@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="学习iot安全的入门题目">
+<title>ESP32 IoT CTF 清华校赛版wp</title>
+
+<link rel='canonical' href='https://Thaumazein.github.io/post/espthuctf/'>
+
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="ESP32 IoT CTF 清华校赛版wp">
+<meta property='og:description' content="学习iot安全的入门题目">
+<meta property='og:url' content='https://Thaumazein.github.io/post/espthuctf/'>
+<meta property='og:site_name' content='Thaumazein'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='article:modified_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='og:image' content='https://Thaumazein.github.io/images/esp0.jpg' />
+<meta name="twitter:title" content="ESP32 IoT CTF 清华校赛版wp">
+<meta name="twitter:description" content="学习iot安全的入门题目"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://Thaumazein.github.io/images/esp0.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_7e87637278c82a68.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein</a></h1>
+            <h2 class="site-description">404 Not Found</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#环境搭建">环境搭建</a></li>
+    <li><a href="#硬件">硬件</a>
+      <ol>
+        <li><a href="#task1">task1</a></li>
+        <li><a href="#task2">task2</a></li>
+        <li><a href="#task3">task3</a></li>
+      </ol>
+    </li>
+    <li><a href="#网络">网络</a>
+      <ol>
+        <li><a href="#task1-1">task1</a></li>
+        <li><a href="#task2-1">task2</a></li>
+        <li><a href="#task3-1">task3</a></li>
+      </ol>
+    </li>
+    <li><a href="#蓝牙">蓝牙</a>
+      <ol>
+        <li><a href="#task1-2">task1</a></li>
+        <li><a href="#task2-2">task2</a></li>
+        <li><a href="#task3-2">task3</a></li>
+      </ol>
+    </li>
+    <li><a href="#mqtt">MQTT</a>
+      <ol>
+        <li><a href="#task1-3">task1</a></li>
+        <li><a href="#task2-3">task2</a></li>
+        <li><a href="#task3-3">task3</a></li>
+      </ol>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/espthuctf/">
+                
+                    <img src="/images/esp0.jpg" loading="lazy" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ctf/" >
+                CTF
+            </a>
+        
+            <a href="/categories/iot/" >
+                IoT
+            </a>
+        
+            <a href="/categories/esp32/" >
+                ESP32
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/espthuctf/">ESP32 IoT CTF 清华校赛版wp</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            学习iot安全的入门题目
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-28</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="环境搭建">环境搭建
+</h2><ul>
+<li>
+<p>需要准备 ESP32、杜邦线、USB 转 TTL 模块、支持监听模式的无线网卡</p>
+</li>
+<li>
+<p>克隆<a class="link" href="https://github.com/xuanxuanblingbling/esp32ctf_thu"  target="_blank" rel="noopener"
+    >源码</a></p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cmd" data-lang="cmd"><span class="line"><span class="cl">git clone https://github.com/xuanxuanblingbling/esp32ctf_thu.git
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>安装<a class="link" href="https://dl.espressif.cn/dl/esp-idf/"  target="_blank" rel="noopener"
+    >esp-idf</a></li>
+</ul>
+<p>安装好后打开ESP-IDF v4.3 PowerShell</p>
+<p><img src="/images/esp1.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cmd" data-lang="cmd"><span class="line"><span class="cl"><span class="k">cd</span> esp32ctf_thu/thuctf/
+</span></span><span class="line"><span class="cl">idf.py menuconfig 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>设置<code>Serial flasher config  ---&gt;  Flash size (4 MB) </code>,<code>Partition Table        ---&gt;  Partition Table (Custom partition table CSV)</code>，然后保存</li>
+</ul>
+<p><img src="/images/esp2.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<ul>
+<li>编译,烧录,监听串口输出</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-cmd" data-lang="cmd"><span class="line"><span class="cl">idf.py build 
+</span></span><span class="line"><span class="cl">idf.py flash 
+</span></span><span class="line"><span class="cl">idf.py monitor
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="/images/esp3.png" style="width: 90%;" />
+<ul>
+<li>
+<p><code>esp_no_flag_source</code>目录中是删掉flag的源码，可以用来分析，但不能烧录</p>
+</li>
+<li>
+<p>上电前连接GND与23号引脚进入硬件、网络、蓝牙题目，否则默认进入MQTT题目，已供电时可按 EN 键重启使设置生效。</p>
+</li>
+</ul>
+<h2 id="硬件">硬件
+</h2><h3 id="task1">task1
+</h3><blockquote>
+<p>将GPIO18抬高，持续3s即可获得flag</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_IO_0     18
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">void</span> <span class="nf">hardware_task1</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">hit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task I : hit %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nf">gpio_get_level</span><span class="p">(</span><span class="n">GPIO_INPUT_IO_0</span><span class="p">)){</span> <span class="c1">//判断gpio18是否为高电平
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">hit</span> <span class="o">++</span> <span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">hit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">hit</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task I : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hardware_flag_1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span> <span class="c1">//这个任务每秒检测一次 GPIO 状态
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是GPIO18 引脚的电平保持为高电平（也就是接 3.3V或5v），时间要持续大于 3 秒，程序就会打印出 flag。</li>
+</ul>
+<blockquote>
+<p>GPIO（General Purpose Input/Output）是通用输入输出引脚。可以配置成读取外部电平（输入模式）或控制外设（输出模式）。</p>
+<p>ESP32 上的 GPIO 是多功能的，每个引脚都可以自由配置成输入、输出或其他特殊用途。</p></blockquote>
+<p>用杜邦线连接3v3与GPIO18，持续3s即可</p>
+<img src="/images/esp4.jpg" style="width: 80%;" />
+<p>此时hit增加，获得flag</p>
+<p><img src="/images/esp5.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{Ev3ryth1ng_st4rt_fr0m_GPIO_!!!}</code></p>
+<h3 id="task2">task2
+</h3><blockquote>
+<p>在GPIO18处构造出1w个上升沿</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_IO_0     18
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_PIN_SEL  ((1ULL&lt;&lt;GPIO_INPUT_IO_0) )
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="n">IRAM_ATTR</span> <span class="nf">gpio_isr_handler</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">arg</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trigger</span><span class="o">++</span><span class="p">;</span> <span class="c1">// 每次触发中断时，trigger增加
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_gpio_setup</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">gpio_config_t</span> <span class="n">io_conf</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">io_conf</span><span class="p">.</span><span class="n">pin_bit_mask</span> <span class="o">=</span> <span class="n">GPIO_INPUT_PIN_SEL</span><span class="p">;</span> <span class="c1">// 绑定 GPIO18
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">GPIO_MODE_INPUT</span><span class="p">;</span> <span class="c1">// 设置为输入模式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">intr_type</span> <span class="o">=</span> <span class="n">GPIO_INTR_POSEDGE</span><span class="p">;</span> <span class="c1">// 上升沿中断
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">pull_up_en</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 关闭上拉，初始状态是低电平
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">gpio_config</span><span class="p">(</span><span class="o">&amp;</span><span class="n">io_conf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">gpio_install_isr_service</span><span class="p">(</span><span class="n">ESP_INTR_FLAG_DEFAULT</span><span class="p">);</span> <span class="c1">// 开启中断服务
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">gpio_isr_handler_add</span><span class="p">(</span><span class="n">GPIO_INPUT_IO_0</span><span class="p">,</span> <span class="n">gpio_isr_handler</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="n">GPIO_INPUT_IO_0</span><span class="p">);</span> <span class="c1">// 注册中断处理函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_task2</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trigger</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task II : trigger %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">trigger</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">trigger</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">){</span> <span class="c1">// 触发次数超过10000，输出flag
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task II : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hardware_flag_2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是要让 GPIO18 不断从低电平跳到高电平（上升沿），当次数大于 10000，程序就会打印出 flag</li>
+</ul>
+<blockquote>
+<p>上升沿是电平从 0 变成 1 的瞬间。</p>
+<p>ESP32 默认的 TX 引脚是持续发送数据的，它的电平会反复在高低之间切换。</p></blockquote>
+<p>用杜邦线连接TX引脚与GPIO18，直到trigger&gt;10000</p>
+<img src="/images/esp6.jpg" style="width: 80%;" />
+<p><img src="/images/esp61.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{AuT0++_is_th3_r1ght_w4y_hhhhhh}</code></p>
+<ul>
+<li>本质上任何能控制输出高低电平切换的引脚都可以用，甚至可以手动连接并断开GPIO18和其他引脚10000次（除了GND），还可以写一个任务让GPIO不断切换输出电平</li>
+</ul>
+<h3 id="task3">task3
+</h3><blockquote>
+<p>在另一个串口处寻找第三个flag</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define ECHO_TEST_TXD  (GPIO_NUM_4) </span><span class="c1">// UART1 的 TX（发送）引脚是 GPIO4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define ECHO_TEST_RXD  (GPIO_NUM_5) </span><span class="c1">// UART1 的 RX（接收）引脚是 GPIO5
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_task3</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task III : find the third flag in another UART</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 向 UART1 发送一串字符串（hardware_flag_3），这个串口不会在 log 输出看到
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">uart_write_bytes</span><span class="p">(</span><span class="n">UART_NUM_1</span><span class="p">,</span> <span class="n">hardware_flag_3</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">hardware_flag_3</span><span class="p">));</span> <span class="c1">// 不断往 UART1 输出 flag
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是要监听 UART1 的串口输出，即可直接读取 flag</li>
+</ul>
+<blockquote>
+<p>UART（通用异步收发器）是串口通信的一种协议，本质就是用两根线（TX 和 RX）来做点对点的串行通信。ESP32 上有多个 UART 通道。默认我们用的是 UART0，它用于 log 输出。但这里题目用的是 UART1。</p></blockquote>
+<p>将USB 转 TTL 模块的RX引脚连接ESP的GPIO4引脚，gnd也对应连接</p>
+<img src="/images/esp7.jpg" style="width: 70%;" />
+<p>用串口工具监听USB 转 TTL 模块</p>
+<p><img src="/images/esp8.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{UART_15_v3ry_imp0r7ant_1n_i0T}</code></p>
+<h2 id="网络">网络
+</h2><h3 id="task1-1">task1
+</h3><blockquote>
+<p>连接板子目标端口，尝试获得flag</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">network_init</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">ssid</span><span class="p">[</span><span class="mh">0x10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">pass</span><span class="p">[</span><span class="mh">0x10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">get_random</span><span class="p">(</span><span class="n">ssid</span><span class="p">,</span><span class="mi">6</span><span class="p">);</span> <span class="c1">//随机生成WiFi名称
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">get_random</span><span class="p">(</span><span class="n">pass</span><span class="p">,</span><span class="mi">8</span><span class="p">);</span> <span class="c1">//随机生成密码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task I: I will connect a wifi -&gt; ssid: %s , password %s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">ssid</span><span class="p">,</span><span class="n">pass</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">connect_wifi</span><span class="p">(</span><span class="n">ssid</span><span class="p">,</span><span class="n">pass</span><span class="p">);</span> <span class="c1">//尝试连接到刚刚生成的WiFi
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">network_tcp</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">addr_str</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">dest_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="nf">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span> <span class="c1">// 接收任意IP
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="nf">htons</span><span class="p">(</span><span class="mi">3333</span><span class="p">);</span> <span class="c1">// 监听3333端口
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">listen_sock</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="n">IPPROTO_IP</span><span class="p">);</span> <span class="c1">// 创建 TCP socket
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket created&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">bind</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">dest_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">dest_addr</span><span class="p">));</span> <span class="c1">// 绑定 socket
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket bound, port %d&#34;</span><span class="p">,</span> <span class="mi">3333</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">listen</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 开始监听
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket listening&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="n">source_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">socklen_t</span> <span class="n">addr_len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">source_addr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="nf">accept</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">source_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">addr_len</span><span class="p">);</span> <span class="c1">// 等待连接
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">inet_ntoa_r</span><span class="p">(((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">source_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">,</span> <span class="n">addr_str</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr_str</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket accepted ip address: %s&#34;</span><span class="p">,</span> <span class="n">addr_str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="nf">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="n">buffer</span><span class="p">,</span><span class="mh">0x10</span><span class="p">,</span><span class="mi">0</span><span class="p">)){</span> <span class="c1">// 接收数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="nf">strstr</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="s">&#34;getflag&#34;</span><span class="p">)){</span> <span class="c1">//如果内容包含getflag
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="nf">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">network_flag_1</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">network_flag_1</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 返回flag
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="s">&#34;error</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="s">&#34;error</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">open_next_tasks</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">shutdown</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">close</span><span class="p">(</span><span class="n">sock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是ESP32 板子会随机生成一个WiFi 名（SSID）和密码，尝试连接这个热点。连上之后，它会在本地开启一个 TCP Server，监听端口 3333。需要在网络中找到并连接它，发送 <code>getflag</code>，它就会返回 flag。</li>
+</ul>
+<blockquote>
+<p>STA 模式（Station）：ESP32 作为 WiFi 客户端接入热点。</p>
+<p>Socket 是一对网络通信端点，由 IP 地址 + 端口号组成。通过 socket 函数可以建立 TCP 或 UDP 连接，发送和接收数据。</p>
+<p>ESP32 成功连接热点后，就成了局域网的一员，它的 3333 端口会接受来自其他设备的 TCP 连接。</p>
+<p><code>netcat</code>作用是快速建立 TCP 或 UDP 连接，用来读写数据。</p></blockquote>
+<p>修改电脑的热点名称和密码与串口打印的相同</p>
+<p><img src="/images/esp9.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><img src="/images/esp12.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>esp32连接成功，获得ip地址<code>192.168.137.188</code></p>
+<p><img src="/images/esp10.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>nc一下，输入<code>nc 192.168.137.188 3333</code></p>
+<p><code>getflag</code></p>
+<p><img src="/images/esp11.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{M4k3_A_w1rele55_h0t5p0ts}</code></p>
+<h3 id="task2-1">task2
+</h3><blockquote>
+<p>你知道他发给百度的flag么</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">network_http</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span>  <span class="n">fmt</span><span class="p">[]</span>  <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;Host: www.baidu.com:80</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;User-Agent: esp-idf/1.0 esp32</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;flag: %s</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">request</span><span class="p">[</span><span class="mi">200</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">network_flag_2</span><span class="p">);</span> <span class="c1">// 构造带有 flag 的 HTTP 请求头
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">ai_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">ai_socktype</span> <span class="o">=</span> <span class="n">SOCK_STREAM</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">addrinfo</span> <span class="o">*</span><span class="n">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">in_addr</span> <span class="o">*</span><span class="n">addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">open_next_tasks</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task II : send the second flag to baidu</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">getaddrinfo</span><span class="p">(</span><span class="s">&#34;www.baidu.com&#34;</span><span class="p">,</span> <span class="s">&#34;80&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">res</span><span class="p">);</span> <span class="c1">// DNS 解析
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;network&#34;</span><span class="p">,</span> <span class="s">&#34;DNS lookup succeeded. IP=%s&#34;</span><span class="p">,</span> <span class="nf">inet_ntoa</span><span class="p">(</span><span class="o">*</span><span class="n">addr</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">            <span class="n">s</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">connect</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addrlen</span><span class="p">);</span> <span class="c1">// 建立 TCP 连接
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">freeaddrinfo</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">write</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">request</span><span class="p">));</span> <span class="c1">// 发送 HTTP 请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">close</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">10000</span> <span class="o">/</span> <span class="n">portTICK_PERIOD_MS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是板子把 <code>network_flag_2</code> 写在 HTTP 请求头里，然后发给百度的 80 端口，要拦截 ESP32 向百度服务器发送的 HTTP 请求，提取其中携带的 flag。</li>
+</ul>
+<blockquote>
+<p>ESP32 用 socket 构造 HTTP 报文并发送，请求并不返回给本地终端，需要抓包分析出站流量。板子的网络行为都会从电脑出去，所以可以抓到 HTTP 请求</p></blockquote>
+<p>电脑开启热点后，系统会新建一个虚拟网卡</p>
+<p><img src="/images/esp13.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>用wireshark抓取这个网卡的流量，追踪http流，发现flag</p>
+<p><img src="/images/esp14.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{Sn1ffer_N3tw0rk_TrAffic_In_7h4_Main_r0aD}</code></p>
+<h3 id="task3-1">task3
+</h3><blockquote>
+<p>flag在空中</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">network_wifi</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>	
+</span></span><span class="line"><span class="cl">    <span class="c1">// 定义一段固定的原始802.11数据包（PDU），是Wi-Fi协议的数据帧格式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">ds2ds_pdu</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0x48</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0xE8</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0xD4</span><span class="p">,</span> <span class="mh">0xCB</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x19</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0x60</span><span class="p">,</span> <span class="mh">0x94</span><span class="p">,</span> <span class="mh">0xE8</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0xD4</span><span class="p">,</span> <span class="mh">0xCB</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">,</span> <span class="mh">0xB9</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0x0D</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="mh">0x7D</span><span class="p">,</span> <span class="mh">0x13</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="mh">0xE8</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0xD4</span><span class="p">,</span> <span class="mh">0xCB</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">,</span> <span class="mh">0xB9</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>  
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">pdu</span><span class="p">[</span><span class="mi">200</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 在固定数据包后面拼接 flag 内容，形成完整的带 flag 的数据帧
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">memcpy</span><span class="p">(</span><span class="n">pdu</span><span class="p">,</span><span class="n">ds2ds_pdu</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">pdu</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">),</span><span class="n">network_flag_3</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">network_flag_3</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">open_next_tasks</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task III : send raw 802.11 package contains the third flag</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">esp_wifi_80211_tx</span><span class="p">(</span><span class="n">ESP_IF_WIFI_STA</span><span class="p">,</span> <span class="n">pdu</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">)</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">network_flag_3</span><span class="p">),</span> <span class="nb">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 通过 esp_wifi_80211_tx 函数，直接发送底层802.11无线数据包（裸包），不经过协议栈
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">5000</span> <span class="o">/</span> <span class="n">portTICK_PERIOD_MS</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/images/esp15.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<ul>
+<li>题目意思是ESP32 直接构造并发送了一个原始的802.11数据包，包含了第三个flag的数据。捕获周围无线信号里的所有802.11帧，包括ESP32发出的这段含flag的裸包，然后用Wireshark解析，就能看到里面隐藏的flag。</li>
+</ul>
+<blockquote>
+<p>802.11数据帧（Wi-Fi裸包）：无线局域网通信的底层数据单元，包含MAC地址、控制字段、负载等，不同于TCP/IP数据包。这种帧必须用支持监听模式的无线网卡开启监听模式后才能看到。</p>
+<p>监听模式无线网卡：捕获所有经过空中的无线帧，包括不发给自己的。普通Wi-Fi连接只能看到TCP/IP层数据，监听模式才能看到MAC层及以上的帧内容。</p></blockquote>
+<p>把无线网卡插入kali，切换网卡到监听模式并开始监听</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo airmon-ng start wlan0
+</span></span><span class="line"><span class="cl">sudo airodump-ng wlan0mon
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/images/esp16.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p>wireshark抓wlan0mon网卡的包,在字节流中用字符串搜索CTF</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo wireshark
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/images/esp17.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{YOu_cAn_s3nd_4nd_sNiff3r_802.11_r4w_pAckag3}</code></p>
+<h2 id="蓝牙">蓝牙
+</h2><h3 id="task1-2">task1
+</h3><blockquote>
+<p>修改蓝牙名称并设置可被发现即可获得flag</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">check_name</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span> <span class="n">b</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">strcmp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;bluetooth task I : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">bt_flag_1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">esp_bt_gap_cancel_discovery</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">scan</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">next_task</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>字面意思，修改手机蓝牙名称与串口打印的相同，等待连接即可</p>
+<p><img src="/images/esp18.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><img src="/images/esp20.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{b1u3t00th_n4me_a1s0_c4n_b3_An_aTT4ck_surfAce}</code></p>
+<h3 id="task2-2">task2
+</h3><blockquote>
+<p>flag在空中</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">next_task</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span><span class="o">=</span> <span class="p">{</span><span class="mh">0x06</span><span class="p">,</span><span class="mh">0x09</span><span class="p">,</span><span class="mh">0x68</span><span class="p">,</span><span class="mh">0x65</span><span class="p">,</span><span class="mh">0x6C</span><span class="p">,</span><span class="mh">0x6C</span><span class="p">,</span><span class="mh">0x6F</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="k">sizeof</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">),</span><span class="mh">0xFD</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">client_name</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">=</span><span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">get_random</span><span class="p">(</span><span class="n">client_name</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task II : BLE device name is %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">client_name</span><span class="p">);</span><span class="c1">// 生成随机 BLE 广播设备名
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task II : Please find the second flag in the ADV package from this BLE device %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">client_name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">fmt</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">client_name</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">fmt</span><span class="p">),</span><span class="n">bt_flag_2</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">));</span><span class="c1">// 将第二个 flag 添加到广播包末尾
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"> <span class="c1">// 配置 BLE 广播的原始数据，直接以二进制形式发送esp_ble_gap_config_adv_data_raw(data,sizeof(fmt)+sizeof(bt_flag_2));
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 开始广播
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">esp_ble_gap_start_advertising</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ble_adv_params</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatts_register_callback</span><span class="p">(</span><span class="n">gatts_event_handler</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatts_app_register</span><span class="p">(</span><span class="n">PROFILE_A_APP_ID</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatt_set_local_mtu</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="/images/esp21.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<ul>
+<li>题目意思是ESP32 现在使用低功耗蓝牙广播模式，设备名是<code>ivhti</code>，flag 在 BLE 广播包里，通过监听广播拿到。</li>
+</ul>
+<blockquote>
+<p>BLE 设备会周期性向外发送广播包，内容可以自定义。</p>
+<p>nRF Connect可用于扫描，调试低功耗蓝牙设备。</p></blockquote>
+<p>用nRF Connect 抓取广播包，获得一串16进制数据<code>5448554354467B416456443437617D</code></p>
+<img src="/images/esp22.jpg" style="width: 50%;" />
+<p>转成ascii，获得flag</p>
+<img src="/images/esp23.png" style="width: 50%;" />
+<p><code>THUCTF{AdVD47a}</code></p>
+<h3 id="task3-2">task3
+</h3><blockquote>
+<p>分析GATT业务并获得flag</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">case</span> <span class="nl">ESP_GATTS_WRITE_EVT</span><span class="p">:</span> <span class="p">{</span> <span class="c1">// 当手机等客户端向蓝牙设备写数据时，会触发这个事件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="s">&#34;GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d&#34;</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">handle</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">is_prep</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="s">&#34;GATT_WRITE_EVT, value len %d, value :&#34;</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">esp_log_buffer_hex</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">);</span> <span class="c1">// 打印写入的数据内容（十六进制）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task III : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">);</span> <span class="c1">// 打印收到的内容（字符串）
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>             <span class="c1">// 检查写入的数据是否和第二个flag一样
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">,(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task III : you can read the third flag this time</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">open_task3</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 如果正确，标记允许读第三个flag
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">esp_ble_gatts_send_response</span><span class="p">(</span><span class="n">gatts_if</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">ESP_GATT_OK</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是向 ESP32 的 GATT 服务写入flag2，如果写入正确，系统会提示你可以读第三个 flag 了，说明已经通过验证，然后就可以读取隐藏的 flag。</li>
+</ul>
+<blockquote>
+<p>GATT（Generic Attribute Profile）是 BLE通信的一种通信规范,定义了BLE 设备之间如何组织数据和读写数据的规则。</p>
+<p>通过手机写入广播获取的 flag，实现对 BLE 特征值的访问控制。</p></blockquote>
+<p>用nRF Connect连接上一题的BLE</p>
+<img src="/images/esp24.jpg" style="width: 50%;" />
+<p>在<code>Unknown Service&gt;Unknown Characteristic</code>中上传task2的flag</p>
+<img src="/images/esp25.jpg" style="width: 50%;" />
+<img src="/images/esp26.jpg" style="width: 50%;" />
+<p>读取获得字符串<code>54-48-55-43-54-46-7B-57-72-49-74-45- 5F-34-5F-67-41-37-54-7D-00</code></p>
+<img src="/images/esp27.jpg" style="width: 50%;" />
+<p>转ascii获得flag</p>
+<p><img src="/images/esp27.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{WrItE_4_gA7T}</code></p>
+<h2 id="mqtt">MQTT
+</h2><p>题目的域名到期了，需要构建一个MQTT服务器，docker文件夹里有这题的dokerfile，起一个docker，然后打开服务器1833端口</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker build -t esp32ctf .
+</span></span><span class="line"><span class="cl">docker run -d -p 1883:1883 esp32ctf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>手机热点改成如下名称和密码，电脑和ESP32连接热点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"> <span class="c1">// MQTT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">connect_wifi</span><span class="p">(</span><span class="s">&#34;THUCTFIOT&#34;</span><span class="p">,</span><span class="s">&#34;mqttwifi@123&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>main.c这部分改成自己的域名，然后重新编译烧录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">mqtt_app_start</span><span class="p">(</span><span class="s">&#34;mqtt://192.168.229.152&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>日志看到连接成功，打开mqtt.fx，设置broker为自己的ip和端口号并连接</p>
+<p><img src="/images/esp28.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<h3 id="task1-3">task1
+</h3><blockquote>
+<p>你知道MQTT的上帝是谁么</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"> <span class="k">switch</span> <span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">event_id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nl">MQTT_EVENT_CONNECTED</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;mqtt&#34;</span><span class="p">,</span> <span class="s">&#34;MQTT_EVENT_CONNECTED&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">         	<span class="c1">// 向主题 &#34;/topic/flag1&#34; 发布一条消息，消息内容是 mqtt_flag_1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">msg_id</span> <span class="o">=</span> <span class="nf">esp_mqtt_client_publish</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s">&#34;/topic/flag1&#34;</span><span class="p">,</span> <span class="n">mqtt_flag_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] MQTT task I: publish successful, msg_id=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg_id</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是ESP32 设备在连接 MQTT 成功后，会自动向 <code>/topic/flag1</code> 主题发送 flag，如果你作为 MQTT 客户端订阅了所有主题，就能收到这条 flag 消息</li>
+</ul>
+<blockquote>
+<p>MQTT 协议是轻量级物联网通信协议，通过发布/订阅机制进行消息传递，适合嵌入式设备使用。</p>
+<p>Broker是MQTT 网络中的核心服务器，负责接收、转发所有客户端的消息。客户端通过订阅主题来接收由其他客户端发布到这些主题的消息。</p>
+<p>主题通配符：<code>#</code> 表示订阅所有主题，<code>+</code> 表示匹配单层主题</p></blockquote>
+<p>subscribe输入#订阅所有主题，即可接收 broker 上发布的所有消息，看到flag</p>
+<p><img src="/images/esp29.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{#_1s_God_in_MQTT}</code></p>
+<h3 id="task2-3">task2
+</h3><blockquote>
+<p>你能欺骗订阅者么</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">mqtt_data_hander</span><span class="p">(</span><span class="kt">int</span> <span class="n">length</span><span class="p">,</span><span class="kt">char</span> <span class="o">*</span> <span class="n">data</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">url</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">out</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">httpdata</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">flagdata</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">tag3</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34; [+] MQTT task III: &#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">flagdata</span><span class="p">,</span><span class="s">&#34;%s%s%s&#34;</span><span class="p">,</span><span class="n">mqtt_flag_2</span><span class="p">,</span><span class="n">tag3</span><span class="p">,</span><span class="n">mqtt_flag_3</span><span class="p">);</span>  <span class="c1">// 构造完整的 flag 内容：flag2 + 提示语 + flag3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">46</span><span class="p">;</span> <span class="c1">// 默认提取 flag 的长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// 从 MQTT 数据中查找 &#39;?&#39;，分离 URL 与长度值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="nf">strnstr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="s">&#34;?&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">data_length</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="n">data</span><span class="p">;</span> <span class="c1">// URL 部分的长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">snprintf</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">length</span> <span class="o">-</span> <span class="n">data_length</span><span class="p">,</span><span class="s">&#34;%s&#34;</span><span class="p">,</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 把 ? 后的内容存入 l
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">a</span> <span class="o">=</span> <span class="nf">atoi</span><span class="p">(</span><span class="n">l</span><span class="p">);</span> <span class="c1">// 把 ? 后的字符串转成整数 a
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">length</span> <span class="o">=</span> <span class="n">data_length</span><span class="p">;</span> <span class="c1">// 更新长度，截掉问号部分
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="s">&#34;%.*s&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span> <span class="c1">// 提取 URL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 构造 HTTP 请求，请求头中包含 flag 前 a 字节内容
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;User-Agent: esp-idf/1.0 esp32</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;flag: %s</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mqtt_flag_2</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tag3</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">memcpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">flagdata</span><span class="p">,</span><span class="n">a</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sprintf</span><span class="p">(</span><span class="n">httpdata</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">out</span><span class="p">);</span> <span class="c1">// 插入 a 长度的 flag 内容
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>          
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">case</span> <span class="nl">MQTT_EVENT_DATA</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;mqtt&#34;</span><span class="p">,</span> <span class="s">&#34;MQTT_EVENT_DATA&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] MQTT task II: topic -&gt;  %.*s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">topic_len</span><span class="p">,</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">topic</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] MQTT task II: data -&gt; %.*s</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">data_len</span><span class="p">,</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">mqtt_data_hander</span><span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">data_len</span><span class="p">,</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是ESP32 作为 MQTT 客户端，订阅了主题，向该主题发送一条消息，只要内容是一个 IP 地址，ESP32 收到后会主动向这个 IP 发起 HTTP 请求，请求中带有部分 flag 内容，藏在 <code>flag:</code> 请求头中，截取长度默认46，如果消息中包含<code>?数字</code>，长度会被更改</li>
+</ul>
+<blockquote>
+<p>攻击者通过发布特定消息控制设备发起 HTTP 请求，将 flag 内容泄露到外部服务器。</p>
+<p>设备未验证 MQTT 消息合法性，导致攻击者可控制其对任意地址发起请求。</p>
+<p>HTTP 默认使用 80端口</p></blockquote>
+<p>向flag2主题发送ip，nc监听80端口即可</p>
+<p><code>nc -l -p 80</code></p>
+<p><img src="/images/esp30.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{attAck_t0_th3_dev1ce_tcp_r3cV_ch4nnel}</code></p>
+<h3 id="task3-3">task3
+</h3><blockquote>
+<p>这是个内存破坏的前戏</p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="s">&#34;%.*s&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span> <span class="c1">// 提取 URL
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 构造 HTTP 请求，请求头中包含 flag 前 a 字节内容
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;User-Agent: esp-idf/1.0 esp32</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;flag: %s</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span><span class="line"><span class="cl">                 <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mqtt_flag_2</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tag3</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">memcpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">flagdata</span><span class="p">,</span><span class="n">a</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sprintf</span><span class="p">(</span><span class="n">httpdata</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">out</span><span class="p">);</span> <span class="c1">// 插入 a 长度的 flag 内容
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>          
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>题目意思是需要让a的值大于字符串长度才可获得flag，但<code>a &lt; (int)(sizeof(mqtt_flag_2) + sizeof(tag3) - 1</code>限制了a的大小，<code>memcpy(out,flagdata,a &amp; 0xff)</code>是与运算，表示取a的二进制的最低8位。因此a=-1时，二进制是<code>11111111 11111111 11111111 11111111</code>，<code>a &amp; 0xff = 00000000 00000000 00000000 11111111 = 255</code>，且a=-1可通过长度判断</li>
+</ul>
+<blockquote>
+<p><code>&amp; 0xff</code> 是按位与运算，常用来截取整数的二进制最低8位，对负数（补码全1）做 <code>&amp; 0xff</code> 操作，得到的是255。</p>
+<p>判断时没有验证符号导致安全漏洞。</p></blockquote>
+<p>向flag2主题发送ip?-1，nc监听80端口即可</p>
+<p><img src="/images/esp31.png"
+	
+	
+	
+	loading="lazy"
+	
+	
+></p>
+<p><code>THUCTF{0ver_the_Air_y0u_c4n_a77ack_t0_1ntranet_d3v1ce</code></p>
+<h2 id="参考">参考
+</h2><p><a class="link" href="https://xuanxuanblingbling.github.io/iot/2022/08/30/esp32/"  target="_blank" rel="noopener"
+    >ESP32 IoT CTF 清华校赛版 Write Up | Clang裁缝店</a></p>
+<p><a class="link" href="https://cloud.tencent.com/developer/article/2311489"  target="_blank" rel="noopener"
+    >ESP32 IoT CTF 题解-腾讯云开发者社区-腾讯云</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script>
+    window.disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (typeof DISQUS == 'object') {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Thaumazein
+    </section>
+    
+    <section class="powerby">
+        
+            May you find your worth in the waking world. <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
