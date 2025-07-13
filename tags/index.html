@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="Tags">
 <meta property='og:description' content="404 Not Found">
 <meta property='og:url' content='https://Thaumazein.github.io/tags/'>
-<meta property='og:site_name' content='Thaumazein'>
-<meta property='og:type' content='website'><meta property='og:updated_time' content=' 2025-06-29T01:26:20&#43;08:00 '/>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='website'><meta property='og:updated_time' content=' 2025-06-28T13:26:44&#43;08:00 '/>
 <meta name="twitter:title" content="Tags">
 <meta name="twitter:description" content="404 Not Found"><link rel="alternate" type="application/rss&#43;xml" href="https://Thaumazein.github.io/tags/index.xml">
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -69,7 +69,7 @@
         
         
         <div class="site-meta">
-            <h1 class="site-name"><a href="/">Thaumazein</a></h1>
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
             <h2 class="site-description">404 Not Found</h2>
         </div>
     </header><ol class="menu-social">
@@ -350,15 +350,15 @@ unicode: "f6d2"
             </a>
         
             <a href="/categories/esp32/" class="font_size_1">
-                ESP32
+                esp32
             </a>
         
             <a href="/categories/iot/" class="font_size_1">
                 IoT
             </a>
         
-            <a href="/categories/%E6%80%BB%E7%BB%93/" class="font_size_1">
-                总结
+            <a href="/categories/%E7%94%B5%E5%AD%90%E5%88%B6%E4%BD%9C/" class="font_size_1">
+                电子制作
             </a>
         
             <a href="/categories/%E9%9A%8F%E8%AE%B0/" class="font_size_1">
@@ -410,6 +410,33 @@ unicode: "f6d2"
 </footer>
 
 
+
+<audio id="bg-music" src="/music/Low Roar - I'll Keep Coming.mp3" autoplay loop style="display:none;"></audio>
+
+<script>
+  const audio = document.getElementById("bg-music");
+
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log("音乐播放成功");
+      }).catch((error) => {
+        console.log("自动播放被浏览器阻止，等待用户点击");
+        
+        document.addEventListener('click', () => {
+          audio.play();
+        }, { once: true });
+      });
+    }
+  });
+</script>
+
+
+
             </main>
         </div>
         <script 
@@ -428,6 +455,44 @@ unicode: "f6d2"
         document.head.appendChild(customFont);
     }());
 </script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
 
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+console.log('particles.js loaded - callback');
+});
+</script>
+
+<script src='renderer.js'></script>
+<script>
+    window.onload = () =>{
+        RENDERER.init();
+    }
+</script>
     </body>
 </html>

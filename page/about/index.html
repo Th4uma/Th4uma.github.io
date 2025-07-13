@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="关于">
 <meta property='og:description' content="大家好，这里是Thaumazein,目前是大学生\n关于我 Thaumazein是希腊语中“惊奇”或“敬畏”的意思。面对这个信息复杂、快速演化的时代，我希望自己能始终保持对未知世界的好奇心和思考力。Th4uma则是这个名字的简化变体，更好写也更便于记忆。\n">
 <meta property='og:url' content='https://Thaumazein.github.io/page/about/'>
-<meta property='og:site_name' content='Thaumazein'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Page' />
 <meta name="twitter:title" content="关于">
 <meta name="twitter:description" content="大家好，这里是Thaumazein,目前是大学生\n关于我 Thaumazein是希腊语中“惊奇”或“敬畏”的意思。面对这个信息复杂、快速演化的时代，我希望自己能始终保持对未知世界的好奇心和思考力。Th4uma则是这个名字的简化变体，更好写也更便于记忆。\n">
@@ -71,7 +71,7 @@
         
         
         <div class="site-meta">
-            <h1 class="site-name"><a href="/">Thaumazein</a></h1>
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
             <h2 class="site-description">404 Not Found</h2>
         </div>
     </header><ol class="menu-social">
@@ -356,11 +356,11 @@ unicode: "f6d2"
 <h3 id="航模">航模
 </h3><p>初中开始玩固定翼，但后来因为技术太菜放弃了。高中虽然混进航模部当了副部，但没做出像样的项目。直到大学才正式重拾这项爱好，目前在学习 FPV</p>
 <h3 id="ctf">CTF
-</h3><p>我的方向是iot。高中时接触过，真正开始学是在大学。第一年出了些意外，只学了 misc 和一点 IoT，计划在大二重点学习</p>
+</h3><p>我的方向是misc和iot。高中时接触过，真正开始学是在大学。第一年出了些意外，只学了 misc 和一点 IoT，计划在大二重点学习</p>
 <h3 id="单机游戏">单机游戏
 </h3><p>玩过不少游戏，高三上学期是最集中的一段时间。最喜欢的游戏是血源诅咒</p>
 <h3 id="摄影">摄影
-</h3><p>非常业余，设备是佳能eosm2。这些年出去玩的时候都会顺带拍一些照片，博客的封面图都是我的作品</p>
+</h3><p>非常业余，设备是佳能eosm2和大疆air3。这些年出去玩的时候都会顺带拍一些照片，博客的封面图都是我的作品</p>
 <h3 id="看漫画">看漫画
 </h3><p>初三开始买漫画，高中天天带到学校偷偷看。现在也经常在看，最喜欢jojo和blame</p>
 <h3 id="城市探险">城市探险
@@ -487,6 +487,33 @@ unicode: "f6d2"
 </footer>
 
 
+
+<audio id="bg-music" src="/music/Low Roar - I'll Keep Coming.mp3" autoplay loop style="display:none;"></audio>
+
+<script>
+  const audio = document.getElementById("bg-music");
+
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log("音乐播放成功");
+      }).catch((error) => {
+        console.log("自动播放被浏览器阻止，等待用户点击");
+        
+        document.addEventListener('click', () => {
+          audio.play();
+        }, { once: true });
+      });
+    }
+  });
+</script>
+
+
+
     
 <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
 
@@ -583,6 +610,44 @@ unicode: "f6d2"
         document.head.appendChild(customFont);
     }());
 </script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
 
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+console.log('particles.js loaded - callback');
+});
+</script>
+
+<script src='renderer.js'></script>
+<script>
+    window.onload = () =>{
+        RENDERER.init();
+    }
+</script>
     </body>
 </html>

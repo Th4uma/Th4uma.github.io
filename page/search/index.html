@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="搜索">
 <meta property='og:description' content="">
 <meta property='og:url' content='https://Thaumazein.github.io/page/search/'>
-<meta property='og:site_name' content='Thaumazein'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Page' />
 <meta name="twitter:title" content="搜索">
 <meta name="twitter:description" content=""><link rel="alternate" type="application/json" href="https://Thaumazein.github.io/page/search/index.json">
@@ -69,7 +69,7 @@
         
         
         <div class="site-meta">
-            <h1 class="site-name"><a href="/">Thaumazein</a></h1>
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
             <h2 class="site-description">404 Not Found</h2>
         </div>
     </header><ol class="menu-social">
@@ -313,6 +313,33 @@ unicode: "f6d2"
 </footer>
 
 
+
+<audio id="bg-music" src="/music/Low Roar - I'll Keep Coming.mp3" autoplay loop style="display:none;"></audio>
+
+<script>
+  const audio = document.getElementById("bg-music");
+
+  
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    const playPromise = audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log("音乐播放成功");
+      }).catch((error) => {
+        console.log("自动播放被浏览器阻止，等待用户点击");
+        
+        document.addEventListener('click', () => {
+          audio.play();
+        }, { once: true });
+      });
+    }
+  });
+</script>
+
+
+
             </main>
         </div>
         <script 
@@ -331,6 +358,44 @@ unicode: "f6d2"
         document.head.appendChild(customFont);
     }());
 </script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
 
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+console.log('particles.js loaded - callback');
+});
+</script>
+
+<script src='renderer.js'></script>
+<script>
+    window.onload = () =>{
+        RENDERER.init();
+    }
+</script>
     </body>
 </html>
