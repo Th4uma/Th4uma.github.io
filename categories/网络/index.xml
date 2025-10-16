@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>网络 on Thaumazein&#39;s Shelter</title>
+        <link>https://th4uma.github.io/categories/%E7%BD%91%E7%BB%9C/</link>
+        <description>Recent content in 网络 on Thaumazein&#39;s Shelter</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Thaumazein</copyright>
+        <lastBuildDate>Thu, 16 Oct 2025 16:42:39 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>J4125 小主机 All in One 搭建与折腾记录</title>
+        <link>https://th4uma.github.io/post/aio/</link>
+        <pubDate>Thu, 16 Oct 2025 16:42:39 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/aio/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/rly.jpg" alt="Featured image of post J4125 小主机 All in One 搭建与折腾记录" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+&lt;/h2&gt;&lt;p&gt;大一期间没有办校园卡，宿舍一直靠手机热点上网，网速不稳定、流量受限，还经常断网，使用体验很差。
+暑假终于办了校园卡，准备认真折腾一下寝室网络，目标是稳定、多功能、可扩展。&lt;/p&gt;
+&lt;h2 id=&#34;背景与目标&#34;&gt;背景与目标
+&lt;/h2&gt;&lt;h3 id=&#34;网络条件&#34;&gt;网络条件
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;学校的宽带采用代拨上网，网速500Mbps&lt;/li&gt;
+&lt;li&gt;需要通过深澜系统登录认证账号后才能使用网络&lt;/li&gt;
+&lt;li&gt;没有公网ip，校外访问需要内网穿透&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;功能需求&#34;&gt;功能需求
+&lt;/h3&gt;&lt;p&gt;我的需求包括广告过滤、科学上网、Docker 等功能，由于设备较多，我还需要一台 NAS 来实现数据共享。所以All in one符合我的需求。&lt;/p&gt;
+&lt;p&gt;All in one（AIO）是一种将多台设备功能整合到同一硬件上、各系统相互独立又可同时运行的方案。&lt;/p&gt;
+&lt;p&gt;一般情况使用x86架构的设备作为硬件平台，虚拟机系统来做底层系统，将软路由、NAS、HTPC等系统安装到同一台物理机中，并且同时运行。对于我这种新手来说，All in one的好处就是能用较低成本体验不同系统的功能，并逐步找到最适合自己的方案。&lt;/p&gt;
+&lt;h2 id=&#34;方案规划&#34;&gt;方案规划
+&lt;/h2&gt;&lt;h3 id=&#34;硬件配置&#34;&gt;硬件配置
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;目标：能跑满校园网的500M 带宽，且价格不太贵，不浪费性能&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;最终选择：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;J4125 +i226 四网口小主机&lt;/li&gt;
+&lt;li&gt;120 G 固态、8 G 内存&lt;/li&gt;
+&lt;li&gt;红米 AC2100 作为 AP&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;总花费 450 元&lt;/p&gt;&lt;/blockquote&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/rly1.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/rly1.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;系统选择&#34;&gt;系统选择
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;参考 &lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/alittlemc/p/16996277.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;All in one入门之All in one和三种PVE、ESXI、Windows Server方案 - alittlemc&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;安装与配置&#34;&gt;安装与配置
+&lt;/h2&gt;&lt;h3 id=&#34;安装istoreos&#34;&gt;安装istoreos
+&lt;/h3&gt;&lt;p&gt;根据物理机类型选择要下载的固件，我下载的是&lt;a class=&#34;link&#34; href=&#34;https://site.istoreos.com/firmware/download?devicename=x86_64&amp;amp;firmware=iStoreOS&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;x86_64 iStoreOS固件&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;买的装好istoreos系统的小主机，所以省略安装系统的步骤&lt;/p&gt;
+&lt;h2 id=&#34;曾经失败的尝试&#34;&gt;曾经失败的尝试
+&lt;/h2&gt;&lt;h3 id=&#34;路由器-openwrt-方案&#34;&gt;路由器 OpenWRT 方案
+&lt;/h3&gt;&lt;p&gt;最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP。最终选用 H3C NX30 Pro。&lt;/p&gt;
+&lt;h4 id=&#34;准备&#34;&gt;准备
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;H3C NX30 Pro 路由器&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有网口的 Windows 电脑&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/NX30Pro.zip&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载termius、winscp和固件&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;开启ssh&#34;&gt;开启ssh
+&lt;/h4&gt;&lt;p&gt;确保路由器是联网的，NX30 Pro 默认开启 telnet，默认的地址是 192.168.124.1，端口是 99。&lt;/p&gt;
+&lt;p&gt;打开 termius 选择 New Host ，Address 填写 192.168.124.1，取消勾选 SSH，勾选 Telnet，Port 端口填写上 99。用户名是 H3C，密码为后台登录密码&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;意外情况：这款路由器2025年8月厂家安装了新版V100R009系统，封闭了telnet 99端口且无法降级，因此无法免拆刷机。由于更新时间较短，网上几乎无资料，我选择路由器的时候并没有发现这种情况，最终只能放弃该方案&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

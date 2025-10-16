@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/nixie_tube/'>
 
-<link rel="stylesheet" href="/scss/style.min.74879b628f0093383ba97db12d1c2ee07fb5991245923c43957ee5ea1035cf24.css"><meta property='og:title' content="[001号机]辉光管时钟">
+<link rel="stylesheet" href="/scss/style.min.bae851b14265eb6aa34c95d2ee01485886cb1c394c57fb13aea286ffc3557328.css"><meta property='og:title' content="[001号机]辉光管时钟">
 <meta property='og:description' content="El Psy Congroo">
 <meta property='og:url' content='https://th4uma.github.io/post/nixie_tube/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -297,12 +297,12 @@ unicode: "f6d2"
           <ol>
             <li><a href="#辉光管">辉光管</a></li>
             <li><a href="#外壳-1">外壳</a></li>
-            <li><a href="#排故">排故</a></li>
+            <li><a href="#出现问题">出现问题</a></li>
           </ol>
         </li>
+        <li><a href="#结局">结局</a></li>
       </ol>
     </li>
-    <li><a href="#完成">完成</a></li>
   </ol>
 </nav>
         </div>
@@ -660,18 +660,24 @@ unicode: "f6d2"
 <h3 id="最终组装">最终组装
 </h3><h4 id="辉光管">辉光管
 </h4><p>怕浪费钱，所以其他部分完全做完以后才敢买辉光管</p>
-<img src="/images/yhj8.jpg" style="width: 100%;" />
+<img src="/images/yhj8.jpg" style="width: 80%;" />
 <p>焊接，这下内外板合并，电路部分彻底完成</p>
 <img src="/images/yhj9.jpg" style="width: 100%;" />
+<blockquote>
+<p>注意：辉光管直接焊接容易造成引脚热胀冷缩，会撑破玻璃导致漏气，所以要么不要把引脚剪太短，要么焊接这种卡簧端子到板子上做成可插拔结构</p>
+<img src="/images/yhj110.jpg" style="width: 30%;" /></blockquote>
 <h4 id="外壳-1">外壳
-</h4><p>定制的时候了解到内侧固定铜柱制作成本高，而且没法打孔，干脆舍弃这部分，改为3d打印件，毕竟对强度没有太大要求。其中的usb部分我画了固定件</p>
-<img src="/images/yhj10.png" style="width: 100%;" />
-<h4 id="排故">排故
-</h4><p>组装好后遇到了奇怪的问题，只有后四个辉光管亮，前四个完全没反应，并且出现部分数字显示不全，错误，部分不显示，还有数字和小数点一起显示的情况</p>
-<img src="/images/yhj11.jpg" style="width: 100%;" />
+</h4><p>定制的时候了解到内侧固定铜柱制作成本高，而且没法打孔，干脆舍弃这部分，改为3d打印件，毕竟对强度没有太大要求。同时，usb接口我也采用了自己画固定件并打印的方法</p>
+<img src="/images/yhj10.png" style="width: 50%;" />
+<h4 id="出现问题">出现问题
+</h4><p>组装好后遇到了奇怪的问题，只有后四个辉光管亮，前四个完全没反应，并且出现部分数字显示不全、错误，部分不显示，还有数字和小数点一起显示的情况</p>
+<img src="/images/yhj11.jpg" style="width: 60%;" />
 <p>重新焊接了td62083，解决部分数字显示错误问题，后两个辉光管显示完全正常，坏消息是掉了两个焊盘，只好飞线</p>
-<h2 id="完成">完成
-</h2>
+<h3 id="结局">结局
+</h3><p>最终重新焊了板子，更换了单片机，检查了升压模块。单独测试每个辉光管，均能正常点亮，测试每个引脚电压，未点亮时是55到65v，点亮时是135v。数据看起来一切正常，但问题依旧是前面几个不亮。重焊板子后虽然解决了数字显示错误的问题，可是只剩下后三个管子会亮。</p>
+<p>毕竟不是自己设计的东西，难以排查究竟哪里出了问题，初步推断是逻辑或者硬件方面。排查了一个月让我感到身心俱疲，所以我决定暂时放弃这个项目，改为开始制作in12的辉光管时钟，并且之后一边学习一边重新设计电路和程序</p>
+<img src="/images/yhj12.jpg" style="width: 100%;" />
+
 </section>
 
 
