@@ -44,7 +44,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;遥控端锂电池 → 降压模块：
 → ESP32 VIN
 → ESP32 GND ↔ 降压模块 GND&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;通信采用ESP-NOW&lt;/strong&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;通信采用ESP-NOW&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/ehj4.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;v30&#34;&gt;v3.0
 &lt;/h3&gt;&lt;p&gt;买的东西还没到，从老登机上拆零件时，突然琢磨明白了老登机的原理。原来老登机用的是433遥控器，比espnow成本低还稳定方便，所以打算改成这个新方案，不得不感慨我知识的不足&lt;/p&gt;
@@ -57,7 +58,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 3.7V 锂电池──►433模块 IN+
 433模块 IN- 接电池GND
 433模块 OUT- 接主GND
-433模块 OUT+ → 接 ESP32 数字输入引脚&lt;/p&gt;&lt;/blockquote&gt;
+433模块 OUT+ → 接 ESP32 数字输入引脚&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;注意：433 接收模块的电源地（IN-）不要和主电源地混接，但信号输出的 GND 要共地，否则 ESP32 无法识别信号，刚开始因为错误接线排查了好久&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;程序如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -479,7 +481,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;本项目复刻自立创开源 &lt;a class=&#34;link&#34; href=&#34;https://oshwhub.com/squirrelmedia/1115-shi-jian-xian-bian-dong-yi&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;时间线变动仪-SQUIRRELMEDIA &lt;/a&gt;,初始作者是bilibili用户&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV1N44y1q7Tf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt; &lt;strong&gt;@遗落之沙&lt;/strong&gt;&lt;/a&gt;，外观参考&lt;a class=&#34;link&#34; href=&#34;https://nixieclock.org/?p=893&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Omnixie&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+    &gt;Omnixie&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;今年2月产生了想制作一个《命运石之门》中世界线变动率探测仪的想法，上网查资料后了解到可以做成时钟并还原外观，于是开始复刻开源项目，目的是学习电子制作基础。本项目基于51单片机制作，采用寿命较长，市面存量较大，外观较还原的IN-14辉光管，总成本925.5元&lt;/p&gt;
 &lt;h2 id=&#34;物品清单&#34;&gt;物品清单
 &lt;/h2&gt;&lt;table&gt;
@@ -760,7 +763,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/yhj9.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：辉光管直接焊接容易造成引脚热胀冷缩，会撑破玻璃导致漏气，所以要么不要把引脚剪太短，要么焊接这种卡簧端子到板子上做成可插拔结构&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj110.jpg&#34; style=&#34;width: 30%;&#34; /&gt;&lt;/blockquote&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/yhj110.jpg&#34; style=&#34;width: 30%;&#34; /&gt;
+&lt;/blockquote&gt;
 &lt;h4 id=&#34;外壳-1&#34;&gt;外壳
 &lt;/h4&gt;&lt;p&gt;定制的时候了解到内侧固定铜柱制作成本高，而且没法打孔，干脆舍弃这部分，改为3d打印件，毕竟对强度没有太大要求。同时，usb接口我也采用了自己画固定件并打印的方法&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/yhj10.png&#34; style=&#34;width: 50%;&#34; /&gt;

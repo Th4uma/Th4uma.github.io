@@ -44,7 +44,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;遥控端锂电池 → 降压模块：
 → ESP32 VIN
 → ESP32 GND ↔ 降压模块 GND&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;通信采用ESP-NOW&lt;/strong&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;通信采用ESP-NOW&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/ehj4.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;v30&#34;&gt;v3.0
 &lt;/h3&gt;&lt;p&gt;买的东西还没到，从老登机上拆零件时，突然琢磨明白了老登机的原理。原来老登机用的是433遥控器，比espnow成本低还稳定方便，所以打算改成这个新方案，不得不感慨我知识的不足&lt;/p&gt;
@@ -57,7 +58,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 3.7V 锂电池──►433模块 IN+
 433模块 IN- 接电池GND
 433模块 OUT- 接主GND
-433模块 OUT+ → 接 ESP32 数字输入引脚&lt;/p&gt;&lt;/blockquote&gt;
+433模块 OUT+ → 接 ESP32 数字输入引脚&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;注意：433 接收模块的电源地（IN-）不要和主电源地混接，但信号输出的 GND 要共地，否则 ESP32 无法识别信号，刚开始因为错误接线排查了好久&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;程序如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
