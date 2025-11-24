@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/hugo_new/'>
 
-<link rel="stylesheet" href="/scss/style.min.bae851b14265eb6aa34c95d2ee01485886cb1c394c57fb13aea286ffc3557328.css"><meta property='og:title' content="Hugo 博客功能拓展">
+<link rel="stylesheet" href="/scss/style.min.10a5d5793d5b556dc43867490f7c1f1f193d670d3c32a8282256f451a1717a27.css"><meta property='og:title' content="Hugo 博客功能拓展">
 <meta property='og:description' content="博客搭建完成后，来探索一下Hugo的更多有趣玩法">
 <meta property='og:url' content='https://th4uma.github.io/post/hugo_new/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -283,6 +283,8 @@ unicode: "f6d2"
         <li><a href="#动态球">动态球</a></li>
         <li><a href="#粒子">粒子</a></li>
         <li><a href="#底部小鱼">底部小鱼</a></li>
+        <li><a href="#背景图片">背景图片</a></li>
+        <li><a href="#文章背景颜色">文章背景颜色</a></li>
       </ol>
     </li>
     <li><a href="#音乐">音乐</a></li>
@@ -381,12 +383,12 @@ unicode: "f6d2"
 <p>点击创建应用，填写名称，选择开发版（免费）</p>
 </li>
 </ul>
-<img src="/images/hugon1.png" style="width: 90%;" />
+<img src="/images/hugon1.png" style="width: 80%;" />
 <ul>
 <li>点击应用左下角数据存储，然后点击创建Class</li>
 </ul>
-<img src="/images/hugon2.png" style="width: 60%;" />
-<img src="/images/hugon3.png" style="width: 60%;" />
+<img src="/images/hugon2.png" style="width: 50%;" />
+<img src="/images/hugon3.png" style="width: 45%;" />
 <ul>
 <li>类名填<code>Like</code>，注意首字母大写，其他设置如下</li>
 </ul>
@@ -394,7 +396,7 @@ unicode: "f6d2"
 <ul>
 <li>点击like→添加列</li>
 </ul>
-<img src="/images/hugon5.png" style="width: 100%;" />
+<img src="/images/hugon5.png" style="width: 90%;" />
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -419,12 +421,12 @@ unicode: "f6d2"
 <ul>
 <li>点击左下角设置→应用凭证，记录自己的<code>AppID</code>，<code>AppKey</code>，<code>API 服务器地址</code></li>
 </ul>
-<img src="/images/hugon6.png" style="width: 50%;" />
+<img src="/images/hugon6.png" style="width: 40%;" />
 <h3 id="设置">设置
 </h3><ul>
 <li>从<a class="link" href="https://tabler.io/icons"  target="_blank" rel="noopener"
-    >Tabler Icons</a>下载点赞图标命名为<code>thumb-up</code>，放在<code>static\icons</code>下</li>
-<li>在<code>layouts\partials</code>下创建<code>like.html</code>，放入以下代码</li>
+    >Tabler Icons</a>下载点赞图标命名为<code>thumb-up</code>，放在<code>static/icons</code>下</li>
+<li>在<code>layouts/partials</code>下创建<code>like.html</code>，放入以下代码</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -651,12 +653,12 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li>在<code>layouts\_default\single.html</code>中，<code> {{ partial &quot;comments/include&quot; . }}</code>这一句之后添加<code>{{ partial &quot;like.html&quot; . }}</code></li>
+<li>在<code>layouts/_default/single.html</code>中，<code> {{ partial &quot;comments/include&quot; . }}</code>这一句之后添加<code>{{ partial &quot;like.html&quot; . }}</code></li>
 </ul>
 <h2 id="背景">背景
 </h2><h3 id="动态球">动态球
 </h3><ul>
-<li>在<code>layouts\partials\footer\custom.html</code>中加入</li>
+<li>在<code>layouts/partials/footer/custom.html</code>中加入</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -796,10 +798,76 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h3 id="背景图片">背景图片
+</h3><ul>
+<li>将背景图放在<code>assets/background</code>下</li>
+</ul>
+<img src="/images/hugon8.png" style="width: 100%;" />
+<ul>
+<li>在<code>layouts/partials/footer/custom.html</code>中放入以下代码，并修改图片名</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">body</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">background</span><span class="p">:</span> <span class="nb">url</span><span class="p">(</span><span class="sx">{{ (resources.Get &#34;background/图片名&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">Permalink</span> <span class="p">}</span><span class="err">}</span><span class="o">)</span> <span class="nt">no-repeat</span> <span class="nt">center</span> <span class="nt">top</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">background-size</span><span class="o">:</span> <span class="nt">cover</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">background-attachment</span><span class="o">:</span> <span class="nt">fixed</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="文章背景颜色">文章背景颜色
+</h3><p>在<code>assets/scss/custom.scss</code>中放入以下代码并改成喜欢的颜色</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">.content,
+</span></span><span class="line"><span class="cl">article,
+</span></span><span class="line"><span class="cl">.article-content {
+</span></span><span class="line"><span class="cl">    background: #212121 !important;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.pagination,
+</span></span><span class="line"><span class="cl">.page-link {
+</span></span><span class="line"><span class="cl">    background: #212121 !important;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.widget--toc,
+</span></span><span class="line"><span class="cl">.widget--toc .widget__content {
+</span></span><span class="line"><span class="cl">    background: #212121 !important;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
 </div><h2 id="音乐">音乐
 </h2><p>我希望音乐可以作为背景音乐，自动播放并循环，不受页面刷新影响，同时保持博客界面整洁。故没有采用音乐插件</p>
 <ul>
-<li>在<code>\hugo\blog\layouts\partials\footer\footer.html</code>中加入以下代码</li>
+<li>在<code>layouts/partials/footer/footer.html</code>中加入以下代码</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1032,7 +1100,7 @@ unicode: "f6d2"
 </h2><ul>
 <li>
 <p>从<a class="link" href="https://www.100font.com/"  target="_blank" rel="noopener"
-    >100font</a>下载字体，然后把文件放到<code>assets/font</code>下</p>
+    >100font</a>下载字体，然后把文件放到<code>static/font</code>下</p>
 </li>
 <li>
 <p>粘贴以下代码到<code>layouts/partials/footer/custom.html</code></p>
@@ -1056,8 +1124,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
 </span></span><span class="line"><span class="cl">  <span class="p">@</span><span class="k">font-face</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nt">font-family</span><span class="o">:</span> <span class="s1">&#39;字体名&#39;</span><span class="o">;</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="p">{</span><span class="err">{</span> <span class="err">(resources.Get</span> <span class="err">&#34;font/字体名.ttf&#34;).Permalink</span> <span class="p">}}</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;truetype&#39;</span><span class="o">);</span>
-</span></span><span class="line"><span class="cl">  <span class="err">}</span> <span class="o">/</span><span class="nt">这部分可以复制粘贴并修改名字增加字体</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">src</span><span class="o">:</span> <span class="nt">url</span><span class="o">(</span><span class="s1">&#39;{{ &#34;font/字体名.ttf&#34; | relURL }}&#39;</span><span class="o">)</span> <span class="nt">format</span><span class="o">(</span><span class="s1">&#39;opentype&#39;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="o">/</span><span class="nt">这部分可以复制粘贴并修改名字增加字体</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">  <span class="p">:</span><span class="nd">root</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nv">--base-font-family</span><span class="p">:</span> <span class="s1">&#39;字体名&#39;</span><span class="p">;</span>	<span class="err">/文章字体</span>
@@ -1586,7 +1654,21 @@ unicode: "f6d2"
 
   body {
     font-family: var(--base-font-family), sans-serif;
+    background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+    background-size: cover;
+    background-attachment: fixed;
   }
+   endLevel: 4
+        ordered: true
+        startLevel: 2
+    highlight:
+        noClasses: false
+        codeFences: true
+        guessSyntax: true
+        lineNoStart: 1
+        lineNos: true
+        lineNumbersInTable: true
+        tabWidth: 4
 </style>
 
 
