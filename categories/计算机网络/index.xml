@@ -110,30 +110,32 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置并确认 PVE 的密码，用于登录 Web UI 和连接 SSH，填写自己的邮箱&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio11.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置 IP 地址，默认会通过 DHCP 获取到一个地址，后续访问 Web UI 或者连接 SSH 需要用到&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口。建议设置到lan口&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Hostname(FQDN)&lt;/code&gt;为当前小主机在局域网中的主机名，不要设置成现有的网站名字，我的是&lt;code&gt;pve.j4125&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;IP Address(CIDR)&lt;/code&gt;为小主机的管理IP地址，安装完成后，这个地址会被设置成&lt;strong&gt;静态地址&lt;/strong&gt;，修改起来比较麻烦，建议&lt;strong&gt;提前修改&lt;/strong&gt;为想要的 IP 地址&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Gateway&lt;/code&gt;为网关，连接路由器的情况下会自动填写。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;DNS Server&lt;/code&gt;为DNS服务器，可保持默认。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;确认信息并安装，安装完成后会自动重启，这时拔下u盘，成功启动后进入系统命令行界面。最上方显示的IP为当前小主机pve系统的管理网页地址。我的管理地址是&lt;code&gt;https://10.150.15.100:8006&lt;/code&gt;。默认用户名为root，密码为上面安装过程中第四个界面设置的密码。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/blockquote&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;确认信息并安装，安装完成后会自动重启，这时拔下u盘，成功启动后进入系统命令行界面。&lt;/p&gt;
+&lt;p&gt;最上方显示的IP为当前小主机pve系统的管理网页地址。我的管理地址是&lt;code&gt;https://10.150.15.100:8006&lt;/code&gt;。默认用户名为root，密码为上面安装过程中第四个界面设置的密码。&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio14.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;配置&#34;&gt;配置
 &lt;/h3&gt;&lt;h4 id=&#34;进入管理界面&#34;&gt;进入管理界面
 &lt;/h4&gt;&lt;p&gt;将刚刚设置的管理端口用网线连接到电脑网口，电脑进入&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&lt;/code&gt;，点击这里的&lt;code&gt;以太网&amp;gt;属性&amp;gt;Internet协议版本4&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;浏览器访问路由器管理地址，跳过安全提醒进入控制界面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio17.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入管理界面，修改语言为中文，登录账号为root，密码是安装时设置的密码。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio18.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h4 id=&#34;更换软件源&#34;&gt;更换软件源
 &lt;/h4&gt;&lt;p&gt;进入更新&amp;gt;存储库，禁用企业源/etc/apt/sources.list.d/pve-enterprise.sources&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio19.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;shell中输入下列命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
