@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/fpvup/'>
 
-<link rel="stylesheet" href="/scss/style.min.10a5d5793d5b556dc43867490f7c1f1f193d670d3c32a8282256f451a1717a27.css"><meta property='og:title' content="[002号机]FPV起飞装置">
+<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="[002号机]FPV起飞装置">
 <meta property='og:description' content="暑假航模队训练时做的小装置">
 <meta property='og:url' content='https://th4uma.github.io/post/fpvup/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -299,6 +299,7 @@ unicode: "f6d2"
 
 
             <main class="main full-width">
+
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
@@ -832,7 +833,29 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
     <footer class="article-footer">
     
 
-    </footer>
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+         
+        #viewCount {
+             position: absolute;   
+             left: 280px;             
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
 
 
     
@@ -863,7 +886,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 
     
 </article>
-	
+
     
 
     
@@ -918,9 +941,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
      
     
         
-    
-
-	
+        
   <div id="like-container">
     <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
     <span id="like-count">0</span>
@@ -933,7 +954,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
   flex-direction: column;
   align-items: center;
   margin: 2rem 0;
-      margin: -2.5rem 0 -5rem 0rem;
+  margin: -3rem 0 -5rem 0rem;
       user-select: none;
       color: white;
     }
@@ -1037,6 +1058,8 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 
 
 
+    
+
 	
     <footer class="site-footer">
     <section class="copyright">
@@ -1044,13 +1067,163 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
         
         2025 Thaumazein
     </section>
-    
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">12</span> 
+      篇 ，总计 
+      <span class="number-highlight">28.05</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-01-01'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
     <section class="powerby">
         
-            May you find your worth in the waking world. <br/>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
         主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
     </section>
+    
 </footer>
 
 
@@ -1140,6 +1313,37 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
                 >
             </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
 <script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
     (function () {
         const customFont = document.createElement('link');
         customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
@@ -1178,10 +1382,6 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
         position: relative;
         min-height: 100%;
     }  
-     
-    body {
-        position: relative;
-    }
 </style>
 
 <script src="/background/particles.min.js"></script>
@@ -1280,6 +1480,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
   initCodeMoreBox();
 </script>
 
+
 <style>
 @font-face {
   font-family: 'songti';
@@ -1291,29 +1492,100 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
   src: url('/font/Ubuntu-R.ttf') format('opentype');
 }
 
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
 
-  :root {
-    --base-font-family: 'songti';
-    --code-font-family: 'Ubuntu-R';
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
   }
 
-  body {
-    font-family: var(--base-font-family), sans-serif;
-    background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
-    background-size: cover;
-    background-attachment: fixed;
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
   }
-   endLevel: 4
-        ordered: true
-        startLevel: 2
-    highlight:
-        noClasses: false
-        codeFences: true
-        guessSyntax: true
-        lineNoStart: 1
-        lineNos: true
-        lineNumbersInTable: true
-        tabWidth: 4
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
 </style>
 
 
