@@ -32,7 +32,7 @@
 &lt;h2 id=&#34;方案规划&#34;&gt;方案规划
 &lt;/h2&gt;&lt;h3 id=&#34;硬件配置&#34;&gt;硬件配置
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;目标：能跑满校园网的500M 带宽，且价格不太贵，不浪费性能&lt;/p&gt;
+&lt;p&gt;目标：能跑满校园网的500兆带宽，且价格不太贵，不浪费性能&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;最终选择：&lt;/p&gt;
 &lt;ul&gt;
@@ -43,7 +43,7 @@
 &lt;p&gt;总花费 450 元&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio1.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;h3 id=&#34;底层系统选择&#34;&gt;底层系统选择
+&lt;h3 id=&#34;底层虚拟机系统选择&#34;&gt;底层虚拟机系统选择
 &lt;/h3&gt;&lt;p&gt;虚拟机分为两种类型：Type 1 和 Type 2。Type 1 虚拟机管理程序（如 Proxmox VE、ESXi）直接运行在硬件之上，没有宿主系统，性能更高、更稳定，常用于服务器或实验环境；Type 2 （如 VirtualBox、VMware Workstation）则依赖已有操作系统运行，启动方便但性能略低，更适合个人电脑或临时测试。常用的all in one虚拟机系统有PVE、ESXi、Windows Server + Hyper-v&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;ESXi&lt;/strong&gt; 属于企业级虚拟化系统，稳定且上手难度低。系统是官方定制的 Linux，只运行 VMware 自家的虚拟化层，不允许太多修改，虚拟机性能损耗较低，适合需要长期稳定运行的环境。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;PVE（Proxmox VE）&lt;/strong&gt; 基于 Debian 的开源虚拟化平台，底层是 KVM。功能多、玩法多，硬件兼容性强。适合喜欢折腾的人，灵活但风险也高，上手难度较大。因为是完整的 Linux 系统再加虚拟化层，性能上略低于 ESXi。&lt;/p&gt;
@@ -51,7 +51,17 @@
 &lt;blockquote&gt;
 &lt;p&gt;生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了pve&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;安装与配置&#34;&gt;安装与配置
+&lt;h3 id=&#34;特定功能系统选择&#34;&gt;特定功能系统选择
+&lt;/h3&gt;&lt;h4 id=&#34;软路由&#34;&gt;软路由
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;OpenWrt&lt;/strong&gt; 是完全开源的路由系统，插件丰富、可定制度高，硬件支持广泛，更新活跃，但需要一定学习成本，对不喜欢闭源、希望掌控所有细节的用户来说非常合适。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;iKuai&lt;/strong&gt; 是一款基于Linux内核开发的轻量级路由操作系统，主要面向家庭及小型企业市场。它以简单易用著称，尤其适合那些不具备深厚技术背景但希望拥有高级网络管理功能的用户。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ImmortalWrt&lt;/strong&gt; 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现，在驱动和系统调度上更为优秀。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;iStoreOS&lt;/strong&gt; 也是 OpenWrt 的分支，强调轻量化和易用性，界面现代，应用商店方便实用，但深度玩法有限，硬件适配范围稍窄，更适合希望快速部署、以家庭使用为主的用户。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我对折腾比较感兴趣，而且准备深入学习一下软路由，所以选择了openwrt&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&#34;nas&#34;&gt;NAS
+&lt;/h4&gt;&lt;h2 id=&#34;底层系统安装与配置&#34;&gt;底层系统安装与配置
 &lt;/h2&gt;&lt;h3 id=&#34;准备&#34;&gt;准备
 &lt;/h3&gt;&lt;p&gt;硬件方面：&lt;/p&gt;
 &lt;ul&gt;
@@ -84,7 +94,7 @@
 &lt;p&gt;将u盘插在小主机的usb口上，连接好显示器，键鼠，同时用网线将小主机连接到能联网的路由器上&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;安装pve&#34;&gt;安装pve
+&lt;h3 id=&#34;安装pve&#34;&gt;安装PVE
 &lt;/h3&gt;&lt;p&gt;开机连按f11进入bios，选择u盘&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;选择pve的镜像&lt;/p&gt;
@@ -113,7 +123,7 @@
 &lt;img src=&#34;https://th4uma.github.io/images/aio11.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置 IP 地址，默认会通过 DHCP 获取到一个地址，后续访问 Web UI 或者连接 SSH 需要用到&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口。建议设置到lan口&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Hostname(FQDN)&lt;/code&gt;为当前小主机在局域网中的主机名，不要设置成现有的网站名字，我的是&lt;code&gt;pve.j4125&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;IP Address(CIDR)&lt;/code&gt;为小主机的管理IP地址，安装完成后，这个地址会被设置成&lt;strong&gt;静态地址&lt;/strong&gt;，修改起来比较麻烦，建议&lt;strong&gt;提前修改&lt;/strong&gt;为想要的 IP 地址&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Gateway&lt;/code&gt;为网关，连接路由器的情况下会自动填写。&lt;/p&gt;
@@ -209,7 +219,36 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sed&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Ezi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bak&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;s/(Ext.Msg.show\(\{\s+title: gettext\(&amp;#39;No valid sub)/void\(\{ \/\/&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/g&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;usr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;share&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;javascript&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;proxmox&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;widget&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;toolkit&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;proxmoxlib&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;js&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;systemctl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;restart&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pveproxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;service&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;曾经的失败尝试&#34;&gt;曾经的失败尝试
+&lt;/div&gt;&lt;h2 id=&#34;特定功能系统安装与配置&#34;&gt;特定功能系统安装与配置
+&lt;/h2&gt;&lt;h3 id=&#34;openwrt&#34;&gt;OpenWRT
+&lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载openwrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
+&lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;记住保存路径&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选择不使用任何介质&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;磁盘大小5GB足够&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;填写cpu核心数&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;内存1到2GB即可&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;不勾选创建后启动，点击确认，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明镜像成功导入&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;打开右侧&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，依次将硬件界面没有显示的网口添加进去&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;这里可能会出现没有vmbr1的情况，这时候我们回到&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&lt;/code&gt;，创建Linux Bridge，然后选择好桥接端口，再返回上一步&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;曾经的失败尝试&#34;&gt;曾经的失败尝试
 &lt;/h2&gt;&lt;h3 id=&#34;路由器-openwrt-方案&#34;&gt;路由器 OpenWRT 方案
 &lt;/h3&gt;&lt;p&gt;最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP。最终选用 H3C NX30 Pro。&lt;/p&gt;
 &lt;h4 id=&#34;准备-1&#34;&gt;准备
