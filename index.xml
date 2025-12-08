@@ -272,7 +272,7 @@
 &lt;p&gt;选择不使用任何介质&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;磁盘大小5GB足够&lt;/p&gt;
+&lt;p&gt;磁盘直接删除&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;填写cpu核心数&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -280,14 +280,30 @@
 &lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;不勾选创建后启动，点击确认，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明镜像成功导入&lt;/p&gt;
+&lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;打开右侧&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，依次将硬件界面没有显示的网口添加进去&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;打开右侧添加&amp;gt;网络设备，依次将硬件界面没有显示的网口添加进去&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;这里可能会出现没有vmbr1的情况，这时候我们回到&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&lt;/code&gt;，创建Linux Bridge，然后选择好桥接端口，再返回上一步&lt;/p&gt;
+&lt;p&gt;这里可能会出现没有vmbr1的情况，这时候我们回到&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&lt;/code&gt;，创建Linux Bridge，然后选择好桥接端口，重启pve，再返回上一步&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位&lt;/p&gt;
+&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;修改IP，输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;修改完毕后 按 ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;开机自启动&lt;/code&gt;，将这一项设为是&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;&lt;/a&gt;&lt;a class=&#34;link&#34; href=&#34;#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2&#34; &gt;重复这一步骤&lt;/a&gt;，但IP改成刚刚设置的lan同网段ip&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio36.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;浏览器访问设置的IP进入op管理界面，输入密码登录&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;曾经的失败尝试&#34;&gt;曾经的失败尝试
 &lt;/h2&gt;&lt;h3 id=&#34;路由器-openwrt-方案&#34;&gt;路由器 OpenWRT 方案
 &lt;/h3&gt;&lt;p&gt;最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP。最终选用 H3C NX30 Pro。&lt;/p&gt;
@@ -315,6 +331,8 @@
     &gt;超详细教程-J4125小主机从到手到安装PVE，iStoreOS作为主路由全过程小记(使用虚拟化) | 邮文的萤火屋&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/alittlemc/p/16996277.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;All in one入门之All in one和三种PVE、ESXI、Windows Server方案 - alittlemc&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/u012374381/article/details/130650909&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>
