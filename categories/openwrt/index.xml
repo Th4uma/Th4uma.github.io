@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>OpenWRT on Thaumazein&#39;s Shelter</title>
+        <link>https://th4uma.github.io/categories/openwrt/</link>
+        <description>Recent content in OpenWRT on Thaumazein&#39;s Shelter</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Thaumazein</copyright>
+        <lastBuildDate>Mon, 08 Dec 2025 12:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/openwrt/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>OpenWRT在PVE上的安装与基本配置</title>
+        <link>https://th4uma.github.io/post/pve_op/</link>
+        <pubDate>Mon, 08 Dec 2025 12:03:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/pve_op/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/op.jpg" alt="Featured image of post OpenWRT在PVE上的安装与基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e5%ba%95%e5%b1%82%e7%b3%bb%e7%bb%9f%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%ae&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;首先安装好ProxmoxVE&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载openwrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件，记住保存路径&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;在pve中创建虚拟机&#34;&gt;在PVE中创建虚拟机
+&lt;/h2&gt;&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选择不使用任何介质&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;磁盘直接删除&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;填写cpu核心数&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;内存1到2GB即可&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;配置虚拟化网口&#34;&gt;配置虚拟化网口
+&lt;/h2&gt;&lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启pve&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，将刚刚设置好的接口全部添加&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;启动与lan配置&#34;&gt;启动与lan配置
+&lt;/h2&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;修改IP，输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;修改完毕后 按 ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;开机自启动&lt;/code&gt;，将这一项设为是&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;浏览器访问设置的IP进入op管理界面，输入密码登录，&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;基础设置&#34;&gt;基础设置
+&lt;/h2&gt;&lt;p&gt;首先将pve的网段改到op下，进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时管理OpenWRT和PVE时，说明设置成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;可以找一根网线，将上文设置的那个WAN口连接到光猫或者上级路由器&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

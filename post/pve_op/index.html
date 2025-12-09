@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Keep on Keeping on!">
-<title>Tags</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="准备 首先安装好ProxmoxVE\n下载openwrt镜像，选择openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz，然后解压\n">
+<title>OpenWRT在PVE上的安装与基本配置</title>
 
-<link rel='canonical' href='https://th4uma.github.io/tags/'>
+<link rel='canonical' href='https://th4uma.github.io/post/pve_op/'>
 
-<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="Tags">
-<meta property='og:description' content="Keep on Keeping on!">
-<meta property='og:url' content='https://th4uma.github.io/tags/'>
+<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="OpenWRT在PVE上的安装与基本配置">
+<meta property='og:description' content="准备 首先安装好ProxmoxVE\n下载openwrt镜像，选择openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz，然后解压\n">
+<meta property='og:url' content='https://th4uma.github.io/post/pve_op/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='website'><meta property='og:updated_time' content=' 2025-12-08T12:03:02&#43;08:00 '/>
-<meta name="twitter:title" content="Tags">
-<meta name="twitter:description" content="Keep on Keeping on!"><link rel="alternate" type="application/rss&#43;xml" href="https://th4uma.github.io/tags/index.xml">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/op.jpg' />
+<meta name="twitter:title" content="OpenWRT在PVE上的安装与基本配置">
+<meta name="twitter:description" content="准备 首先安装好ProxmoxVE\n下载openwrt镜像，选择openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz，然后解压\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/op.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
-    <body class="">
+    <body class="
+    article-page
+    ">
     <script>
         (function() {
             const colorSchemeKey = 'StackColorScheme';
@@ -250,61 +253,10 @@ unicode: "f6d2"
     <aside class="sidebar right-sidebar sticky">
         
             
-                <form action="/page/search/" class="search-form widget" >
-        <p>
-            <label>搜索</label>
-            <input name="keyword" required placeholder="输入关键词..." />
-        
-            <button title="搜索">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="10" cy="10" r="7" />
-  <line x1="21" y1="21" x2="15" y2="15" />
-</svg>
-
-
-
-            </button>
-        </p>
-    </form>
-            
-        
-            
-                <section class="widget archives">
+                
+    <section class="widget archives">
         <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M9.828 9.172a4 4 0 1 0 0 5.656 a10 10 0 0 0 2.172 -2.828a10 10 0 0 1 2.172 -2.828 a4 4 0 1 1 0 5.656a10 10 0 0 1 -2.172 -2.828a10 10 0 0 0 -2.172 -2.828" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">归档</h2>
-
-        
-        
-        
-        
-        
-        <div class="widget-archive--list">
-            <div class="archives-year">
-                    <a href="/page/archives/#2025">
-                        
-                            <span class="year">2025</span>
-                            <span class="count">13</span>
-                        
-                    </a> 
-                </div>
-            
-        </div>
-    </section>
-            
-        
-            
-                <section class="widget tagCloud">
-    <div class="widget-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z"/>
   <line x1="5" y1="9" x2="19" y2="9" />
   <line x1="5" y1="15" x2="19" y2="15" />
@@ -314,53 +266,21 @@ unicode: "f6d2"
 
 
 
-    </div>
-    <h2 class="widget-title section-title">分类</h2>
-
-    <div class="tagCloud-tags">
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
         
-            <a href="/categories/ctf/" class="font_size_2">
-                CTF
-            </a>
-        
-            <a href="/categories/hugo/" class="font_size_2">
-                Hugo
-            </a>
-        
-            <a href="/categories/proxmoxve/" class="font_size_2">
-                ProxmoxVE
-            </a>
-        
-            <a href="/categories/%E7%94%B5%E5%AD%90%E5%88%B6%E4%BD%9C/" class="font_size_2">
-                电子制作
-            </a>
-        
-            <a href="/categories/%E8%88%AA%E6%A8%A1/" class="font_size_2">
-                航模
-            </a>
-        
-            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" class="font_size_2">
-                计算机
-            </a>
-        
-            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="font_size_2">
-                计算机网络
-            </a>
-        
-            <a href="/categories/%E9%9A%8F%E8%AE%B0/" class="font_size_2">
-                随记
-            </a>
-        
-            <a href="/categories/esp32/" class="font_size_1">
-                ESP32
-            </a>
-        
-            <a href="/categories/iot/" class="font_size_1">
-                IoT
-            </a>
-        
-    </div>
-</section>
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#准备">准备</a></li>
+    <li><a href="#在pve中创建虚拟机">在PVE中创建虚拟机</a></li>
+    <li><a href="#配置虚拟化网口">配置虚拟化网口</a></li>
+    <li><a href="#启动与lan配置">启动与lan配置</a></li>
+    <li><a href="#基础设置">基础设置</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
 
             
         
@@ -368,27 +288,354 @@ unicode: "f6d2"
 
 
             <main class="main full-width">
-    <header>
-        <h3 class="section-title">
-            
-                章节
-            
-        </h3>
 
-        <div class="section-card">
-            <div class="section-details">
-                <h3 class="section-count">0 个页面</h3>
-                <h1 class="section-term">Tags</h1>
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/pve_op/">
+                
+                    <img src="/images/op.jpg" loading="lazy" alt="Featured image of post OpenWRT在PVE上的安装与基本配置" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
+                计算机网络
+            </a>
+        
+            <a href="/categories/openwrt/" >
+                OpenWRT
+            </a>
+        
+            <a href="/categories/proxmoxve/" >
+                ProxmoxVE
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/pve_op/">OpenWRT在PVE上的安装与基本配置</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-12-08</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="准备">准备
+</h2><ul>
+<li>
+<p><a class="link" href="https://th4uma.github.io/post/aio/#%e5%ba%95%e5%b1%82%e7%b3%bb%e7%bb%9f%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%ae"  target="_blank" rel="noopener"
+    >首先安装好ProxmoxVE</a></p>
+</li>
+<li>
+<p><a class="link" href="https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/"  target="_blank" rel="noopener"
+    >下载openwrt镜像</a>，选择<code>openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz</code>，然后解压</p>
+</li>
+<li>
+<p>打开PVE系统管理界面右侧<code>pve&gt;local(pve)&gt;ISO镜像&gt;上传</code>，选择刚刚下载好的img文件，记住保存路径</p>
+</li>
+</ul>
+<img src="/images/aio27.png" style="width: 100%;" />
+<img src="/images/aio28.png" style="width: 100%;" />
+<h2 id="在pve中创建虚拟机">在PVE中创建虚拟机
+</h2><p>在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置</p>
+<img src="/images/aio20.png" style="width: 100%;" />
+<p>选择不使用任何介质</p>
+<img src="/images/aio21.png" style="width: 100%;" />
+<img src="/images/aio22.png" style="width: 100%;" />
+<p>磁盘直接删除</p>
+<img src="/images/aio23.png" style="width: 100%;" />
+<p>填写cpu核心数</p>
+<img src="/images/aio24.png" style="width: 100%;" />
+<p>内存1到2GB即可</p>
+<img src="/images/aio25.png" style="width: 100%;" />
+<p>此处模型选择VirtlO，linux的支持更好</p>
+<img src="/images/aio26.png" style="width: 100%;" />
+<p>不勾选创建后启动，点击完成，然后打开宿主机命令行，输入<code>qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm</code>，出现成功提示说明磁盘添加成功</p>
+<img src="/images/aio29.png" style="width: 100%;" />
+<p>进入<code>pve&gt;100&gt;硬件&gt;未使用的磁盘0</code>，点击添加</p>
+<img src="/images/aio29a.png" style="width: 100%;" />
+<p>选中硬盘，选择磁盘操作&gt;调整大小，将大小设置为5GB</p>
+<img src="/images/aio29b.png" style="width: 100%;" />
+<blockquote>
+<p>在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构。</p>
+</blockquote>
+<h2 id="配置虚拟化网口">配置虚拟化网口
+</h2><p>进入<code>pve&gt;系统&gt;网络&gt;创建&gt;Linux Bridge</code>，然后选择好桥接端口，依次添加所有网口后，重启pve</p>
+<img src="/images/aio31.png" style="width: 100%;" />
+<p>进入<code>pve&gt;100&gt;硬件&gt;添加&gt;网络设备</code>，将刚刚设置好的接口全部添加</p>
+<img src="/images/aio30.png" style="width: 100%;" />
+<h2 id="启动与lan配置">启动与lan配置
+</h2><p>在<code>pve&gt;100&gt;选项&gt;引导顺序</code>中，将scsi0设置到第一位并启用</p>
+<img src="/images/aio32.png" style="width: 100%;" />
+<p>右上角启动虚拟机，进入控制台，等一会显示<code>please press enter</code>后按回车，显示如下画面就说明启动成功</p>
+<img src="/images/aio33.png" style="width: 100%;" />
+<p>修改IP，输入<code>vi /etc/config/network</code>，进入vi编辑画面后按<code>i</code>进入编辑状态，对LAN IP进行修改，我这里改成了<code>192.168.10.1</code></p>
+<img src="/images/aio34.png" style="width: 50%;" />
+<p>修改完毕后 按 ESC键退出编辑模式，这时输入<code>:wq</code> ，然后enter保存，最后输入<code>reboot</code>重启</p>
+<p>进入<code>pve&gt;100&gt;选项&gt;开机自启动</code>，将这一项设为是</p>
+<img src="/images/aio35.png" style="width: 100%;" />
+<p>浏览器访问设置的IP进入op管理界面，输入密码登录，<a class="link" href="/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95" >若无法访问可尝试此方法</a></p>
+<img src="/images/aio37.png" style="width: 100%;" />
+<h2 id="基础设置">基础设置
+</h2><p>首先将pve的网段改到op下，进入<code>pve&gt;系统&gt;网络&gt;vmbr0</code>，做如图修改，此时新的管理地址变成了<code>https://192.168.10.99:8006/</code>，当你可以同时管理OpenWRT和PVE时，说明设置成功</p>
+<img src="/images/op1.png" style="width: 100%;" />
+<p>可以找一根网线，将上文设置的那个WAN口连接到光猫或者上级路由器</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+         
+        #viewCount {
+             position: absolute;   
+             left: 280px;             
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/aio/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/aio.jpg" loading="lazy" data-key="" data-hash="/images/aio.jpg"/>
                 
             </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">J4125 小主机 All in One 搭建与折腾</h2>
         </div>
-    </header>
-        
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
     
-    <section class="article-list--compact">
         
-    </section>
-<footer class="site-footer">
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
     <section class="copyright">
         &copy; 
         
@@ -561,6 +808,84 @@ if (busuanziValue) {
     
 </footer>
 
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
 
             </main>
         </div>

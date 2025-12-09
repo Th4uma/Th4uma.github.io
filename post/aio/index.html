@@ -294,7 +294,7 @@ unicode: "f6d2"
     <li><a href="#底层系统安装与配置">底层系统安装与配置</a>
       <ol>
         <li><a href="#准备">准备</a></li>
-        <li><a href="#安装pve">安装PVE</a></li>
+        <li><a href="#安装proxmoxve">安装ProxmoxVE</a></li>
         <li><a href="#配置">配置</a>
           <ol>
             <li><a href="#进入管理界面">进入管理界面</a></li>
@@ -318,6 +318,7 @@ unicode: "f6d2"
         </li>
       </ol>
     </li>
+    <li><a href="#附管理界面无法进入的解决方法">附：管理界面无法进入的解决方法</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -348,6 +349,10 @@ unicode: "f6d2"
         
             <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
                 计算机网络
+            </a>
+        
+            <a href="/categories/proxmoxve/" >
+                ProxmoxVE
             </a>
         
     </header>
@@ -478,7 +483,7 @@ unicode: "f6d2"
 <p>将u盘插在小主机的usb口上，连接好显示器，键鼠，同时用网线将小主机连接到能联网的路由器上</p>
 </li>
 </ul>
-<h3 id="安装pve">安装PVE
+<h3 id="安装proxmoxve">安装ProxmoxVE
 </h3><p>开机连按f11进入bios，选择u盘</p>
 <img src="/images/aio5.jpg" style="width: 60%;" />
 <p>选择pve的镜像</p>
@@ -507,7 +512,7 @@ unicode: "f6d2"
 <img src="/images/aio11.jpg" style="width: 100%;" />
 <p>设置 IP 地址，默认会通过 DHCP 获取到一个地址，后续访问 Web UI 或者连接 SSH 需要用到</p>
 <blockquote>
-<p><code>Management interface</code>为用于管理pve的端口</p>
+<p><code>Management interface</code>为用于管理pve的端口，建议设定在之后打算用作lan的网口</p>
 <p><code>Hostname(FQDN)</code>为当前小主机在局域网中的主机名，不要设置成现有的网站名字，我的是<code>pve.j4125</code></p>
 <p><code>IP Address(CIDR)</code>为小主机的管理IP地址，安装完成后，这个地址会被设置成<strong>静态地址</strong>，修改起来比较麻烦，建议<strong>提前修改</strong>为想要的 IP 地址</p>
 <p><code>Gateway</code>为网关，连接路由器的情况下会自动填写。</p>
@@ -538,7 +543,7 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 更换非订阅源 
-</span></span><span class="line"><span class="cl">source /etc/os-release echo &#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve $VERSION_CODENAME pve-no-subscription&#34; &gt; /etc/apt/sources.list.d/pve-no-subscription.list 
+</span></span><span class="line"><span class="cl">source /etc/os-releaseecho &#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve $VERSION_CODENAME pve-no-subscription&#34; &gt; /etc/apt/sources.list.d/pve-no-subscription.list 
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -605,49 +610,8 @@ unicode: "f6d2"
 </div>
 </div><h2 id="特定功能系统安装与配置">特定功能系统安装与配置
 </h2><h3 id="openwrt">OpenWRT
-</h3><p><a class="link" href="https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/"  target="_blank" rel="noopener"
-    >下载openwrt镜像</a>，选择<code>openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz</code>，然后解压</p>
-<p>打开PVE系统管理界面右侧<code>pve&gt;local(pve)&gt;ISO镜像&gt;上传</code>，选择刚刚下载好的img文件</p>
-<img src="/images/aio27.png" style="width: 100%;" />
-<p>记住保存路径</p>
-<img src="/images/aio28.png" style="width: 100%;" />
-<p>在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置</p>
-<img src="/images/aio20.png" style="width: 100%;" />
-<p>选择不使用任何介质</p>
-<img src="/images/aio21.png" style="width: 100%;" />
-<img src="/images/aio22.png" style="width: 100%;" />
-<p>磁盘直接删除</p>
-<img src="/images/aio23.png" style="width: 100%;" />
-<p>填写cpu核心数</p>
-<img src="/images/aio24.png" style="width: 100%;" />
-<p>内存1到2GB即可</p>
-<img src="/images/aio25.png" style="width: 100%;" />
-<p>此处模型选择VirtlO，linux的支持更好</p>
-<img src="/images/aio26.png" style="width: 100%;" />
-<p>不勾选创建后启动，点击完成，然后打开宿主机命令行，输入<code>qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm</code>，出现成功提示说明磁盘添加成功</p>
-<img src="/images/aio29.png" style="width: 100%;" />
-<p>进入<code>pve&gt;100&gt;硬件&gt;未使用的磁盘0</code>，点击添加</p>
-<img src="/images/aio29a.png" style="width: 100%;" />
-<p>选中硬盘，选择磁盘操作&gt;调整大小，将大小设置为5GB</p>
-<img src="/images/aio29b.png" style="width: 100%;" />
-<p>打开右侧添加&gt;网络设备，依次将硬件界面没有显示的网口添加进去</p>
-<img src="/images/aio30.png" style="width: 100%;" />
-<p>这里可能会出现没有vmbr1的情况，这时候我们回到<code>pve&gt;系统&gt;网络</code>，创建Linux Bridge，然后选择好桥接端口，重启pve，再返回上一步</p>
-<img src="/images/aio31.png" style="width: 100%;" />
-<p>在<code>pve&gt;100&gt;选项&gt;引导顺序</code>中，将scsi0设置到第一位并启用</p>
-<img src="/images/aio32.png" style="width: 100%;" />
-<p>右上角启动虚拟机，进入控制台，等一会显示<code>please press enter</code>后按回车，显示如下画面就说明启动成功</p>
-<img src="/images/aio33.png" style="width: 100%;" />
-<p>修改IP，输入<code>vi /etc/config/network</code>，进入vi编辑画面后按<code>i</code>进入编辑状态，对LAN IP进行修改，我这里改成了<code>192.168.10.1</code></p>
-<img src="/images/aio34.png" style="width: 50%;" />
-<p>修改完毕后 按 ESC键退出编辑模式，这时输入<code>:wq</code> ，然后enter保存，最后输入<code>reboot</code>重启</p>
-<p>进入<code>pve&gt;100&gt;选项&gt;开机自启动</code>，将这一项设为是</p>
-<img src="/images/aio35.png" style="width: 100%;" />
-<p><a class="link" href="https://th4uma.github.io/post/aio/#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2"  target="_blank" rel="noopener"
-    ></a><a class="link" href="#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2" >重复这一步骤</a>，但IP改成刚刚设置的lan同网段ip</p>
-<img src="/images/aio36.png" style="width: 50%;" />
-<p>浏览器访问设置的IP进入op管理界面，输入密码登录</p>
-<img src="/images/aio37.png" style="width: 100%;" />
+</h3><p><a class="link" href="https://th4uma.github.io//post/pve_op/"  target="_blank" rel="noopener"
+    >OpenWRT在PVE上的安装与基本配置</a></p>
 <h2 id="曾经的失败尝试">曾经的失败尝试
 </h2><h3 id="路由器-openwrt-方案">路由器 OpenWRT 方案
 </h3><p>最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP。最终选用 H3C NX30 Pro。</p>
@@ -670,6 +634,11 @@ unicode: "f6d2"
 <blockquote>
 <p>意外情况：这款路由器2025年8月厂家安装了新版V100R009系统，封闭了telnet 99端口且无法降级，因此无法免拆刷机。由于更新时间较短，网上几乎无资料，我选择路由器的时候并没有发现这种情况，最终只能放弃该方案</p>
 </blockquote>
+<h2 id="附管理界面无法进入的解决方法">附：管理界面无法进入的解决方法
+</h2><p>将管理端口用网线连接到电脑网口，电脑进入<code>控制面板&gt;网络和 Internet&gt;网络和共享中心</code>，点击这里的<code>以太网&gt;属性&gt;Internet协议版本4</code></p>
+<img src="/images/aio15.png" style="width: 50%;" />
+<p>选择<code>使用下面的IP地址</code>，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致</p>
+<img src="/images/aio16.png" style="width: 50%;" />
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://blog.welain.com/articles/2023/j4125-allinone-tutorial/"  target="_blank" rel="noopener"
     >超详细教程-J4125小主机从到手到安装PVE，iStoreOS作为主路由全过程小记(使用虚拟化) | 邮文的萤火屋</a></p>
@@ -741,6 +710,34 @@ unicode: "f6d2"
     
 
     
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/pve_op/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/op.jpg" loading="lazy" data-key="" data-hash="/images/op.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">OpenWRT在PVE上的安装与基本配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
 
      
     
@@ -914,10 +911,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">12</span> 
+      <span class="number-highlight">13</span> 
       篇 ，总计 
-      <span class="number-highlight">29.18</span> 
+      <span class="number-highlight">29.67</span> 
       k 字
   </div>
   <div>
@@ -961,6 +960,12 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
+        
+        
         
         
         

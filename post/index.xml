@@ -7,7 +7,75 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Sun, 26 Oct 2025 20:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 08 Dec 2025 12:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>OpenWRT在PVE上的安装与基本配置</title>
+        <link>https://th4uma.github.io/post/pve_op/</link>
+        <pubDate>Mon, 08 Dec 2025 12:03:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/pve_op/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/op.jpg" alt="Featured image of post OpenWRT在PVE上的安装与基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e5%ba%95%e5%b1%82%e7%b3%bb%e7%bb%9f%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%ae&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;首先安装好ProxmoxVE&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载openwrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件，记住保存路径&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;在pve中创建虚拟机&#34;&gt;在PVE中创建虚拟机
+&lt;/h2&gt;&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选择不使用任何介质&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;磁盘直接删除&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;填写cpu核心数&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;内存1到2GB即可&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;配置虚拟化网口&#34;&gt;配置虚拟化网口
+&lt;/h2&gt;&lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启pve&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，将刚刚设置好的接口全部添加&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;启动与lan配置&#34;&gt;启动与lan配置
+&lt;/h2&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;修改IP，输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;修改完毕后 按 ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;开机自启动&lt;/code&gt;，将这一项设为是&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;浏览器访问设置的IP进入op管理界面，输入密码登录，&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;基础设置&#34;&gt;基础设置
+&lt;/h2&gt;&lt;p&gt;首先将pve的网段改到op下，进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时管理OpenWRT和PVE时，说明设置成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;可以找一根网线，将上文设置的那个WAN口连接到光猫或者上级路由器&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>2025CADC 比赛记录</title>
         <link>https://th4uma.github.io/post/25cadc/</link>
         <pubDate>Sun, 26 Oct 2025 20:03:02 +0800</pubDate>
@@ -134,7 +202,7 @@
 &lt;p&gt;将u盘插在小主机的usb口上，连接好显示器，键鼠，同时用网线将小主机连接到能联网的路由器上&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;安装pve&#34;&gt;安装PVE
+&lt;h3 id=&#34;安装proxmoxve&#34;&gt;安装ProxmoxVE
 &lt;/h3&gt;&lt;p&gt;开机连按f11进入bios，选择u盘&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;选择pve的镜像&lt;/p&gt;
@@ -163,7 +231,7 @@
 &lt;img src=&#34;https://th4uma.github.io/images/aio11.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置 IP 地址，默认会通过 DHCP 获取到一个地址，后续访问 Web UI 或者连接 SSH 需要用到&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口，建议设定在之后打算用作lan的网口&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Hostname(FQDN)&lt;/code&gt;为当前小主机在局域网中的主机名，不要设置成现有的网站名字，我的是&lt;code&gt;pve.j4125&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;IP Address(CIDR)&lt;/code&gt;为小主机的管理IP地址，安装完成后，这个地址会被设置成&lt;strong&gt;静态地址&lt;/strong&gt;，修改起来比较麻烦，建议&lt;strong&gt;提前修改&lt;/strong&gt;为想要的 IP 地址&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Gateway&lt;/code&gt;为网关，连接路由器的情况下会自动填写。&lt;/p&gt;
@@ -194,7 +262,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 更换非订阅源 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;source /etc/os-release echo &amp;#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve $VERSION_CODENAME pve-no-subscription&amp;#34; &amp;gt; /etc/apt/sources.list.d/pve-no-subscription.list 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;source /etc/os-releaseecho &amp;#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve $VERSION_CODENAME pve-no-subscription&amp;#34; &amp;gt; /etc/apt/sources.list.d/pve-no-subscription.list 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -261,49 +329,8 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;特定功能系统安装与配置&#34;&gt;特定功能系统安装与配置
 &lt;/h2&gt;&lt;h3 id=&#34;openwrt&#34;&gt;OpenWRT
-&lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;下载openwrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
-&lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;记住保存路径&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;选择不使用任何介质&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;磁盘直接删除&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;填写cpu核心数&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;内存1到2GB即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;打开右侧添加&amp;gt;网络设备，依次将硬件界面没有显示的网口添加进去&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;这里可能会出现没有vmbr1的情况，这时候我们回到&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&lt;/code&gt;，创建Linux Bridge，然后选择好桥接端口，重启pve，再返回上一步&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;修改IP，输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;修改完毕后 按 ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
-&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;开机自启动&lt;/code&gt;，将这一项设为是&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;&lt;/a&gt;&lt;a class=&#34;link&#34; href=&#34;#%e8%bf%9b%e5%85%a5%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2&#34; &gt;重复这一步骤&lt;/a&gt;，但IP改成刚刚设置的lan同网段ip&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio36.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;浏览器访问设置的IP进入op管理界面，输入密码登录&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io//post/pve_op/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;OpenWRT在PVE上的安装与基本配置&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;曾经的失败尝试&#34;&gt;曾经的失败尝试
 &lt;/h2&gt;&lt;h3 id=&#34;路由器-openwrt-方案&#34;&gt;路由器 OpenWRT 方案
 &lt;/h3&gt;&lt;p&gt;最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP。最终选用 H3C NX30 Pro。&lt;/p&gt;
@@ -326,6 +353,11 @@
 &lt;blockquote&gt;
 &lt;p&gt;意外情况：这款路由器2025年8月厂家安装了新版V100R009系统，封闭了telnet 99端口且无法降级，因此无法免拆刷机。由于更新时间较短，网上几乎无资料，我选择路由器的时候并没有发现这种情况，最终只能放弃该方案&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;h2 id=&#34;附管理界面无法进入的解决方法&#34;&gt;附：管理界面无法进入的解决方法
+&lt;/h2&gt;&lt;p&gt;将管理端口用网线连接到电脑网口，电脑进入&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&lt;/code&gt;，点击这里的&lt;code&gt;以太网&amp;gt;属性&amp;gt;Internet协议版本4&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.welain.com/articles/2023/j4125-allinone-tutorial/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;超详细教程-J4125小主机从到手到安装PVE，iStoreOS作为主路由全过程小记(使用虚拟化) | 邮文的萤火屋&lt;/a&gt;&lt;/p&gt;
