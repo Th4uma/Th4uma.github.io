@@ -283,7 +283,7 @@ unicode: "f6d2"
       <ol>
         <li><a href="#硬件配置">硬件配置</a></li>
         <li><a href="#底层虚拟机系统选择">底层虚拟机系统选择</a></li>
-        <li><a href="#特定功能系统选择">特定功能系统选择</a>
+        <li><a href="#上层服务系统选择">上层服务系统选择</a>
           <ol>
             <li><a href="#软路由">软路由</a></li>
             <li><a href="#nas">NAS</a></li>
@@ -297,13 +297,12 @@ unicode: "f6d2"
         <li><a href="#安装proxmoxve">安装ProxmoxVE</a></li>
         <li><a href="#配置">配置</a>
           <ol>
-            <li><a href="#进入管理界面">进入管理界面</a></li>
             <li><a href="#更换软件源">更换软件源</a></li>
           </ol>
         </li>
       </ol>
     </li>
-    <li><a href="#特定功能系统安装与配置">特定功能系统安装与配置</a>
+    <li><a href="#上层服务系统安装与配置">上层服务系统安装与配置</a>
       <ol>
         <li><a href="#openwrt">OpenWRT</a></li>
       </ol>
@@ -417,7 +416,7 @@ unicode: "f6d2"
 <p>我的需求包括广告过滤、科学上网、Docker 等功能，由于设备较多，我还需要一台 NAS 来实现数据共享。所以All in one符合我的需求。</p>
 </blockquote>
 <p><strong>All in one（AIO）</strong> 是一种将多台设备功能整合到同一硬件上、各系统相互独立又可同时运行的方案。</p>
-<p>一般情况使用x86架构的设备作为硬件平台，虚拟机系统来做底层系统，将软路由、NAS、HTPC等系统安装到同一台物理机中，并且同时运行。对于我这种新手来说，All in one的好处就是能用较低成本体验不同系统的功能，并逐步找到最适合自己的方案。</p>
+<p>一般情况使用x86架构的设备作为硬件平台，虚拟机系统来做底层，将软路由、NAS、HTPC等系统安装到同一台物理机中，并且同时运行。对于我这种新手来说，All in one的好处就是能用较低成本体验不同系统的功能，并逐步找到最适合自己的方案。</p>
 <h2 id="方案规划">方案规划
 </h2><h3 id="硬件配置">硬件配置
 </h3><blockquote>
@@ -438,16 +437,16 @@ unicode: "f6d2"
 <p><strong>PVE（Proxmox VE）</strong> 基于 Debian 的开源虚拟化平台，底层是 KVM。功能多、玩法多，硬件兼容性强。适合喜欢折腾的人，灵活但风险也高，上手难度较大。因为是完整的 Linux 系统再加虚拟化层，性能上略低于 ESXi。</p>
 <p><strong>Hyper-V</strong> 集成在 Windows Server 里。和 Windows 环境结合紧密，部署方便，适合内部测试和办公虚拟机。对 Linux 支持一般，系统体积大，不适合轻量化环境。稳定性介于两者之间，可玩性有限。</p>
 <blockquote>
-<p>生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了pve</p>
+<p>生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了PVE</p>
 </blockquote>
-<h3 id="特定功能系统选择">特定功能系统选择
+<h3 id="上层服务系统选择">上层服务系统选择
 </h3><h4 id="软路由">软路由
 </h4><p><strong>OpenWrt</strong> 是完全开源的路由系统，插件丰富、可定制度高，硬件支持广泛，更新活跃，但需要一定学习成本，对不喜欢闭源、希望掌控所有细节的用户来说非常合适。</p>
 <p><strong>iKuai</strong> 是一款基于Linux内核开发的轻量级路由操作系统，主要面向家庭及小型企业市场。它以简单易用著称，尤其适合那些不具备深厚技术背景但希望拥有高级网络管理功能的用户。</p>
-<p><strong>ImmortalWrt</strong> 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现，在驱动和系统调度上更为优秀。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户。</p>
+<p><strong>ImmortalWrt</strong> 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户。</p>
 <p><strong>iStoreOS</strong> 也是 OpenWrt 的分支，强调轻量化和易用性，界面现代，应用商店方便实用，但深度玩法有限，硬件适配范围稍窄，更适合希望快速部署、以家庭使用为主的用户。</p>
 <blockquote>
-<p>我对折腾比较感兴趣，而且准备深入学习一下软路由，所以选择了openwrt</p>
+<p>我对折腾比较感兴趣，准备深入学习一下软路由，而且有一点电子洁癖，不希望被安装没有用或者不知道的插件，所以选择了原版OpenWrt</p>
 </blockquote>
 <h4 id="nas">NAS
 </h4><h2 id="底层系统安装与配置">底层系统安装与配置
@@ -523,12 +522,7 @@ unicode: "f6d2"
 <p>最上方显示的IP为当前小主机pve系统的管理网页地址。我的管理地址是<code>https://10.150.15.100:8006</code>。默认用户名为root，密码为上面安装过程中第四个界面设置的密码。</p>
 <img src="/images/aio14.jpg" style="width: 100%;" />
 <h3 id="配置">配置
-</h3><h4 id="进入管理界面">进入管理界面
-</h4><p>将刚刚设置的管理端口用网线连接到电脑网口，电脑进入<code>控制面板&gt;网络和 Internet&gt;网络和共享中心</code>，点击这里的<code>以太网&gt;属性&gt;Internet协议版本4</code></p>
-<img src="/images/aio15.png" style="width: 50%;" />
-<p>选择<code>使用下面的IP地址</code>，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致</p>
-<img src="/images/aio16.png" style="width: 50%;" />
-<p>浏览器访问路由器管理地址，跳过安全提醒进入控制界面</p>
+</h3><p>浏览器访问pve管理地址，跳过安全提醒进入控制界面，<a class="link" href="#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95" >若无法访问可尝试此方法</a></p>
 <img src="/images/aio17.png" style="width: 80%;" />
 <p>进入管理界面，修改语言为中文，登录账号为root，密码是安装时设置的密码。</p>
 <img src="/images/aio18.png" style="width: 60%;" />
@@ -588,7 +582,7 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 最后apt uptade一下
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 最后apt update一下
 </span></span><span class="line"><span class="cl">apt update &amp;&amp; apt-get install -y apt-transport-https ca-certificates  --fix-missing
 </span></span></code></pre></td></tr></table>
 </div>
@@ -608,7 +602,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sed</span> <span class="o">-</span><span class="n">Ezi</span><span class="o">.</span><span class="n">bak</span> <span class="s2">&#34;s/(Ext.Msg.show\(\{\s+title: gettext\(&#39;No valid sub)/void\(\{ \/\/</span><span class="se">\1</span><span class="s2">/g&#34;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">javascript</span><span class="o">/</span><span class="n">proxmox</span><span class="o">-</span><span class="n">widget</span><span class="o">-</span><span class="n">toolkit</span><span class="o">/</span><span class="n">proxmoxlib</span><span class="o">.</span><span class="n">js</span> <span class="o">&amp;&amp;</span> <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">pveproxy</span><span class="o">.</span><span class="n">service</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="特定功能系统安装与配置">特定功能系统安装与配置
+</div><h2 id="上层服务系统安装与配置">上层服务系统安装与配置
 </h2><h3 id="openwrt">OpenWRT
 </h3><p><a class="link" href="https://th4uma.github.io//post/pve_op/"  target="_blank" rel="noopener"
     >OpenWRT在PVE上的安装与基本配置</a></p>
@@ -637,7 +631,7 @@ unicode: "f6d2"
 <h2 id="附管理界面无法进入的解决方法">附：管理界面无法进入的解决方法
 </h2><p>将管理端口用网线连接到电脑网口，电脑进入<code>控制面板&gt;网络和 Internet&gt;网络和共享中心</code>，点击这里的<code>以太网&gt;属性&gt;Internet协议版本4</code></p>
 <img src="/images/aio15.png" style="width: 50%;" />
-<p>选择<code>使用下面的IP地址</code>，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致</p>
+<p>选择<code>使用下面的IP地址</code>，ip地址填写和管理IP同网段的任意地址，网关填写管理ip，其他和图片填写保持一致</p>
 <img src="/images/aio16.png" style="width: 50%;" />
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://blog.welain.com/articles/2023/j4125-allinone-tutorial/"  target="_blank" rel="noopener"
@@ -646,6 +640,8 @@ unicode: "f6d2"
     >All in one入门之All in one和三种PVE、ESXI、Windows Server方案 - alittlemc</a></p>
 <p><a class="link" href="https://blog.csdn.net/u012374381/article/details/130650909"  target="_blank" rel="noopener"
     >超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客</a></p>
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/681218035"  target="_blank" rel="noopener"
+    >还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎</a></p>
 
 </section>
 
@@ -916,7 +912,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">13</span> 
       篇 ，总计 
-      <span class="number-highlight">29.67</span> 
+      <span class="number-highlight">30.41</span> 
       k 字
   </div>
   <div>

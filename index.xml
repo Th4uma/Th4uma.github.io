@@ -21,7 +21,7 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://downloads.openwrt.org/releases/24.10.0/targets/x86/64/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;下载openwrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
+    &gt;下载OpenWrt镜像&lt;/a&gt;，选择&lt;code&gt;openwrt-24.10.0-x86-64-generic-ext4-combined-efi.img.gz&lt;/code&gt;，然后解压&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件，记住保存路径&lt;/p&gt;
@@ -31,48 +31,151 @@
 &lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;在pve中创建虚拟机&#34;&gt;在PVE中创建虚拟机
 &lt;/h2&gt;&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;选择不使用任何介质&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;磁盘直接删除&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;填写cpu核心数&lt;/p&gt;
+&lt;p&gt;填写CPU核心数&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;内存1到2GB即可&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;此处模型选择VirtlO，linux的支持更好&lt;/p&gt;
+&lt;p&gt;此处模型选择VirtlO，Linux的支持更好&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;blockquote&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;网络配置&#34;&gt;网络配置
+&lt;/h2&gt;&lt;h3 id=&#34;虚拟网络拓扑&#34;&gt;虚拟网络拓扑
+&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;配置虚拟化网口&#34;&gt;配置虚拟化网口
-&lt;/h2&gt;&lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启pve&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启PVE&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，将刚刚设置好的接口全部添加&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;启动与lan配置&#34;&gt;启动与lan配置
-&lt;/h2&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
+&lt;h3 id=&#34;启动&#34;&gt;启动
+&lt;/h3&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;修改IP，输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;修改完毕后 按 ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
-&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;开机自启动&lt;/code&gt;，将这一项设为是&lt;/p&gt;
+&lt;p&gt;将&lt;code&gt;开机自启动&lt;/code&gt;设为是&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;浏览器访问设置的IP进入op管理界面，输入密码登录，&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;h3 id=&#34;更改默认lan-ip&#34;&gt;更改默认LAN IP
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;OpenWrt 默认使用 &lt;strong&gt;192.168.1.1&lt;/strong&gt; 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所有只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;修改完毕后，按ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;p&gt;浏览器访问设置的IP进入OpenWrt管理界面，输入密码登录，&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;基础设置&#34;&gt;基础设置
-&lt;/h2&gt;&lt;p&gt;首先将pve的网段改到op下，进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时管理OpenWRT和PVE时，说明设置成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;可以找一根网线，将上文设置的那个WAN口连接到光猫或者上级路由器&lt;/p&gt;
+&lt;h3 id=&#34;pve-管理地址迁移&#34;&gt;PVE 管理地址迁移
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;PVE 的管理口和 OpenWrt 的 LAN 默认不在同一个网段，设备进入 LAN 后就访问不到 PVE。把 PVE 管理 IP 改到 LAN 网段，任何 LAN 口就都能同时管理 PVE 和 OpenWrt&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时进入OpenWRT和PVE的管理界面时，说明设置成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h3 id=&#34;设置lan口和wan口&#34;&gt;设置LAN口和WAN口
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：OpenWRT中显示的网口编号不等于物理网口编号，具体编号需要看映射情况，推荐做一个下表来直观显示映射情况&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;OpenWrt 接口&lt;/th&gt;
+          &lt;th&gt;PVE 桥接&lt;/th&gt;
+          &lt;th&gt;PVE 从属端口&lt;/th&gt;
+          &lt;th&gt;物理网口&lt;/th&gt;
+          &lt;th&gt;功能&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;eth0&lt;/td&gt;
+          &lt;td&gt;vmbr0&lt;/td&gt;
+          &lt;td&gt;enp2s0&lt;/td&gt;
+          &lt;td&gt;eth1&lt;/td&gt;
+          &lt;td&gt;PVE 管理、LAN&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;eth1&lt;/td&gt;
+          &lt;td&gt;vmbr1&lt;/td&gt;
+          &lt;td&gt;enp1s0&lt;/td&gt;
+          &lt;td&gt;eth0&lt;/td&gt;
+          &lt;td&gt;WAN&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;eth2&lt;/td&gt;
+          &lt;td&gt;vmbr3&lt;/td&gt;
+          &lt;td&gt;enp3s0&lt;/td&gt;
+          &lt;td&gt;eth2&lt;/td&gt;
+          &lt;td&gt;LAN&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;eth3&lt;/td&gt;
+          &lt;td&gt;vmbr4&lt;/td&gt;
+          &lt;td&gt;enp4s0&lt;/td&gt;
+          &lt;td&gt;eth3&lt;/td&gt;
+          &lt;td&gt;LAN&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;进入OpenWrt管理界面，&lt;code&gt;network&amp;gt;interfaces&amp;gt;wan&amp;gt;edit&lt;/code&gt;，然后将device改成需要的WAN口，右下角保存&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op2.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;devices&amp;gt;br-lan&amp;gt;configure&lt;/code&gt;，勾选需要的LAN口，右下角保存，然后点击&lt;code&gt;Save &amp;amp; Apply&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;用网线将WAN口连接到光猫或者上级路由器，WAN这里显示IP地址说明配置完成，这时候就可以上网了&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;插件设置&#34;&gt;插件设置
+&lt;/h2&gt;&lt;h3 id=&#34;更换国内源&#34;&gt;更换国内源
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;OpenWrt官方服务器在国外，直连更新安装会比较慢，所以要先更换国内源&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;进入OpenWrt管理界面，&lt;code&gt;system&amp;gt;software&amp;gt;configure opkg&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op4.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;将&lt;code&gt;/etc/opkg/distfeeds.conf&lt;/code&gt;中的地址，将网址中的&lt;code&gt;downloads.openwrt.org&lt;/code&gt;全部替换成&lt;code&gt;mirrors.tuna.tsinghua.edu.cn/openwrt&lt;/code&gt;，点击Save保存，我的版本修改好是这样的&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_core https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/targets/x86/64/packages
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_base https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/packages/x86_64/base
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_kmods https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/targets/x86/64/kmods/6.6.73-1-a21259e4f338051d27a6443a3a7f7f1f
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_luci https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/packages/x86_64/luci
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_packages https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/packages/x86_64/packages
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_routing https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/packages/x86_64/routing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;src/gz openwrt_telephony https://mirrors.tuna.tsinghua.edu.cn/openwrt/releases/24.10.0/packages/x86_64/telephony
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;更新插件列表&#34;&gt;更新插件列表
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;OpenWrt每次重启后可用插件列表都会清空，要安装或者更新插件需要手动更新&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;点击software界面的&lt;code&gt;Update lists…&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;更新成功&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op6.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;安装中文插件&#34;&gt;安装中文插件
+&lt;/h3&gt;&lt;p&gt;在插件过滤框里面输入&lt;code&gt;zh-cn&lt;/code&gt;筛选中文界面插件，然后点击下载&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;安装好后刷新，页面就变成了中文，此时再输入&lt;code&gt;zh-cn&lt;/code&gt;筛选会看到更多中文插件&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;扩容&#34;&gt;扩容
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;OpenWrt默认只会分配100M空间用于安装插件，所以需要给空间扩容&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -136,7 +239,7 @@
 &lt;p&gt;我的需求包括广告过滤、科学上网、Docker 等功能，由于设备较多，我还需要一台 NAS 来实现数据共享。所以All in one符合我的需求。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;All in one（AIO）&lt;/strong&gt; 是一种将多台设备功能整合到同一硬件上、各系统相互独立又可同时运行的方案。&lt;/p&gt;
-&lt;p&gt;一般情况使用x86架构的设备作为硬件平台，虚拟机系统来做底层系统，将软路由、NAS、HTPC等系统安装到同一台物理机中，并且同时运行。对于我这种新手来说，All in one的好处就是能用较低成本体验不同系统的功能，并逐步找到最适合自己的方案。&lt;/p&gt;
+&lt;p&gt;一般情况使用x86架构的设备作为硬件平台，虚拟机系统来做底层，将软路由、NAS、HTPC等系统安装到同一台物理机中，并且同时运行。对于我这种新手来说，All in one的好处就是能用较低成本体验不同系统的功能，并逐步找到最适合自己的方案。&lt;/p&gt;
 &lt;h2 id=&#34;方案规划&#34;&gt;方案规划
 &lt;/h2&gt;&lt;h3 id=&#34;硬件配置&#34;&gt;硬件配置
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -157,16 +260,16 @@
 &lt;p&gt;&lt;strong&gt;PVE（Proxmox VE）&lt;/strong&gt; 基于 Debian 的开源虚拟化平台，底层是 KVM。功能多、玩法多，硬件兼容性强。适合喜欢折腾的人，灵活但风险也高，上手难度较大。因为是完整的 Linux 系统再加虚拟化层，性能上略低于 ESXi。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Hyper-V&lt;/strong&gt; 集成在 Windows Server 里。和 Windows 环境结合紧密，部署方便，适合内部测试和办公虚拟机。对 Linux 支持一般，系统体积大，不适合轻量化环境。稳定性介于两者之间，可玩性有限。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了pve&lt;/p&gt;
+&lt;p&gt;生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了PVE&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h3 id=&#34;特定功能系统选择&#34;&gt;特定功能系统选择
+&lt;h3 id=&#34;上层服务系统选择&#34;&gt;上层服务系统选择
 &lt;/h3&gt;&lt;h4 id=&#34;软路由&#34;&gt;软路由
 &lt;/h4&gt;&lt;p&gt;&lt;strong&gt;OpenWrt&lt;/strong&gt; 是完全开源的路由系统，插件丰富、可定制度高，硬件支持广泛，更新活跃，但需要一定学习成本，对不喜欢闭源、希望掌控所有细节的用户来说非常合适。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;iKuai&lt;/strong&gt; 是一款基于Linux内核开发的轻量级路由操作系统，主要面向家庭及小型企业市场。它以简单易用著称，尤其适合那些不具备深厚技术背景但希望拥有高级网络管理功能的用户。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;ImmortalWrt&lt;/strong&gt; 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现，在驱动和系统调度上更为优秀。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ImmortalWrt&lt;/strong&gt; 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;iStoreOS&lt;/strong&gt; 也是 OpenWrt 的分支，强调轻量化和易用性，界面现代，应用商店方便实用，但深度玩法有限，硬件适配范围稍窄，更适合希望快速部署、以家庭使用为主的用户。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;我对折腾比较感兴趣，而且准备深入学习一下软路由，所以选择了openwrt&lt;/p&gt;
+&lt;p&gt;我对折腾比较感兴趣，准备深入学习一下软路由，而且有一点电子洁癖，不希望被安装没有用或者不知道的插件，所以选择了原版OpenWrt&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;nas&#34;&gt;NAS
 &lt;/h4&gt;&lt;h2 id=&#34;底层系统安装与配置&#34;&gt;底层系统安装与配置
@@ -242,12 +345,7 @@
 &lt;p&gt;最上方显示的IP为当前小主机pve系统的管理网页地址。我的管理地址是&lt;code&gt;https://10.150.15.100:8006&lt;/code&gt;。默认用户名为root，密码为上面安装过程中第四个界面设置的密码。&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio14.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;配置&#34;&gt;配置
-&lt;/h3&gt;&lt;h4 id=&#34;进入管理界面&#34;&gt;进入管理界面
-&lt;/h4&gt;&lt;p&gt;将刚刚设置的管理端口用网线连接到电脑网口，电脑进入&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&lt;/code&gt;，点击这里的&lt;code&gt;以太网&amp;gt;属性&amp;gt;Internet协议版本4&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;浏览器访问路由器管理地址，跳过安全提醒进入控制界面&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;浏览器访问pve管理地址，跳过安全提醒进入控制界面，&lt;a class=&#34;link&#34; href=&#34;#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio17.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入管理界面，修改语言为中文，登录账号为root，密码是安装时设置的密码。&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio18.png&#34; style=&#34;width: 60%;&#34; /&gt;
@@ -307,7 +405,7 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 最后apt uptade一下
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 最后apt update一下
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt update &amp;amp;&amp;amp; apt-get install -y apt-transport-https ca-certificates  --fix-missing
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
@@ -327,7 +425,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sed&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Ezi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bak&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;s/(Ext.Msg.show\(\{\s+title: gettext\(&amp;#39;No valid sub)/void\(\{ \/\/&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\1&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/g&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;usr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;share&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;javascript&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;proxmox&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;widget&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;toolkit&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;proxmoxlib&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;js&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;systemctl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;restart&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pveproxy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;service&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;特定功能系统安装与配置&#34;&gt;特定功能系统安装与配置
+&lt;/div&gt;&lt;h2 id=&#34;上层服务系统安装与配置&#34;&gt;上层服务系统安装与配置
 &lt;/h2&gt;&lt;h3 id=&#34;openwrt&#34;&gt;OpenWRT
 &lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io//post/pve_op/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;OpenWRT在PVE上的安装与基本配置&lt;/a&gt;&lt;/p&gt;
@@ -356,7 +454,7 @@
 &lt;h2 id=&#34;附管理界面无法进入的解决方法&#34;&gt;附：管理界面无法进入的解决方法
 &lt;/h2&gt;&lt;p&gt;将管理端口用网线连接到电脑网口，电脑进入&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&lt;/code&gt;，点击这里的&lt;code&gt;以太网&amp;gt;属性&amp;gt;Internet协议版本4&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写路由器的IP同网段任意地址，其他和路由器填写保持一致&lt;/p&gt;
+&lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写和管理IP同网段的任意地址，网关填写管理ip，其他和图片填写保持一致&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.welain.com/articles/2023/j4125-allinone-tutorial/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -365,6 +463,8 @@
     &gt;All in one入门之All in one和三种PVE、ESXI、Windows Server方案 - alittlemc&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/u012374381/article/details/130650909&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/681218035&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>
