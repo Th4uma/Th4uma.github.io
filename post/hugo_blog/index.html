@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程，涵盖主题配置、部署与自动化">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程">
 <title>Hugo &#43; GitHub博客搭建记录</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/hugo_blog/'>
 
 <link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="Hugo + GitHub博客搭建记录">
-<meta property='og:description' content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程，涵盖主题配置、部署与自动化">
+<meta property='og:description' content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程">
 <meta property='og:url' content='https://th4uma.github.io/post/hugo_blog/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-24T11:24:02&#43;08:00'/><meta property='article:modified_time' content='2025-06-24T11:24:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/hugo00.jpg' />
 <meta name="twitter:title" content="Hugo + GitHub博客搭建记录">
-<meta name="twitter:description" content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程，涵盖主题配置、部署与自动化"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="记录使用 Hugo + GitHub Pages 搭建个人博客的全过程"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/hugo00.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -335,7 +335,7 @@ unicode: "f6d2"
     
         
         <h3 class="article-subtitle">
-            记录使用 Hugo &#43; GitHub Pages 搭建个人博客的全过程，涵盖主题配置、部署与自动化
+            记录使用 Hugo &#43; GitHub Pages 搭建个人博客的全过程
         </h3>
         
     </div>
@@ -376,7 +376,7 @@ unicode: "f6d2"
 </h2><ul>
 <li>
 <p>下载<a class="link" href="https://github.com/gohugoio/hugo"  target="_blank" rel="noopener"
-    >hugo</a></p>
+    >Hugo</a></p>
 </li>
 <li>
 <p>将 Hugo 解压路径添加至系统 PATH</p>
@@ -404,13 +404,23 @@ unicode: "f6d2"
 ></p>
 <h3 id="主题配置">主题配置
 </h3><ul>
-<li>可以在<a class="link" href="https://themes.gohugo.io/"  target="_blank" rel="noopener"
+<li>
+<p>可以在<a class="link" href="https://themes.gohugo.io/"  target="_blank" rel="noopener"
     >Hugo Themes</a>找到喜欢的主题，我用的是<a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack"  target="_blank" rel="noopener"
-    >stack</a>，下载后解压到<code>blog\themes</code>目录里</li>
-<li>在主题文件夹中找到<code>exampleSite</code>文件夹，复制其中<code>content</code>和<code>hugo.yaml</code>到<code>blog</code>文件夹下，并删除原本的配置文件<code>hugo.toml</code></li>
-<li>修改<code>themes</code>文件夹下主题文件名，删除文件名中的版本号，使其和<code>hugo.yaml</code>中的主题名一样</li>
-<li>删除<code>content&gt;post&gt;rich-content</code>文件夹，因为文件内容引用了youtube视频，不删掉可能网络访问失败启动不了</li>
-<li>此时网站框架完成，输入<code>hugo server --buildDrafts</code>命令启动服务，打开输出的地址，如http://localhost:1313/，就可以看到网站的框架了</li>
+    >stack</a>，下载后解压到<code>blog\themes</code>目录里</p>
+</li>
+<li>
+<p>在主题文件夹中找到<code>exampleSite</code>文件夹，复制其中<code>content</code>和<code>hugo.yaml</code>到<code>blog</code>文件夹下，并删除原本的配置文件<code>hugo.toml</code></p>
+</li>
+<li>
+<p>修改<code>themes</code>文件夹下主题文件名，删除文件名中的版本号，使其和<code>hugo.yaml</code>中的主题名一样</p>
+</li>
+<li>
+<p>删除<code>content&gt;post&gt;rich-content</code>文件夹，因为文件内容引用了youtube视频，不删掉可能网络访问失败启动不了</p>
+</li>
+<li>
+<p>此时网站框架完成，输入<code>hugo server --buildDrafts</code>命令启动服务，打开输出的地址，如<code>http://localhost:1313/</code>，就可以看到网站的框架了</p>
+</li>
 </ul>
 <p><img src="/images/hugo3.png"
 	
@@ -464,10 +474,8 @@ unicode: "f6d2"
 <li><code>post</code>是存放博客文件的目录</li>
 </ul>
 <h3 id="新建文章">新建文章
-</h3><ul>
-<li>
-<p><code>blog\content\post</code>文件夹用来存放文章</p>
-</li>
+</h3><p><code>blog\content\post</code>文件夹用来存放文章</p>
+<ul>
 <li>
 <p>命令行输入<code>hugo new content post/myfirstblog/index.md</code></p>
 </li>
@@ -500,14 +508,8 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">copyright</span><span class="p">:</span><span class="w"> </span><span class="l">Thaumazein</span><span class="w"> </span><span class="c">#自己的名字</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>
-<p><code>DefaultContentLanguage</code>: 默认语言</p>
-</li>
-<li>
+</div><p><code>DefaultContentLanguage</code>: 默认语言</p>
 <p><code>hasCJKLanguage</code>: 设置为true</p>
-</li>
-</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -532,9 +534,7 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="w">                  </span><span class="nt">subtitle</span><span class="p">:</span><span class="w"> </span><span class="m">404</span><span class="w"> </span><span class="l">Not Found</span><span class="w"> </span><span class="c">#简介</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><code>pagination: pagerSize: 5</code>:每页文章数</li>
-</ul>
+</div><p><code>pagination: pagerSize: 5</code>:每页文章数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -642,15 +642,11 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">toc</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>主页<code>Archives</code>,<code>Search</code>,<code>Links</code>显示英文解决方法:<code>hugo\blog\content\page</code>文件夹中对应名称的文件夹，打开其中的<code>index.md</code>,修改成中文标题</li>
-</ul>
+</div><p>主页<code>Archives</code>,<code>Search</code>,<code>Links</code>显示英文解决方法:<code>hugo\blog\content\page</code>文件夹中对应名称的文件夹，打开其中的<code>index.md</code>,修改成中文标题</p>
 <h3 id="社交账号">社交账号
-</h3><ul>
-<li>可以自己增加平台账号，图标从<a class="link" href="https://tabler.io/icons"  target="_blank" rel="noopener"
-    >Tabler Icons</a>下载svg格式</li>
-<li>在<code>\hugo\blog\assets</code>目录下创建<code>icons</code>文件夹，放入图标，然后修改<code>hugo.yaml</code>文件这一部分</li>
-</ul>
+</h3><p>可以自己增加平台账号，图标从<a class="link" href="https://tabler.io/icons"  target="_blank" rel="noopener"
+    >Tabler Icons</a>下载svg格式</p>
+<p>在<code>\hugo\blog\assets</code>目录下创建<code>icons</code>文件夹，放入图标，然后修改<code>hugo.yaml</code>文件这一部分</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -681,14 +677,10 @@ unicode: "f6d2"
 ></p>
 <h2 id="部署到github">部署到GitHub
 </h2><h3 id="手动部署">手动部署
-</h3><ul>
-<li>github新建一个公有仓库，命名建议<code>github用户名.github.io</code></li>
-</ul>
+</h3><p>github新建一个公有仓库，命名建议<code>github用户名.github.io</code></p>
 <img src="/images/hugo5.png" style="width: 60%;" />
-<ul>
-<li>修改<code>hugo.yaml</code>文件<code>baseurl</code>参数为<code>https://用户名.github.io/</code></li>
-<li>我们需要把public文件夹下的文件上传，因此在此文件夹下打开命令行，然后依次输入下列命令</li>
-</ul>
+<p>修改<code>hugo.yaml</code>文件<code>baseurl</code>参数为<code>https://用户名.github.io/</code></p>
+<p>我们需要把public文件夹下的文件上传，因此在此文件夹下打开命令行，然后依次输入下列命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -707,15 +699,11 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">git push -u origin main
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>仓库界面进入<code>settings&gt;pages&gt;branch</code>选择main，保存，刷新后出现自己网站的url，部署成功</li>
-</ul>
-<img src="/images/hugo6.png" style="width: 50%;" />
+</div><p>仓库界面进入<code>settings&gt;pages&gt;branch</code>选择main，保存，刷新后出现自己网站的url，部署成功</p>
+<img src="/images/hugo6.png" style="width: 40%;" />
 <h3 id="github-action实现自动化部署">GitHub Action实现自动化部署
-</h3><ul>
-<li>github新建一个仓库用来存放hugo主文件，建议设置成私有</li>
-<li>由于自动生成的文件比如public不需要上传，因此在<code>\hugo\blog</code>文件夹新建一个<code>.gitignore</code>文件来忽略上传，文件中写入</li>
-</ul>
+</h3><p>github新建一个仓库用来存放hugo主文件，建议设置成私有</p>
+<p>由于自动生成的文件比如public不需要上传，因此在<code>\hugo\blog</code>文件夹新建一个<code>.gitignore</code>文件来忽略上传，文件中写入</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -728,9 +716,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">.</span><span class="n">hugo_build</span><span class="p">.</span><span class="n">lock</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>打开命令行，然后依次输入下列命令</li>
-</ul>
+</div><p>打开命令行，然后依次输入下列命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -749,9 +735,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">git push -u origin main
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>
-<p>在<a class="link" href="https://github.com/settings/tokens"  target="_blank" rel="noopener"
+</div><p>在<a class="link" href="https://github.com/settings/tokens"  target="_blank" rel="noopener"
     >Personal Access Tokens (Classic)</a>新建一个token，设置如下<img src="/images/hugo7.png"
 	
 	
@@ -760,14 +744,8 @@ unicode: "f6d2"
 	
 	
 ></p>
-</li>
-<li>
 <p>进入存放hugo主文件的仓库，选择<code>Settings&gt; Secrets and variables&gt; Actions&gt;Repository secrets</code>新增环境变量，填入token</p>
-</li>
-<li>
 <p>在<code>\hugo\blog</code>文件夹下新建<code>.github\workflows\xxxx.yaml</code>文件,复制下面的代码到文件，并把参数改成自己的</p>
-</li>
-</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -842,9 +820,7 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">commit_message</span><span class="p">:</span><span class="w"> </span><span class="l">auto deploy</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>把文件push上去</li>
-</ul>
+</div><p>把文件push上去</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -857,24 +833,20 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">git push
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>仓库中显示运行成功，部署完成<img src="/images/hugo8.png"
+</div><p>仓库中显示运行成功，部署完成<img src="/images/hugo8.png"
 	
 	
 	
 	loading="lazy"
 	
 	
-></li>
-</ul>
+></p>
 <h2 id="参考">参考
-</h2><ul>
-<li>b站up主Letere-莱特雷的<a class="link" href="https://www.bilibili.com/video/BV1bovfeaEtQ"  target="_blank" rel="noopener"
+</h2><p>b站up主Letere-莱特雷的<a class="link" href="https://www.bilibili.com/video/BV1bovfeaEtQ"  target="_blank" rel="noopener"
     >视频</a>与<a class="link" href="https://letere-gzj.github.io/hugo-stack/p/hugo/custom-blog/"  target="_blank" rel="noopener"
-    >博客</a></li>
-<li><a class="link" href="https://morick66.com/post/20240321055915"  target="_blank" rel="noopener"
-    >https://morick66.com/post/20240321055915</a></li>
-</ul>
+    >博客</a></p>
+<p><a class="link" href="https://morick66.com/post/20240321055915/"  target="_blank" rel="noopener"
+    >【博客搭建】我的Hugo博客搭建记录</a></p>
 
 </section>
 
@@ -1142,10 +1114,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">13</span> 
+      <span class="number-highlight">14</span> 
       篇 ，总计 
-      <span class="number-highlight">30.41</span> 
+      <span class="number-highlight">32.90</span> 
       k 字
   </div>
   <div>
@@ -1189,6 +1163,10 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
         
         
         
