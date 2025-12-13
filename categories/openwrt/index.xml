@@ -8,12 +8,12 @@
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
         <lastBuildDate>Mon, 08 Dec 2025 12:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/openwrt/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>OpenWrt在PVE上的安装与基本配置</title>
+        <title>OpenWrt 在 ProxmoxVE 上的安装和基本配置</title>
         <link>https://th4uma.github.io/post/pve_op/</link>
         <pubDate>Mon, 08 Dec 2025 12:03:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/pve_op/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/op.jpg" alt="Featured image of post OpenWrt在PVE上的安装与基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
+        <description>&lt;img src="https://th4uma.github.io/images/op.jpg" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e5%ba%95%e5%b1%82%e7%b3%bb%e7%bb%9f%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%ae&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -35,24 +35,33 @@
 &lt;p&gt;选择不使用任何介质&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;磁盘直接删除&lt;/p&gt;
+&lt;p&gt;删除虚拟机默认生成的磁盘&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;填写CPU核心数&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;内存1到2GB即可&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;此处模型选择VirtlO，Linux的支持更好&lt;/p&gt;
+&lt;p&gt;此处模型选择VirtIO，Linux的支持更好&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;不勾选创建后启动，点击完成，然后打开宿主机命令行，输入&lt;code&gt;qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm&lt;/code&gt;，出现成功提示说明磁盘添加成功&lt;/p&gt;
+&lt;p&gt;然后打开宿主机命令行，输入以下命令导入磁盘：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;qm importdisk &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt; /var/lib/vz/template/iso/op.img local-lvm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;出现成功提示说明磁盘添加成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;选中硬盘，选择磁盘操作&amp;gt;调整大小，将大小设置为5GB&lt;/p&gt;
+&lt;p&gt;选中硬盘，选择&lt;code&gt;磁盘操作&amp;gt;调整大小&lt;/code&gt;，将大小设置为&lt;code&gt;5GB&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;h2 id=&#34;网络配置&#34;&gt;网络配置
 &lt;/h2&gt;&lt;h3 id=&#34;虚拟网络拓扑&#34;&gt;虚拟网络拓扑
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构&lt;/p&gt;
+&lt;p&gt;在路由器中，WAN口连接上游网络，LAN口提供局域网服务。在 PVE 虚拟机中运行 OpenWrt 时，需要先为虚拟机分配物理网卡，让 OpenWrt 识别并设置对应的WAN或LAN口，从而形成完整网络&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启PVE&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -60,14 +69,14 @@
 &lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;启动&#34;&gt;启动
 &lt;/h3&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;将&lt;code&gt;开机自启动&lt;/code&gt;设为是&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;更改默认lan-ip&#34;&gt;更改默认LAN IP
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;OpenWrt 默认使用 &lt;strong&gt;192.168.1.1&lt;/strong&gt; 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所有只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突&lt;/p&gt;
+&lt;p&gt;OpenWrt 默认使用 &lt;strong&gt;192.168.1.1&lt;/strong&gt; 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所以只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
@@ -77,6 +86,7 @@
 &lt;h3 id=&#34;pve-管理地址迁移&#34;&gt;PVE 管理地址迁移
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;PVE 的管理口和 OpenWrt 的 LAN 默认不在同一个网段，设备进入 LAN 后就访问不到 PVE。把 PVE 管理 IP 改到 LAN 网段，任何 LAN 口就都能同时管理 PVE 和 OpenWrt&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：在修改 vmbr0 前，必须确认 OpenWrt LAN 已经绑定到 vmbr0，否则 PVE 会直接从网络消失&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时进入OpenWRT和PVE的管理界面时，说明设置成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 80%;&#34; /&gt;
@@ -131,7 +141,22 @@
 &lt;img src=&#34;https://th4uma.github.io/images/op3.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;用网线将WAN口连接到光猫或者上级路由器，WAN这里显示IP地址说明配置完成，这时候就可以上网了&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op7.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;插件设置&#34;&gt;插件设置
+&lt;h3 id=&#34;设置时区和-ntp&#34;&gt;设置时区和 NTP
+&lt;/h3&gt;&lt;p&gt;在&lt;code&gt;系统&amp;gt;常规设置&lt;/code&gt;里把时区改成 &lt;code&gt;Asia/Shanghai&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在&lt;code&gt;系统&amp;gt;时间同步&lt;/code&gt;里删除默认的NTP服务器，换成速度更快的&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ntp1.aliyun.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ntp.tencent.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;time.apple.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;软件包管理配置&#34;&gt;软件包管理配置
 &lt;/h2&gt;&lt;h3 id=&#34;更换国内源&#34;&gt;更换国内源
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;OpenWrt官方服务器在国外，直连更新安装会比较慢，所以要先更换国内源&lt;/p&gt;
@@ -172,22 +197,7 @@
 &lt;img src=&#34;https://th4uma.github.io/images/op8.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;安装好后刷新，页面就变成了中文，此时再输入&lt;code&gt;zh-cn&lt;/code&gt;筛选会看到更多中文插件&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op9.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;设置时区和-ntp&#34;&gt;设置时区和 NTP
-&lt;/h3&gt;&lt;p&gt;在&lt;code&gt;系统&amp;gt;常规设置&lt;/code&gt;里把社区改成 &lt;code&gt;Asia/Shanghai&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;在&lt;code&gt;系统&amp;gt;时间同步&lt;/code&gt;里删除默认的NTP服务器，换成速度更快的&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ntp1.aliyun.com
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ntp.tencent.com
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;time.apple.com
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;扩容&#34;&gt;扩容
+&lt;h2 id=&#34;扩容&#34;&gt;扩容
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;OpenWrt默认只会分配100M空间用于安装插件，所以需要给空间扩容&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -199,7 +209,7 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;opkg update
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;opkg update
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;opkg install cfdisk
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
@@ -210,7 +220,7 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;opkg install block-mount
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;opkg install block-mount
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
@@ -240,63 +250,21 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /tmp/introot
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /tmp/introot
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /tmp/extroot
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount --bind / /tmp/introot
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/sda3 /tmp/extroot
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -C /tmp/introot -cvf - . | tar -C /tmp/extroot -xf -
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -C /tmp/introot -cvf - . &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tar -C /tmp/extroot -xf -
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /tmp/introot
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /tmp/extroot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;在网页管理页面，进入&lt;code&gt;系统&amp;gt;软件包&lt;/code&gt;，可以看到磁盘空间变成了4.84GiB，扩容成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op16.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;插件推荐&#34;&gt;插件推荐
-&lt;/h2&gt;&lt;h3 id=&#34;adguardhome&#34;&gt;AdGuardHome
-&lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;作用：广告过滤，恶意域名阻断，提升 DNS 稳定性&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h4 id=&#34;安装&#34;&gt;安装
-&lt;/h4&gt;&lt;p&gt;在软件包里搜索 &lt;code&gt;adguardhome&lt;/code&gt; 安装，然后访问&lt;a class=&#34;link&#34; href=&#34;http://192.168.10.1:3000&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;http://路由器IP:3000&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;WEB端口设置成&lt;code&gt;3000&lt;/code&gt;，监听端口改成好记的，默认53被dnsmasq占用。接着按照提示进行设置，直到进入主界面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op17.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;h4 id=&#34;dns设置&#34;&gt;DNS设置
-&lt;/h4&gt;&lt;p&gt;进入&lt;code&gt;设置&amp;gt;DNS设置&amp;gt;上游DNS服务器&lt;/code&gt;，更改服务器地址&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;上游DNS服务器是AdGuard Home查询的服务器，设置2到3个即可，一个本地运营商的地址（在路由器WAN口可以看到），一个最快的公共DNS服务器，可以用终端ping测试&lt;/p&gt;
+&lt;p&gt;基础配置完成后，可以根据需求安装各类插件，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;223.5.5.5
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;180.76.76.76
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;119.29.29.29
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/op18.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Bootstrap DNS 服务器改成能直接解析域名的普通 DNS，如&lt;code&gt;119.29.29.29&lt;/code&gt;即可，然后点击&lt;code&gt;应用&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;DNS 服务配置&amp;gt;速度限制&lt;/code&gt;设置为&lt;code&gt;0&lt;/code&gt;，然后点击&lt;code&gt;保存&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;启用&#34;&gt;启用
-&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;安装模拟终端 &lt;code&gt;luci-i18n-ttyd-zh-cn&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;按需安装 &lt;code&gt;luci-compat&lt;/code&gt;，某些第三方 luci 程序界面不兼容需要依赖它，如 ddns-go&lt;/li&gt;
-&lt;li&gt;可以下载 &lt;a class=&#34;link&#34; href=&#34;https://dl.openwrt.ai/releases/24.10/packages/x86_64/kiddin9/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;kwrt&lt;/a&gt; 所编译的一些好用的软件：
-添加关机 &lt;code&gt;luci-app-poweroffdevice&lt;/code&gt;
-概览添加 CPU 监控 &lt;code&gt;luci-app-cpu-status&lt;/code&gt;
-概览添加温度监控 &lt;code&gt;luci-app-temp-status&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/u012374381/article/details/130650909&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客&lt;/a&gt;&lt;/p&gt;
@@ -304,10 +272,6 @@
     &gt;还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/opus/751852171608195081&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;原版Openwrt在x86平台上的安装和配置以及常用插件安装 - 哔哩哔哩&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/opus/931748684832440368&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;2024最新:原版OpenWrt安装AdGuard Home - 哔哩哔哩&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/625206116&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;OpenWrt 保姆级AdGuard Home 设置广告拦截＆加快DNS解析网页秒开 - 知乎&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         

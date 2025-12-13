@@ -2,16 +2,16 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="在虚拟化环境中部署软路由">
-<title>OpenWrt在PVE上的安装与基本配置</title>
+<title>OpenWrt 在 ProxmoxVE 上的安装和基本配置</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/pve_op/'>
 
-<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="OpenWrt在PVE上的安装与基本配置">
+<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="OpenWrt 在 ProxmoxVE 上的安装和基本配置">
 <meta property='og:description' content="在虚拟化环境中部署软路由">
 <meta property='og:url' content='https://th4uma.github.io/post/pve_op/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/op.jpg' />
-<meta name="twitter:title" content="OpenWrt在PVE上的安装与基本配置">
+<meta name="twitter:title" content="OpenWrt 在 ProxmoxVE 上的安装和基本配置">
 <meta name="twitter:description" content="在虚拟化环境中部署软路由"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/op.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -281,14 +281,14 @@ unicode: "f6d2"
         <li><a href="#更改默认lan-ip">更改默认LAN IP</a></li>
         <li><a href="#pve-管理地址迁移">PVE 管理地址迁移</a></li>
         <li><a href="#设置lan口和wan口">设置LAN口和WAN口</a></li>
+        <li><a href="#设置时区和-ntp">设置时区和 NTP</a></li>
       </ol>
     </li>
-    <li><a href="#插件设置">插件设置</a>
+    <li><a href="#软件包管理配置">软件包管理配置</a>
       <ol>
         <li><a href="#更换国内源">更换国内源</a></li>
         <li><a href="#更新插件列表">更新插件列表</a></li>
         <li><a href="#安装中文插件">安装中文插件</a></li>
-        <li><a href="#设置时区和-ntp">设置时区和 NTP</a></li>
       </ol>
     </li>
     <li><a href="#扩容">扩容</a>
@@ -296,17 +296,6 @@ unicode: "f6d2"
         <li><a href="#安装工具">安装工具</a></li>
         <li><a href="#配置扩容分区">配置扩容分区</a></li>
         <li><a href="#复制根目录">复制根目录</a></li>
-      </ol>
-    </li>
-    <li><a href="#插件推荐">插件推荐</a>
-      <ol>
-        <li><a href="#adguardhome">AdGuardHome</a>
-          <ol>
-            <li><a href="#安装">安装</a></li>
-            <li><a href="#dns设置">DNS设置</a></li>
-            <li><a href="#启用">启用</a></li>
-          </ol>
-        </li>
       </ol>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -327,7 +316,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/pve_op/">
                 
-                    <img src="/images/op.jpg" loading="lazy" alt="Featured image of post OpenWrt在PVE上的安装与基本配置" />
+                    <img src="/images/op.jpg" loading="lazy" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" />
                 
             </a>
         </div>
@@ -354,7 +343,7 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/pve_op/">OpenWrt在PVE上的安装与基本配置</a>
+            <a href="/post/pve_op/">OpenWrt 在 ProxmoxVE 上的安装和基本配置</a>
         </h2>
     
         
@@ -418,24 +407,33 @@ unicode: "f6d2"
 <p>选择不使用任何介质</p>
 <img src="/images/aio21.png" style="width: 100%;" />
 <img src="/images/aio22.png" style="width: 100%;" />
-<p>磁盘直接删除</p>
+<p>删除虚拟机默认生成的磁盘</p>
 <img src="/images/aio23.png" style="width: 100%;" />
 <p>填写CPU核心数</p>
 <img src="/images/aio24.png" style="width: 100%;" />
 <p>内存1到2GB即可</p>
 <img src="/images/aio25.png" style="width: 100%;" />
-<p>此处模型选择VirtlO，Linux的支持更好</p>
+<p>此处模型选择VirtIO，Linux的支持更好</p>
 <img src="/images/aio26.png" style="width: 100%;" />
-<p>不勾选创建后启动，点击完成，然后打开宿主机命令行，输入<code>qm importdisk 100 /var/lib/vz/template/iso/op.img local-lvm</code>，出现成功提示说明磁盘添加成功</p>
+<p>然后打开宿主机命令行，输入以下命令导入磁盘：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qm importdisk <span class="m">100</span> /var/lib/vz/template/iso/op.img local-lvm
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>出现成功提示说明磁盘添加成功</p>
 <img src="/images/aio29.png" style="width: 100%;" />
 <p>进入<code>pve&gt;100&gt;硬件&gt;未使用的磁盘0</code>，点击添加</p>
 <img src="/images/aio29a.png" style="width: 80%;" />
-<p>选中硬盘，选择磁盘操作&gt;调整大小，将大小设置为5GB</p>
+<p>选中硬盘，选择<code>磁盘操作&gt;调整大小</code>，将大小设置为<code>5GB</code></p>
 <img src="/images/aio29b.png" style="width: 90%;" />
 <h2 id="网络配置">网络配置
 </h2><h3 id="虚拟网络拓扑">虚拟网络拓扑
 </h3><blockquote>
-<p>在路由器中，端口角色的划分决定了整个网络拓扑。WAN 口用于连接上游网络，LAN 口负责向下游设备提供局域网服务。由于本环境在 PVE 中以虚拟机方式运行 OpenWrt，需要先在 PVE 为虚拟机分配对应的物理网卡，让 OpenWrt 能识别这些接口并将其设置成 WAN 或 LAN，从而形成完整的路由结构</p>
+<p>在路由器中，WAN口连接上游网络，LAN口提供局域网服务。在 PVE 虚拟机中运行 OpenWrt 时，需要先为虚拟机分配物理网卡，让 OpenWrt 识别并设置对应的WAN或LAN口，从而形成完整网络</p>
 </blockquote>
 <p>进入<code>pve&gt;系统&gt;网络&gt;创建&gt;Linux Bridge</code>，然后选择好桥接端口，依次添加所有网口后，重启PVE</p>
 <img src="/images/aio31.png" style="width: 100%;" />
@@ -443,14 +441,14 @@ unicode: "f6d2"
 <img src="/images/aio30.png" style="width: 100%;" />
 <h3 id="启动">启动
 </h3><p>在<code>pve&gt;100&gt;选项&gt;引导顺序</code>中，将scsi0设置到第一位并启用</p>
-<img src="/images/aio32.png" style="width: 100%;" />
+<img src="/images/aio32.png" style="width: 80%;" />
 <p>将<code>开机自启动</code>设为是</p>
 <img src="/images/aio35.png" style="width: 100%;" />
 <p>右上角启动虚拟机，进入控制台，等一会显示<code>please press enter</code>后按回车，显示如下画面就说明启动成功</p>
 <img src="/images/aio33.png" style="width: 70%;" />
 <h3 id="更改默认lan-ip">更改默认LAN IP
 </h3><blockquote>
-<p>OpenWrt 默认使用 <strong>192.168.1.1</strong> 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所有只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突</p>
+<p>OpenWrt 默认使用 <strong>192.168.1.1</strong> 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所以只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突</p>
 </blockquote>
 <p>输入<code>vi /etc/config/network</code>，进入vi编辑画面后按<code>i</code>进入编辑状态，对LAN IP进行修改，我这里改成了<code>192.168.10.1</code></p>
 <img src="/images/aio34.png" style="width: 50%;" />
@@ -460,6 +458,7 @@ unicode: "f6d2"
 <h3 id="pve-管理地址迁移">PVE 管理地址迁移
 </h3><blockquote>
 <p>PVE 的管理口和 OpenWrt 的 LAN 默认不在同一个网段，设备进入 LAN 后就访问不到 PVE。把 PVE 管理 IP 改到 LAN 网段，任何 LAN 口就都能同时管理 PVE 和 OpenWrt</p>
+<p><strong>注意：在修改 vmbr0 前，必须确认 OpenWrt LAN 已经绑定到 vmbr0，否则 PVE 会直接从网络消失</strong></p>
 </blockquote>
 <p>进入<code>pve&gt;系统&gt;网络&gt;vmbr0</code>，做如图修改，此时新的管理地址变成了<code>https://192.168.10.99:8006/</code>，当你可以同时进入OpenWRT和PVE的管理界面时，说明设置成功</p>
 <img src="/images/op1.png" style="width: 80%;" />
@@ -514,7 +513,22 @@ unicode: "f6d2"
 <img src="/images/op3.png" style="width: 100%;" />
 <p>用网线将WAN口连接到光猫或者上级路由器，WAN这里显示IP地址说明配置完成，这时候就可以上网了</p>
 <img src="/images/op7.png" style="width: 100%;" />
-<h2 id="插件设置">插件设置
+<h3 id="设置时区和-ntp">设置时区和 NTP
+</h3><p>在<code>系统&gt;常规设置</code>里把时区改成 <code>Asia/Shanghai</code></p>
+<p>在<code>系统&gt;时间同步</code>里删除默认的NTP服务器，换成速度更快的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ntp1.aliyun.com
+</span></span><span class="line"><span class="cl">ntp.tencent.com
+</span></span><span class="line"><span class="cl">time.apple.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="软件包管理配置">软件包管理配置
 </h2><h3 id="更换国内源">更换国内源
 </h3><blockquote>
 <p>OpenWrt官方服务器在国外，直连更新安装会比较慢，所以要先更换国内源</p>
@@ -555,22 +569,7 @@ unicode: "f6d2"
 <img src="/images/op8.png" style="width: 100%;" />
 <p>安装好后刷新，页面就变成了中文，此时再输入<code>zh-cn</code>筛选会看到更多中文插件</p>
 <img src="/images/op9.png" style="width: 100%;" />
-<h3 id="设置时区和-ntp">设置时区和 NTP
-</h3><p>在<code>系统&gt;常规设置</code>里把社区改成 <code>Asia/Shanghai</code></p>
-<p>在<code>系统&gt;时间同步</code>里删除默认的NTP服务器，换成速度更快的</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ntp1.aliyun.com
-</span></span><span class="line"><span class="cl">ntp.tencent.com
-</span></span><span class="line"><span class="cl">time.apple.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="扩容">扩容
+<h2 id="扩容">扩容
 </h2><blockquote>
 <p>OpenWrt默认只会分配100M空间用于安装插件，所以需要给空间扩容</p>
 </blockquote>
@@ -582,7 +581,7 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">opkg update
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">opkg update
 </span></span><span class="line"><span class="cl">opkg install cfdisk
 </span></span></code></pre></td></tr></table>
 </div>
@@ -593,7 +592,7 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">opkg install block-mount
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">opkg install block-mount
 </span></span><span class="line"><span class="cl">reboot
 </span></span></code></pre></td></tr></table>
 </div>
@@ -623,63 +622,21 @@ unicode: "f6d2"
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir -p /tmp/introot
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p /tmp/introot
 </span></span><span class="line"><span class="cl">mkdir -p /tmp/extroot
 </span></span><span class="line"><span class="cl">mount --bind / /tmp/introot
 </span></span><span class="line"><span class="cl">mount /dev/sda3 /tmp/extroot
-</span></span><span class="line"><span class="cl">tar -C /tmp/introot -cvf - . | tar -C /tmp/extroot -xf -
+</span></span><span class="line"><span class="cl">tar -C /tmp/introot -cvf - . <span class="p">|</span> tar -C /tmp/extroot -xf -
 </span></span><span class="line"><span class="cl">umount /tmp/introot
 </span></span><span class="line"><span class="cl">umount /tmp/extroot
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在网页管理页面，进入<code>系统&gt;软件包</code>，可以看到磁盘空间变成了4.84GiB，扩容成功</p>
 <img src="/images/op16.png" style="width: 100%;" />
-<h2 id="插件推荐">插件推荐
-</h2><h3 id="adguardhome">AdGuardHome
-</h3><blockquote>
-<p>作用：广告过滤，恶意域名阻断，提升 DNS 稳定性</p>
-</blockquote>
-<h4 id="安装">安装
-</h4><p>在软件包里搜索 <code>adguardhome</code> 安装，然后访问<a class="link" href="http://192.168.10.1:3000"  target="_blank" rel="noopener"
-    >http://路由器IP:3000</a></p>
-<p>WEB端口设置成<code>3000</code>，监听端口改成好记的，默认53被dnsmasq占用。接着按照提示进行设置，直到进入主界面</p>
-<img src="/images/op17.png" style="width: 60%;" />
-<h4 id="dns设置">DNS设置
-</h4><p>进入<code>设置&gt;DNS设置&gt;上游DNS服务器</code>，更改服务器地址</p>
 <blockquote>
-<p>上游DNS服务器是AdGuard Home查询的服务器，设置2到3个即可，一个本地运营商的地址（在路由器WAN口可以看到），一个最快的公共DNS服务器，可以用终端ping测试</p>
+<p>基础配置完成后，可以根据需求安装各类插件，详见<a class="link" href="https://th4uma.github.io/post/op_add"  target="_blank" rel="noopener"
+    >OpenWrt插件推荐与配置</a></p>
 </blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">223.5.5.5
-</span></span><span class="line"><span class="cl">180.76.76.76
-</span></span><span class="line"><span class="cl">119.29.29.29
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="/images/op18.png" style="width: 80%;" />
-<ul>
-<li>
-<p>Bootstrap DNS 服务器改成能直接解析域名的普通 DNS，如<code>119.29.29.29</code>即可，然后点击<code>应用</code></p>
-</li>
-<li>
-<p><code>DNS 服务配置&gt;速度限制</code>设置为<code>0</code>，然后点击<code>保存</code></p>
-</li>
-</ul>
-<h4 id="启用">启用
-</h4><ul>
-<li>安装模拟终端 <code>luci-i18n-ttyd-zh-cn</code></li>
-<li>按需安装 <code>luci-compat</code>，某些第三方 luci 程序界面不兼容需要依赖它，如 ddns-go</li>
-<li>可以下载 <a class="link" href="https://dl.openwrt.ai/releases/24.10/packages/x86_64/kiddin9/"  target="_blank" rel="noopener"
-    >kwrt</a> 所编译的一些好用的软件：
-添加关机 <code>luci-app-poweroffdevice</code>
-概览添加 CPU 监控 <code>luci-app-cpu-status</code>
-概览添加温度监控 <code>luci-app-temp-status</code></li>
-</ul>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://blog.csdn.net/u012374381/article/details/130650909"  target="_blank" rel="noopener"
     >超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客</a></p>
@@ -687,10 +644,6 @@ unicode: "f6d2"
     >还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎</a></p>
 <p><a class="link" href="https://www.bilibili.com/opus/751852171608195081"  target="_blank" rel="noopener"
     >原版Openwrt在x86平台上的安装和配置以及常用插件安装 - 哔哩哔哩</a></p>
-<p><a class="link" href="https://www.bilibili.com/opus/931748684832440368"  target="_blank" rel="noopener"
-    >2024最新:原版OpenWrt安装AdGuard Home - 哔哩哔哩</a></p>
-<p><a class="link" href="https://zhuanlan.zhihu.com/p/625206116"  target="_blank" rel="noopener"
-    >OpenWrt 保姆级AdGuard Home 设置广告拦截＆加快DNS解析网页秒开 - 知乎</a></p>
 
 </section>
 
@@ -958,12 +911,10 @@ unicode: "f6d2"
       
       
       
-      
-      
       共发表文章 
-      <span class="number-highlight">14</span> 
+      <span class="number-highlight">13</span> 
       篇 ，总计 
-      <span class="number-highlight">32.90</span> 
+      <span class="number-highlight">32.84</span> 
       k 字
   </div>
   <div>
@@ -1007,8 +958,6 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
-        
-        
         
         
         

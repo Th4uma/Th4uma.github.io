@@ -301,6 +301,7 @@ unicode: "f6d2"
     <li><a href="#上层服务系统安装与配置">上层服务系统安装与配置</a>
       <ol>
         <li><a href="#openwrt">OpenWRT</a></li>
+        <li><a href="#黑群晖">黑群晖</a></li>
       </ol>
     </li>
     <li><a href="#曾经的失败尝试">曾经的失败尝试</a>
@@ -427,24 +428,33 @@ unicode: "f6d2"
 <img src="/images/aio1.jpg" style="width: 70%;" />
 <img src="/images/aio2.jpg" style="width: 70%;" />
 <h3 id="底层虚拟机系统选择">底层虚拟机系统选择
-</h3><p>虚拟机分为两种类型：Type 1 和 Type 2。Type 1 虚拟机管理程序（如 Proxmox VE、ESXi）直接运行在硬件之上，没有宿主系统，性能更高、更稳定，常用于服务器或实验环境；Type 2 （如 VirtualBox、VMware Workstation）则依赖已有操作系统运行，启动方便但性能略低，更适合个人电脑或临时测试。常用的all in one虚拟机系统有PVE、ESXi、Windows Server + Hyper-v</p>
+</h3><blockquote>
+<p>虚拟机分为两种类型：Type 1 和 Type 2。Type 1 虚拟机管理程序（如 Proxmox VE、ESXi）直接运行在硬件之上，没有宿主系统，性能更高、更稳定，常用于服务器或实验环境；Type 2 （如 VirtualBox、VMware Workstation）则依赖已有操作系统运行，启动方便但性能略低，更适合个人电脑或临时测试。常用的all in one虚拟机系统有PVE、ESXi、Windows Server + Hyper-v</p>
+</blockquote>
 <p><strong>ESXi</strong> 属于企业级虚拟化系统，稳定且上手难度低。系统是官方定制的 Linux，只运行 VMware 自家的虚拟化层，不允许太多修改，虚拟机性能损耗较低，适合需要长期稳定运行的环境</p>
-<p><strong>PVE（Proxmox VE）</strong> 基于 Debian 的开源虚拟化平台，底层是 KVM。功能多、玩法多，硬件兼容性强。适合喜欢折腾的人，灵活但风险也高，上手难度较大。因为是完整的 Linux 系统再加虚拟化层，性能上略低于 ESXi</p>
+<p><strong>PVE（Proxmox VE）</strong> 基于 Debian 的开源虚拟化平台，底层是 KVM。功能和玩法多，硬件兼容性强，快照与LXC 容器等功能对初学者很友好。适合喜欢折腾的人，灵活但风险也高，上手难度较大。因为是完整的 Linux 系统再加虚拟化层，性能上略低于 ESXi</p>
 <p><strong>Hyper-V</strong> 集成在 Windows Server 里。和 Windows 环境结合紧密，部署方便，适合内部测试和办公虚拟机。对 Linux 支持一般，系统体积大，不适合轻量化环境。稳定性介于两者之间，可玩性有限</p>
 <blockquote>
 <p>生命在于折腾，而且企业环境的稳定性我也用不上，所以我最终选择了PVE</p>
 </blockquote>
 <h3 id="上层服务系统选择">上层服务系统选择
 </h3><h4 id="软路由">软路由
-</h4><p><strong>OpenWrt</strong> 是完全开源的路由系统，插件丰富、可定制度高，硬件支持广泛，更新活跃，但需要一定学习成本，对不喜欢闭源、希望掌控所有细节的用户来说非常合适</p>
-<p><strong>iKuai</strong> 是一款基于Linux内核开发的轻量级路由操作系统，主要面向家庭及小型企业市场。它以简单易用著称，尤其适合那些不具备深厚技术背景但希望拥有高级网络管理功能的用户</p>
-<p><strong>ImmortalWrt</strong> 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的用户</p>
-<p><strong>iStoreOS</strong> 也是 OpenWrt 的分支，强调轻量化和易用性，界面现代，应用商店方便实用，但深度玩法有限，硬件适配范围稍窄，更适合希望快速部署、以家庭使用为主的用户</p>
+</h4><p><strong>OpenWrt</strong> 是完全开源的路由系统，插件丰富，可定制度高，硬件支持广泛，更新活跃，但需要一定学习成本，适合不喜欢闭源，希望全部自定义的人</p>
+<p><strong>iKuai</strong> 基于 Linux 内核，定位家庭与小型企业，界面清晰，配置流程简单，适合缺乏技术基础，但需要使用较完整网络管理功能的人</p>
+<p><strong>ImmortalWrt</strong> 是 OpenWrt 的一个分支，更关注国内网络环境与性能表现。社区交流热度高，文档相对较少，适合具备一定基础并希望进一步提升网络体验的人</p>
+<p><strong>iStoreOS</strong> 也是 OpenWrt 的分支，强调轻量化和易用性，界面现代，应用商店方便实用，但深度玩法有限，硬件适配范围稍窄，适合希望快速部署，以家庭使用为主的人</p>
 <blockquote>
 <p>我对折腾比较感兴趣，准备深入学习一下软路由，而且有一点电子洁癖，不希望被安装没有用或者不知道的插件，所以选择了原版OpenWrt</p>
+<p>考虑到把网络搞崩的风险，之后可能会加入ikuai当主路由，OpenWrt作为旁路由</p>
 </blockquote>
 <h4 id="nas">NAS
-</h4><h2 id="底层系统安装与配置">底层系统安装与配置
+</h4><p><strong>飞牛 OS</strong> 更偏向家庭存储，功能集中在文件共享与照片备份。系统资源占用较低，对硬件要求不高，可在小型主机或旧设备上稳定运行，适用于需要基础 NAS 能力且不爱折腾的人</p>
+<p><strong>黑群晖</strong> 依托 DSM 的完整生态体系，套件数量丰富，有多种功能。非官方安装在硬件兼容性方面存在一定不确定性，需要额外进行适配与测试。整体功能完善，适合重视系统完整度并具备一定折腾能力的人</p>
+<p><strong>TrueNAS</strong> 面向高可靠性的存储场景，系统结构偏向专业化，对内存与处理器性能有较高要求，可玩性与可调参数显著多于前面的系统，更适合硬件条件充足，希望深入学习NAS与数据管理的人</p>
+<blockquote>
+<p>综上来看黑群晖最适合我，既可以折腾又不会太难入门，而且网上教程非常多</p>
+</blockquote>
+<h2 id="底层系统安装与配置">底层系统安装与配置
 </h2><h3 id="准备">准备
 </h3><p>硬件方面：</p>
 <ul>
@@ -531,9 +541,9 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 更换非订阅源 
-</span></span><span class="line"><span class="cl">source /etc/os-release
-</span></span><span class="line"><span class="cl">echo &#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve $VERSION_CODENAME pve-no-subscription&#34; &gt; /etc/apt/sources.list.d/pve-no-subscription.list 
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更换非订阅源 </span>
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> /etc/os-release
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/pve </span><span class="nv">$VERSION_CODENAME</span><span class="s2"> pve-no-subscription&#34;</span> &gt; /etc/apt/sources.list.d/pve-no-subscription.list 
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -543,9 +553,9 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 更换Debian系统源
-</span></span><span class="line"><span class="cl">sed -i &#39;s|^deb http://ftp.debian.org|deb https://mirrors.ustc.edu.cn|g&#39; /etc/apt/sources.list
-</span></span><span class="line"><span class="cl">sed -i &#39;s|^deb http://security.debian.org|deb https://mirrors.ustc.edu.cn/debian-security|g&#39; /etc/apt/sources.list
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更换Debian系统源</span>
+</span></span><span class="line"><span class="cl">sed -i <span class="s1">&#39;s|^deb http://ftp.debian.org|deb https://mirrors.ustc.edu.cn|g&#39;</span> /etc/apt/sources.list
+</span></span><span class="line"><span class="cl">sed -i <span class="s1">&#39;s|^deb http://security.debian.org|deb https://mirrors.ustc.edu.cn/debian-security|g&#39;</span> /etc/apt/sources.list
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -556,10 +566,10 @@ unicode: "f6d2"
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 更换LXC容器源</span>
-</span></span><span class="line"><span class="cl"><span class="n">cp</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">perl5</span><span class="o">/</span><span class="n">PVE</span><span class="o">/</span><span class="n">APLInfo</span><span class="o">.</span><span class="n">pm</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">perl5</span><span class="o">/</span><span class="n">PVE</span><span class="o">/</span><span class="n">APLInfo</span><span class="o">.</span><span class="n">pm_back</span>
-</span></span><span class="line"><span class="cl"><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s1">&#39;s|http://download.proxmox.com|https://mirrors.ustc.edu.cn/proxmox|g&#39;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">perl5</span><span class="o">/</span><span class="n">PVE</span><span class="o">/</span><span class="n">APLInfo</span><span class="o">.</span><span class="n">pm</span>
-</span></span><span class="line"><span class="cl"><span class="n">systemctl</span> <span class="n">restart</span> <span class="n">pvedaemon</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更换LXC容器源</span>
+</span></span><span class="line"><span class="cl">cp /usr/share/perl5/PVE/APLInfo.pm /usr/share/perl5/PVE/APLInfo.pm_back
+</span></span><span class="line"><span class="cl">sed -i <span class="s1">&#39;s|http://download.proxmox.com|https://mirrors.ustc.edu.cn/proxmox|g&#39;</span> /usr/share/perl5/PVE/APLInfo.pm
+</span></span><span class="line"><span class="cl">systemctl restart pvedaemon
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -568,8 +578,8 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 更换ceph源
-</span></span><span class="line"><span class="cl">if [ -f /etc/apt/sources.list.d/ceph.list ]; then CEPH_CODENAME=`ceph -v | grep ceph | awk &#39;{print $(NF-1)}&#39;`; source /etc/os-release; echo &#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-$CEPH_CODENAME $VERSION_CODENAME no-subscription&#34; &gt; /etc/apt/sources.list.d/ceph.list; fi
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更换ceph源</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -f /etc/apt/sources.list.d/ceph.list <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="nv">CEPH_CODENAME</span><span class="o">=</span><span class="sb">`</span>ceph -v <span class="p">|</span> grep ceph <span class="p">|</span> awk <span class="s1">&#39;{print $(NF-1)}&#39;</span><span class="sb">`</span><span class="p">;</span> <span class="nb">source</span> /etc/os-release<span class="p">;</span> <span class="nb">echo</span> <span class="s2">&#34;deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-</span><span class="nv">$CEPH_CODENAME</span><span class="s2"> </span><span class="nv">$VERSION_CODENAME</span><span class="s2"> no-subscription&#34;</span> &gt; /etc/apt/sources.list.d/ceph.list<span class="p">;</span> <span class="k">fi</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -578,8 +588,8 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 最后apt update一下
-</span></span><span class="line"><span class="cl">apt update &amp;&amp; apt-get install -y apt-transport-https ca-certificates  --fix-missing
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 最后apt update一下</span>
+</span></span><span class="line"><span class="cl">apt update <span class="o">&amp;&amp;</span> apt-get install -y apt-transport-https ca-certificates  --fix-missing
 </span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
@@ -591,17 +601,20 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 删除无订阅弹窗</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 删除无订阅弹窗</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># 执行完成后，请在浏览器内按下Ctrl+F5刷新缓存</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># 注意：执行此项后，PVE的Web管理界面-仓库中，新增仓库按钮将会无法使用</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">sed</span> <span class="o">-</span><span class="n">Ezi</span><span class="o">.</span><span class="n">bak</span> <span class="s2">&#34;s/(Ext.Msg.show\(\{\s+title: gettext\(&#39;No valid sub)/void\(\{ \/\/</span><span class="se">\1</span><span class="s2">/g&#34;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">javascript</span><span class="o">/</span><span class="n">proxmox</span><span class="o">-</span><span class="n">widget</span><span class="o">-</span><span class="n">toolkit</span><span class="o">/</span><span class="n">proxmoxlib</span><span class="o">.</span><span class="n">js</span> <span class="o">&amp;&amp;</span> <span class="n">systemctl</span> <span class="n">restart</span> <span class="n">pveproxy</span><span class="o">.</span><span class="n">service</span>
+</span></span><span class="line"><span class="cl">sed -Ezi.bak <span class="s2">&#34;s/(Ext.Msg.show\(\{\s+title: gettext\(&#39;No valid sub)/void\(\{ \/\/\1/g&#34;</span> /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js <span class="o">&amp;&amp;</span> systemctl restart pveproxy.service
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="上层服务系统安装与配置">上层服务系统安装与配置
 </h2><h3 id="openwrt">OpenWRT
-</h3><p><a class="link" href="https://th4uma.github.io//post/pve_op/"  target="_blank" rel="noopener"
-    >OpenWRT在PVE上的安装与基本配置</a></p>
+</h3><p><a class="link" href="https://th4uma.github.io/post/pve_op/"  target="_blank" rel="noopener"
+    >OpenWrt 在 ProxmoxVE 上的安装和基本配置</a></p>
+<h3 id="黑群晖">黑群晖
+</h3><p><a class="link" href="https://th4uma.github.io/post/pve_nas"  target="_blank" rel="noopener"
+    >Proxmox VE 安装与部署黑群晖</a></p>
 <h2 id="曾经的失败尝试">曾经的失败尝试
 </h2><h3 id="路由器-openwrt-方案">路由器 OpenWRT 方案
 </h3><p>最开始因为不熟悉校园网结构，打算先在路由器上刷 OpenWRT 学习。计划后续将软路由独立出来，让路由器只做 AP，最终选用 H3C NX30 Pro</p>
@@ -717,7 +730,7 @@ unicode: "f6d2"
         
 
         <div class="article-details">
-            <h2 class="article-title">OpenWrt在PVE上的安装与基本配置</h2>
+            <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
         </div>
     </a>
 </article>
@@ -901,12 +914,10 @@ unicode: "f6d2"
       
       
       
-      
-      
       共发表文章 
-      <span class="number-highlight">14</span> 
+      <span class="number-highlight">13</span> 
       篇 ，总计 
-      <span class="number-highlight">32.90</span> 
+      <span class="number-highlight">32.84</span> 
       k 字
   </div>
   <div>
@@ -950,8 +961,6 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
-        
-        
         
         
         
