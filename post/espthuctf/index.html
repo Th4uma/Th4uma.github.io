@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/espthuctf/'>
 
-<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="ESP32 IoT CTF 清华校赛版wp">
+<link rel="stylesheet" href="/scss/style.min.8a3b148b5d16c5f4f56e04af4acd63e06e377514ad466439098dc7fd64079ab8.css"><meta property='og:title' content="ESP32 IoT CTF 清华校赛版wp">
 <meta property='og:description' content="学习iot安全的入门题目">
 <meta property='og:url' content='https://th4uma.github.io/post/espthuctf/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -57,7 +57,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu_7e87637278c82a68.png" width="300"
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -496,12 +496,12 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_IO_0     18
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="kt">void</span> <span class="nf">hardware_task1</span><span class="p">(){</span>
+</span></span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_task1</span><span class="p">(){</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">hit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task I : hit %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hit</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nf">gpio_get_level</span><span class="p">(</span><span class="n">GPIO_INPUT_IO_0</span><span class="p">)){</span> <span class="c1">//判断gpio18是否为高电平
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">hit</span> <span class="o">++</span> <span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">            <span class="n">hit</span> <span class="o">++</span> <span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="n">hit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
@@ -510,7 +510,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span> <span class="c1">//这个任务每秒检测一次 GPIO 状态
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -572,28 +572,28 @@ unicode: "f6d2"
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_IO_0     18
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define GPIO_INPUT_PIN_SEL  ((1ULL&lt;&lt;GPIO_INPUT_IO_0) )
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="n">IRAM_ATTR</span> <span class="nf">gpio_isr_handler</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span> <span class="n">arg</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">    <span class="n">trigger</span><span class="o">++</span><span class="p">;</span> <span class="c1">// 每次触发中断时，trigger增加
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_gpio_setup</span><span class="p">(){</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">gpio_config_t</span> <span class="n">io_conf</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="n">io_conf</span><span class="p">.</span><span class="n">pin_bit_mask</span> <span class="o">=</span> <span class="n">GPIO_INPUT_PIN_SEL</span><span class="p">;</span> <span class="c1">// 绑定 GPIO18
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">GPIO_MODE_INPUT</span><span class="p">;</span> <span class="c1">// 设置为输入模式
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">intr_type</span> <span class="o">=</span> <span class="n">GPIO_INTR_POSEDGE</span><span class="p">;</span> <span class="c1">// 上升沿中断
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">io_conf</span><span class="p">.</span><span class="n">pull_up_en</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 关闭上拉，初始状态是低电平
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">gpio_config</span><span class="p">(</span><span class="o">&amp;</span><span class="n">io_conf</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">io_conf</span><span class="p">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">GPIO_MODE_INPUT</span><span class="p">;</span> <span class="c1">// 设置为输入模式
+</span></span></span><span class="line"><span class="cl">    <span class="n">io_conf</span><span class="p">.</span><span class="n">intr_type</span> <span class="o">=</span> <span class="n">GPIO_INTR_POSEDGE</span><span class="p">;</span> <span class="c1">// 上升沿中断
+</span></span></span><span class="line"><span class="cl">    <span class="n">io_conf</span><span class="p">.</span><span class="n">pull_up_en</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// 关闭上拉，初始状态是低电平
+</span></span></span><span class="line"><span class="cl">    <span class="nf">gpio_config</span><span class="p">(</span><span class="o">&amp;</span><span class="n">io_conf</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">gpio_install_isr_service</span><span class="p">(</span><span class="n">ESP_INTR_FLAG_DEFAULT</span><span class="p">);</span> <span class="c1">// 开启中断服务
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">gpio_isr_handler_add</span><span class="p">(</span><span class="n">GPIO_INPUT_IO_0</span><span class="p">,</span> <span class="n">gpio_isr_handler</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="n">GPIO_INPUT_IO_0</span><span class="p">);</span> <span class="c1">// 注册中断处理函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">gpio_isr_handler_add</span><span class="p">(</span><span class="n">GPIO_INPUT_IO_0</span><span class="p">,</span> <span class="n">gpio_isr_handler</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span> <span class="n">GPIO_INPUT_IO_0</span><span class="p">);</span> <span class="c1">// 注册中断处理函数
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_task2</span><span class="p">(){</span>
 </span></span><span class="line"><span class="cl">    <span class="n">trigger</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task II : trigger %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">trigger</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">trigger</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">){</span> <span class="c1">// 触发次数超过10000，输出flag
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task II : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hardware_flag_2</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task II : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">hardware_flag_2</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
@@ -642,14 +642,14 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define ECHO_TEST_TXD  (GPIO_NUM_4) </span><span class="c1">// UART1 的 TX（发送）引脚是 GPIO4
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define ECHO_TEST_RXD  (GPIO_NUM_5) </span><span class="c1">// UART1 的 RX（接收）引脚是 GPIO5
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define ECHO_TEST_RXD  (GPIO_NUM_5) </span><span class="c1">// UART1 的 RX（接收）引脚是 GPIO5
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">hardware_task3</span><span class="p">(){</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] hardware task III : find the third flag in another UART</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="c1">// 向 UART1 发送一串字符串（hardware_flag_3），这个串口不会在 log 输出看到
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">uart_write_bytes</span><span class="p">(</span><span class="n">UART_NUM_1</span><span class="p">,</span> <span class="n">hardware_flag_3</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">hardware_flag_3</span><span class="p">));</span> <span class="c1">// 不断往 UART1 输出 flag
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">uart_write_bytes</span><span class="p">(</span><span class="n">UART_NUM_1</span><span class="p">,</span> <span class="n">hardware_flag_3</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">hardware_flag_3</span><span class="p">));</span> <span class="c1">// 不断往 UART1 输出 flag
+</span></span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="n">portTICK_RATE_MS</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -735,10 +735,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">ssid</span><span class="p">[</span><span class="mh">0x10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">pass</span><span class="p">[</span><span class="mh">0x10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">get_random</span><span class="p">(</span><span class="n">ssid</span><span class="p">,</span><span class="mi">6</span><span class="p">);</span> <span class="c1">//随机生成WiFi名称
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">get_random</span><span class="p">(</span><span class="n">pass</span><span class="p">,</span><span class="mi">8</span><span class="p">);</span> <span class="c1">//随机生成密码
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task I: I will connect a wifi -&gt; ssid: %s , password %s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">ssid</span><span class="p">,</span><span class="n">pass</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">get_random</span><span class="p">(</span><span class="n">pass</span><span class="p">,</span><span class="mi">8</span><span class="p">);</span> <span class="c1">//随机生成密码
+</span></span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task I: I will connect a wifi -&gt; ssid: %s , password %s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">ssid</span><span class="p">,</span><span class="n">pass</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">connect_wifi</span><span class="p">(</span><span class="n">ssid</span><span class="p">,</span><span class="n">pass</span><span class="p">);</span> <span class="c1">//尝试连接到刚刚生成的WiFi
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">network_tcp</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
@@ -747,30 +747,30 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">dest_addr</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="nf">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span> <span class="c1">// 接收任意IP
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="n">dest_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="nf">htons</span><span class="p">(</span><span class="mi">3333</span><span class="p">);</span> <span class="c1">// 监听3333端口
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">listen_sock</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="n">IPPROTO_IP</span><span class="p">);</span> <span class="c1">// 创建 TCP socket
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket created&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">bind</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">dest_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">dest_addr</span><span class="p">));</span> <span class="c1">// 绑定 socket
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket bound, port %d&#34;</span><span class="p">,</span> <span class="mi">3333</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket bound, port %d&#34;</span><span class="p">,</span> <span class="mi">3333</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">listen</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 开始监听
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket listening&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">struct</span> <span class="n">sockaddr_storage</span> <span class="n">source_addr</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="kt">socklen_t</span> <span class="n">addr_len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">source_addr</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">sock</span> <span class="o">=</span> <span class="nf">accept</span><span class="p">(</span><span class="n">listen_sock</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">source_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">addr_len</span><span class="p">);</span> <span class="c1">// 等待连接
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">inet_ntoa_r</span><span class="p">(((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">source_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">,</span> <span class="n">addr_str</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr_str</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">inet_ntoa_r</span><span class="p">(((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">source_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">,</span> <span class="n">addr_str</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">addr_str</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Socket accepted ip address: %s&#34;</span><span class="p">,</span> <span class="n">addr_str</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="nf">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="n">buffer</span><span class="p">,</span><span class="mh">0x10</span><span class="p">,</span><span class="mi">0</span><span class="p">)){</span> <span class="c1">// 接收数据
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="nf">strstr</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="s">&#34;getflag&#34;</span><span class="p">)){</span> <span class="c1">//如果内容包含getflag
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="nf">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">network_flag_1</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">network_flag_1</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 返回flag
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">break</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="nf">strstr</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span><span class="s">&#34;getflag&#34;</span><span class="p">)){</span> <span class="c1">//如果内容包含getflag
+</span></span></span><span class="line"><span class="cl">                <span class="nf">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">network_flag_1</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">network_flag_1</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// 返回flag
+</span></span></span><span class="line"><span class="cl">                <span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span><span class="p">{</span>
 </span></span><span class="line"><span class="cl">                <span class="nf">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="s">&#34;error</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="s">&#34;error</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">),</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="p">}</span>
@@ -881,7 +881,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">request</span><span class="p">[</span><span class="mi">200</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">network_flag_2</span><span class="p">);</span> <span class="c1">// 构造带有 flag 的 HTTP 请求头
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="k">struct</span> <span class="n">addrinfo</span> <span class="n">hints</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">ai_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">ai_socktype</span> <span class="o">=</span> <span class="n">SOCK_STREAM</span><span class="p">,</span>
@@ -894,13 +894,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">open_next_tasks</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task II : send the second flag to baidu</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">getaddrinfo</span><span class="p">(</span><span class="s">&#34;www.baidu.com&#34;</span><span class="p">,</span> <span class="s">&#34;80&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hints</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">res</span><span class="p">);</span> <span class="c1">// DNS 解析
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">            <span class="n">addr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">((</span><span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="o">*</span><span class="p">)</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">sin_addr</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;network&#34;</span><span class="p">,</span> <span class="s">&#34;DNS lookup succeeded. IP=%s&#34;</span><span class="p">,</span> <span class="nf">inet_ntoa</span><span class="p">(</span><span class="o">*</span><span class="n">addr</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">            <span class="n">s</span> <span class="o">=</span> <span class="nf">socket</span><span class="p">(</span><span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_family</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_socktype</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">connect</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addr</span><span class="p">,</span> <span class="n">res</span><span class="o">-&gt;</span><span class="n">ai_addrlen</span><span class="p">);</span> <span class="c1">// 建立 TCP 连接
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">freeaddrinfo</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">            <span class="nf">freeaddrinfo</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">write</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">request</span><span class="p">));</span> <span class="c1">// 发送 HTTP 请求
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">close</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">            <span class="nf">close</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">10000</span> <span class="o">/</span> <span class="n">portTICK_PERIOD_MS</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
@@ -968,7 +968,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">network_wifi</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>	
 </span></span><span class="line"><span class="cl">    <span class="c1">// 定义一段固定的原始802.11数据包（PDU），是Wi-Fi协议的数据帧格式
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">ds2ds_pdu</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="n">ds2ds_pdu</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="mh">0x48</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0x00</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="mh">0xE8</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0xD4</span><span class="p">,</span> <span class="mh">0xCB</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x19</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="mh">0x60</span><span class="p">,</span> <span class="mh">0x94</span><span class="p">,</span> <span class="mh">0xE8</span><span class="p">,</span> <span class="mh">0x65</span><span class="p">,</span> <span class="mh">0xD4</span><span class="p">,</span> <span class="mh">0xCB</span><span class="p">,</span> <span class="mh">0x74</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">,</span> <span class="mh">0xB9</span><span class="p">,</span>
@@ -978,7 +978,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">pdu</span><span class="p">[</span><span class="mi">200</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 在固定数据包后面拼接 flag 内容，形成完整的带 flag 的数据帧
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">memcpy</span><span class="p">(</span><span class="n">pdu</span><span class="p">,</span><span class="n">ds2ds_pdu</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">));</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">pdu</span><span class="p">,</span><span class="n">ds2ds_pdu</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">pdu</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">),</span><span class="n">network_flag_3</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">network_flag_3</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
@@ -986,7 +986,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] network task III : send raw 802.11 package contains the third flag</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">esp_wifi_80211_tx</span><span class="p">(</span><span class="n">ESP_IF_WIFI_STA</span><span class="p">,</span> <span class="n">pdu</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ds2ds_pdu</span><span class="p">)</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">network_flag_3</span><span class="p">),</span> <span class="nb">true</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="c1">// 通过 esp_wifi_80211_tx 函数，直接发送底层802.11无线数据包（裸包），不经过协议栈
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="mi">5000</span> <span class="o">/</span> <span class="n">portTICK_PERIOD_MS</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -1124,15 +1124,15 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">client_name</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">=</span><span class="p">{};</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">get_random</span><span class="p">(</span><span class="n">client_name</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task II : BLE device name is %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">client_name</span><span class="p">);</span><span class="c1">// 生成随机 BLE 广播设备名
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task II : Please find the second flag in the ADV package from this BLE device %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">client_name</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task II : Please find the second flag in the ADV package from this BLE device %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">client_name</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">data</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">fmt</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">client_name</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">memcpy</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">fmt</span><span class="p">),</span><span class="n">bt_flag_2</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">));</span><span class="c1">// 将第二个 flag 添加到广播包末尾
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"> <span class="c1">// 配置 BLE 广播的原始数据，直接以二进制形式发送esp_ble_gap_config_adv_data_raw(data,sizeof(fmt)+sizeof(bt_flag_2));
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 开始广播
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">esp_ble_gap_start_advertising</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ble_adv_params</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="c1">// 开始广播
+</span></span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gap_start_advertising</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ble_adv_params</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatts_register_callback</span><span class="p">(</span><span class="n">gatts_event_handler</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatts_app_register</span><span class="p">(</span><span class="n">PROFILE_A_APP_ID</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">esp_ble_gatt_set_local_mtu</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
@@ -1183,16 +1183,16 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">case</span> <span class="nl">ESP_GATTS_WRITE_EVT</span><span class="p">:</span> <span class="p">{</span> <span class="c1">// 当手机等客户端向蓝牙设备写数据时，会触发这个事件
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="s">&#34;GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d&#34;</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">handle</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="s">&#34;GATT_WRITE_EVT, conn_id %d, trans_id %d, handle %d&#34;</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">handle</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">is_prep</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="s">&#34;GATT_WRITE_EVT, value len %d, value :&#34;</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">esp_log_buffer_hex</span><span class="p">(</span><span class="n">GATTS_TAG</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">);</span> <span class="c1">// 打印写入的数据内容（十六进制）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task III : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">);</span> <span class="c1">// 打印收到的内容（字符串）
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>             <span class="c1">// 检查写入的数据是否和第二个flag一样
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">,(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">)){</span>
+</span></span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task III : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">);</span> <span class="c1">// 打印收到的内容（字符串）
+</span></span></span><span class="line"><span class="cl">             <span class="c1">// 检查写入的数据是否和第二个flag一样
+</span></span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">bt_flag_2</span><span class="p">,(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">value</span><span class="p">,</span><span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">len</span><span class="p">)){</span>
 </span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] bluetooth task III : you can read the third flag this time</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">                <span class="n">open_task3</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>  <span class="c1">// 如果正确，标记允许读第三个flag
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">            <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">esp_ble_gatts_send_response</span><span class="p">(</span><span class="n">gatts_if</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">conn_id</span><span class="p">,</span> <span class="n">param</span><span class="o">-&gt;</span><span class="n">write</span><span class="p">.</span><span class="n">trans_id</span><span class="p">,</span> <span class="n">ESP_GATT_OK</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
@@ -1243,7 +1243,7 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"> <span class="c1">// MQTT
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">connect_wifi</span><span class="p">(</span><span class="s">&#34;THUCTFIOT&#34;</span><span class="p">,</span><span class="s">&#34;mqttwifi@123&#34;</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">connect_wifi</span><span class="p">(</span><span class="s">&#34;THUCTFIOT&#34;</span><span class="p">,</span><span class="s">&#34;mqttwifi@123&#34;</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>main.c这部分改成自己的域名，然后重新编译烧录</p>
@@ -1282,7 +1282,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nl">MQTT_EVENT_CONNECTED</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;mqtt&#34;</span><span class="p">,</span> <span class="s">&#34;MQTT_EVENT_CONNECTED&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">         	<span class="c1">// 向主题 &#34;/topic/flag1&#34; 发布一条消息，消息内容是 mqtt_flag_1
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">msg_id</span> <span class="o">=</span> <span class="nf">esp_mqtt_client_publish</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s">&#34;/topic/flag1&#34;</span><span class="p">,</span> <span class="n">mqtt_flag_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">            <span class="n">msg_id</span> <span class="o">=</span> <span class="nf">esp_mqtt_client_publish</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="s">&#34;/topic/flag1&#34;</span><span class="p">,</span> <span class="n">mqtt_flag_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;[+] MQTT task I: publish successful, msg_id=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msg_id</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1362,22 +1362,22 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">flagdata</span><span class="p">[</span><span class="mi">500</span><span class="p">]</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">tag3</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34; [+] MQTT task III: &#34;</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">flagdata</span><span class="p">,</span><span class="s">&#34;%s%s%s&#34;</span><span class="p">,</span><span class="n">mqtt_flag_2</span><span class="p">,</span><span class="n">tag3</span><span class="p">,</span><span class="n">mqtt_flag_3</span><span class="p">);</span>  <span class="c1">// 构造完整的 flag 内容：flag2 + 提示语 + flag3
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">46</span><span class="p">;</span> <span class="c1">// 默认提取 flag 的长度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">   <span class="c1">// 从 MQTT 数据中查找 &#39;?&#39;，分离 URL 与长度值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="nf">strnstr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="s">&#34;?&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="nf">strnstr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="s">&#34;?&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">p</span><span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">data_length</span> <span class="o">=</span> <span class="n">p</span> <span class="o">-</span> <span class="n">data</span><span class="p">;</span> <span class="c1">// URL 部分的长度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">snprintf</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">length</span> <span class="o">-</span> <span class="n">data_length</span><span class="p">,</span><span class="s">&#34;%s&#34;</span><span class="p">,</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 把 ? 后的内容存入 l
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">a</span> <span class="o">=</span> <span class="nf">atoi</span><span class="p">(</span><span class="n">l</span><span class="p">);</span> <span class="c1">// 把 ? 后的字符串转成整数 a
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">length</span> <span class="o">=</span> <span class="n">data_length</span><span class="p">;</span> <span class="c1">// 更新长度，截掉问号部分
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span></span><span class="line"><span class="cl">        <span class="nf">snprintf</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">length</span> <span class="o">-</span> <span class="n">data_length</span><span class="p">,</span><span class="s">&#34;%s&#34;</span><span class="p">,</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// 把 ? 后的内容存入 l
+</span></span></span><span class="line"><span class="cl">        <span class="n">a</span> <span class="o">=</span> <span class="nf">atoi</span><span class="p">(</span><span class="n">l</span><span class="p">);</span> <span class="c1">// 把 ? 后的字符串转成整数 a
+</span></span></span><span class="line"><span class="cl">        <span class="n">length</span> <span class="o">=</span> <span class="n">data_length</span><span class="p">;</span> <span class="c1">// 更新长度，截掉问号部分
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="s">&#34;%.*s&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span> <span class="c1">// 提取 URL
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 构造 HTTP 请求，请求头中包含 flag 前 a 字节内容
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;User-Agent: esp-idf/1.0 esp32</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;flag: %s</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
@@ -1385,8 +1385,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mqtt_flag_2</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tag3</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">memcpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">flagdata</span><span class="p">,</span><span class="n">a</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">sprintf</span><span class="p">(</span><span class="n">httpdata</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">out</span><span class="p">);</span> <span class="c1">// 插入 a 长度的 flag 内容
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>          
+</span></span></span><span class="line"><span class="cl">        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>          
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="k">case</span> <span class="nl">MQTT_EVENT_DATA</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="s">&#34;mqtt&#34;</span><span class="p">,</span> <span class="s">&#34;MQTT_EVENT_DATA&#34;</span><span class="p">);</span>
@@ -1438,9 +1438,9 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="nf">sprintf</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="s">&#34;%.*s&#34;</span><span class="p">,</span><span class="n">length</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span> <span class="c1">// 提取 URL
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 构造 HTTP 请求，请求头中包含 flag 前 a 字节内容
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">fmt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;User-Agent: esp-idf/1.0 esp32</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;flag: %s</span><span class="se">\r\n</span><span class="s">&#34;</span>
 </span></span><span class="line"><span class="cl">                 <span class="s">&#34;</span><span class="se">\r\n</span><span class="s">&#34;</span><span class="p">;</span>
@@ -1448,8 +1448,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">mqtt_flag_2</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tag3</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">){</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">memcpy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span><span class="n">flagdata</span><span class="p">,</span><span class="n">a</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">sprintf</span><span class="p">(</span><span class="n">httpdata</span><span class="p">,</span><span class="n">fmt</span><span class="p">,</span><span class="n">out</span><span class="p">);</span> <span class="c1">// 插入 a 长度的 flag 内容
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>          
+</span></span></span><span class="line"><span class="cl">        <span class="nf">http_get_task</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">httpdata</span><span class="p">);</span> <span class="c1">// 向指定 URL 发送 HTTP 请求
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>          
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1498,10 +1498,9 @@ unicode: "f6d2"
         #viewCount * {
             color: #ffffffe1 !important;
         }
-         
         #viewCount {
              position: absolute;   
-             left: 280px;             
+             left: 280px;            
             transform: translateY(-50%) translateY(260px);
         }
     </style></footer>
@@ -1742,10 +1741,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">13</span> 
+      <span class="number-highlight">14</span> 
       篇 ，总计 
-      <span class="number-highlight">32.84</span> 
+      <span class="number-highlight">34.98</span> 
       k 字
   </div>
   <div>
@@ -1789,6 +1790,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         

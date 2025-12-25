@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/fpvup/'>
 
-<link rel="stylesheet" href="/scss/style.min.1d110c2a99ff7ee8aabad8800f85dda963907394ae4d1b89e1ba485d5ac338c7.css"><meta property='og:title' content="[002号机]FPV起飞装置">
+<link rel="stylesheet" href="/scss/style.min.8a3b148b5d16c5f4f56e04af4acd63e06e377514ad466439098dc7fd64079ab8.css"><meta property='og:title' content="[002号机]FPV起飞装置">
 <meta property='og:description' content="暑假航模队训练时做的小装置">
 <meta property='og:url' content='https://th4uma.github.io/post/fpvup/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -57,7 +57,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu_7e87637278c82a68.png" width="300"
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -615,40 +615,40 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;esp_log.h&#34;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;driver/mcpwm_prelude.h&#34;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;driver/gpio.h&#34;</span><span class="cp">
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">TAG</span> <span class="o">=</span> <span class="s">&#34;dual_servo_433&#34;</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// GPIO配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define SERVO1_GPIO              12   </span><span class="c1">// 舵机1 PWM信号GPIO
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define SERVO2_GPIO              13   </span><span class="c1">// 舵机2 PWM信号GPIO  
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define RF433_GPIO               14   </span><span class="c1">// 433MHz接收器GPIO
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO1_GPIO              12   </span><span class="c1">// 舵机1 PWM信号GPIO
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO2_GPIO              13   </span><span class="c1">// 舵机2 PWM信号GPIO  
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define RF433_GPIO               14   </span><span class="c1">// 433MHz接收器GPIO
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 舵机参数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define SERVO_MIN_PULSEWIDTH_US 500
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_MIN_PULSEWIDTH_US 500
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_MAX_PULSEWIDTH_US 2500
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_MIN_DEGREE        -90
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_MAX_DEGREE        90
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_TIMEBASE_RESOLUTION_HZ 1000000
 </span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_TIMEBASE_PERIOD        20000
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 舵机角度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define SERVO_CLOSE_ANGLE  -5   </span><span class="c1">// 关闭角度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#define SERVO_OPEN_ANGLE   150  </span><span class="c1">// 开启角度
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_CLOSE_ANGLE  -5   </span><span class="c1">// 关闭角度
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define SERVO_OPEN_ANGLE   150  </span><span class="c1">// 开启角度
+</span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 控制命令
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">state</span><span class="p">;</span>       <span class="c1">// 0=关闭, 1=开启
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="kt">servo_command_t</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">servo_command_t</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 全局变量
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">mcpwm_cmpr_handle_t</span> <span class="n">comparator1</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">mcpwm_cmpr_handle_t</span> <span class="n">comparator1</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">mcpwm_cmpr_handle_t</span> <span class="n">comparator2</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="n">QueueHandle_t</span> <span class="n">servo_queue</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">servo_state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="n">last_rf433_state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 角度转PWM值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">uint32_t</span> <span class="nf">angle_to_compare</span><span class="p">(</span><span class="kt">int</span> <span class="n">angle</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">uint32_t</span> <span class="nf">angle_to_compare</span><span class="p">(</span><span class="kt">int</span> <span class="n">angle</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&lt;</span> <span class="n">SERVO_MIN_DEGREE</span><span class="p">)</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">SERVO_MIN_DEGREE</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&gt;</span> <span class="n">SERVO_MAX_DEGREE</span><span class="p">)</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">SERVO_MAX_DEGREE</span><span class="p">;</span>
@@ -658,7 +658,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 舵机控制任务
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">servo_control_task</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">servo_control_task</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">servo_command_t</span> <span class="n">cmd</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    
@@ -669,7 +669,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl">            <span class="kt">uint32_t</span> <span class="n">compare_value</span> <span class="o">=</span> <span class="nf">angle_to_compare</span><span class="p">(</span><span class="n">target_angle</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            
 </span></span><span class="line"><span class="cl">            <span class="c1">// 设置两个舵机
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nf">mcpwm_comparator_set_compare_value</span><span class="p">(</span><span class="n">comparator1</span><span class="p">,</span> <span class="n">compare_value</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">            <span class="nf">mcpwm_comparator_set_compare_value</span><span class="p">(</span><span class="n">comparator1</span><span class="p">,</span> <span class="n">compare_value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">mcpwm_comparator_set_compare_value</span><span class="p">(</span><span class="n">comparator2</span><span class="p">,</span> <span class="n">compare_value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            
 </span></span><span class="line"><span class="cl">            <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Servos: %s (%d°)&#34;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">.</span><span class="n">state</span> <span class="o">?</span> <span class="s">&#34;OPEN&#34;</span> <span class="o">:</span> <span class="s">&#34;CLOSE&#34;</span><span class="p">,</span> <span class="n">target_angle</span><span class="p">);</span>
@@ -679,7 +679,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 433MHz检测任务
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">rf433_task</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">rf433_task</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">servo_command_t</span> <span class="n">cmd</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    
@@ -688,7 +688,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl">        
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">last_rf433_state</span> <span class="o">!=</span> <span class="n">current_rf433_state</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">vTaskDelay</span><span class="p">(</span><span class="nf">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">50</span><span class="p">));</span> <span class="c1">// 防抖
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            
+</span></span></span><span class="line"><span class="cl">            
 </span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nf">gpio_get_level</span><span class="p">(</span><span class="n">RF433_GPIO</span><span class="p">)</span> <span class="o">==</span> <span class="n">current_rf433_state</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">                <span class="kt">int</span> <span class="n">new_state</span> <span class="o">=</span> <span class="n">current_rf433_state</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">                
@@ -705,10 +705,10 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 初始化单个舵机
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">esp_err_t</span> <span class="nf">init_servo</span><span class="p">(</span><span class="kt">int</span> <span class="n">gpio_num</span><span class="p">,</span> <span class="kt">mcpwm_cmpr_handle_t</span> <span class="o">*</span><span class="n">comparator</span><span class="p">,</span> <span class="kt">int</span> <span class="n">group_id</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">esp_err_t</span> <span class="nf">init_servo</span><span class="p">(</span><span class="kt">int</span> <span class="n">gpio_num</span><span class="p">,</span> <span class="kt">mcpwm_cmpr_handle_t</span> <span class="o">*</span><span class="n">comparator</span><span class="p">,</span> <span class="kt">int</span> <span class="n">group_id</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建定时器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">mcpwm_timer_handle_t</span> <span class="n">timer</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_timer_handle_t</span> <span class="n">timer</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_timer_config_t</span> <span class="n">timer_config</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">group_id</span> <span class="o">=</span> <span class="n">group_id</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">clk_src</span> <span class="o">=</span> <span class="n">MCPWM_TIMER_CLK_SRC_DEFAULT</span><span class="p">,</span>
@@ -719,7 +719,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_new_timer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer_config</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">timer</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建操作符
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">mcpwm_oper_handle_t</span> <span class="n">oper</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_oper_handle_t</span> <span class="n">oper</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_operator_config_t</span> <span class="n">operator_config</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">group_id</span> <span class="o">=</span> <span class="n">group_id</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">};</span>
@@ -727,33 +727,33 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_operator_connect_timer</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="n">timer</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建比较器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">mcpwm_comparator_config_t</span> <span class="n">comparator_config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_comparator_config_t</span> <span class="n">comparator_config</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">flags</span><span class="p">.</span><span class="n">update_cmp_on_tez</span> <span class="o">=</span> <span class="nb">true</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_new_comparator</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">comparator_config</span><span class="p">,</span> <span class="n">comparator</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建发生器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">mcpwm_gen_handle_t</span> <span class="n">generator</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_gen_handle_t</span> <span class="n">generator</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">mcpwm_generator_config_t</span> <span class="n">generator_config</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">gen_gpio_num</span> <span class="o">=</span> <span class="n">gpio_num</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="p">};</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_new_generator</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">generator_config</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">generator</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 配置PWM
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_generator_set_action_on_timer_event</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_generator_set_action_on_timer_event</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">MCPWM_GEN_TIMER_EVENT_ACTION</span><span class="p">(</span><span class="n">MCPWM_TIMER_DIRECTION_UP</span><span class="p">,</span> <span class="n">MCPWM_TIMER_EVENT_EMPTY</span><span class="p">,</span> <span class="n">MCPWM_GEN_ACTION_HIGH</span><span class="p">)));</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_generator_set_action_on_compare_event</span><span class="p">(</span><span class="n">generator</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">MCPWM_GEN_COMPARE_EVENT_ACTION</span><span class="p">(</span><span class="n">MCPWM_TIMER_DIRECTION_UP</span><span class="p">,</span> <span class="o">*</span><span class="n">comparator</span><span class="p">,</span> <span class="n">MCPWM_GEN_ACTION_LOW</span><span class="p">)));</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="c1">// 启动定时器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_timer_enable</span><span class="p">(</span><span class="n">timer</span><span class="p">));</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_timer_enable</span><span class="p">(</span><span class="n">timer</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_ERROR_CHECK</span><span class="p">(</span><span class="nf">mcpwm_timer_start_stop</span><span class="p">(</span><span class="n">timer</span><span class="p">,</span> <span class="n">MCPWM_TIMER_START_NO_STOP</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ESP_OK</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1">// 初始化433MHz GPIO
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">static</span> <span class="kt">void</span> <span class="nf">init_rf433_gpio</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">init_rf433_gpio</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">gpio_config_t</span> <span class="n">io_conf</span> <span class="o">=</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">intr_type</span> <span class="o">=</span> <span class="n">GPIO_INTR_DISABLE</span><span class="p">,</span>
@@ -770,28 +770,28 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;Starting Dual Servo 433MHz Control&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建队列
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">servo_queue</span> <span class="o">=</span> <span class="nf">xQueueCreate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">servo_command_t</span><span class="p">));</span>
+</span></span></span><span class="line"><span class="cl">    <span class="n">servo_queue</span> <span class="o">=</span> <span class="nf">xQueueCreate</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">servo_command_t</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 初始化GPIO
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">init_rf433_gpio</span><span class="p">();</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">init_rf433_gpio</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 初始化舵机
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">init_servo</span><span class="p">(</span><span class="n">SERVO1_GPIO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">comparator1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">init_servo</span><span class="p">(</span><span class="n">SERVO1_GPIO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">comparator1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">init_servo</span><span class="p">(</span><span class="n">SERVO2_GPIO</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">comparator2</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 设置初始位置为关闭
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">uint32_t</span> <span class="n">close_value</span> <span class="o">=</span> <span class="nf">angle_to_compare</span><span class="p">(</span><span class="n">SERVO_CLOSE_ANGLE</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">close_value</span> <span class="o">=</span> <span class="nf">angle_to_compare</span><span class="p">(</span><span class="n">SERVO_CLOSE_ANGLE</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">mcpwm_comparator_set_compare_value</span><span class="p">(</span><span class="n">comparator1</span><span class="p">,</span> <span class="n">close_value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">mcpwm_comparator_set_compare_value</span><span class="p">(</span><span class="n">comparator2</span><span class="p">,</span> <span class="n">close_value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 创建任务
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">xTaskCreate</span><span class="p">(</span><span class="n">servo_control_task</span><span class="p">,</span> <span class="s">&#34;servo_control&#34;</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span></span><span class="line"><span class="cl">    <span class="nf">xTaskCreate</span><span class="p">(</span><span class="n">servo_control_task</span><span class="p">,</span> <span class="s">&#34;servo_control&#34;</span><span class="p">,</span> <span class="mi">4096</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">xTaskCreate</span><span class="p">(</span><span class="n">rf433_task</span><span class="p">,</span> <span class="s">&#34;rf433_task&#34;</span><span class="p">,</span> <span class="mi">2048</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="nf">ESP_LOGI</span><span class="p">(</span><span class="n">TAG</span><span class="p">,</span> <span class="s">&#34;System initialized - 433MHz HIGH=OPEN, LOW=CLOSE&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="c1">// 主循环
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">vTaskDelay</span><span class="p">(</span><span class="nf">pdMS_TO_TICKS</span><span class="p">(</span><span class="mi">10000</span><span class="p">));</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -849,10 +849,9 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
         #viewCount * {
             color: #ffffffe1 !important;
         }
-         
         #viewCount {
              position: absolute;   
-             left: 280px;             
+             left: 280px;            
             transform: translateY(-50%) translateY(260px);
         }
     </style></footer>
@@ -895,6 +894,25 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/25cadc/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cadc.jpg" loading="lazy" data-key="" data-hash="/images/cadc.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">2025CADC 比赛记录</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">
@@ -1093,10 +1111,12 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">13</span> 
+      <span class="number-highlight">14</span> 
       篇 ，总计 
-      <span class="number-highlight">32.84</span> 
+      <span class="number-highlight">34.98</span> 
       k 字
   </div>
   <div>
@@ -1140,6 +1160,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         
