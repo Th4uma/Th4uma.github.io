@@ -265,6 +265,66 @@
 &lt;p&gt;基础配置完成后，可以根据需求安装各类插件，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;h2 id=&#34;校园网认证&#34;&gt;校园网认证
+&lt;/h2&gt;&lt;p&gt;我学校的校园网是深澜认证，连接网络后会自动跳转到网页认证界面，输入学号和密码就可以上网。而认证失效的情况，大概一学期只会出现几次，所以我不需要安装自动认证脚本，只需要修改wan口的MAC地址为认证成功电脑的MAC地址即可&lt;/p&gt;
+&lt;h3 id=&#34;修改mac地址&#34;&gt;修改MAC地址
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;网络&amp;gt;设备&amp;gt;wan口&lt;/code&gt;，点击配置，把MAC地址改成电脑的MAC&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op40.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;h3 id=&#34;禁用ipv6&#34;&gt;禁用IPv6
+&lt;/h3&gt;&lt;p&gt;由于校园网不支持IPv6，如果不禁用，会无法访问支持IPv6的网站&lt;/p&gt;
+&lt;p&gt;在&lt;code&gt;网络&amp;gt;接口&lt;/code&gt;中，删除&lt;code&gt;WAN6&lt;/code&gt;这个接口&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op41.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;在&lt;code&gt;LAN&amp;gt;编辑&amp;gt;DHCP服务器&amp;gt;IPv6设置&lt;/code&gt;中，将&lt;code&gt;RA 服务&lt;/code&gt;，&lt;code&gt;DHCPv6 服务&lt;/code&gt; ，&lt;code&gt;NDP 代理&lt;/code&gt; 选择 &lt;code&gt;已禁用&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op42.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;然后点击&lt;code&gt;高级设置&lt;/code&gt;，把 &lt;code&gt;IPv6 分配长度&lt;/code&gt;选择&lt;code&gt;已禁用&lt;/code&gt;，最后保存并应用&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op43.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;在&lt;code&gt;网络&amp;gt;防火墙&amp;gt;通信规则&lt;/code&gt;中，把所有为&lt;code&gt;入站IPv6&lt;/code&gt;或&lt;code&gt;转发IPv6&lt;/code&gt;或&lt;code&gt;出站IPv6&lt;/code&gt;的&lt;code&gt;启用&lt;/code&gt;放弃勾选，然后保存并应用&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op44.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;控制台&lt;/code&gt;，输入下列命令，回车执行&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uci &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; dhcp.@dnsmasq&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.filter_aaaa&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;1&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uci commit dhcp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/etc/init.d/odhcpd disable
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;1为禁止，0为启用，输入完命令没有提示，则完成&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;从如下两部分命令中选择一部分输入&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有接口禁用ipv6&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;net.ipv6.conf.all.disable_ipv6 = 1&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; /etc/sysctl.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -p /etc/sysctl.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;禁用某一个指定接口的IPv6（例如：eh0）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;net.ipv6.conf.eth0.disable_ipv6 = 1&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; /etc/sysctl.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -p /etc/sysctl.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/op45.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;然后重启路由器，就可以访问之前打不开的网页了&lt;/p&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/u012374381/article/details/130650909&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客&lt;/a&gt;&lt;/p&gt;
@@ -272,6 +332,8 @@
     &gt;还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/opus/751852171608195081&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;原版Openwrt在x86平台上的安装和配置以及常用插件安装 - 哔哩哔哩&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/NueXini/p/15707858.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;OpenWrt之关闭IPv6 - 虐心i - 博客园&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>

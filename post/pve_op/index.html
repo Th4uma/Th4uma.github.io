@@ -298,6 +298,12 @@ unicode: "f6d2"
         <li><a href="#复制根目录">复制根目录</a></li>
       </ol>
     </li>
+    <li><a href="#校园网认证">校园网认证</a>
+      <ol>
+        <li><a href="#修改mac地址">修改MAC地址</a></li>
+        <li><a href="#禁用ipv6">禁用IPv6</a></li>
+      </ol>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -637,6 +643,66 @@ unicode: "f6d2"
 <p>基础配置完成后，可以根据需求安装各类插件，详见<a class="link" href="https://th4uma.github.io/post/op_add"  target="_blank" rel="noopener"
     >OpenWrt插件推荐与配置</a></p>
 </blockquote>
+<h2 id="校园网认证">校园网认证
+</h2><p>我学校的校园网是深澜认证，连接网络后会自动跳转到网页认证界面，输入学号和密码就可以上网。而认证失效的情况，大概一学期只会出现几次，所以我不需要安装自动认证脚本，只需要修改wan口的MAC地址为认证成功电脑的MAC地址即可</p>
+<h3 id="修改mac地址">修改MAC地址
+</h3><p><code>网络&gt;设备&gt;wan口</code>，点击配置，把MAC地址改成电脑的MAC</p>
+<img src="/images/op40.png" style="width: 40%;" />
+<h3 id="禁用ipv6">禁用IPv6
+</h3><p>由于校园网不支持IPv6，如果不禁用，会无法访问支持IPv6的网站</p>
+<p>在<code>网络&gt;接口</code>中，删除<code>WAN6</code>这个接口</p>
+<img src="/images/op41.png" style="width: 90%;" />
+<p>在<code>LAN&gt;编辑&gt;DHCP服务器&gt;IPv6设置</code>中，将<code>RA 服务</code>，<code>DHCPv6 服务</code> ，<code>NDP 代理</code> 选择 <code>已禁用</code></p>
+<img src="/images/op42.png" style="width: 90%;" />
+<p>然后点击<code>高级设置</code>，把 <code>IPv6 分配长度</code>选择<code>已禁用</code>，最后保存并应用</p>
+<img src="/images/op43.png" style="width: 70%;" />
+<p>在<code>网络&gt;防火墙&gt;通信规则</code>中，把所有为<code>入站IPv6</code>或<code>转发IPv6</code>或<code>出站IPv6</code>的<code>启用</code>放弃勾选，然后保存并应用</p>
+<img src="/images/op44.png" style="width: 100%;" />
+<p>进入<code>pve&gt;100&gt;控制台</code>，输入下列命令，回车执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">uci <span class="nb">set</span> dhcp.@dnsmasq<span class="o">[</span>0<span class="o">]</span>.filter_aaaa<span class="o">=</span><span class="s1">&#39;1&#39;</span>
+</span></span><span class="line"><span class="cl">uci commit dhcp
+</span></span><span class="line"><span class="cl">/etc/init.d/odhcpd disable
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>1为禁止，0为启用，输入完命令没有提示，则完成</p>
+</blockquote>
+<p>从如下两部分命令中选择一部分输入</p>
+<ul>
+<li>所有接口禁用ipv6</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;net.ipv6.conf.all.disable_ipv6 = 1&#39;</span> &gt;&gt; /etc/sysctl.conf
+</span></span><span class="line"><span class="cl">sysctl -p /etc/sysctl.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>禁用某一个指定接口的IPv6（例如：eh0）</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;net.ipv6.conf.eth0.disable_ipv6 = 1&#39;</span> &gt;&gt; /etc/sysctl.conf
+</span></span><span class="line"><span class="cl">sysctl -p /etc/sysctl.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="/images/op45.png" style="width: 100%;" />
+<p>然后重启路由器，就可以访问之前打不开的网页了</p>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://blog.csdn.net/u012374381/article/details/130650909"  target="_blank" rel="noopener"
     >超详细,多图 PVE 安装 OpenWRT 教程(个人记录)_pve安装openwrt-CSDN博客</a></p>
@@ -644,6 +710,8 @@ unicode: "f6d2"
     >还不会软路由？x86主机安装原版OpenWrt就这么简单 - 知乎</a></p>
 <p><a class="link" href="https://www.bilibili.com/opus/751852171608195081"  target="_blank" rel="noopener"
     >原版Openwrt在x86平台上的安装和配置以及常用插件安装 - 哔哩哔哩</a></p>
+<p><a class="link" href="https://www.cnblogs.com/NueXini/p/15707858.html"  target="_blank" rel="noopener"
+    >OpenWrt之关闭IPv6 - 虐心i - 博客园</a></p>
 
 </section>
 
@@ -915,7 +983,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">14</span> 
       篇 ，总计 
-      <span class="number-highlight">35.59</span> 
+      <span class="number-highlight">36.13</span> 
       k 字
   </div>
   <div>
