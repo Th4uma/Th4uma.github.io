@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/op_add/'>
 
-<link rel="stylesheet" href="/scss/style.min.8a3b148b5d16c5f4f56e04af4acd63e06e377514ad466439098dc7fd64079ab8.css"><meta property='og:title' content="OpenWrt插件推荐与配置">
+<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="OpenWrt插件推荐与配置">
 <meta property='og:description' content="最好用的一集">
 <meta property='og:url' content='https://th4uma.github.io/post/op_add/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -279,6 +279,13 @@ unicode: "f6d2"
         <li><a href="#dns黑名单">DNS黑名单</a></li>
       </ol>
     </li>
+    <li><a href="#zerotier">ZeroTier</a>
+      <ol>
+        <li><a href="#创建虚拟局域网">创建虚拟局域网</a></li>
+        <li><a href="#openwrt配置">OpenWRT配置</a></li>
+        <li><a href="#添加设备">添加设备</a></li>
+      </ol>
+    </li>
     <li><a href="#wake-on-lan">Wake on Lan</a></li>
     <li><a href="#其他">其他</a></li>
     <li><a href="#参考">参考</a></li>
@@ -371,13 +378,14 @@ unicode: "f6d2"
 <h3 id="openwrt设置">OpenWrt设置
 </h3><p><code>OpenWrt&gt;网络&gt;DHCP/DNS&gt;设置及端口&gt;DNS 服务器端口</code>设置为<code>5353</code></p>
 <img src="/images/op19.png" style="width: 70%;" />
-<p><code>网络&gt;接口&gt;LAN&gt;DHCP 服务器&gt;高级设置&gt;DHCP 选项</code>设置为<code>6,192.168.10.1</code><img src="/images/op20.png" style="width: 100%;" /></p>
+<p><code>网络&gt;接口&gt;LAN&gt;DHCP 服务器&gt;高级设置&gt;DHCP 选项</code>设置为<code>6,路由器LAN口地址</code></p>
+<img src="/images/op20.png" style="width: 100%;" />
 <p>在软件包里搜索 <code>adguardhome</code> 安装</p>
 <h3 id="adguardhome配置">AdGuardHome配置
 </h3><p>访问<a class="link" href="http://192.168.10.1:3000"  target="_blank" rel="noopener"
     >http://路由器IP:3000</a>，WEB端口设置成<code>3000</code>，监听端口设置成<code>53</code>，接着按照提示进行设置，直到进入主界面</p>
 <blockquote>
-<p>默认53端口被dnsmasq占用，但我们上一步已经让出了这个端口，因此流量可以直接进入adguardhome</p>
+<p>默认 53 端口由 dnsmasq 占用，上一步已将其改为 5353 释放 53 端口。由于 DHCP 已向客户端下发 192.168.10.1 作为 DNS 服务器地址，客户端的 DNS 请求会发送至路由器 53 端口，因此由 AdGuardHome 处理</p>
 </blockquote>
 <img src="/images/op17.png" style="width: 60%;" />
 <p>进入<code>设置&gt;DNS设置&gt;上游DNS服务器</code>，更改服务器地址</p>
@@ -471,6 +479,60 @@ unicode: "f6d2"
 </li>
 </ul>
 <p>如果有特殊屏蔽或者放行需求，可以在自定义规则中添加，至此AdGuardHome就可以正常使用了</p>
+<h2 id="zerotier">ZeroTier
+</h2><blockquote>
+<p>作用：创建虚拟局域网，用于远程设备互联</p>
+</blockquote>
+<h3 id="创建虚拟局域网">创建虚拟局域网
+</h3><p>在<a class="link" href="https://www.zerotier.com/"  target="_blank" rel="noopener"
+    >ZeroTier官网</a>上注册账号，然后创建一个虚拟网络</p>
+<img src="/images/op22.png" style="width: 100%;" />
+<p>记住设置中显示的Network ID</p>
+<img src="/images/op23.png" style="width: 100%;" />
+<h3 id="openwrt配置">OpenWRT配置
+</h3><p>包管理器安装zerotier</p>
+<img src="/images/op24.png" style="width: 100%;" />
+<p>终端运行下面的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/etc/init.d/zerotier enable #这里是设置成服务自启，不想要可以不执行
+</span></span><span class="line"><span class="cl">uci set zerotier.global.enabled=&#39;1&#39;
+</span></span><span class="line"><span class="cl">uci commit zerotier
+</span></span><span class="line"><span class="cl">/etc/init.d/zerotier restart
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在<code>网络&gt;接口&gt;添加新接口</code>中按照图片进行设置并创建</p>
+<blockquote>
+<p>这里一定要选择不配置协议，很多教程写的是DHCP客户端协议，实测配置完成无法正常使用</p>
+</blockquote>
+<img src="/images/op25.png" style="width: 100%;" />
+<p>在<code>网络&gt;防火墙&gt;常规设置&gt;区域</code>中点击添加，如图进行设置后保存</p>
+<img src="/images/op26.png" style="width: 100%;" />
+<p>回到<code>网络&gt;接口</code>，点击编辑刚刚创建的接口，在防火墙设置中，选择分配防火墙区域</p>
+<img src="/images/op27.png" style="width: 100%;" />
+<h3 id="添加设备">添加设备
+</h3><p>OpenWRT终端输入下面的指令，将xxx替换为自己的Network ID</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli join xxx
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>回到官网，发现弹出了设备的加入申请，通过即可</p>
+<img src="/images/op28.png" style="width: 100%;" />
+<p>Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络</p>
+<img src="/images/op29.jpg" style="width: 40%;" />
+<p>将需要的设备加入后，互相ping发现能ping通，说明配置成功</p>
+<img src="/images/op28.jpg" style="width: 30%;" />
+<img src="/images/op30.png" style="width: 60%;" />
 <h2 id="wake-on-lan">Wake on Lan
 </h2><blockquote>
 <p>作用：远程开机，方便在外访问主机与串流</p>
@@ -493,6 +555,10 @@ unicode: "f6d2"
     >平均处理时间1ms，Adguard home从安装到设置教程，DNS防污染劫持，又快又稳-软路由,x86系统,openwrt(x86),Router OS 等-恩山无线论坛 - Powered by Discuz!</a></p>
 <p><a class="link" href="https://blog.csdn.net/u012861744/article/details/112491055"  target="_blank" rel="noopener"
     >软路由：AdGuardHome + OpenWRT 让你家的网络无广告&amp;无跟踪_adguardhome规则-CSDN博客</a></p>
+<p><a class="link" href="https://blog.gugu.dev/2025-03-02/OpenWRT%e4%bd%bf%e7%94%a8ZeroTier%e6%9d%a5%e5%ae%9e%e7%8e%b0%e5%bc%82%e5%9c%b0%e7%bb%84%e7%bd%91%e7%9a%84%e6%96%b9%e6%a1%88/"  target="_blank" rel="noopener"
+    >OpenWRT使用ZeroTier来实现异地组网的方案 - MinMin的鸽子窝</a></p>
+<p><a class="link" href="https://www.cnblogs.com/saintyear/p/19049862"  target="_blank" rel="noopener"
+    >openwrt原版系统安装zerotier，私有化planet，网段互通 - 大宋666 - 博客园</a></p>
 
 </section>
 
@@ -808,7 +874,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">41.60</span> 
+      <span class="number-highlight">42.11</span> 
       k 字
   </div>
   <div>
