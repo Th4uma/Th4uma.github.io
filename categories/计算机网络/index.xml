@@ -222,7 +222,7 @@
 &lt;img src=&#34;https://th4uma.github.io/images/op25.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;网络&amp;gt;防火墙&amp;gt;常规设置&amp;gt;区域&lt;/code&gt;中点击添加，如图进行设置后保存&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op26.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;回到&lt;code&gt;网络&amp;gt;接口&lt;/code&gt;，点击编辑刚刚创建的接口，在防火墙设置中，选择分配防火墙区域&lt;/p&gt;
+&lt;p&gt;回到&lt;code&gt;网络&amp;gt;接口&lt;/code&gt;，点击编辑刚刚创建的接口，在防火墙设置中分配防火墙区域&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op27.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;添加设备&#34;&gt;添加设备
 &lt;/h3&gt;&lt;p&gt;OpenWRT终端输入下面的指令，将xxx替换为自己的Network ID&lt;/p&gt;
@@ -234,13 +234,44 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zerotier-cli join xxx
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;回到官网，发现弹出了设备的加入申请，通过即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op28.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op29.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
-&lt;p&gt;将需要的设备加入后，互相ping发现能ping通，说明配置成功&lt;/p&gt;
+&lt;p&gt;回到官网，发现弹出了设备的加入申请，通过即可&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op28.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;将需要的设备加入后，互相ping发现能ping通（虽然延迟感人），说明配置成功&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op28.jpg&#34; style=&#34;width: 30%;&#34; /&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/op30.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;延迟大的解决方法&#34;&gt;延迟大的解决方法
+&lt;/h3&gt;&lt;p&gt;查看网络信息，可以发现目前只会出现一行信息，意思是 OpenWrt 已经成功加入了一个名为 &lt;code&gt;111&lt;/code&gt; 的私有 ZeroTier 网络，分配到的虚拟 IP 是 &lt;code&gt;10.10.160.241&lt;/code&gt;，网络正常&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zerotier-cli listnetworks
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/op31.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;查看peers，从官网的设备中可以知道&lt;code&gt;775372d612&lt;/code&gt; 是我的设备，状态是 &lt;code&gt;RELAY&lt;/code&gt;，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。这也是延迟极大的原因&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zerotier-cli peers
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/op32.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;zerotier走路由器的wan，而openwrt默认不开放wan口的9993端口，在复杂网络环境下会自动切到中继模式&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;进入&lt;code&gt;网络&amp;gt;防火墙&amp;gt;通信规则&lt;/code&gt;，添加一条新的规则，设置如图&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/op33.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;访问局域网设备&#34;&gt;访问局域网设备
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;ZeroTier 虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他 ZeroTier 节点通过 ZeroTier IP 访问路由器下的局域网设备&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在 ZeroTier 私有网络中，将 OpenWrt 路由器作为网关，让 ZeroTier 节点可以访问路由器 LAN 下的局域网设备，实现跨网络互通。&lt;/p&gt;
 &lt;h2 id=&#34;wake-on-lan&#34;&gt;Wake on Lan
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;作用：远程开机，方便在外访问主机与串流&lt;/p&gt;

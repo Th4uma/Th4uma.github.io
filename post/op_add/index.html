@@ -284,6 +284,8 @@ unicode: "f6d2"
         <li><a href="#创建虚拟局域网">创建虚拟局域网</a></li>
         <li><a href="#openwrt配置">OpenWRT配置</a></li>
         <li><a href="#添加设备">添加设备</a></li>
+        <li><a href="#延迟大的解决方法">延迟大的解决方法</a></li>
+        <li><a href="#访问局域网设备">访问局域网设备</a></li>
       </ol>
     </li>
     <li><a href="#wake-on-lan">Wake on Lan</a></li>
@@ -514,7 +516,7 @@ unicode: "f6d2"
 <img src="/images/op25.png" style="width: 100%;" />
 <p>在<code>网络&gt;防火墙&gt;常规设置&gt;区域</code>中点击添加，如图进行设置后保存</p>
 <img src="/images/op26.png" style="width: 100%;" />
-<p>回到<code>网络&gt;接口</code>，点击编辑刚刚创建的接口，在防火墙设置中，选择分配防火墙区域</p>
+<p>回到<code>网络&gt;接口</code>，点击编辑刚刚创建的接口，在防火墙设置中分配防火墙区域</p>
 <img src="/images/op27.png" style="width: 100%;" />
 <h3 id="添加设备">添加设备
 </h3><p>OpenWRT终端输入下面的指令，将xxx替换为自己的Network ID</p>
@@ -526,13 +528,44 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli join xxx
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>回到官网，发现弹出了设备的加入申请，通过即可</p>
-<img src="/images/op28.png" style="width: 100%;" />
-<p>Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络</p>
+</div><p>Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络</p>
 <img src="/images/op29.jpg" style="width: 40%;" />
-<p>将需要的设备加入后，互相ping发现能ping通，说明配置成功</p>
+<p>回到官网，发现弹出了设备的加入申请，通过即可</p>
+<img src="/images/op28.png" style="width: 100%;" />
+<p>将需要的设备加入后，互相ping发现能ping通（虽然延迟感人），说明配置成功</p>
 <img src="/images/op28.jpg" style="width: 30%;" />
 <img src="/images/op30.png" style="width: 60%;" />
+<h3 id="延迟大的解决方法">延迟大的解决方法
+</h3><p>查看网络信息，可以发现目前只会出现一行信息，意思是 OpenWrt 已经成功加入了一个名为 <code>111</code> 的私有 ZeroTier 网络，分配到的虚拟 IP 是 <code>10.10.160.241</code>，网络正常</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli listnetworks
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="/images/op31.png" style="width: 100%;" />
+<p>查看peers，从官网的设备中可以知道<code>775372d612</code> 是我的设备，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。这也是延迟极大的原因</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli peers
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="/images/op32.png" style="width: 90%;" />
+<blockquote>
+<p>zerotier走路由器的wan，而openwrt默认不开放wan口的9993端口，在复杂网络环境下会自动切到中继模式</p>
+</blockquote>
+<p>进入<code>网络&gt;防火墙&gt;通信规则</code>，添加一条新的规则，设置如图</p>
+<img src="/images/op33.png" style="width: 60%;" />
+<h3 id="访问局域网设备">访问局域网设备
+</h3><blockquote>
+<p>ZeroTier 虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他 ZeroTier 节点通过 ZeroTier IP 访问路由器下的局域网设备</p>
+</blockquote>
+<p>在 ZeroTier 私有网络中，将 OpenWrt 路由器作为网关，让 ZeroTier 节点可以访问路由器 LAN 下的局域网设备，实现跨网络互通。</p>
 <h2 id="wake-on-lan">Wake on Lan
 </h2><blockquote>
 <p>作用：远程开机，方便在外访问主机与串流</p>
@@ -874,7 +907,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">42.11</span> 
+      <span class="number-highlight">42.49</span> 
       k 字
   </div>
   <div>
