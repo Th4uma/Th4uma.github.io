@@ -279,12 +279,12 @@ unicode: "f6d2"
         <li><a href="#dns黑名单">DNS黑名单</a></li>
       </ol>
     </li>
-    <li><a href="#zerotier">ZeroTier</a>
+    <li><a href="#zerotier不推荐">ZeroTier(不推荐)</a>
       <ol>
         <li><a href="#创建虚拟局域网">创建虚拟局域网</a></li>
-        <li><a href="#openwrt配置">OpenWRT配置</a></li>
+        <li><a href="#openwrt配置">OpenWrt配置</a></li>
         <li><a href="#添加设备">添加设备</a></li>
-        <li><a href="#延迟大的解决方法">延迟大的解决方法</a></li>
+        <li><a href="#延迟大的原因分析">延迟大的原因分析</a></li>
         <li><a href="#访问局域网设备">访问局域网设备</a></li>
       </ol>
     </li>
@@ -378,7 +378,7 @@ unicode: "f6d2"
 <p>作用：广告过滤，恶意域名阻断，提升 DNS 稳定性</p>
 </blockquote>
 <h3 id="openwrt设置">OpenWrt设置
-</h3><p><code>OpenWrt&gt;网络&gt;DHCP/DNS&gt;设置及端口&gt;DNS 服务器端口</code>设置为<code>5353</code></p>
+</h3><p><code>网络&gt;DHCP/DNS&gt;设置及端口&gt;DNS 服务器端口</code>设置为<code>5353</code></p>
 <img src="/images/op19.png" style="width: 70%;" />
 <p><code>网络&gt;接口&gt;LAN&gt;DHCP 服务器&gt;高级设置&gt;DHCP 选项</code>设置为<code>6,路由器LAN口地址</code></p>
 <img src="/images/op20.png" style="width: 100%;" />
@@ -392,8 +392,7 @@ unicode: "f6d2"
 <img src="/images/op17.png" style="width: 60%;" />
 <p>进入<code>设置&gt;DNS设置&gt;上游DNS服务器</code>，更改服务器地址</p>
 <blockquote>
-<p>上游DNS服务器是AdGuard Home查询的服务器，设置几个最快的公共DNS服务器，可以用终端ping测试</p>
-<p>这里建议使用DoH/DoT加密的DNS，不然DNS依旧会被污染和劫持</p>
+<p>上游DNS服务器是AdGuard Home查询的服务器，设置几个最快的公共DNS服务器。这里建议使用DoH/DoT加密的DNS，不然DNS依旧会被污染和劫持</p>
 </blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -425,7 +424,7 @@ unicode: "f6d2"
 <p>启用 DNSSEC : 用于校验 DNS 记录的签名，防止 DNS 缓存被投毒，建议勾选。勾选后会在日志页面请求列显示小绿锁图标</p>
 </li>
 <li>
-<p>禁用 IPv6 ：丢弃 IPv6 的 DNS 查询。在本地网络和网站都支持 IPv6 会优先使用 IPv6 去访问网站，但大多数地区的 IPv6 网络体验都一般。还有一些代理软件对 IPv6 支持不佳，如果对此没有特殊需求，勾选即可</p>
+<p>禁用 IPv6 ：丢弃 IPv6 的 DNS 查询。在本地网络和网站都支持 IPv6 会优先使用 IPv6 去访问网站，但大多数地区的 IPv6 网络体验都一般。还有一些代理软件对 IPv6 支持不佳，如果没有特殊需求，勾选即可</p>
 </li>
 <li>
 <p>DNS缓存配置根据自己设备配置来，空间足够的可以设置大一点，勾选乐观缓存</p>
@@ -438,50 +437,30 @@ unicode: "f6d2"
 <p>可以挑选下面的规则加入，不建议添加过多，会影响解析速度，够用即可</p>
 </blockquote>
 <ul>
-<li>
-<p><a class="link" href="https://easylist-downloads.adblockplus.org/easylist.txt"  target="_blank" rel="noopener"
-    >EasyList</a>：去除国际网页中大多数广告，包括不需要的框架、图像和对象</p>
-</li>
-<li>
-<p><a class="link" href="https://easylist-downloads.adblockplus.org/easylistchina.txt"  target="_blank" rel="noopener"
-    >EasyList China</a>：EasyList针对国内的补充规则</p>
-</li>
-<li>
-<p><a class="link" href="https://easylist-downloads.adblockplus.org/easyprivacy.txt"  target="_blank" rel="noopener"
-    >EasyPrivacy</a>：从网络上上完全删除所有形式的跟踪，包括Web错误、跟踪脚本和信息收集，从而保护个人数据</p>
-</li>
-<li>
-<p><a class="link" href="https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt"  target="_blank" rel="noopener"
-    >Anti-AD</a>：目前中文区命中率最高的广告过滤列表，实现了精确的广告屏蔽和隐私保护</p>
-</li>
-<li>
-<p>halflife：合并自乘风视频广告过滤规则、Easylist、EasylistChina、EasyPrivacy、CJX&rsquo;sAnnoyance，以及补充的一些规则 <a class="link" href="https://cdn.jsdelivr.net/gh/sbwml/halflife-list@master/ad-pc.txt"  target="_blank" rel="noopener"
+<li><a class="link" href="https://easylist-downloads.adblockplus.org/easylist.txt"  target="_blank" rel="noopener"
+    >EasyList</a>：去除国际网页中大多数广告，包括不需要的框架、图像和对象</li>
+<li><a class="link" href="https://easylist-downloads.adblockplus.org/easylistchina.txt"  target="_blank" rel="noopener"
+    >EasyList China</a>：EasyList针对国内的补充规则</li>
+<li><a class="link" href="https://easylist-downloads.adblockplus.org/easyprivacy.txt"  target="_blank" rel="noopener"
+    >EasyPrivacy</a>：从网络上完全删除所有形式的跟踪，包括Web错误、跟踪脚本和信息收集，从而保护个人数据</li>
+<li><a class="link" href="https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-easylist.txt"  target="_blank" rel="noopener"
+    >Anti-AD</a>：目前中文区命中率最高的广告过滤列表，实现了精确的广告屏蔽和隐私保护</li>
+<li>halflife：合并自乘风视频广告过滤规则、Easylist、EasylistChina、EasyPrivacy、CJX&rsquo;sAnnoyance，以及补充的一些规则 <a class="link" href="https://cdn.jsdelivr.net/gh/sbwml/halflife-list@master/ad-pc.txt"  target="_blank" rel="noopener"
     >桌面端</a>  <a class="link" href="https://cdn.jsdelivr.net/gh/sbwml/halflife-list@master/ad.txt"  target="_blank" rel="noopener"
-    >移动端</a></p>
-</li>
-<li>
-<p><a class="link" href="https://raw.githubusercontent.com/banbendalao/ADgk/master/ADgk.txt"  target="_blank" rel="noopener"
-    >ADgk</a>：适用于 AdGuard for Android 的去广告规则</p>
-</li>
-<li>
-<p><a class="link" href="https://raw.githubusercontent.com/banbendalao/ADgk/master/kill-baidu-ad.txt"  target="_blank" rel="noopener"
-    >百度搜索优化</a>：搜索结果内屏蔽百家号</p>
-</li>
-<li>
-<p><a class="link" href="https://www.i-dont-care-about-cookies.eu/abp/"  target="_blank" rel="noopener"
-    >i-dont-care-about-cookies</a>屏蔽网站的 cookies 相关的警告</p>
-</li>
-<li>
-<p><a class="link" href="https://raw.githubusercontent.com/zsakvo/AdGuard-Custom-Rule/master/rule/zhihu-strict.txt"  target="_blank" rel="noopener"
-    >知乎过滤器 严格版</a> —— 去除开屏、时间轴、首页推荐、回答列表、回答底部及评论区广告，个人中心VIP横幅</p>
-</li>
-<li>
-<p><a class="link" href="https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt"  target="_blank" rel="noopener"
-    >CJX&rsquo;s Annoyance List</a>：过滤烦人的自我推广，并补充EasyPrivacy隐私规则</p>
-</li>
+    >移动端</a></li>
+<li><a class="link" href="https://raw.githubusercontent.com/banbendalao/ADgk/master/ADgk.txt"  target="_blank" rel="noopener"
+    >ADgk</a>：适用于 AdGuard for Android 的去广告规则</li>
+<li><a class="link" href="https://raw.githubusercontent.com/banbendalao/ADgk/master/kill-baidu-ad.txt"  target="_blank" rel="noopener"
+    >百度搜索优化</a>：搜索结果内屏蔽百家号</li>
+<li><a class="link" href="https://www.i-dont-care-about-cookies.eu/abp/"  target="_blank" rel="noopener"
+    >i-dont-care-about-cookies</a>屏蔽网站的 cookies 相关的警告</li>
+<li><a class="link" href="https://raw.githubusercontent.com/zsakvo/AdGuard-Custom-Rule/master/rule/zhihu-strict.txt"  target="_blank" rel="noopener"
+    >知乎过滤器 严格版</a> —— 去除开屏、时间轴、首页推荐、回答列表、回答底部及评论区广告，个人中心VIP横幅</li>
+<li><a class="link" href="https://raw.githubusercontent.com/cjx82630/cjxlist/master/cjx-annoyance.txt"  target="_blank" rel="noopener"
+    >CJX&rsquo;s Annoyance List</a>：过滤烦人的自我推广，并补充EasyPrivacy隐私规则</li>
 </ul>
 <p>如果有特殊屏蔽或者放行需求，可以在自定义规则中添加，至此AdGuardHome就可以正常使用了</p>
-<h2 id="zerotier">ZeroTier
+<h2 id="zerotier不推荐">ZeroTier(不推荐)
 </h2><blockquote>
 <p>作用：创建虚拟局域网，用于远程设备互联</p>
 </blockquote>
@@ -491,7 +470,7 @@ unicode: "f6d2"
 <img src="/images/op22.png" style="width: 100%;" />
 <p>记住设置中显示的Network ID</p>
 <img src="/images/op23.png" style="width: 100%;" />
-<h3 id="openwrt配置">OpenWRT配置
+<h3 id="openwrt配置">OpenWrt配置
 </h3><p>包管理器安装zerotier</p>
 <img src="/images/op24.png" style="width: 100%;" />
 <p>终端运行下面的命令</p>
@@ -503,8 +482,8 @@ unicode: "f6d2"
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/etc/init.d/zerotier enable #这里是设置成服务自启，不想要可以不执行
-</span></span><span class="line"><span class="cl">uci set zerotier.global.enabled=&#39;1&#39;
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/etc/init.d/zerotier <span class="nb">enable</span> <span class="c1">#这里是设置成服务自启，不想要可以不执行</span>
+</span></span><span class="line"><span class="cl">uci <span class="nb">set</span> zerotier.global.enabled<span class="o">=</span><span class="s1">&#39;1&#39;</span>
 </span></span><span class="line"><span class="cl">uci commit zerotier
 </span></span><span class="line"><span class="cl">/etc/init.d/zerotier restart
 </span></span></code></pre></td></tr></table>
@@ -519,13 +498,13 @@ unicode: "f6d2"
 <p>回到<code>网络&gt;接口</code>，点击编辑刚刚创建的接口，在防火墙设置中分配防火墙区域</p>
 <img src="/images/op27.png" style="width: 100%;" />
 <h3 id="添加设备">添加设备
-</h3><p>OpenWRT终端输入下面的指令，将xxx替换为自己的Network ID</p>
+</h3><p>OpenWrt终端输入下面的指令，将xxx替换为自己的Network ID</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli join xxx
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zerotier-cli join xxx
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络</p>
@@ -535,37 +514,42 @@ unicode: "f6d2"
 <p>将需要的设备加入后，互相ping发现能ping通（虽然延迟感人），说明配置成功</p>
 <img src="/images/op28.jpg" style="width: 30%;" />
 <img src="/images/op30.png" style="width: 60%;" />
-<h3 id="延迟大的解决方法">延迟大的解决方法
+<h3 id="延迟大的原因分析">延迟大的原因分析
 </h3><p>查看网络信息，可以发现目前只会出现一行信息，意思是 OpenWrt 已经成功加入了一个名为 <code>111</code> 的私有 ZeroTier 网络，分配到的虚拟 IP 是 <code>10.10.160.241</code>，网络正常</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli listnetworks
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zerotier-cli listnetworks
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="/images/op31.png" style="width: 100%;" />
-<p>查看peers，从官网的设备中可以知道<code>775372d612</code> 是我的设备，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。这也是延迟极大的原因</p>
+<p>查看peers，从官网中可以知道<code>775372d612</code> 是我的设备，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。ZeroTier的中继服务器在国外，这也是延迟极大的原因</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">zerotier-cli peers
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zerotier-cli peers
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="/images/op32.png" style="width: 90%;" />
 <blockquote>
-<p>zerotier走路由器的wan，而openwrt默认不开放wan口的9993端口，在复杂网络环境下会自动切到中继模式</p>
+<p>ZeroTier默认使用UDP 9993端口通信，如果路由器或上级网络限制UDP 9993，在复杂网络环境下就会自动切到中继模式，因此需要手动放行该端口</p>
 </blockquote>
 <p>进入<code>网络&gt;防火墙&gt;通信规则</code>，添加一条新的规则，设置如图</p>
 <img src="/images/op33.png" style="width: 60%;" />
+<p>如果还是没有效果，大概率是NAT类型或运营商限制导致无法打洞成功，需要另找方法</p>
 <h3 id="访问局域网设备">访问局域网设备
 </h3><blockquote>
-<p>ZeroTier 虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他 ZeroTier 节点通过 ZeroTier IP 访问路由器下的局域网设备</p>
+<p>ZeroTier虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他ZeroTier节点可以访问路由器下的局域网设备</p>
 </blockquote>
-<p>在 ZeroTier 私有网络中，将 OpenWrt 路由器作为网关，让 ZeroTier 节点可以访问路由器 LAN 下的局域网设备，实现跨网络互通。</p>
+<p>这一步需要在官网配置Managed Routes，将路由器LAN网段设置为由路由器虚拟IP转发，这时我注意到根本没有这一选项，在之前的配置过程中也有大量和教程不同的地方</p>
+<img src="/images/op34.png" style="width: 40%;" />
+<p>在官方文档搜索Managed Routes并跳转后，发现我访问的是<code>https://central.zerotier.com/</code>，有高级设置的是<code>https://my.zerotier.com/</code>。官方在2025.11进行了更新，现在需要花费18美元才能有这类功能。新版创建的网络不会在旧版管理界面显示，控制面板不互通，就算创建一个新的老版局域网，相信过不了多久也会没有办法使用。因此我选择放弃这个方案</p>
+<img src="/images/op35.png" style="width: 80%;" />
+<img src="/images/op36.png" style="width: 60%;" />
 <h2 id="wake-on-lan">Wake on Lan
 </h2><blockquote>
 <p>作用：远程开机，方便在外访问主机与串流</p>
@@ -907,7 +891,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">42.49</span> 
+      <span class="number-highlight">42.79</span> 
       k 字
   </div>
   <div>
