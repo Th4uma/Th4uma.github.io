@@ -293,6 +293,7 @@ unicode: "f6d2"
         <li><a href="#github-action实现自动化部署">GitHub Action实现自动化部署</a></li>
       </ol>
     </li>
+    <li><a href="#附图片引用与大小写问题">附：图片引用与大小写问题</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -483,9 +484,6 @@ unicode: "f6d2"
 <p>md文件名的后缀是语言编码，如<code>index.en.md</code>在英文环境，<code>index.zh-cn</code>在中文环境，默认使用 <code>index.md</code> 即可</p>
 </li>
 </ul>
-<blockquote>
-<p>注：文章中图片引用绝对路径会报错，因此在<code>static</code>文件夹下新建一个<code>images</code>文件夹，把文章中用到的图片放进去，改名使图片名中不含空格，引用时<code>![图片名](/images/图片名)</code>或<code>&lt;img src=&quot;/images/图片名&quot; style=&quot;width: 缩放百分比%;&quot; /&gt;</code></p>
-</blockquote>
 <h2 id="基本参数设置">基本参数设置
 </h2><blockquote>
 <p>注：改动参数时要在<code>:</code>后面加一个空格，否则会报错</p>
@@ -841,10 +839,34 @@ unicode: "f6d2"
 	
 	
 ></p>
+<h2 id="附图片引用与大小写问题">附：图片引用与大小写问题
+</h2><p>文章中的图片引用绝对路径会报错，因此在<code>static</code>文件夹下新建一个<code>images</code>文件夹，把文章中用到的图片放进去，改名使图片名中不含空格。在文章中加入下面的代码来引用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;/images/图片名&#34;</span> <span class="na">style</span><span class="o">=</span><span class="s">&#34;width: 缩放百分比%;&#34;</span> <span class="p">/&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>重要：</strong> GitHub Pages 是 Linux 环境，区分大小写，而Windows默认不区分。如果图片用了大写的后缀，本地可以正常加载但push后不行</p>
+</blockquote>
+<p>如果已经 push 过大写文件名，单纯改大小写不会被 Git 识别，需要使用 git mv 刷新。解决方法就是将图片后缀都改成小写，然后在当前博客项目目录执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git config core.ignorecase <span class="nb">false</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后重新push一遍，更新仓库内的图片名，这个很难排查的问题就解决了</p>
 <h2 id="参考">参考
-</h2><p>b站up主Letere-莱特雷的<a class="link" href="https://www.bilibili.com/video/BV1bovfeaEtQ"  target="_blank" rel="noopener"
-    >视频</a>与<a class="link" href="https://letere-gzj.github.io/hugo-stack/p/hugo/custom-blog/"  target="_blank" rel="noopener"
-    >博客</a></p>
+</h2><p><a class="link" href="https://www.bilibili.com/video/BV1bovfeaEtQ/?vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
+    >【雷】Hugo + Github免费搭建博客，并实现自动化部署_哔哩哔哩_bilibili</a></p>
+<p><a class="link" href="https://letere-gzj.github.io/hugo-stack/p/hugo/custom-blog/"  target="_blank" rel="noopener"
+    >【Hugo】Hugo + Github 免费部署自己的博客</a></p>
 <p><a class="link" href="https://morick66.com/post/20240321055915/"  target="_blank" rel="noopener"
     >【博客搭建】我的Hugo博客搭建记录</a></p>
 
@@ -1124,7 +1146,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">45.78</span> 
+      <span class="number-highlight">46.12</span> 
       k 字
   </div>
   <div>
