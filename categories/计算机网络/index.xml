@@ -21,25 +21,31 @@
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;服务端：台式电脑，笔记本&lt;/li&gt;
 &lt;li&gt;客户端：笔记本，平板&lt;/li&gt;
-&lt;li&gt;路由器：OpenWRT&lt;/li&gt;
+&lt;li&gt;路由器：OpenWrt&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;软件&#34;&gt;软件
-&lt;/h3&gt;&lt;h4 id=&#34;服务端&#34;&gt;服务端
-&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/LizardByte/Sunshine/releases&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Sunshine&lt;/a&gt;：串流服务器&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;客户端&#34;&gt;客户端
-&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://moonlight-stream.org/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Moonlight&lt;/a&gt;：串流客户端&lt;/li&gt;
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/LizardByte/Sunshine/releases&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Sunshine&lt;/a&gt;：串流服务器&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://moonlight-stream.org/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Moonlight&lt;/a&gt;：串流客户端&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.natpierce.cn/pc/index/index.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;皎月连&lt;/a&gt;：内网穿透&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;wol网络唤醒&#34;&gt;WOL网络唤醒
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;WOL网络唤醒可以通过网络控制电脑开机，这样就解决了电脑关机情况下在外无法随时串流的问题&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;前提条件：&lt;/strong&gt; 主板和网卡必须支持 WOL，需要使用有线网卡&lt;/p&gt;
 &lt;h3 id=&#34;主机端设置&#34;&gt;主机端设置
-&lt;/h3&gt;&lt;p&gt;开机连按&lt;code&gt;F8&lt;/code&gt;进入BIOS，进入高级模式，将&lt;code&gt;由PCI-E设备唤醒&lt;/code&gt;设置为&lt;code&gt;开启&lt;/code&gt;&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;开机进入BIOS，进入高级模式，将&lt;code&gt;由PCI-E设备唤醒&lt;/code&gt;设置为&lt;code&gt;开启&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;WOL需要网卡待机供电，因此将ErP设置为&lt;code&gt;关闭&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/zj55.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;设备管理器&amp;gt;网络适配器&amp;gt;右键网卡&amp;gt;属性&amp;gt;电源管理&lt;/code&gt;，勾选&lt;code&gt;允许此设备唤醒计算机&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/zj64.png&#34; style=&#34;width: 80%;&#34; /&gt;
@@ -53,25 +59,34 @@
 &lt;p&gt;进入主机的界面，点击&lt;code&gt;LAN唤醒&lt;/code&gt;，这里会自动填写好信息，点击发送即可&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;内网串流&#34;&gt;内网串流
-&lt;/h2&gt;&lt;h3 id=&#34;服务端-1&#34;&gt;服务端
-&lt;/h3&gt;&lt;p&gt;首先安装sunshine，然后以管理员身份运行，这里会给出管理地址&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;访问&lt;a class=&#34;link&#34; href=&#34;https://localhost:47990/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;p&gt;访问&lt;a class=&#34;link&#34; href=&#34;https://localhost:47990&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;管理地址&lt;/a&gt;，第一次进入的时候浏览器会警告非私密链接，选择继续访问&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl8.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;设置管理员用户名和密码，这个用户名密码是存储在本地的，必须牢记，如果忘记没办法找回，就无法进入配置页面&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl9.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;确认账密后进行登录，然后跳转到这个界面&lt;/p&gt;
+&lt;p&gt;确认账号密码后进行登录，然后跳转到这个界面&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl10.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;调整网页语言，进入&lt;code&gt;Configuration&amp;gt;General&amp;gt;Locale&lt;/code&gt;，选择简体中文，保存并应用&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl11.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;客户端-1&#34;&gt;客户端
-&lt;/h3&gt;&lt;p&gt;安装moonlight，和客户端连接同一局域网，注意一定要5G，然后刷新可以看到出现服务端，进行配对即可&lt;/p&gt;
+&lt;p&gt;客户端安装Moonlight，和服务端连接同一局域网，刷新后设备列表出现服务端，进行配对即可&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
-&lt;p&gt;用秒表测试延迟，2k60帧40码率大概100ms，可以流畅游玩&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl6.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;外网串流&#34;&gt;外网串流
-&lt;/h2&gt;</description>
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#zerotier%e4%b8%8d%e6%8e%a8%e8%8d%90&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ZeroTier+OpenWrt方案&lt;/a&gt;实测不可用，后来采用了电脑直接安装皎月连的方法&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;服务端与客户端均安装&lt;a class=&#34;link&#34; href=&#34;https://www.natpierce.cn/pc/downloads/index_new.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;皎月连&lt;/a&gt;，然后注册一个账号&lt;/p&gt;
+&lt;p&gt;启动并访问&lt;a class=&#34;link&#34; href=&#34;http://localhost:33272&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;控制界面&lt;/a&gt;，登录后进入&lt;code&gt;服务端&lt;/code&gt;，开启组网模式并设置密码，这里就能看到虚拟局域网的IP，然后开启服务&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/cl13.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;客户端登录后可以看到服务端设备名，选中后点击连接&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/cl14.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;p&gt;打开Moonlight，点击右上角的加号，输入虚拟局域网的IP地址，然后添加，可以看到设备可用，这样就可以在外进行串流了&lt;/p&gt;
+&lt;img src=&#34;https://th4uma.github.io/images/cl15.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+</description>
         </item>
         <item>
         <title>OpenWrt插件推荐与配置</title>
@@ -266,6 +281,7 @@
 &lt;li&gt;&lt;code&gt;luci-app-ttyd&lt;/code&gt;：模拟终端，可以直接在浏览器里面使用 SSH 进入路由器后台&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;luci-app-filebrowser&lt;/code&gt;：可以对文件进行管理&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;luci-app-nlbwmon&lt;/code&gt;：网络带宽统计&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;curl&lt;/code&gt;：命令行网络工具，用来和服务器进行数据交互&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/opus/931748684832440368&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;

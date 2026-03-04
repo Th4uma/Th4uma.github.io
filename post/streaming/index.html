@@ -276,12 +276,7 @@ unicode: "f6d2"
     <li><a href="#准备">准备</a>
       <ol>
         <li><a href="#设备">设备</a></li>
-        <li><a href="#软件">软件</a>
-          <ol>
-            <li><a href="#服务端">服务端</a></li>
-            <li><a href="#客户端">客户端</a></li>
-          </ol>
-        </li>
+        <li><a href="#软件">软件</a></li>
       </ol>
     </li>
     <li><a href="#wol网络唤醒">WOL网络唤醒</a>
@@ -290,12 +285,7 @@ unicode: "f6d2"
         <li><a href="#控制端设置">控制端设置</a></li>
       </ol>
     </li>
-    <li><a href="#内网串流">内网串流</a>
-      <ol>
-        <li><a href="#服务端-1">服务端</a></li>
-        <li><a href="#客户端-1">客户端</a></li>
-      </ol>
-    </li>
+    <li><a href="#内网串流">内网串流</a></li>
     <li><a href="#外网串流">外网串流</a></li>
   </ol>
 </nav>
@@ -387,25 +377,31 @@ unicode: "f6d2"
 </h3><ul>
 <li>服务端：台式电脑，笔记本</li>
 <li>客户端：笔记本，平板</li>
-<li>路由器：OpenWRT</li>
+<li>路由器：OpenWrt</li>
 </ul>
 <h3 id="软件">软件
-</h3><h4 id="服务端">服务端
-</h4><ul>
-<li><a class="link" href="https://github.com/LizardByte/Sunshine/releases"  target="_blank" rel="noopener"
-    >Sunshine</a>：串流服务器</li>
-</ul>
-<h4 id="客户端">客户端
-</h4><ul>
-<li><a class="link" href="https://moonlight-stream.org/"  target="_blank" rel="noopener"
-    >Moonlight</a>：串流客户端</li>
+</h3><ul>
+<li>
+<p><a class="link" href="https://github.com/LizardByte/Sunshine/releases"  target="_blank" rel="noopener"
+    >Sunshine</a>：串流服务器</p>
+</li>
+<li>
+<p><a class="link" href="https://moonlight-stream.org/"  target="_blank" rel="noopener"
+    >Moonlight</a>：串流客户端</p>
+</li>
+<li>
+<p><a class="link" href="https://www.natpierce.cn/pc/index/index.html"  target="_blank" rel="noopener"
+    >皎月连</a>：内网穿透</p>
+</li>
 </ul>
 <h2 id="wol网络唤醒">WOL网络唤醒
 </h2><blockquote>
 <p>WOL网络唤醒可以通过网络控制电脑开机，这样就解决了电脑关机情况下在外无法随时串流的问题</p>
 </blockquote>
+<p><strong>前提条件：</strong> 主板和网卡必须支持 WOL，需要使用有线网卡</p>
 <h3 id="主机端设置">主机端设置
-</h3><p>开机连按<code>F8</code>进入BIOS，进入高级模式，将<code>由PCI-E设备唤醒</code>设置为<code>开启</code></p>
+</h3><p>开机进入BIOS，进入高级模式，将<code>由PCI-E设备唤醒</code>设置为<code>开启</code></p>
+<p>WOL需要网卡待机供电，因此将ErP设置为<code>关闭</code></p>
 <img src="/images/zj55.jpg" style="width: 100%;" />
 <p>打开<code>设备管理器&gt;网络适配器&gt;右键网卡&gt;属性&gt;电源管理</code>，勾选<code>允许此设备唤醒计算机</code></p>
 <img src="/images/zj64.png" style="width: 80%;" />
@@ -419,25 +415,34 @@ unicode: "f6d2"
 <p>进入主机的界面，点击<code>LAN唤醒</code>，这里会自动填写好信息，点击发送即可</p>
 <img src="/images/cl3.jpg" style="width: 40%;" />
 <h2 id="内网串流">内网串流
-</h2><h3 id="服务端-1">服务端
-</h3><p>首先安装sunshine，然后以管理员身份运行，这里会给出管理地址</p>
+</h2><p>服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址</p>
 <img src="/images/cl7.png" style="width: 80%;" />
-<p>访问<a class="link" href="https://localhost:47990/"  target="_blank" rel="noopener"
+<p>访问<a class="link" href="https://localhost:47990"  target="_blank" rel="noopener"
     >管理地址</a>，第一次进入的时候浏览器会警告非私密链接，选择继续访问</p>
 <img src="/images/cl8.png" style="width: 80%;" />
 <p>设置管理员用户名和密码，这个用户名密码是存储在本地的，必须牢记，如果忘记没办法找回，就无法进入配置页面</p>
 <img src="/images/cl9.png" style="width: 100%;" />
-<p>确认账密后进行登录，然后跳转到这个界面</p>
+<p>确认账号密码后进行登录，然后跳转到这个界面</p>
 <img src="/images/cl10.png" style="width: 100%;" />
 <p>调整网页语言，进入<code>Configuration&gt;General&gt;Locale</code>，选择简体中文，保存并应用</p>
 <img src="/images/cl11.png" style="width: 100%;" />
-<h3 id="客户端-1">客户端
-</h3><p>安装moonlight，和客户端连接同一局域网，注意一定要5G，然后刷新可以看到出现服务端，进行配对即可</p>
+<p>客户端安装Moonlight，和服务端连接同一局域网，刷新后设备列表出现服务端，进行配对即可</p>
 <img src="/images/cl5.jpg" style="width: 40%;" />
-<p>用秒表测试延迟，2k60帧40码率大概100ms，可以流畅游玩</p>
-<img src="/images/cl6.jpg" style="width: 40%;" />
 <h2 id="外网串流">外网串流
-</h2>
+</h2><blockquote>
+<p>有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的<a class="link" href="https://th4uma.github.io/post/op_add/#zerotier%e4%b8%8d%e6%8e%a8%e8%8d%90"  target="_blank" rel="noopener"
+    >ZeroTier+OpenWrt方案</a>实测不可用，后来采用了电脑直接安装皎月连的方法</p>
+</blockquote>
+<p>服务端与客户端均安装<a class="link" href="https://www.natpierce.cn/pc/downloads/index_new.html"  target="_blank" rel="noopener"
+    >皎月连</a>，然后注册一个账号</p>
+<p>启动并访问<a class="link" href="http://localhost:33272"  target="_blank" rel="noopener"
+    >控制界面</a>，登录后进入<code>服务端</code>，开启组网模式并设置密码，这里就能看到虚拟局域网的IP，然后开启服务</p>
+<img src="/images/cl13.png" style="width: 100%;" />
+<p>客户端登录后可以看到服务端设备名，选中后点击连接</p>
+<img src="/images/cl14.jpg" style="width: 40%;" />
+<p>打开Moonlight，点击右上角的加号，输入虚拟局域网的IP地址，然后添加，可以看到设备可用，这样就可以在外进行串流了</p>
+<img src="/images/cl15.jpg" style="width: 40%;" />
+
 </section>
 
 
@@ -752,7 +757,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">46.23</span> 
+      <span class="number-highlight">46.49</span> 
       k 字
   </div>
   <div>
