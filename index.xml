@@ -33,7 +33,7 @@
         <pubDate>Tue, 17 Feb 2026 23:35:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/streaming/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/st1.jpg" alt="Featured image of post Sunshine&#43;Moonlight远程串流" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/st1.jpg" alt="Featured image of post Sunshine&#43;Moonlight远程串流" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩&lt;/p&gt;
 &lt;p&gt;因此在不改变目前设备位置与数量的情况下，我需要串流来实现我的需求&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备
@@ -66,36 +66,36 @@
 &lt;h3 id=&#34;主机端设置&#34;&gt;主机端设置
 &lt;/h3&gt;&lt;p&gt;开机进入BIOS，进入高级模式，将&lt;code&gt;由PCI-E设备唤醒&lt;/code&gt;设置为&lt;code&gt;开启&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;WOL需要网卡待机供电，因此将ErP设置为&lt;code&gt;关闭&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj55.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj55.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;设备管理器&amp;gt;网络适配器&amp;gt;右键网卡&amp;gt;属性&amp;gt;电源管理&lt;/code&gt;，勾选&lt;code&gt;允许此设备唤醒计算机&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj64.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj64.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;高级&lt;/code&gt;选项卡，将&lt;code&gt;唤醒幻数据包&lt;/code&gt;和&lt;code&gt;唤醒模式匹配&lt;/code&gt;设置为开启&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj65.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj65.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;控制端设置&#34;&gt;控制端设置
 &lt;/h3&gt;&lt;p&gt;手机下载&lt;code&gt;Fing&lt;/code&gt;，和电脑连接同一网络&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl1.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl1.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;点击扫描现有网络，在设备界面找到主机设备名&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl2.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl2.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;进入主机的界面，点击&lt;code&gt;LAN唤醒&lt;/code&gt;，这里会自动填写好信息，点击发送即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;如果需要远程串流，还需要进一步配置远程WOL，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#wake-on-lan&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;内网串流&#34;&gt;内网串流
 &lt;/h2&gt;&lt;p&gt;服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;访问&lt;a class=&#34;link&#34; href=&#34;https://localhost:47990&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;管理地址&lt;/a&gt;，第一次进入的时候浏览器会警告非私密链接，选择继续访问&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl8.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;cl8.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;设置管理员用户名和密码，这个用户名密码是存储在本地的，必须牢记，如果忘记没办法找回，就无法进入配置页面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl9.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;确认账号密码后进行登录，然后跳转到这个界面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl10.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl10.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;调整网页语言，进入&lt;code&gt;Configuration&amp;gt;General&amp;gt;Locale&lt;/code&gt;，选择简体中文，保存并应用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl11.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;客户端安装Moonlight，和服务端连接同一局域网，刷新后设备列表出现服务端，进行配对即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;外网串流&#34;&gt;外网串流
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#zerotier&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -105,11 +105,11 @@
     &gt;皎月连&lt;/a&gt;，然后注册一个账号&lt;/p&gt;
 &lt;p&gt;启动并访问&lt;a class=&#34;link&#34; href=&#34;http://localhost:33272&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;控制界面&lt;/a&gt;，登录后进入&lt;code&gt;服务端&lt;/code&gt;，开启组网模式并设置密码，这里就能看到虚拟局域网的IP，然后开启服务&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl13.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl13.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;客户端登录后可以看到服务端设备名，选中后点击连接&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl14.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl14.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;打开Moonlight，点击右上角的加号，输入虚拟局域网的IP地址，然后添加，可以看到设备可用，这样就可以在外进行串流了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl15.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl15.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 </description>
         </item>
         <item>
@@ -118,7 +118,7 @@
         <pubDate>Mon, 16 Feb 2026 01:03:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/op_add/</guid>
-        <description>&lt;img src="https://th4uma.github.io/op1.jpg" alt="Featured image of post OpenWrt插件推荐与配置" /&gt;&lt;h2 id=&#34;adguardhome&#34;&gt;AdGuardHome
+        <description>&lt;img src="https://th4uma.github.io/images/cover/op1.jpg" alt="Featured image of post OpenWrt插件推荐与配置" /&gt;&lt;h2 id=&#34;adguardhome&#34;&gt;AdGuardHome
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;作用：广告过滤，恶意域名阻断，提升 DNS 稳定性&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -448,7 +448,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
         <pubDate>Mon, 08 Dec 2025 12:03:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/pve_op/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/op.jpg" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
+        <description>&lt;img src="https://th4uma.github.io/images/cover/op.jpg" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" /&gt;&lt;h2 id=&#34;准备&#34;&gt;准备
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e5%ba%95%e5%b1%82%e7%b3%bb%e7%bb%9f%e5%ae%89%e8%a3%85%e4%b8%8e%e9%85%8d%e7%bd%ae&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -462,22 +462,22 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;打开PVE系统管理界面右侧&lt;code&gt;pve&amp;gt;local(pve)&amp;gt;ISO镜像&amp;gt;上传&lt;/code&gt;，选择刚刚下载好的img文件，记住保存路径&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio27.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio28.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;在pve中创建虚拟机&#34;&gt;在PVE中创建虚拟机
 &lt;/h2&gt;&lt;p&gt;在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio20.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;aio20.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;选择不使用任何介质&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio21.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio22.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;删除虚拟机默认生成的磁盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;填写CPU核心数&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio24.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;内存1到2GB即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio25.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;此处模型选择VirtIO，Linux的支持更好&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio26.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;然后打开宿主机命令行，输入以下命令导入磁盘：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -488,43 +488,43 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;出现成功提示说明磁盘添加成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio29.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;未使用的磁盘0&lt;/code&gt;，点击添加&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29a.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;aio29a.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;选中硬盘，选择&lt;code&gt;磁盘操作&amp;gt;调整大小&lt;/code&gt;，将大小设置为&lt;code&gt;5GB&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio29b.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;aio29b.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;h2 id=&#34;网络配置&#34;&gt;网络配置
 &lt;/h2&gt;&lt;h3 id=&#34;虚拟网络拓扑&#34;&gt;虚拟网络拓扑
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;在路由器中，WAN口连接上游网络，LAN口提供局域网服务。在 PVE 虚拟机中运行 OpenWrt 时，需要先为虚拟机分配物理网卡，让 OpenWrt 识别并设置对应的WAN或LAN口，从而形成完整网络&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;创建&amp;gt;Linux Bridge&lt;/code&gt;，然后选择好桥接端口，依次添加所有网口后，重启PVE&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio31.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;硬件&amp;gt;添加&amp;gt;网络设备&lt;/code&gt;，将刚刚设置好的接口全部添加&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio30.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;启动&#34;&gt;启动
 &lt;/h3&gt;&lt;p&gt;在&lt;code&gt;pve&amp;gt;100&amp;gt;选项&amp;gt;引导顺序&lt;/code&gt;中，将scsi0设置到第一位并启用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio32.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;aio32.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;将&lt;code&gt;开机自启动&lt;/code&gt;设为是&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio35.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;右上角启动虚拟机，进入控制台，等一会显示&lt;code&gt;please press enter&lt;/code&gt;后按回车，显示如下画面就说明启动成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio33.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;aio33.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;更改默认lan-ip&#34;&gt;更改默认LAN IP
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;OpenWrt 默认使用 &lt;strong&gt;192.168.1.1&lt;/strong&gt; 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所以只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;输入&lt;code&gt;vi /etc/config/network&lt;/code&gt;，进入vi编辑画面后按&lt;code&gt;i&lt;/code&gt;进入编辑状态，对LAN IP进行修改，我这里改成了&lt;code&gt;192.168.10.1&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;aio34.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;修改完毕后，按ESC键退出编辑模式，这时输入&lt;code&gt;:wq&lt;/code&gt; ，然后enter保存，最后输入&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
 &lt;p&gt;浏览器访问设置的IP进入OpenWrt管理界面，输入密码登录，&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio37.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;pve-管理地址迁移&#34;&gt;PVE 管理地址迁移
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;PVE 的管理口和 OpenWrt 的 LAN 默认不在同一个网段，设备进入 LAN 后就访问不到 PVE。把 PVE 管理 IP 改到 LAN 网段，任何 LAN 口就都能同时管理 PVE 和 OpenWrt&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;注意：在修改 vmbr0 前，必须确认 OpenWrt LAN 已经绑定到 vmbr0，否则 PVE 会直接从网络消失&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;系统&amp;gt;网络&amp;gt;vmbr0&lt;/code&gt;，做如图修改，此时新的管理地址变成了&lt;code&gt;https://192.168.10.99:8006/&lt;/code&gt;，当你可以同时进入OpenWRT和PVE的管理界面时，说明设置成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op1.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;op1.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;设置lan口和wan口&#34;&gt;设置LAN口和WAN口
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：OpenWRT中显示的网口编号不等于物理网口编号，具体编号需要看映射情况，推荐做一个下表来直观显示映射情况&lt;/p&gt;
@@ -571,11 +571,11 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;进入OpenWrt管理界面，&lt;code&gt;network&amp;gt;interfaces&amp;gt;wan&amp;gt;edit&lt;/code&gt;，然后将device改成需要的WAN口，右下角保存&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op2.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op2.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;devices&amp;gt;br-lan&amp;gt;configure&lt;/code&gt;，勾选需要的LAN口，右下角保存，然后点击&lt;code&gt;Save &amp;amp; Apply&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op3.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;用网线将WAN口连接到光猫或者上级路由器，WAN这里显示IP地址说明配置完成，这时候就可以上网了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;设置时区和-ntp&#34;&gt;设置时区和 NTP
 &lt;/h3&gt;&lt;p&gt;在&lt;code&gt;系统&amp;gt;常规设置&lt;/code&gt;里把时区改成 &lt;code&gt;Asia/Shanghai&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;在&lt;code&gt;系统&amp;gt;时间同步&lt;/code&gt;里删除默认的NTP服务器，换成速度更快的&lt;/p&gt;
@@ -597,7 +597,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;OpenWrt官方服务器在国外，直连更新安装会比较慢，所以要先更换国内源&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入OpenWrt管理界面，&lt;code&gt;system&amp;gt;software&amp;gt;configure opkg&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op4.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;op4.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;将&lt;code&gt;/etc/opkg/distfeeds.conf&lt;/code&gt;中的地址，将网址中的&lt;code&gt;downloads.openwrt.org&lt;/code&gt;全部替换成&lt;code&gt;mirrors.tuna.tsinghua.edu.cn/openwrt&lt;/code&gt;，点击Save保存，我的版本修改好是这样的&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -624,14 +624,14 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;OpenWrt每次重启后可用插件列表都会清空，要安装或者更新插件需要手动更新&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;点击software界面的&lt;code&gt;Update lists…&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;更新成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op6.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;op6.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;安装中文插件&#34;&gt;安装中文插件
 &lt;/h3&gt;&lt;p&gt;在插件过滤框里面输入&lt;code&gt;zh-cn&lt;/code&gt;筛选中文界面插件，然后点击下载&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op8.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;安装好后刷新，页面就变成了中文，此时再输入&lt;code&gt;zh-cn&lt;/code&gt;筛选会看到更多中文插件&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op9.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;扩容&#34;&gt;扩容
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;OpenWrt默认只会分配100M空间用于安装插件，所以需要给空间扩容&lt;/p&gt;
@@ -660,19 +660,19 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重启完成后再次进入网页管理页面，打开系统下拉菜单，会多出来一个挂载点选项说明安装成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op10.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;op10.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;配置扩容分区&#34;&gt;配置扩容分区
 &lt;/h3&gt;&lt;p&gt;控制台输入&lt;code&gt;cfdisk&lt;/code&gt;进入下方界面，选择&lt;code&gt;Free space&lt;/code&gt;，下方选中&lt;code&gt;New&lt;/code&gt;后回车，输入&lt;code&gt;5G&lt;/code&gt;回车&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op11.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;可以发现新分出了一块5G大小的空间&lt;code&gt;/dev/sda3&lt;/code&gt;，选中后下方选择&lt;code&gt;write&lt;/code&gt;回车，输入&lt;code&gt;yes&lt;/code&gt;确定，然后选择&lt;code&gt;Quit&lt;/code&gt;退出。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op12.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op12.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;输入&lt;code&gt;mkfs.ext4 /dev/sda3&lt;/code&gt;，用ext4的文件系统格式对该区域格式化&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op13.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;op13.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;复制根目录&#34;&gt;复制根目录
 &lt;/h3&gt;&lt;p&gt;回到网页管理页面，进入&lt;code&gt;系统&amp;gt;挂载点&lt;/code&gt;，点击&lt;code&gt;挂载已连接的设备&lt;/code&gt;刷新硬盘信息，然后下拉到&lt;code&gt;挂载点&lt;/code&gt;，可以看到&lt;code&gt;/dev/sda3&lt;/code&gt;出现在最下方&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op14.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op14.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;点击&lt;code&gt;编辑&lt;/code&gt;，勾选&lt;code&gt;启用&lt;/code&gt;，挂载点选择&lt;code&gt;作为根文件系统使用&lt;/code&gt;，复制根目录准备中的内容并将中间的&lt;code&gt;/dev/sda1&lt;/code&gt;改成自己的分区路径，我的是&lt;code&gt;/dev/sda3&lt;/code&gt;。点击保存，再点击右下角保存并应用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op15.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op15.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;回到命令行，将修改完成的内容复制进去，这个操作是将原来根目录的文件全都复制到新的分区，然后重启&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -695,7 +695,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;在网页管理页面，进入&lt;code&gt;系统&amp;gt;软件包&lt;/code&gt;，可以看到磁盘空间变成了4.84GiB，扩容成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op16.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op16.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;基础配置完成后，可以根据需求安装各类插件，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
@@ -704,17 +704,17 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/h2&gt;&lt;p&gt;我学校的校园网是深澜认证，连接网络后会自动跳转到网页认证界面，输入学号和密码就可以上网。而认证失效的情况，大概一学期只会出现几次，所以我不需要安装自动认证脚本，只需要修改wan口的MAC地址为认证成功电脑的MAC地址即可&lt;/p&gt;
 &lt;h3 id=&#34;修改mac地址&#34;&gt;修改MAC地址
 &lt;/h3&gt;&lt;p&gt;&lt;code&gt;网络&amp;gt;设备&amp;gt;wan口&lt;/code&gt;，点击配置，把MAC地址改成电脑的MAC&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op40.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;op40.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h3 id=&#34;禁用ipv6&#34;&gt;禁用IPv6
 &lt;/h3&gt;&lt;p&gt;由于校园网不支持IPv6，如果不禁用，会无法访问支持IPv6的网站&lt;/p&gt;
 &lt;p&gt;在&lt;code&gt;网络&amp;gt;接口&lt;/code&gt;中，删除&lt;code&gt;WAN6&lt;/code&gt;这个接口&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op41.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;op41.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;LAN&amp;gt;编辑&amp;gt;DHCP服务器&amp;gt;IPv6设置&lt;/code&gt;中，将&lt;code&gt;RA 服务&lt;/code&gt;，&lt;code&gt;DHCPv6 服务&lt;/code&gt; ，&lt;code&gt;NDP 代理&lt;/code&gt; 选择 &lt;code&gt;已禁用&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op42.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;op42.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;然后点击&lt;code&gt;高级设置&lt;/code&gt;，把 &lt;code&gt;IPv6 分配长度&lt;/code&gt;选择&lt;code&gt;已禁用&lt;/code&gt;，最后保存并应用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op43.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;op43.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;网络&amp;gt;防火墙&amp;gt;通信规则&lt;/code&gt;中，把所有为&lt;code&gt;入站IPv6&lt;/code&gt;或&lt;code&gt;转发IPv6&lt;/code&gt;或&lt;code&gt;出站IPv6&lt;/code&gt;的&lt;code&gt;启用&lt;/code&gt;放弃勾选，然后保存并应用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/op44.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;op44.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;pve&amp;gt;100&amp;gt;控制台&lt;/code&gt;，输入下列命令，回车执行&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -758,7 +758,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -p /etc/sysctl.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/op45.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;op45.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;然后重启路由器，就可以访问之前打不开的网页了&lt;/p&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.csdn.net/u012374381/article/details/130650909&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -1160,175 +1160,175 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
         <pubDate>Sun, 26 Oct 2025 20:03:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/25cadc/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cadc.jpg" alt="Featured image of post 2025CADC 比赛记录" /&gt;&lt;p&gt;去年年末成功的进入了航模队的微折组，经过半年的学习，我逐渐了解了穿越机相关基础知识，也掌握了基本的飞行，暑假开始迎战比赛。6月28～10月24，从备赛到比赛结束持续了四个月，过程很辛苦，结果也没有辜负我的努力，最终获得了国赛一等奖，总排名第六，省赛三等奖，总排名第四&lt;/p&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/cadc.jpg" alt="Featured image of post 2025CADC 比赛记录" /&gt;&lt;p&gt;去年年末成功的进入了航模队的微折组，经过半年的学习，我逐渐了解了穿越机相关基础知识，也掌握了基本的飞行，暑假开始迎战比赛。6月28～10月24，从备赛到比赛结束持续了四个月，过程很辛苦，结果也没有辜负我的努力，最终获得了国赛一等奖，总排名第六，省赛三等奖，总排名第四&lt;/p&gt;
 &lt;h2 id=&#34;开发阶段&#34;&gt;开发阶段
 &lt;/h2&gt;&lt;h3 id=&#34;628&#34;&gt;6.28
 &lt;/h3&gt;&lt;p&gt;考试结束，也正式开始了训练，最开始的目标是熟悉比赛要穿越的门，同时了解起飞架的结构并准备改良，这时是用自己的飞机进行练习，飞的跌跌撞撞，几乎没办法穿过门&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca1.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;73&#34;&gt;7.3
 &lt;/h3&gt;&lt;p&gt;第一版桶体与开门结构完成，但图传出现故障，经常黑屏半秒钟&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca2.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;ca2.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;75&#34;&gt;7.5
 &lt;/h3&gt;&lt;p&gt;图传拿去寄修，暂时没有办法练习，专心研究开门结构&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca12.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca12.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;711&#34;&gt;7.11
 &lt;/h3&gt;&lt;p&gt;开门结构遇到了问题，也就是其他一切正常，但遥控器接收模块一直没法工作，试了很多方法都没有办法解决，陷入绝望开始摆烂，于是研究起了辉光管&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca3.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;ca3.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;713&#34;&gt;7.13
 &lt;/h3&gt;&lt;p&gt;图传修好了，队友对机架和电池位置改良完成，第一架飞机装好&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca4.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca4.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;715&#34;&gt;7.15
 &lt;/h3&gt;&lt;p&gt;拿到了上届学长的飞机，拆卸后换了图传，飞控，碳板，算是真正拥有了属于自己的飞机&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;716&#34;&gt;7.16
 &lt;/h3&gt;&lt;p&gt;炸机到草丛里，电机炸到缺相&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca6.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca6.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;718&#34;&gt;7.18
 &lt;/h3&gt;&lt;p&gt;摆烂中，把辉光管时钟完成了，但是只有一半能点亮&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca7.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;ca7.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;719&#34;&gt;7.19
 &lt;/h3&gt;&lt;p&gt;回到起飞架的开发，这时突然意识到，问题出在遥控接收模块需要单独供电，一下子明白了学长放了两块电池的的用意。然后一晚上火速学会了画pcb板，并且在嘉立创下单&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca8.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;ca8.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;723&#34;&gt;7.23
 &lt;/h3&gt;&lt;p&gt;新电机到货，修好飞机&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca9.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca9.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;724&#34;&gt;7.24
 &lt;/h3&gt;&lt;p&gt;收到板子，安装并且调试好了起飞架，试做机完成&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/fpvup/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;[002号机]FPV起飞装置&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;727821&#34;&gt;7.27～8.21
 &lt;/h3&gt;&lt;p&gt;跑路回家休息，玩死亡搁浅2😋&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;练习阶段&#34;&gt;练习阶段
 &lt;/h2&gt;&lt;h3 id=&#34;822&#34;&gt;8.22
 &lt;/h3&gt;&lt;p&gt;回到学校，把第二个桶的控制部分做好了，同时在草坪上熟悉赛机的操控&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca11.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca11.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;823&#34;&gt;8.23
 &lt;/h3&gt;&lt;p&gt;回到门前场地，练定点降落&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca13.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca13.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;824&#34;&gt;8.24
 &lt;/h3&gt;&lt;p&gt;新增了投球桶，但我一投球飞机就会翻倒炸机，所以重点练习&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca14.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca14.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;825&#34;&gt;8.25
 &lt;/h3&gt;&lt;p&gt;学会投球但投不准&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca15.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca15.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;826&#34;&gt;8.26
 &lt;/h3&gt;&lt;p&gt;偶尔可以投出完美的球&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca16.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca16.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;828&#34;&gt;8.28
 &lt;/h3&gt;&lt;p&gt;新增了c门，天黑训练时我把飞机炸到护栏外的工地上了，好不容易才拿回来，之后天黑后就改在楼道穿门训练&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca17.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca17.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;829&#34;&gt;8.29
 &lt;/h3&gt;&lt;p&gt;场地改到门外操场，摆起全部的门和桶&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca18.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca18.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;91&#34;&gt;9.1
 &lt;/h3&gt;&lt;p&gt;自己设计了摄像头支架&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca19.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca19.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;93&#34;&gt;9.3
 &lt;/h3&gt;&lt;p&gt;逐渐熟练，学会了垂直拉出桶&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca20.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca20.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;95&#34;&gt;9.5
 &lt;/h3&gt;&lt;p&gt;学长来检查练习情况，太久没有比过赛，特别紧张，结果直接发挥失常&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca21.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca21.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;915&#34;&gt;9.15
 &lt;/h3&gt;&lt;p&gt;开学后练习时间减少，但操作越来越熟练&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca22.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca22.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;919&#34;&gt;9.19
 &lt;/h3&gt;&lt;p&gt;回屋充电突然下起雷阵雨，对门和桶造成毁灭性打击，维修了一下午，获得破烂战损门&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;921&#34;&gt;9.21
 &lt;/h3&gt;&lt;p&gt;社团招新，我负责小登的面试，喝到了野生奶茶&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca28.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca28.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;924&#34;&gt;9.24
 &lt;/h3&gt;&lt;p&gt;训练场地搬到了击剑馆，搬东西差点累死&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca25.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca25.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;928106&#34;&gt;9.28~10.6
 &lt;/h3&gt;&lt;p&gt;回家&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca26.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca33.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;ca26.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;ca33.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;h3 id=&#34;107&#34;&gt;10.7
 &lt;/h3&gt;&lt;p&gt;回校继续练习，但我的控出现了卡在关机界面的问题，重新刷了固件解决&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca27.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;ca27.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;1011&#34;&gt;10.11
 &lt;/h3&gt;&lt;p&gt;在击剑馆练习这段时间，虽然经常由于时间冲突练不上，但稳定性提升很大，飞行变得丝滑了。我的最好时间是25秒，大部分时间是28秒，队友大约比我快3秒，感觉有些自卑&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca29.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca29.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;1013&#34;&gt;10.13
 &lt;/h3&gt;&lt;p&gt;距离比赛还剩下一周，我有些焦虑，所以请假了学校的课天天来击剑馆训练，这种感觉真是心情舒畅&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca30.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;ca30.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;1019&#34;&gt;10.19
 &lt;/h3&gt;&lt;p&gt;经过一周练习，我的速度已经提到了23s左右。为了不在赛场上掉链子，我每天一边想象周围全是人，一边练习。学长来验收，这次也不紧张了，飞出了好成绩&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca31.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca31.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;1020&#34;&gt;10.20
 &lt;/h3&gt;&lt;p&gt;最后练习一下，然后收拾东西准备出发&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca32.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca32.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h2 id=&#34;比赛&#34;&gt;比赛
 &lt;/h2&gt;&lt;h3 id=&#34;1022&#34;&gt;10.22
 &lt;/h3&gt;&lt;p&gt;坐高铁赶往崇礼，晚上到达后检修飞机，更换桨叶&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca17.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;ca17.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;1023&#34;&gt;10.23
 &lt;/h3&gt;&lt;p&gt;去熟悉场地并练习。不幸的是当天下午我挂名在其他组，需要跟着他们比赛，当时非常着急，害怕比完赛来不及熟悉场地，影响第二天发挥&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca34.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;ca34.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;赛后我火速赶回，然而发现旁边馆有模传在飞，暂时没法练，白白着急一番。后来练习了一下午，最好成绩26s，稳飞成绩34s&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca33.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca33.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;1024&#34;&gt;10.24
 &lt;/h3&gt;&lt;p&gt;早上起晚了，三分钟准备好跑下楼。场馆里面非常冷，手都冻僵了。检录后摆放好东西就去旁边的馆等待。第一轮是18号，等待一段时间即将轮到我们组，就进入了比赛场馆。待上场的位置刚好有空调直吹，我吹了很长时间手才终于调整好状态。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca22.jpg&#34; style=&#34;width: 85%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;ca22.jpg&#34; style=&#34;width: 85%;&#34; /&gt;
+&lt;img src=&#34;ca18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;第一轮感觉不是很紧张，但为了求稳就慢慢的飞，再加上降落前才发现需要降落到自己那边的降落区，所以慢了一些，成绩是42秒&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca34.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca34.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca19.jpg&#34; style=&#34;width: 85%;&#34; /&gt;
+&lt;img src=&#34;ca19.jpg&#34; style=&#34;width: 85%;&#34; /&gt;
 &lt;p&gt;第二轮稍微有点紧张，因为既要速度又不能失误，不然一等奖就没了，再加上桶打开慢了一秒，最终比我练习时的26秒慢了3秒&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca35.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca35.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca20.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;ca20.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;赛后又看了一会其他人比赛才离开&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca24.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;ca24.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;1026&#34;&gt;10.26
 &lt;/h3&gt;&lt;p&gt;比完赛感觉发挥一般，场上也有强劲的对手，所以不确定能不能得一等奖。经过两天煎熬的等待，终于在26号晚上出了成绩，是第六名一等奖，努力也算是有了回报&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca21.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca21.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;分站赛&#34;&gt;分站赛
 &lt;/h2&gt;&lt;h3 id=&#34;1217&#34;&gt;12.17
 &lt;/h3&gt;&lt;p&gt;做完手术回来仅仅不到一周就要去比赛了，一个半月没碰飞机，有些生疏，所以我去工作室简单复健了一下，幸运的是手感依旧很好&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca36.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca36.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;1219&#34;&gt;12.19
 &lt;/h3&gt;&lt;p&gt;坐车半天来到了文成，晚上去看了场地并练习，这次一共只有9组，其中前3组都有3000奖金，而且一起练习的队伍都没有我技术好，所以我信心满满，正常发挥一定可以进前三&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca37.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca37.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;h3 id=&#34;1220&#34;&gt;12.20
 &lt;/h3&gt;&lt;p&gt;搞错比赛时间，提前来了一小时，所以先练习。这个比赛感觉不是很正规，快开始了裁判才过来摆门和桶，位置也和规则里的不一样&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca38.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca38.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;我在最后一次练习的时候用了反乌龟，桨叶不知道打到什么东西，结果我去看的时候电机已经被拧下来了，这是我炸机最惨烈的一次。紧急更换电机后，上电自检和连接都正常，但一给油，飞机只飞 2 厘米就停下，应该是飞控坏了&lt;/p&gt;
 &lt;video controls width=&#34;100%&#34;&gt;
-  &lt;source src=&#34;https://th4uma.github.io/images/ca39.mp4&#34; type=&#34;video/mp4&#34;&gt;
+  &lt;source src=&#34;ca39.mp4&#34; type=&#34;video/mp4&#34;&gt;
 &lt;/video&gt;
 &lt;p&gt;没办法，只好在第二轮的时候用队友的飞机，由于没有时间换绑键位，我没法投球，又因为解锁键不一样，我在降落时没有及时停下，掉到了满分区外，就这样错失第一，真是非常可惜，唯一庆幸的是至少还有奖&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/ca39.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;ca39.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;结语&#34;&gt;结语
 &lt;/h2&gt;&lt;p&gt;仅仅4个月，在我眼里却好像过了很长时间。刚开始训练时是轻松开心的，原定17号比完分站赛就回家，但分站赛延期了，我的开发也没完成，被迫多留了十天。那段时间是麻木的，直到有一天恍然大悟，问题真正被解决，紧绷的感觉才突然松开，取而代之的是久违的畅快&lt;/p&gt;
 &lt;p&gt;8月回校以后的练习，整体是一直在进步的，但每天大量重复的练习，炎热的天气，经常搬运沉重的门和桶，都让我感到痛苦。独自住在宿舍也搞乱了我的作息，那段时间过的有些浑浑噩噩，不过现在想想真是珍贵的日子，可以心无旁骛地投入到热爱的事情中，每天精进自己的爱好&lt;/p&gt;
@@ -1344,7 +1344,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
         <pubDate>Thu, 16 Oct 2025 16:42:39 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/aio/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/aio.jpg" alt="Featured image of post J4125 小主机 All in One 搭建" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/aio.jpg" alt="Featured image of post J4125 小主机 All in One 搭建" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;大一期间没有办校园卡，宿舍一直靠手机热点上网，网速不稳定、流量受限，还经常断网，使用体验很差。暑假终于办了校园卡，准备认真折腾一下寝室网络，目标是稳定、多功能、可扩展&lt;/p&gt;
 &lt;h2 id=&#34;背景与目标&#34;&gt;背景与目标
 &lt;/h2&gt;&lt;h3 id=&#34;网络条件&#34;&gt;网络条件
@@ -1371,8 +1371,8 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;li&gt;红米 AC2100 作为 AP&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;总花费 450 元&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio1.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;aio1.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;aio2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;底层虚拟机系统选择&#34;&gt;底层虚拟机系统选择
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;虚拟机分为两种类型：Type 1 和 Type 2。Type 1 虚拟机管理程序（如 Proxmox VE、ESXi）直接运行在硬件之上，没有宿主系统，性能更高、更稳定，常用于服务器或实验环境；Type 2 （如 VirtualBox、VMware Workstation）则依赖已有操作系统运行，启动方便但性能略低，更适合个人电脑或临时测试。常用的all in one虚拟机系统有PVE、ESXi、Windows Server + Hyper-v&lt;/p&gt;
@@ -1423,11 +1423,11 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;解压下载的Ventoy，运行&lt;code&gt;Ventoy2Disk.exe&lt;/code&gt;，在右上角配置选项中将分区类型改为GPT&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio3.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;aio3.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;选择U盘，点击安装，然后将PVE的镜像复制进U盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio4.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;aio4.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;将U盘插在小主机的USB口上，连接好显示器，键鼠，同时用网线将小主机连接到能联网的路由器上&lt;/p&gt;
@@ -1435,15 +1435,15 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;安装proxmoxve&#34;&gt;安装ProxmoxVE
 &lt;/h3&gt;&lt;p&gt;开机连按&lt;code&gt;F11&lt;/code&gt;进入BIOS，选择U盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;aio5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;选择PVE的镜像&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio6.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio6.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;选择Install Proxmox VE (Graphical)&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;进入安装界面，选择&lt;code&gt;I agree&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;在下方选择系统盘，这一步会将硬盘格式化，注意备份数据&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio9.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio9.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;填写：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1457,9 +1457,9 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Keyboard Layout : U.S. English
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;aio10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置并确认PVE的密码，用于登录Web UI和连接SSH，填写自己的邮箱&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio11.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio11.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;设置IP地址，默认会通过DHCP获取到一个地址，后续访问Web UI或者连接SSH需要用到&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;Management interface&lt;/code&gt;为用于管理pve的端口，建议设定在之后打算用作lan的网口&lt;/p&gt;
@@ -1468,17 +1468,17 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Gateway&lt;/code&gt;为网关，连接路由器的情况下会自动填写&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;DNS Server&lt;/code&gt;为DNS服务器，可保持默认&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;确认信息并安装，安装完成后会自动重启，这时拔下U盘，成功启动后进入系统命令行界面&lt;/p&gt;
 &lt;p&gt;最上方显示的IP为当前小主机PVE系统的管理网页地址。我的管理地址是&lt;code&gt;https://10.150.15.100:8006&lt;/code&gt;。默认用户名为&lt;code&gt;root&lt;/code&gt;，密码为上面安装过程中第四个界面设置的密码&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio14.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio14.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;更换软件源&#34;&gt;更换软件源
 &lt;/h3&gt;&lt;p&gt;浏览器访问PVE管理地址，跳过安全提醒进入控制界面，&lt;a class=&#34;link&#34; href=&#34;#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95&#34; &gt;若无法访问可尝试此方法&lt;/a&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio17.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;aio17.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入管理界面，修改语言为中文，登录账号为&lt;code&gt;root&lt;/code&gt;，密码是安装时设置的密码&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio18.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;aio18.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;更新&amp;gt;存储库&lt;/code&gt;，禁用企业源&lt;code&gt;/etc/apt/sources.list.d/ceph.sources&lt;/code&gt;和&lt;code&gt;/etc/apt/sources.list.d/pve-enterprise.sources&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio19.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;aio19.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;shell中输入下列命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1585,9 +1585,9 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;附管理界面无法进入的解决方法&#34;&gt;附：管理界面无法进入的解决方法
 &lt;/h2&gt;&lt;p&gt;将管理端口用网线连接到电脑网口，电脑进入&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&lt;/code&gt;，点击这里的&lt;code&gt;以太网&amp;gt;属性&amp;gt;Internet协议版本4&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;aio15.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;选择&lt;code&gt;使用下面的IP地址&lt;/code&gt;，ip地址填写和管理IP同网段的任意地址，网关填写管理ip，其他和图片填写保持一致&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;aio16.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.welain.com/articles/2023/j4125-allinone-tutorial/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;超详细教程-J4125小主机从到手到安装PVE，iStoreOS作为主路由全过程小记(使用虚拟化) | 邮文的萤火屋&lt;/a&gt;&lt;/p&gt;
@@ -1601,7 +1601,7 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
         <pubDate>Wed, 17 Sep 2025 14:15:39 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/my_pc/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/pc.jpg" alt="Featured image of post 装机记录" /&gt;&lt;p&gt;我的笔记本是四年前买的拯救者 Y7000P 2020，配置放在现在不太够用，再加上之后想把笔记本放到工作室里，于是决定装一台台式电脑&lt;/p&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/pc.jpg" alt="Featured image of post 装机记录" /&gt;&lt;p&gt;我的笔记本是四年前买的拯救者 Y7000P 2020，配置放在现在不太够用，再加上之后想把笔记本放到工作室里，于是决定装一台台式电脑&lt;/p&gt;
 &lt;h2 id=&#34;需求&#34;&gt;需求
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;
@@ -1634,64 +1634,64 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;机箱：&lt;/strong&gt;开放式机架&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;网卡：&lt;/strong&gt;MT7922&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;风扇：&lt;/strong&gt;零度世家 风尊 T30 12cm&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj1.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj1.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;装机过程&#34;&gt;装机过程
 &lt;/h2&gt;&lt;h3 id=&#34;准备&#34;&gt;准备
 &lt;/h3&gt;&lt;p&gt;首先熟读装机法，先吃饭&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj03.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj03.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;合影&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj35.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj35.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;组装好机箱&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj4.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj4.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;打开硬件茶谈的&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV1BG4y137mG/?spm_id_from=333.1387.favlist.content.click&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;【装机教程】全网最好的装机教程，没有之一&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;安装cpu&#34;&gt;安装CPU
 &lt;/h3&gt;&lt;p&gt;拿出板U，检查外观是否正常&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj5.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj5.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;对齐主板和CPU的凹槽，然后轻放CPU，再压下扣具，弹出保护盖&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj6.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj7.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj8.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj6.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;zj7.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;zj8.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;安装内存&#34;&gt;安装内存
 &lt;/h3&gt;&lt;p&gt;打开内存卡扣&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj9.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj9.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;对齐凹槽把内存按到底，直到听到咔嚓声。四槽双内存需要装到第2和第4插槽，我的是双槽就不用考虑这个问题&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj10.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;安装固态硬盘&#34;&gt;安装固态硬盘
 &lt;/h3&gt;&lt;p&gt;将主板散热马甲拧下，检查螺柱有没有多余或者缺少，保证固态安装后不会出现被螺柱顶到，或没有支撑导致歪斜&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj11.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj11.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;将硬盘以30度角左右对准凹槽插入&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj12.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj12.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;&lt;strong&gt;撕下散热马甲背面的保护膜&lt;/strong&gt;，再拧回马甲&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj13.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj13.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;安装风冷&#34;&gt;安装风冷
 &lt;/h3&gt;&lt;p&gt;拆卸原装散热固定器，这四个螺丝非常紧，需要用大号螺丝刀才能拧下，实在拧不动可以求助电脑店，不要大力出奇迹，螺丝刀戳坏主板&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj14.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj14.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;将四个塑料圆柱装到刚刚的螺丝孔上，装上对应主板平台的固定架，然后拧好螺丝&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj15.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj15.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;挤硅脂，在CPU上画X，少了就是刚好，刚好就是多了，多了就是完了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj16.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj16.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;&lt;strong&gt;将散热塔上的膜撕下来&lt;/strong&gt;，然后对准螺丝孔位，放在CPU上面，两边螺丝交替着拧，拧到底再拧松三圈&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj36.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj17.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj36.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj17.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;将风扇装上卡扣，卡进散热塔的凹槽里，注意风扇的方向，应前进后出。散热塔很锋利，装的时候注意不要滴血认主了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj28.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj29.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj28.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj29.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;主板装上机箱&#34;&gt;主板装上机箱
 &lt;/h3&gt;&lt;p&gt;对照说明书上的主板孔位在机箱上拧好螺柱，注意需要拧紧，然后装上IO面板&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj25.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj25.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;将主板安装上去，拧上螺丝，注意螺丝不要拧太紧&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj19.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj19.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;安装sata硬盘&#34;&gt;安装SATA硬盘
 &lt;/h3&gt;&lt;p&gt;找出主板盒子里这样接口的线，一头接主板SATA口，一头接硬盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj20.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;zj20.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;对照机箱说明书把硬盘固定在机箱里&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj21.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj21.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;安装电源与接线&#34;&gt;安装电源与接线
 &lt;/h3&gt;&lt;p&gt;我的是全模组电源，对照说明书找到需要的线&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj22.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj22.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;CPU&lt;/li&gt;
 &lt;li&gt;主板&lt;/li&gt;
@@ -1699,29 +1699,29 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;li&gt;SATA硬盘&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;将线插到电源对应的接口上&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj23.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj23.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;将电源安装到机箱，将线穿过对应的孔洞&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj24.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj24.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;将机箱前板的线也穿过孔洞，对照说明书连接好所有的接口，到这里就可以先进行主板通电测试了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj30.jpg&#34; style=&#34;width: 55%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj27.jpg&#34; style=&#34;width: 35%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj26.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj30.jpg&#34; style=&#34;width: 55%;&#34; /&gt;
+&lt;img src=&#34;zj27.jpg&#34; style=&#34;width: 35%;&#34; /&gt;
+&lt;img src=&#34;zj26.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;一般情况应该是先装显卡再开机，但是我的显卡还没买，所以先进行主板通电测试&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;一次点亮，装机很成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj31.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj31.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;安装显卡&#34;&gt;安装显卡
 &lt;/h3&gt;&lt;p&gt;拿出显卡，检查外观方面有没有损坏&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj37.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj37.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;取下金手指保护套和视频接口的防尘塞并检查&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj38.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj38.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;将机箱躺着放，可以看到主板的PCIe1槽，将金手指对准插槽&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj39.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj39.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;将显卡按进插槽，直到听到咔嚓声&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj40.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj40.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;拧上显卡挡板的螺丝&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj41.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;zj41.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h2 id=&#34;系统与设置&#34;&gt;系统与设置
 &lt;/h2&gt;&lt;p&gt;参考&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV1UP4y1L7io/?spm_id_from=333.1007.top_right_bar_window_default_collection.content.click&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;装机不求人之：史上最全传说级装系统教程，零基础新手一站式WIN10系统安装攻略。内含系统激活、驱动安装、BIOS基础调试及基础烤机稳定性压力测试。_&lt;/a&gt;&lt;/p&gt;
@@ -1739,27 +1739,27 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
     &gt;微PE工具箱 &lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;打开刚刚下载的程序，选择其他安装方式后面的第一个图标，也就是安装到U盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/pe1.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;pe1.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;除了卷标可以自定义以外，其他选项均默认即可，然后点击立即安装进U盘&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/pe2.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;pe2.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h4 id=&#34;安装windows&#34;&gt;安装Windows
 &lt;/h4&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.microsoft.com/zh-cn/software-download/windows11&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;下载 Windows 11&lt;/a&gt;的镜像文件，放入U盘，然后把U盘插在电脑上，开机连按F8将U盘设置成第一启动项，然后进入PE系统&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj32.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj32.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;用DiskGenius给固态分区，选中固态，右键选择快速分区，按照下图进行设置，建议C盘至少200G，分两个区即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj33.bmp&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj33.bmp&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;打开此电脑，找到刚刚的Windows镜像，运行其中的&lt;code&gt;setup.exe&lt;/code&gt;，跟随引导安装系统&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj43.bmp&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;zj43.bmp&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;重启电脑，过程中拔下U盘，开机自动进入Windows系统，跟随初始界面引导进行设置即可，注意电脑命名一定不能使用中文&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj34.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj34.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;在设置里面激活系统，激活码&lt;code&gt;R3BQN-YQP9J-FYHRC-QMVPY-B4G6Y&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj42.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj42.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;安装驱动&#34;&gt;安装驱动
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;进入&lt;a class=&#34;link&#34; href=&#34;https://www.nvidia.cn/geforce/drivers/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;NVIDIA GeForce 驱动程序官网&lt;/a&gt;，填入显卡信息，点击搜索，下载最新的驱动，安装选项全部默认即可&lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj44.png&#34; style=&#34;width: 55%;&#34; /&gt;
+&lt;img src=&#34;zj44.png&#34; style=&#34;width: 55%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/opus/818547975779254336&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;MT7922 WIFI与蓝牙驱动&lt;/a&gt;&lt;/li&gt;
@@ -1772,47 +1772,47 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;基本设置&#34;&gt;基本设置
 &lt;/h4&gt;&lt;p&gt;主界面把语言切换成中文，开启&lt;code&gt;EXPO&lt;/code&gt;，也就是一键内存超频，开启&lt;code&gt;PBO&lt;/code&gt;，让CPU频率更高&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj52.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj52.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;主界面调整风扇转速，建议 (40,35)、(60,60)、(70,100) 几个点&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj53.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj53.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;如果要关机后USB接口停止供电，就进入高级模式，将ErP设置为&lt;code&gt;S4+S5&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj54.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj54.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;稳定性测试&#34;&gt;稳定性测试
 &lt;/h3&gt;&lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.tbtool.cn/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;图吧工具箱&lt;/a&gt; ，在硬件信息里确认一下有没有问题&lt;/p&gt;
 &lt;h4 id=&#34;硬盘&#34;&gt;硬盘
 &lt;/h4&gt;&lt;p&gt;打开&lt;code&gt;AS SSD Benchmark&lt;/code&gt;，选择需要测试的硬盘，点击&lt;code&gt;Start&lt;/code&gt;开始测试&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj57.png&#34; style=&#34;width: 55%;&#34; /&gt;
+&lt;img src=&#34;zj57.png&#34; style=&#34;width: 55%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;CrystalDiskInfo&lt;/code&gt;，检查硬盘的使用情况有没有异常&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj58.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj58.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;cpu体质测试&#34;&gt;CPU体质测试
 &lt;/h4&gt;&lt;p&gt;打开&lt;code&gt;任务管理器&lt;/code&gt;、&lt;code&gt;CoreTemp&lt;/code&gt;、&lt;code&gt;CPU-Z&lt;/code&gt;，检查默频和电压是否正常&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj62.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj62.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;CPU-Z&lt;/code&gt;中点击基准跑分，点击CPU稳定性测试，然后检查是否能跑到对应型号的分数&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj63.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj63.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;HWiNFO&amp;gt;传感器&lt;/code&gt;，找到CPU的详细信息&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj61.png&#34; style=&#34;width: 75%;&#34; /&gt;
+&lt;img src=&#34;zj61.png&#34; style=&#34;width: 75%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;CPU Burner&lt;/code&gt;，点击&lt;code&gt;Start&lt;/code&gt;，然后检查CPU频率与电压。如果稳定在1.3V以下说明是正常的，电压越低说明体质越好，温度应在80度以下。烤机十分钟，若电压温度稳定且没有出现故障，说明CPU已经可以正常使用了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj45.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj45.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;双烤&#34;&gt;双烤
 &lt;/h4&gt;&lt;p&gt;打开&lt;code&gt;FurMark&lt;/code&gt;，在设置中勾选第一和第三个选项，然后点击&lt;code&gt;GPU Stress Test&lt;/code&gt;，开始烤GPU&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj55.png&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;zj55.png&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;AIDA64&lt;/code&gt;，点击系统稳定性测试，只勾选FPU，然后点击左下角的开始&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj56.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj56.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;回到&lt;code&gt;AIDA64&lt;/code&gt;第一个界面，选择&lt;code&gt;计算机&amp;gt;传感器&lt;/code&gt;，可以看到电脑的实时参数，一般应小于85度&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj59.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj59.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;烤机半小时左右，如果没有异常或死机，那么恭喜，电脑可以正常使用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj60.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj60.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;完成&#34;&gt;完成
 &lt;/h2&gt;&lt;p&gt;我最后在风扇和机架轮廓上缠了两条EL冷光线，这样放进机柜后不会由于看不清而碰到主机，而且更好看&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj46.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj46.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;机箱背面的线我做了简单的整理&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj48.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;zj48.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;p&gt;机柜内我加了一层纱窗网，可以防止较大的灰尘进入，还放了一个USB小风扇辅助散热，虽然噪音大了点，但戴上耳机就听不到了。机柜外我采用的是烧烤网加纱窗网&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj50.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj49.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;zj50.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;zj49.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;p&gt;最后是主机的照片，装完机总体感觉并不像想象的难，就像拼积木一样，很好玩&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj51.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;zj51.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 </description>
         </item>
         <item>
@@ -3548,7 +3548,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
         <pubDate>Thu, 26 Jun 2025 12:05:13 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/2025/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/zj0.jpg" alt="Featured image of post [随记]2025大一总结" /&gt;&lt;h1 id=&#34;随记2025大一总结&#34;&gt;[随记]2025大一总结
+        <description>&lt;img src="https://th4uma.github.io/images/cover/zj0.jpg" alt="Featured image of post [随记]2025大一总结" /&gt;&lt;h1 id=&#34;随记2025大一总结&#34;&gt;[随记]2025大一总结
 &lt;/h1&gt;&lt;p&gt;不知不觉大一已经结束，还有两个月就要变成中登了，有些压力。这一年学的东西并不多，但还是有不少收获，主要是心态方面的转变&lt;/p&gt;
 &lt;h2 id=&#34;心理篇&#34;&gt;心理篇
 &lt;/h2&gt;&lt;blockquote&gt;
@@ -3574,13 +3574,13 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/h3&gt;&lt;h4 id=&#34;加入&#34;&gt;加入
 &lt;/h4&gt;&lt;p&gt;​	入社考核分为两次，一是飞手选拔，二是方向选择。第一次考了sw画火火箭和cad画fpv，还有最重要的模拟器。&lt;/p&gt;
 &lt;p&gt;​	我是初中就玩过固定翼的究极老登，虽然玩了好几年连一个航线都飞不下来，再加上多年没碰，但依旧手感爆发，第一次训练飞完航线，之后甚至练会了倒飞，最后理所当然的模拟器分数第一，总分前几。这是我设计的火火箭&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj1.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;zj1.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;​	然后就是分方向，按理说我更适合玩固定翼，也确实喜欢，但是高中就憧憬fpv，感觉fpv又好玩又帅，再说了高中幻想系列总得实现一个吧，于是就选了微折。结果进群后发现5人只能进2人。当时听说固定翼组依旧统一训练，暂时不细分方向，我就一直以为被微折淘汰掉就跟固定翼一起训练了，后面才知道淘汰就寄了，好险(&amp;gt;_&amp;lt;)。&lt;/p&gt;
 &lt;p&gt;​	当时其实并没有抱太大希望能进组，因为同组有两个同学有基础，训练时非常熟练，另外两个同学选择了退出。我也被组长劝退过，因为他认为我先加入固定翼组再额外学习fpv会更容易，但我不服输，还是坚持下来。最终考核有模拟器，焊接，理论，模拟器我不如别人，没有时间加分，但没扣基础分，焊接我拿到了98高分，大概是手比较稳。理论分数不高，由于我当时有些失去希望，就没怎么准备。但最后我居然以0.2的分差超过了最后的同学进来了，最幸运的一集。&lt;/p&gt;
 &lt;h4 id=&#34;练习&#34;&gt;练习
-&lt;/h4&gt;&lt;p&gt;​	成功加入后就是每周去航模室训练，寒假照着图片复刻了队里的fpv图纸!&lt;img src=&#34;https://th4uma.github.io/images/zj2.png&#34; style=&#34;width: 60%;&#34; /&gt;&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;​	成功加入后就是每周去航模室训练，寒假照着图片复刻了队里的fpv图纸!&lt;img src=&#34;zj2.png&#34; style=&#34;width: 60%;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;3月我第一次学会设置飞机，然后第一次飞了真机。练了一个月悬停，终于从一飞就炸机到稳定悬停。月底第一次戴眼镜飞行，没过多久，4月初我就有了自己的第一架fpv&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj3.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj3.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;5月初，我感觉目前用顶级的图传有些没必要而且浪费，再加上总担心炸坏，于是把o4pro拆下来卖了换成小o4，还有了自己的工位。暑假即将开始半个月的训练，我会把这项爱好一直坚持下去&lt;/p&gt;
 &lt;h3 id=&#34;网安&#34;&gt;网安
 &lt;/h3&gt;&lt;h4 id=&#34;加入前&#34;&gt;加入前
@@ -3631,46 +3631,46 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
         <pubDate>Thu, 26 Jun 2025 02:03:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/bjb/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/bjb.jpg" alt="Featured image of post 笔记本清灰与固态加装" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/bjb.jpg" alt="Featured image of post 笔记本清灰与固态加装" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;我的笔记本是四年前买的拯救者y7000p2020，这么多年还没清过灰，512G的固态也是爆满，所以打算好好清理一下并加装固态&lt;/p&gt;
 &lt;p&gt;固态我选择了西数sn5000 1T，价格358，到手如下&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb1.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;bjb1.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h2 id=&#34;拆机&#34;&gt;拆机
 &lt;/h2&gt;&lt;p&gt;先洗手或摸金属放静电，然后拧下螺丝，上面7个是长螺丝，下面4个是短螺丝&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb2.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;bjb2.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;从这三个地方开始，用撬棒撬开缝隙，然后沿边缘滑动以松开卡扣，取下后盖&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb3.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb4.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;bjb3.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;bjb4.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;bjb5.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;注意：拆下后盖后第一步必须先拔掉电池排线，然后按开机键30s左右放静电，否则静电可能击穿主板&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb6.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;bjb6.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;崭新出土&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;bjb7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;安装固态硬盘&#34;&gt;安装固态硬盘
 &lt;/h2&gt;&lt;p&gt;拧下硬盘固定螺丝，将硬盘以30度角左右对准凹槽插入，再拧回螺丝&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb9.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;bjb9.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h2 id=&#34;清灰&#34;&gt;清灰
 &lt;/h2&gt;&lt;p&gt;拆下内存盖板和固态散热马甲，拧下风扇固定螺丝&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb14.jpg&#34; style=&#34;width: 47%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb15.jpg&#34; style=&#34;width: 48%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;bjb14.jpg&#34; style=&#34;width: 47%;&#34; /&gt;
+&lt;img src=&#34;bjb15.jpg&#34; style=&#34;width: 48%;&#34; /&gt;
+&lt;img src=&#34;bjb8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;拆散热器，拧下螺丝时要分多次、对角轮流进行，不可一次性拧到底，以免压强不均造成核心受损。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb10.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;bjb10.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;用酒精棉片清理原有硅脂&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb11.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;bjb11.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;bjb18.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;拆开风扇，由于拯救者y7000p2020的风扇是被塑料铆钉固定死的，需要削下来才能拆开，装回时可以用醋酸胶布固定&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb12.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;bjb12.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;小零食😋&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb13.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;bjb13.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;把灰尘清理干净，在cpu和gpu上贴好霍尼韦尔7950相变片&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb16.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;bjb16.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;按照之前的步骤倒序装回&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb17.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;bjb17.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;大功告成&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/bjb19.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;bjb19.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 </description>
         </item>
         <item>
@@ -3679,7 +3679,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
         <pubDate>Wed, 25 Jun 2025 23:26:20 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/nixie_tube/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/yhj.jpg" alt="Featured image of post [001号机]辉光管时钟" /&gt;&lt;blockquote&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/yhj.jpg" alt="Featured image of post [001号机]辉光管时钟" /&gt;&lt;blockquote&gt;
 &lt;p&gt;本项目复刻自立创开源 &lt;a class=&#34;link&#34; href=&#34;https://oshwhub.com/squirrelmedia/1115-shi-jian-xian-bian-dong-yi&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;时间线变动仪-SQUIRRELMEDIA &lt;/a&gt;,初始作者是bilibili用户&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV1N44y1q7Tf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt; &lt;strong&gt;@遗落之沙&lt;/strong&gt;&lt;/a&gt;，外观参考&lt;a class=&#34;link&#34; href=&#34;https://nixieclock.org/?p=893&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -3937,47 +3937,47 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/h2&gt;&lt;h3 id=&#34;定制&#34;&gt;定制
 &lt;/h3&gt;&lt;h4 id=&#34;pcb板&#34;&gt;pcb板
 &lt;/h4&gt;&lt;p&gt;由于嘉立创只能免费打10*10以内的板，我选择了捷配&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj1.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj1.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;外壳&#34;&gt;外壳
 &lt;/h4&gt;&lt;p&gt;淘宝定制，采用304细直纹拉丝不锈钢材质。由于侧面钣金件比较难做，而且螺丝孔较小，所以效果不算完美，有切割痕迹和一些明显的划痕&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj2.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj2.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;焊板子&#34;&gt;焊板子
 &lt;/h3&gt;&lt;h4 id=&#34;内层板&#34;&gt;内层板
 &lt;/h4&gt;&lt;p&gt;第一次焊接贴片元件，不太熟练，但最终也是完美成功。这里学会了读原理图。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj3.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj3.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;外层板&#34;&gt;外层板
 &lt;/h4&gt;&lt;p&gt;参考了很多网上的成品图片，不过帮助最大的还是omnixie的这张图&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;焊接完成是这样&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj4.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj4.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;初步组装&#34;&gt;初步组装
 &lt;/h3&gt;&lt;h4 id=&#34;控制部分&#34;&gt;控制部分
 &lt;/h4&gt;&lt;p&gt;思考了很久，终于搞明白了供电部分的接线。烧录程序后led灯会亮，但不稳定，大概是红外接收模块没有焊接的缘故。&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj6.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj6.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;外观部分&#34;&gt;外观部分
 &lt;/h4&gt;&lt;p&gt;先3d打印了一个外壳，测试大小和安装方案&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj7.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;最终组装&#34;&gt;最终组装
 &lt;/h3&gt;&lt;h4 id=&#34;辉光管&#34;&gt;辉光管
 &lt;/h4&gt;&lt;p&gt;怕浪费钱，所以其他部分完全做完以后才敢买辉光管&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj8.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;yhj8.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;焊接，这下内外板合并，电路部分彻底完成&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj9.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj9.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：辉光管直接焊接容易造成引脚热胀冷缩，会撑破玻璃导致漏气，所以要么不要把引脚剪太短，要么焊接这种卡簧端子到板子上做成可插拔结构&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj110.jpg&#34; style=&#34;width: 30%;&#34; /&gt;
+&lt;img src=&#34;yhj110.jpg&#34; style=&#34;width: 30%;&#34; /&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;外壳-1&#34;&gt;外壳
 &lt;/h4&gt;&lt;p&gt;定制的时候了解到内侧固定铜柱制作成本高，而且没法打孔，干脆舍弃这部分，改为3d打印件，毕竟对强度没有太大要求。同时，usb接口我也采用了自己画固定件并打印的方法&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj10.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;yhj10.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h4 id=&#34;出现问题&#34;&gt;出现问题
 &lt;/h4&gt;&lt;p&gt;组装好后遇到了奇怪的问题，只有后四个辉光管亮，前四个完全没反应，并且出现部分数字显示不全、错误，部分不显示，还有数字和小数点一起显示的情况&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj11.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;yhj11.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;重新焊接了td62083，解决部分数字显示错误问题，后两个辉光管显示完全正常，坏消息是掉了两个焊盘，只好飞线&lt;/p&gt;
 &lt;h3 id=&#34;结局&#34;&gt;结局
 &lt;/h3&gt;&lt;p&gt;最终重新焊了板子，更换了单片机，检查了升压模块。单独测试每个辉光管，均能正常点亮，测试每个引脚电压，未点亮时是55到65v，点亮时是135v。数据看起来一切正常，但问题依旧是前面几个不亮。重焊板子后虽然解决了数字显示错误的问题，可是只剩下后三个管子会亮。&lt;/p&gt;
 &lt;p&gt;毕竟不是自己设计的东西，难以排查究竟哪里出了问题，初步推断是逻辑或者硬件方面。排查了一个月让我感到身心俱疲，所以我决定暂时放弃这个项目，改为开始制作in12的辉光管时钟，并且之后一边学习一边重新设计电路和程序&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/yhj12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;yhj12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 </description>
         </item>
         <item>
@@ -3986,7 +3986,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
         <pubDate>Wed, 25 Jun 2025 20:24:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/hugo_new/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/hugon00.jpg" alt="Featured image of post Hugo 博客功能拓展" /&gt;&lt;blockquote&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/hugon00.jpg" alt="Featured image of post Hugo 博客功能拓展" /&gt;&lt;blockquote&gt;
 &lt;p&gt;博客搭建过程见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/p/hugo--github%e5%8d%9a%e5%ae%a2%e6%90%ad%e5%bb%ba%e8%ae%b0%e5%bd%95/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Hugo + Github博客搭建记录&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -3995,14 +3995,14 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/h3&gt;&lt;p&gt;注册并登录&lt;a class=&#34;link&#34; href=&#34;https://console.leancloud.cn/apps&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;LeanCloud 控制台&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;点击创建应用，填写名称，选择开发版（免费）&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon1.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;hugon1.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;点击应用左下角数据存储，然后点击创建Class&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon2.png&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon3.png&#34; style=&#34;width: 45%;&#34; /&gt;
+&lt;img src=&#34;hugon2.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;hugon3.png&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;p&gt;类名填&lt;code&gt;Like&lt;/code&gt;，注意首字母大写，其他设置如下&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon4.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;hugon4.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;点击&lt;code&gt;Like&amp;gt;添加列&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon5.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;img src=&#34;hugon5.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
@@ -4025,7 +4025,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;点击左下角&lt;code&gt;设置&amp;gt;应用凭证&lt;/code&gt;，记录自己的&lt;code&gt;AppID&lt;/code&gt;，&lt;code&gt;AppKey&lt;/code&gt;，&lt;code&gt;API 服务器地址&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon6.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;hugon6.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h3 id=&#34;设置&#34;&gt;设置
 &lt;/h3&gt;&lt;p&gt;从&lt;a class=&#34;link&#34; href=&#34;https://tabler.io/icons&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Tabler Icons&lt;/a&gt;下载点赞图标命名为&lt;code&gt;thumb-up&lt;/code&gt;，放在&lt;code&gt;static/icons&lt;/code&gt;下&lt;/p&gt;
@@ -4271,7 +4271,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/div&gt;&lt;h3 id=&#34;粒子&#34;&gt;粒子
 &lt;/h3&gt;&lt;p&gt;在&lt;a class=&#34;link&#34; href=&#34;https://vincentgarreau.com/particles.js/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;这里&lt;/a&gt;自行设置，&lt;code&gt;detect_on&lt;/code&gt;要改成 &lt;code&gt;window&lt;/code&gt;，然后下载配置文件与js文件&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;hugon7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;解压文件，将 &lt;code&gt;particles.min.js&lt;/code&gt; 和 &lt;code&gt;particlesjs-config.json&lt;/code&gt; 放在 &lt;code&gt;assets/background&lt;/code&gt; 文件夹下&lt;/p&gt;
 &lt;p&gt;在 &lt;code&gt;layouts/partials/footer/custom.html&lt;/code&gt; 中加入&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -4392,7 +4392,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;背景图片&#34;&gt;背景图片
 &lt;/h3&gt;&lt;p&gt;将背景图放在&lt;code&gt;assets/background&lt;/code&gt;下&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugon8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;hugon8.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;layouts/partials/footer/custom.html&lt;/code&gt;中加入以下代码，并修改图片名&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -5503,7 +5503,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;特殊功能&#34;&gt;特殊功能
 &lt;/h2&gt;&lt;h3 id=&#34;代码块折叠&#34;&gt;代码块折叠
-&lt;/h3&gt;&lt;p&gt;将&lt;a class=&#34;link&#34; href=&#34;https://github.com/Th4uma/Th4uma.github.io/tree/main/images/codeMore.png&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;/h3&gt;&lt;p&gt;将&lt;a class=&#34;link&#34; href=&#34;https://github.com/Th4uma/Th4uma.github.io/tree/maincodeMore.png&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;&lt;strong&gt;展开图片&lt;/strong&gt;&lt;/a&gt;放到&lt;code&gt;assets/icons&lt;/code&gt;目录下&lt;/p&gt;
 &lt;p&gt;在&lt;code&gt;layouts/partials/footer/custom.html&lt;/code&gt;加入以下代码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -6007,7 +6007,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
         <pubDate>Tue, 24 Jun 2025 11:24:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/hugo_blog/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/hugo00.jpg" alt="Featured image of post Hugo &#43; GitHub博客搭建记录" /&gt;&lt;h2 id=&#34;环境准备&#34;&gt;环境准备
+        <description>&lt;img src="https://th4uma.github.io/images/cover/hugo00.jpg" alt="Featured image of post Hugo &#43; GitHub博客搭建记录" /&gt;&lt;h2 id=&#34;环境准备&#34;&gt;环境准备
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio/hugo&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -6017,7 +6017,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;将 Hugo 解压路径添加至系统 PATH&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugo1.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;hugo1.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;注册&lt;a class=&#34;link&#34; href=&#34;https://github.com/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;GitHub&lt;/a&gt;&lt;/li&gt;
@@ -6027,14 +6027,18 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;h2 id=&#34;搭建博客&#34;&gt;搭建博客
 &lt;/h2&gt;&lt;h3 id=&#34;创建站点&#34;&gt;创建站点
 &lt;/h3&gt;&lt;p&gt;hugo目录下打开命令行，输入&lt;code&gt;hugo new site blog&lt;/code&gt;，新建一个存放网站文件的文件夹，成功后出现提示&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/hugo2.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/hugo_blog/hugo2.png&#34;
+	width=&#34;839&#34;
+	height=&#34;243&#34;
+	srcset=&#34;https://th4uma.github.io/post/hugo_blog/hugo2_hu_7f6bb8fbef53540a.png 480w, https://th4uma.github.io/post/hugo_blog/hugo2_hu_139ce6a11e6da8e4.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;屏幕截图&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;345&#34;
+		data-flex-basis=&#34;828px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h3 id=&#34;主题配置&#34;&gt;主题配置
@@ -6057,14 +6061,18 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;此时网站框架完成，输入&lt;code&gt;hugo server --buildDrafts&lt;/code&gt;命令启动服务，打开输出的地址，如&lt;code&gt;http://localhost:1313/&lt;/code&gt;，就可以看到网站的框架了&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/hugo3.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/hugo_blog/hugo3.png&#34;
+	width=&#34;1815&#34;
+	height=&#34;1381&#34;
+	srcset=&#34;https://th4uma.github.io/post/hugo_blog/hugo3_hu_63fb3a71512255fd.png 480w, https://th4uma.github.io/post/hugo_blog/hugo3_hu_9b5d5af97b16b0d4.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;屏幕截图&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;131&#34;
+		data-flex-basis=&#34;315px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;h3 id=&#34;主要文件夹&#34;&gt;主要文件夹
@@ -6297,20 +6305,24 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;              &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;icon&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;brand-github&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;#图标文件名&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;到这里本地的设置和调试基本完成了，网站现在是这样：&lt;img src=&#34;https://th4uma.github.io/images/hugo4.png&#34;
-	
-	
-	
+&lt;/div&gt;&lt;p&gt;到这里本地的设置和调试基本完成了，网站现在是这样：&lt;img src=&#34;https://th4uma.github.io/post/hugo_blog/hugo4.png&#34;
+	width=&#34;1896&#34;
+	height=&#34;1381&#34;
+	srcset=&#34;https://th4uma.github.io/post/hugo_blog/hugo4_hu_7339d1324b93b475.png 480w, https://th4uma.github.io/post/hugo_blog/hugo4_hu_54400e53071b9944.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 		alt=&#34;屏幕截图&#34;
 	
 	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;137&#34;
+		data-flex-basis=&#34;329px&#34;
+	
 &gt;&lt;/p&gt;
 &lt;h2 id=&#34;部署到github&#34;&gt;部署到GitHub
 &lt;/h2&gt;&lt;h3 id=&#34;手动部署&#34;&gt;手动部署
 &lt;/h3&gt;&lt;p&gt;github新建一个公有仓库，命名建议&lt;code&gt;github用户名.github.io&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugo5.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;img src=&#34;hugo5.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;修改&lt;code&gt;hugo.yaml&lt;/code&gt;文件&lt;code&gt;baseurl&lt;/code&gt;参数为&lt;code&gt;https://用户名.github.io/&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;我们需要把public文件夹下的文件上传，因此在此文件夹下打开命令行，然后依次输入下列命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -6332,7 +6344,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;仓库界面进入&lt;code&gt;settings&amp;gt;pages&amp;gt;branch&lt;/code&gt;选择main，保存，刷新后出现自己网站的url，部署成功&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/hugo6.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;hugo6.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h3 id=&#34;github-action实现自动化部署&#34;&gt;GitHub Action实现自动化部署
 &lt;/h3&gt;&lt;p&gt;github新建一个仓库用来存放hugo主文件，建议设置成私有&lt;/p&gt;
 &lt;p&gt;由于自动生成的文件比如public不需要上传，因此在&lt;code&gt;\hugo\blog&lt;/code&gt;文件夹新建一个&lt;code&gt;.gitignore&lt;/code&gt;文件来忽略上传，文件中写入&lt;/p&gt;
@@ -6368,12 +6380,16 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;在&lt;a class=&#34;link&#34; href=&#34;https://github.com/settings/tokens&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Personal Access Tokens (Classic)&lt;/a&gt;新建一个token，设置如下&lt;img src=&#34;https://th4uma.github.io/images/hugo7.png&#34;
-	
-	
-	
+    &gt;Personal Access Tokens (Classic)&lt;/a&gt;新建一个token，设置如下&lt;img src=&#34;https://th4uma.github.io/post/hugo_blog/hugo7.png&#34;
+	width=&#34;1397&#34;
+	height=&#34;684&#34;
+	srcset=&#34;https://th4uma.github.io/post/hugo_blog/hugo7_hu_fb54b8b4d3dbaa60.png 480w, https://th4uma.github.io/post/hugo_blog/hugo7_hu_6ea2ef81274fe62e.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;204&#34;
+		data-flex-basis=&#34;490px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;进入存放hugo主文件的仓库，选择&lt;code&gt;Settings&amp;gt; Secrets and variables&amp;gt; Actions&amp;gt;Repository secrets&lt;/code&gt;新增环境变量，填入token&lt;/p&gt;
@@ -6465,22 +6481,35 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git push
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;仓库中显示运行成功，部署完成&lt;img src=&#34;https://th4uma.github.io/images/hugo8.png&#34;
-	
-	
-	
+&lt;/div&gt;&lt;p&gt;仓库中显示运行成功，部署完成&lt;img src=&#34;https://th4uma.github.io/post/hugo_blog/hugo8.png&#34;
+	width=&#34;1773&#34;
+	height=&#34;592&#34;
+	srcset=&#34;https://th4uma.github.io/post/hugo_blog/hugo8_hu_783c507c92bc6854.png 480w, https://th4uma.github.io/post/hugo_blog/hugo8_hu_8cd475aeab6ed44d.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;299&#34;
+		data-flex-basis=&#34;718px&#34;
+	
 &gt;&lt;/p&gt;
 &lt;h2 id=&#34;附图片引用问题&#34;&gt;附：图片引用问题
-&lt;/h2&gt;&lt;p&gt;文章中的图片引用绝对路径会报错，因此在&lt;code&gt;static&lt;/code&gt;文件夹下新建一个&lt;code&gt;images&lt;/code&gt;文件夹，把文章中用到的图片放进去，改名使图片名中不含空格。在文章中加入下面的代码来引用&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;方案一：&lt;/strong&gt; 文章中的图片引用绝对路径会报错，因此在&lt;code&gt;static&lt;/code&gt;文件夹下新建一个&lt;code&gt;images&lt;/code&gt;文件夹，把文章中用到的图片放进去，改名使图片名中不含空格。在文章中加入下面的代码来引用&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;img&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/images/图片名&amp;#34;&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;width: 缩放百分比%;&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;方案二（推荐 ）：&lt;/strong&gt; 将每篇文章的图片都放在&lt;code&gt;content&amp;gt;post&amp;gt;文章文件夹&lt;/code&gt;，和&lt;code&gt;index.md&lt;/code&gt;放在一起，用下面的代码进行引用，这样更整洁，也方便管理。只有封面图放在&lt;code&gt;image&lt;/code&gt;文件夹，方便查找和更换&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;img&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;图片名&amp;#34;&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;style&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;width: 缩放百分比%;&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;/&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
@@ -6717,7 +6746,7 @@ $$&lt;h4 id=&#34;行内数学公式&#34;&gt;行内数学公式
 &lt;/h2&gt;&lt;p&gt;Thaumazein是希腊语中惊奇或敬畏的意思，面对这个信息复杂、快速演化的时代，我希望自己能始终保持对未知世界的好奇心和思考力。Th4uma则是这个名字的简化变体，更好写也更便于记忆&lt;/p&gt;
 &lt;h2 id=&#34;关于我的鸟&#34;&gt;关于我的鸟
 &lt;/h2&gt;&lt;p&gt;这是闹闹，10岁，能力是瞬移，可以秒杀我&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/nao.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;nao.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;兴趣爱好&#34;&gt;兴趣爱好
 &lt;/h2&gt;&lt;p&gt;兴趣非常广泛，基本想到什么就去折腾什么。虽然很多只是浅尝辄止，但也都留下了一些痕迹。以下是目前还在持续投入的：&lt;/p&gt;
 &lt;h3 id=&#34;航模&#34;&gt;航模

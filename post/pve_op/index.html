@@ -10,10 +10,10 @@
 <meta property='og:description' content="在虚拟化环境中部署软路由">
 <meta property='og:url' content='https://th4uma.github.io/post/pve_op/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/op.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-12-08T12:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/op.jpg' />
 <meta name="twitter:title" content="OpenWrt 在 ProxmoxVE 上的安装和基本配置">
 <meta name="twitter:description" content="在虚拟化环境中部署软路由"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/op.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/op.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -322,7 +322,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/pve_op/">
                 
-                    <img src="/images/op.jpg" loading="lazy" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" />
+                    <img src="/images/cover/op.jpg" loading="lazy" alt="Featured image of post OpenWrt 在 ProxmoxVE 上的安装和基本配置" />
                 
             </a>
         </div>
@@ -405,22 +405,22 @@ unicode: "f6d2"
 <p>打开PVE系统管理界面右侧<code>pve&gt;local(pve)&gt;ISO镜像&gt;上传</code>，选择刚刚下载好的img文件，记住保存路径</p>
 </li>
 </ul>
-<img src="/images/aio27.png" style="width: 100%;" />
-<img src="/images/aio28.png" style="width: 100%;" />
+<img src="aio27.png" style="width: 100%;" />
+<img src="aio28.png" style="width: 100%;" />
 <h2 id="在pve中创建虚拟机">在PVE中创建虚拟机
 </h2><p>在PVE系统管理界面，右上角点击新建虚拟机，然后按照下图进行设置</p>
-<img src="/images/aio20.png" style="width: 90%;" />
+<img src="aio20.png" style="width: 90%;" />
 <p>选择不使用任何介质</p>
-<img src="/images/aio21.png" style="width: 100%;" />
-<img src="/images/aio22.png" style="width: 100%;" />
+<img src="aio21.png" style="width: 100%;" />
+<img src="aio22.png" style="width: 100%;" />
 <p>删除虚拟机默认生成的磁盘</p>
-<img src="/images/aio23.png" style="width: 100%;" />
+<img src="aio23.png" style="width: 100%;" />
 <p>填写CPU核心数</p>
-<img src="/images/aio24.png" style="width: 100%;" />
+<img src="aio24.png" style="width: 100%;" />
 <p>内存1到2GB即可</p>
-<img src="/images/aio25.png" style="width: 100%;" />
+<img src="aio25.png" style="width: 100%;" />
 <p>此处模型选择VirtIO，Linux的支持更好</p>
-<img src="/images/aio26.png" style="width: 100%;" />
+<img src="aio26.png" style="width: 100%;" />
 <p>然后打开宿主机命令行，输入以下命令导入磁盘：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -431,43 +431,43 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>出现成功提示说明磁盘添加成功</p>
-<img src="/images/aio29.png" style="width: 100%;" />
+<img src="aio29.png" style="width: 100%;" />
 <p>进入<code>pve&gt;100&gt;硬件&gt;未使用的磁盘0</code>，点击添加</p>
-<img src="/images/aio29a.png" style="width: 80%;" />
+<img src="aio29a.png" style="width: 80%;" />
 <p>选中硬盘，选择<code>磁盘操作&gt;调整大小</code>，将大小设置为<code>5GB</code></p>
-<img src="/images/aio29b.png" style="width: 90%;" />
+<img src="aio29b.png" style="width: 90%;" />
 <h2 id="网络配置">网络配置
 </h2><h3 id="虚拟网络拓扑">虚拟网络拓扑
 </h3><blockquote>
 <p>在路由器中，WAN口连接上游网络，LAN口提供局域网服务。在 PVE 虚拟机中运行 OpenWrt 时，需要先为虚拟机分配物理网卡，让 OpenWrt 识别并设置对应的WAN或LAN口，从而形成完整网络</p>
 </blockquote>
 <p>进入<code>pve&gt;系统&gt;网络&gt;创建&gt;Linux Bridge</code>，然后选择好桥接端口，依次添加所有网口后，重启PVE</p>
-<img src="/images/aio31.png" style="width: 100%;" />
+<img src="aio31.png" style="width: 100%;" />
 <p>进入<code>pve&gt;100&gt;硬件&gt;添加&gt;网络设备</code>，将刚刚设置好的接口全部添加</p>
-<img src="/images/aio30.png" style="width: 100%;" />
+<img src="aio30.png" style="width: 100%;" />
 <h3 id="启动">启动
 </h3><p>在<code>pve&gt;100&gt;选项&gt;引导顺序</code>中，将scsi0设置到第一位并启用</p>
-<img src="/images/aio32.png" style="width: 80%;" />
+<img src="aio32.png" style="width: 80%;" />
 <p>将<code>开机自启动</code>设为是</p>
-<img src="/images/aio35.png" style="width: 100%;" />
+<img src="aio35.png" style="width: 100%;" />
 <p>右上角启动虚拟机，进入控制台，等一会显示<code>please press enter</code>后按回车，显示如下画面就说明启动成功</p>
-<img src="/images/aio33.png" style="width: 70%;" />
+<img src="aio33.png" style="width: 70%;" />
 <h3 id="更改默认lan-ip">更改默认LAN IP
 </h3><blockquote>
 <p>OpenWrt 默认使用 <strong>192.168.1.1</strong> 并开启 DHCP，直接接入原有网络往往会与光猫或旧主路由冲突。因为我准备让 OpenWrt 成为新的主路由，所以只需在首次启动后把 LAN 地址改成计划使用的网段。完成修改并重启后，就可以安全接入主网络，不会再出现地址或 DHCP 冲突</p>
 </blockquote>
 <p>输入<code>vi /etc/config/network</code>，进入vi编辑画面后按<code>i</code>进入编辑状态，对LAN IP进行修改，我这里改成了<code>192.168.10.1</code></p>
-<img src="/images/aio34.png" style="width: 50%;" />
+<img src="aio34.png" style="width: 50%;" />
 <p>修改完毕后，按ESC键退出编辑模式，这时输入<code>:wq</code> ，然后enter保存，最后输入<code>reboot</code>重启</p>
 <p>浏览器访问设置的IP进入OpenWrt管理界面，输入密码登录，<a class="link" href="/post/aio/#%e9%99%84%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2%e6%97%a0%e6%b3%95%e8%bf%9b%e5%85%a5%e7%9a%84%e8%a7%a3%e5%86%b3%e6%96%b9%e6%b3%95" >若无法访问可尝试此方法</a></p>
-<img src="/images/aio37.png" style="width: 100%;" />
+<img src="aio37.png" style="width: 100%;" />
 <h3 id="pve-管理地址迁移">PVE 管理地址迁移
 </h3><blockquote>
 <p>PVE 的管理口和 OpenWrt 的 LAN 默认不在同一个网段，设备进入 LAN 后就访问不到 PVE。把 PVE 管理 IP 改到 LAN 网段，任何 LAN 口就都能同时管理 PVE 和 OpenWrt</p>
 <p><strong>注意：在修改 vmbr0 前，必须确认 OpenWrt LAN 已经绑定到 vmbr0，否则 PVE 会直接从网络消失</strong></p>
 </blockquote>
 <p>进入<code>pve&gt;系统&gt;网络&gt;vmbr0</code>，做如图修改，此时新的管理地址变成了<code>https://192.168.10.99:8006/</code>，当你可以同时进入OpenWRT和PVE的管理界面时，说明设置成功</p>
-<img src="/images/op1.png" style="width: 80%;" />
+<img src="op1.png" style="width: 80%;" />
 <h3 id="设置lan口和wan口">设置LAN口和WAN口
 </h3><blockquote>
 <p><strong>注意</strong>：OpenWRT中显示的网口编号不等于物理网口编号，具体编号需要看映射情况，推荐做一个下表来直观显示映射情况</p>
@@ -514,11 +514,11 @@ unicode: "f6d2"
   </tbody>
 </table></div>
 <p>进入OpenWrt管理界面，<code>network&gt;interfaces&gt;wan&gt;edit</code>，然后将device改成需要的WAN口，右下角保存</p>
-<img src="/images/op2.png" style="width: 100%;" />
+<img src="op2.png" style="width: 100%;" />
 <p>进入<code>devices&gt;br-lan&gt;configure</code>，勾选需要的LAN口，右下角保存，然后点击<code>Save &amp; Apply</code></p>
-<img src="/images/op3.png" style="width: 100%;" />
+<img src="op3.png" style="width: 100%;" />
 <p>用网线将WAN口连接到光猫或者上级路由器，WAN这里显示IP地址说明配置完成，这时候就可以上网了</p>
-<img src="/images/op7.png" style="width: 100%;" />
+<img src="op7.png" style="width: 100%;" />
 <h3 id="设置时区和-ntp">设置时区和 NTP
 </h3><p>在<code>系统&gt;常规设置</code>里把时区改成 <code>Asia/Shanghai</code></p>
 <p>在<code>系统&gt;时间同步</code>里删除默认的NTP服务器，换成速度更快的</p>
@@ -540,7 +540,7 @@ unicode: "f6d2"
 <p>OpenWrt官方服务器在国外，直连更新安装会比较慢，所以要先更换国内源</p>
 </blockquote>
 <p>进入OpenWrt管理界面，<code>system&gt;software&gt;configure opkg</code></p>
-<img src="/images/op4.png" style="width: 80%;" />
+<img src="op4.png" style="width: 80%;" />
 <p>将<code>/etc/opkg/distfeeds.conf</code>中的地址，将网址中的<code>downloads.openwrt.org</code>全部替换成<code>mirrors.tuna.tsinghua.edu.cn/openwrt</code>，点击Save保存，我的版本修改好是这样的</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -567,14 +567,14 @@ unicode: "f6d2"
 <p>OpenWrt每次重启后可用插件列表都会清空，要安装或者更新插件需要手动更新</p>
 </blockquote>
 <p>点击software界面的<code>Update lists…</code></p>
-<img src="/images/op5.png" style="width: 100%;" />
+<img src="op5.png" style="width: 100%;" />
 <p>更新成功</p>
-<img src="/images/op6.png" style="width: 60%;" />
+<img src="op6.png" style="width: 60%;" />
 <h3 id="安装中文插件">安装中文插件
 </h3><p>在插件过滤框里面输入<code>zh-cn</code>筛选中文界面插件，然后点击下载</p>
-<img src="/images/op8.png" style="width: 100%;" />
+<img src="op8.png" style="width: 100%;" />
 <p>安装好后刷新，页面就变成了中文，此时再输入<code>zh-cn</code>筛选会看到更多中文插件</p>
-<img src="/images/op9.png" style="width: 100%;" />
+<img src="op9.png" style="width: 100%;" />
 <h2 id="扩容">扩容
 </h2><blockquote>
 <p>OpenWrt默认只会分配100M空间用于安装插件，所以需要给空间扩容</p>
@@ -603,19 +603,19 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重启完成后再次进入网页管理页面，打开系统下拉菜单，会多出来一个挂载点选项说明安装成功</p>
-<img src="/images/op10.png" style="width: 50%;" />
+<img src="op10.png" style="width: 50%;" />
 <h3 id="配置扩容分区">配置扩容分区
 </h3><p>控制台输入<code>cfdisk</code>进入下方界面，选择<code>Free space</code>，下方选中<code>New</code>后回车，输入<code>5G</code>回车</p>
-<img src="/images/op11.png" style="width: 100%;" />
+<img src="op11.png" style="width: 100%;" />
 <p>可以发现新分出了一块5G大小的空间<code>/dev/sda3</code>，选中后下方选择<code>write</code>回车，输入<code>yes</code>确定，然后选择<code>Quit</code>退出。</p>
-<img src="/images/op12.png" style="width: 100%;" />
+<img src="op12.png" style="width: 100%;" />
 <p>输入<code>mkfs.ext4 /dev/sda3</code>，用ext4的文件系统格式对该区域格式化</p>
-<img src="/images/op13.png" style="width: 80%;" />
+<img src="op13.png" style="width: 80%;" />
 <h3 id="复制根目录">复制根目录
 </h3><p>回到网页管理页面，进入<code>系统&gt;挂载点</code>，点击<code>挂载已连接的设备</code>刷新硬盘信息，然后下拉到<code>挂载点</code>，可以看到<code>/dev/sda3</code>出现在最下方</p>
-<img src="/images/op14.png" style="width: 100%;" />
+<img src="op14.png" style="width: 100%;" />
 <p>点击<code>编辑</code>，勾选<code>启用</code>，挂载点选择<code>作为根文件系统使用</code>，复制根目录准备中的内容并将中间的<code>/dev/sda1</code>改成自己的分区路径，我的是<code>/dev/sda3</code>。点击保存，再点击右下角保存并应用</p>
-<img src="/images/op15.png" style="width: 100%;" />
+<img src="op15.png" style="width: 100%;" />
 <p>回到命令行，将修改完成的内容复制进去，这个操作是将原来根目录的文件全都复制到新的分区，然后重启</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -638,7 +638,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在网页管理页面，进入<code>系统&gt;软件包</code>，可以看到磁盘空间变成了4.84GiB，扩容成功</p>
-<img src="/images/op16.png" style="width: 100%;" />
+<img src="op16.png" style="width: 100%;" />
 <blockquote>
 <p>基础配置完成后，可以根据需求安装各类插件，详见<a class="link" href="https://th4uma.github.io/post/op_add"  target="_blank" rel="noopener"
     >OpenWrt插件推荐与配置</a></p>
@@ -647,17 +647,17 @@ unicode: "f6d2"
 </h2><p>我学校的校园网是深澜认证，连接网络后会自动跳转到网页认证界面，输入学号和密码就可以上网。而认证失效的情况，大概一学期只会出现几次，所以我不需要安装自动认证脚本，只需要修改wan口的MAC地址为认证成功电脑的MAC地址即可</p>
 <h3 id="修改mac地址">修改MAC地址
 </h3><p><code>网络&gt;设备&gt;wan口</code>，点击配置，把MAC地址改成电脑的MAC</p>
-<img src="/images/op40.png" style="width: 40%;" />
+<img src="op40.png" style="width: 40%;" />
 <h3 id="禁用ipv6">禁用IPv6
 </h3><p>由于校园网不支持IPv6，如果不禁用，会无法访问支持IPv6的网站</p>
 <p>在<code>网络&gt;接口</code>中，删除<code>WAN6</code>这个接口</p>
-<img src="/images/op41.png" style="width: 90%;" />
+<img src="op41.png" style="width: 90%;" />
 <p>在<code>LAN&gt;编辑&gt;DHCP服务器&gt;IPv6设置</code>中，将<code>RA 服务</code>，<code>DHCPv6 服务</code> ，<code>NDP 代理</code> 选择 <code>已禁用</code></p>
-<img src="/images/op42.png" style="width: 90%;" />
+<img src="op42.png" style="width: 90%;" />
 <p>然后点击<code>高级设置</code>，把 <code>IPv6 分配长度</code>选择<code>已禁用</code>，最后保存并应用</p>
-<img src="/images/op43.png" style="width: 70%;" />
+<img src="op43.png" style="width: 70%;" />
 <p>在<code>网络&gt;防火墙&gt;通信规则</code>中，把所有为<code>入站IPv6</code>或<code>转发IPv6</code>或<code>出站IPv6</code>的<code>启用</code>放弃勾选，然后保存并应用</p>
-<img src="/images/op44.png" style="width: 100%;" />
+<img src="op44.png" style="width: 100%;" />
 <p>进入<code>pve&gt;100&gt;控制台</code>，输入下列命令，回车执行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -701,7 +701,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sysctl -p /etc/sysctl.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/op45.png" style="width: 100%;" />
+</div><img src="op45.png" style="width: 100%;" />
 <p>然后重启路由器，就可以访问之前打不开的网页了</p>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://blog.csdn.net/u012374381/article/details/130650909"  target="_blank" rel="noopener"
@@ -788,7 +788,7 @@ unicode: "f6d2"
         
             <div class="article-image">
                 
-                    <img src="/op1.jpg" loading="lazy" data-key="" data-hash="/op1.jpg"/>
+                    <img src="/images/cover/op1.jpg" loading="lazy" data-key="" data-hash="/images/cover/op1.jpg"/>
                 
             </div>
         
@@ -807,7 +807,7 @@ unicode: "f6d2"
         
             <div class="article-image">
                 
-                    <img src="/images/aio.jpg" loading="lazy" data-key="" data-hash="/images/aio.jpg"/>
+                    <img src="/images/cover/aio.jpg" loading="lazy" data-key="" data-hash="/images/cover/aio.jpg"/>
                 
             </div>
         
@@ -826,7 +826,7 @@ unicode: "f6d2"
         
             <div class="article-image">
                 
-                    <img src="/images/st1.jpg" loading="lazy" data-key="" data-hash="/images/st1.jpg"/>
+                    <img src="/images/cover/st1.jpg" loading="lazy" data-key="" data-hash="/images/cover/st1.jpg"/>
                 
             </div>
         
@@ -1029,7 +1029,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">48.28</span> 
+      <span class="number-highlight">48.42</span> 
       k 字
   </div>
   <div>

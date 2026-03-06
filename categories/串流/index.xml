@@ -13,7 +13,7 @@
         <pubDate>Tue, 17 Feb 2026 23:35:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/streaming/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/st1.jpg" alt="Featured image of post Sunshine&#43;Moonlight远程串流" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/st1.jpg" alt="Featured image of post Sunshine&#43;Moonlight远程串流" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩&lt;/p&gt;
 &lt;p&gt;因此在不改变目前设备位置与数量的情况下，我需要串流来实现我的需求&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备
@@ -46,36 +46,36 @@
 &lt;h3 id=&#34;主机端设置&#34;&gt;主机端设置
 &lt;/h3&gt;&lt;p&gt;开机进入BIOS，进入高级模式，将&lt;code&gt;由PCI-E设备唤醒&lt;/code&gt;设置为&lt;code&gt;开启&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;WOL需要网卡待机供电，因此将ErP设置为&lt;code&gt;关闭&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj55.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;zj55.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;打开&lt;code&gt;设备管理器&amp;gt;网络适配器&amp;gt;右键网卡&amp;gt;属性&amp;gt;电源管理&lt;/code&gt;，勾选&lt;code&gt;允许此设备唤醒计算机&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj64.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;zj64.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入&lt;code&gt;高级&lt;/code&gt;选项卡，将&lt;code&gt;唤醒幻数据包&lt;/code&gt;和&lt;code&gt;唤醒模式匹配&lt;/code&gt;设置为开启&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/zj65.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;zj65.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;控制端设置&#34;&gt;控制端设置
 &lt;/h3&gt;&lt;p&gt;手机下载&lt;code&gt;Fing&lt;/code&gt;，和电脑连接同一网络&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl1.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl1.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;点击扫描现有网络，在设备界面找到主机设备名&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl2.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl2.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;进入主机的界面，点击&lt;code&gt;LAN唤醒&lt;/code&gt;，这里会自动填写好信息，点击发送即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;如果需要远程串流，还需要进一步配置远程WOL，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#wake-on-lan&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;内网串流&#34;&gt;内网串流
 &lt;/h2&gt;&lt;p&gt;服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;访问&lt;a class=&#34;link&#34; href=&#34;https://localhost:47990&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;管理地址&lt;/a&gt;，第一次进入的时候浏览器会警告非私密链接，选择继续访问&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl8.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;cl8.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;设置管理员用户名和密码，这个用户名密码是存储在本地的，必须牢记，如果忘记没办法找回，就无法进入配置页面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl9.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;确认账号密码后进行登录，然后跳转到这个界面&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl10.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl10.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;调整网页语言，进入&lt;code&gt;Configuration&amp;gt;General&amp;gt;Locale&lt;/code&gt;，选择简体中文，保存并应用&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl11.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;客户端安装Moonlight，和服务端连接同一局域网，刷新后设备列表出现服务端，进行配对即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;外网串流&#34;&gt;外网串流
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#zerotier&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -85,11 +85,11 @@
     &gt;皎月连&lt;/a&gt;，然后注册一个账号&lt;/p&gt;
 &lt;p&gt;启动并访问&lt;a class=&#34;link&#34; href=&#34;http://localhost:33272&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;控制界面&lt;/a&gt;，登录后进入&lt;code&gt;服务端&lt;/code&gt;，开启组网模式并设置密码，这里就能看到虚拟局域网的IP，然后开启服务&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl13.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;cl13.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;客户端登录后可以看到服务端设备名，选中后点击连接&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl14.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl14.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;打开Moonlight，点击右上角的加号，输入虚拟局域网的IP地址，然后添加，可以看到设备可用，这样就可以在外进行串流了&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/cl15.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;cl15.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 </description>
         </item>
         
