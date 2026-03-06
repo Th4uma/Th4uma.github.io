@@ -10,10 +10,10 @@
 <meta property='og:description' content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影 解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n">
 <meta property='og:url' content='https://th4uma.github.io/post/l3ctf25/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/l300.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/l300.jpg' />
 <meta name="twitter:title" content="L3HCTF 2025 misc wp">
 <meta name="twitter:description" content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影 解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/l300.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/l300.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -293,7 +293,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/l3ctf25/">
                 
-                    <img src="/images/l300.jpg" loading="lazy" alt="Featured image of post L3HCTF 2025 misc wp" />
+                    <img src="/images/cover/l300.jpg" loading="lazy" alt="Featured image of post L3HCTF 2025 misc wp" />
                 
             </a>
         </div>
@@ -357,8 +357,8 @@ unicode: "f6d2"
     <p>也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目</p>
 <h2 id="量子双生影">量子双生影
 </h2><p>解压出webp文件，是ai处理过的二维码，写脚本转换成黑白</p>
-<img src="/images/l31.png" style="width: 60%;" />
-<img src="/images/l32.png" style="width: 60%;" />
+<img src="l31.png" style="width: 60%;" />
+<img src="l32.png" style="width: 60%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -403,27 +403,27 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">rgb_to_black_white</span><span class="p">(</span><span class="s2">&#34;stream2.webp&#34;</span><span class="p">,</span> <span class="s2">&#34;bw_output.png&#34;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/l34.png" style="width: 60%;" />
-<img src="/images/l33.png" style="width: 60%;" />
+</div><img src="l34.png" style="width: 60%;" />
+<img src="l33.png" style="width: 60%;" />
 <p>扫第二个二维码</p>
 <p><code>flag is not here, but I can give you the key: &quot;quantum&quot;</code></p>
 <p>观察发现第一个二维码好像两个二维码重叠起来了，结合提示，将两个二维码进行xor运算</p>
-<img src="/images/l35.bmp" style="width: 60%;" />
+<img src="l35.bmp" style="width: 60%;" />
 <p><code>L3HCTF{Quantum_ADS_XOR}</code></p>
 <h2 id="why-not-read-it-out">Why not read it out?
 </h2><p>解压后的readme文件分析头尾是jpg，同时发现文件尾部还藏了数据<code>==wdllmdlJFIOdUSgoDduFDa</code></p>
-<img src="/images/l36.png" style="width: 100%;" />
+<img src="l36.png" style="width: 100%;" />
 <p><code>h1nt: IGN Review</code></p>
 <p>是图形编码，随波逐流没有查到，结合题目，也许是表音文字</p>
-<img src="/images/l37.jpg" style="width: 100%;" />
+<img src="l37.jpg" style="width: 100%;" />
 <blockquote>
 <p>比赛时死活没搜到，可能是没有裁剪图片的原因&hellip;</p>
 </blockquote>
 <p>搜索发现是tunic这个游戏</p>
-<img src="/images/l38.png" style="width: 50%;" />
+<img src="l38.png" style="width: 50%;" />
 <p>搜索ign对这个游戏的评价<a class="link" href="https://www.ign.com/articles/tunic-review-xbox-pc-steam"  target="_blank" rel="noopener"
     >Tunic Review - IGN</a>，发现最开始两段话的标点符号和图片可以对应上</p>
-<img src="/images/l312.png" style="width: 70%;" />
+<img src="l312.png" style="width: 70%;" />
 <p>破解部分实在不会，看大佬wp得知是把元音辅音位置对调了，破解出来是这样</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -447,11 +447,11 @@ unicode: "f6d2"
 <p>Someone thought paper could replace a CD. Turns out… they weren’t entirely wrong. Can you read between the dots? Btw, I really like OllyDbg.</p>
 </blockquote>
 <p>根据提示搜索，发现这个工具</p>
-<img src="/images/l39.png" style="width: 100%;" />
+<img src="l39.png" style="width: 100%;" />
 <p>open bitmap打开题目的flag.bmp，输出一个ws文件，打开发现有很多空格</p>
 <p>搜索发现是white space语言，<a class="link" href="https://vii5ard.github.io/whitespace/"  target="_blank" rel="noopener"
     >Whitelips the Esoteric Language IDE</a>解码获得flag</p>
-<img src="/images/l310.png" style="width: 100%;" />
+<img src="l310.png" style="width: 100%;" />
 <p><code>L3HCTF{welcome_to_l3hctf2025}</code></p>
 <h2 id="please-sign-in">Please Sign In
 </h2><p>这道题要求我们构造一张图像，使其和给定的embedding.json足够接近</p>
@@ -567,7 +567,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">] 错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/l311.png" style="width: 100%;" />
+</div><img src="l311.png" style="width: 100%;" />
 <p><code>L3HCTF{f4c3_r3c0gn1t10n_15_n0t_s0_s3cur3_4ft3r_4ll}</code></p>
 
 </section>
@@ -645,7 +645,7 @@ unicode: "f6d2"
         
             <div class="article-image">
                 
-                    <img src="/images/esp0.jpg" loading="lazy" data-key="" data-hash="/images/esp0.jpg"/>
+                    <img src="/images/cover/esp0.jpg" loading="lazy" data-key="" data-hash="/images/cover/esp0.jpg"/>
                 
             </div>
         
@@ -843,10 +843,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">16</span> 
+      <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">47.69</span> 
+      <span class="number-highlight">48.28</span> 
       k 字
   </div>
   <div>
@@ -890,6 +892,12 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
+        
+        
         
         
         

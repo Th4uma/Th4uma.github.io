@@ -10,10 +10,10 @@
 <meta property='og:description' content="暑假航模队训练时做的小装置">
 <meta property='og:url' content='https://th4uma.github.io/post/fpvup/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-01T04:46:39&#43;08:00'/><meta property='article:modified_time' content='2025-07-01T04:46:39&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/ehj.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-01T04:46:39&#43;08:00'/><meta property='article:modified_time' content='2025-07-01T04:46:39&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/ehj.jpg' />
 <meta name="twitter:title" content="[002号机]FPV起飞装置">
 <meta name="twitter:description" content="暑假航模队训练时做的小装置"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/ehj.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/ehj.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -305,7 +305,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/fpvup/">
                 
-                    <img src="/images/ehj.jpg" loading="lazy" alt="Featured image of post [002号机]FPV起飞装置" />
+                    <img src="/images/cover/ehj.jpg" loading="lazy" alt="Featured image of post [002号机]FPV起飞装置" />
                 
             </a>
         </div>
@@ -374,16 +374,16 @@ unicode: "f6d2"
 </h2><p>之后要参加的比赛要求赛机从一个桶中起飞，桶必须保持完整，因此我需要设计一个能快速开启的起飞装置</p>
 <p>我的设想是桶分为外壳和内部支架两部分，关闭状态外壳下部被固定在支架上部，开启后外壳落下，这样能在保证桶完整的前提下，实现快速打开。开关部分打算用舵机或电磁铁</p>
 <p>老登机如下：</p>
-<img src="/images/ehjld1.jpg" style="width: 60%;" />
-<img src="/images/ehjld2.jpg" style="width: 70%;" />
+<img src="ehjld1.jpg" style="width: 60%;" />
+<img src="ehjld2.jpg" style="width: 70%;" />
 <h2 id="零号机">零号机
 </h2><p>这是在知道新规则前设计的，桶被切开了，万万没想到今年的规则和去年不一样，于是还没测试就死了</p>
-<img src="/images/ehj1.png" style="width: 70%;" />
+<img src="ehj1.png" style="width: 70%;" />
 <h2 id="一号机">一号机
 </h2><h3 id="v10">v1.0
 </h3><p>ddl临近，没有时间精雕细琢和现学知识了，就做了个简陋的框架，然后ai写了代码，可以实现蓝牙连接后，用蓝牙串口调试软件发送信息，控制舵机旋转</p>
-<img src="/images/ehj2.jpg" style="width: 60%;" />
-<img src="/images/ehj3.jpg" style="width: 60%;" />
+<img src="ehj2.jpg" style="width: 60%;" />
+<img src="ehj3.jpg" style="width: 60%;" />
 <h3 id="v20">v2.0
 </h3><p>整体大改，这次想出了完整的供电方案，画了舵机架和桶导轨</p>
 <blockquote>
@@ -403,7 +403,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 → ESP32 GND ↔ 降压模块 GND</p>
 <p><strong>通信采用ESP-NOW</strong></p>
 </blockquote>
-<img src="/images/ehj4.png" style="width: 60%;" />
+<img src="ehj4.png" style="width: 60%;" />
 <h3 id="v30">v3.0
 </h3><p>买的东西还没到，从老登机上拆零件时，突然琢磨明白了老登机的原理。原来老登机用的是433遥控器，比espnow成本低还稳定方便，所以打算改成这个新方案，不得不感慨我知识的不足</p>
 <blockquote>
@@ -800,31 +800,31 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
 </div><h2 id="最终组装">最终组装
 </h2><h3 id="画板子">画板子
 </h3><p>我用的是嘉立创eda，首先创建工程</p>
-<img src="/images/ehj5.png" style="width: 70%;" />
+<img src="ehj5.png" style="width: 70%;" />
 <p>原理图界面shift+f查找元件，然后放置元件</p>
-<img src="/images/ehj6.png" style="width: 90%;" />
+<img src="ehj6.png" style="width: 90%;" />
 <p>按w连线，完成原理图绘制</p>
-<img src="/images/ehj7.png" style="width: 70%;" />
+<img src="ehj7.png" style="width: 70%;" />
 <p>alt+i生成pcb，先调整元件位置</p>
-<img src="/images/ehj8.png" style="width: 70%;" />
+<img src="ehj8.png" style="width: 70%;" />
 <p>然后布线，需要注意的是gnd不连线，而是给板子铺铜</p>
 <p>最后绘制板框，添加丝印，完成</p>
-<img src="/images/ehj9.png" style="width: 70%;" />
+<img src="ehj9.png" style="width: 70%;" />
 <p>打板效果与最终电路部分</p>
-<img src="/images/ehj9.jpg" style="width: 70%;" />
-<img src="/images/ehj16.jpg" style="width: 70%;" />
+<img src="ehj9.jpg" style="width: 70%;" />
+<img src="ehj16.jpg" style="width: 70%;" />
 <h3 id="赛机">赛机
 </h3><p>飞控上面焊接好四个电机，接收机，电源线，接上图传，然后组装好就行了，非常简单。</p>
-<img src="/images/ehj10.jpg" style="width: 60%;" />
-<img src="/images/ehj11.jpg" style="width: 70%;" />
+<img src="ehj10.jpg" style="width: 60%;" />
+<img src="ehj11.jpg" style="width: 70%;" />
 <p>有一个需要注意的点就是需要<a class="link" href="https://th4uma.github.io/1.pdf"  target="_blank" rel="noopener"
     >新增一个电机</a>作为发射器</p>
 <h3 id="完成">完成
-</h3><img src="/images/ehj14.jpg" style="width: 45%;" />
-<img src="/images/ehj12.jpg" style="width: 45%;" />
-<img src="/images/ehj15.jpg" style="width: 50%;" />
+</h3><img src="ehj14.jpg" style="width: 45%;" />
+<img src="ehj12.jpg" style="width: 45%;" />
+<img src="ehj15.jpg" style="width: 50%;" />
 <video controls width="40%">
-  <source src="/images/ehj13.mp4" type="video/mp4">
+  <source src="ehj13.mp4" type="video/mp4">
 </video>
 
 </section>
@@ -1119,10 +1119,12 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）</p>
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">16</span> 
+      <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">47.69</span> 
+      <span class="number-highlight">48.28</span> 
       k 字
   </div>
   <div>
@@ -1166,6 +1168,12 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
+        
+        
         
         
         

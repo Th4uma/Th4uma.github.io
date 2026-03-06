@@ -13,7 +13,7 @@
         <pubDate>Sat, 28 Jun 2025 13:26:44 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/espthuctf/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/esp0.jpg" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" /&gt;&lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
+        <description>&lt;img src="https://th4uma.github.io/images/cover/esp0.jpg" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" /&gt;&lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;需要准备 ESP32、杜邦线、USB 转 TTL 模块、支持监听模式的无线网卡&lt;/p&gt;
@@ -36,14 +36,7 @@
     &gt;esp-idf&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;安装好后打开ESP-IDF v4.3 PowerShell&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp1.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp1.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -62,14 +55,7 @@
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp2.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp2.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;编译,烧录,监听串口输出&lt;/li&gt;
 &lt;/ul&gt;
@@ -85,7 +71,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;idf.py monitor
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp3.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;esp3.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;code&gt;esp_no_flag_source&lt;/code&gt;目录中是删掉flag的源码，可以用来分析，但不能烧录&lt;/p&gt;
@@ -147,16 +133,9 @@
 &lt;p&gt;ESP32 上的 GPIO 是多功能的，每个引脚都可以自由配置成输入、输出或其他特殊用途。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;用杜邦线连接3v3与GPIO18，持续3s即可&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp4.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;esp4.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;此时hit增加，获得flag&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp5.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp5.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{Ev3ryth1ng_st4rt_fr0m_GPIO_!!!}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;task2&#34;&gt;task2
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -234,15 +213,8 @@
 &lt;p&gt;ESP32 默认的 TX 引脚是持续发送数据的，它的电平会反复在高低之间切换。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;用杜邦线连接TX引脚与GPIO18，直到trigger&amp;gt;10000&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp6.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp61.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp6.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;img src=&#34;esp61.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{AuT0++_is_th3_r1ght_w4y_hhhhhh}&lt;/code&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;本质上任何能控制输出高低电平切换的引脚都可以用，甚至可以手动连接并断开GPIO18和其他引脚10000次（除了GND），还可以写一个任务让GPIO不断切换输出电平&lt;/li&gt;
@@ -286,16 +258,9 @@
 &lt;p&gt;UART（通用异步收发器）是串口通信的一种协议，本质就是用两根线（TX 和 RX）来做点对点的串行通信。ESP32 上有多个 UART 通道。默认我们用的是 UART0，它用于 log 输出。但这里题目用的是 UART1。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;将USB 转 TTL 模块的RX引脚连接ESP的GPIO4引脚，gnd也对应连接&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp7.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;esp7.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;用串口工具监听USB 转 TTL 模块&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp8.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp8.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{UART_15_v3ry_imp0r7ant_1n_i0T}&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id=&#34;网络&#34;&gt;网络
 &lt;/h2&gt;&lt;h3 id=&#34;task1-1&#34;&gt;task1
@@ -418,41 +383,35 @@
 &lt;p&gt;&lt;code&gt;netcat&lt;/code&gt;作用是快速建立 TCP 或 UDP 连接，用来读写数据。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;修改电脑的热点名称和密码与串口打印的相同&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp9.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp9.png&#34;
+	width=&#34;946&#34;
+	height=&#34;37&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp9_hu_ec5ab904a8792ae8.png 480w, https://th4uma.github.io/post/espthuctf/esp9_hu_b76a3381a0d3030d.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
-&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp12.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;2556&#34;
+		data-flex-basis=&#34;6136px&#34;
 	
 &gt;&lt;/p&gt;
+&lt;img src=&#34;esp12.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;esp32连接成功，获得ip地址&lt;code&gt;192.168.137.188&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp10.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp10.png&#34;
+	width=&#34;1170&#34;
+	height=&#34;186&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp10_hu_3965e7ecbd6e9bc0.png 480w, https://th4uma.github.io/post/espthuctf/esp10_hu_61d86e789dfb1963.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;629&#34;
+		data-flex-basis=&#34;1509px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;nc一下，输入&lt;code&gt;nc 192.168.137.188 3333&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;getflag&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp11.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp11.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{M4k3_A_w1rele55_h0t5p0ts}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;task2-1&#34;&gt;task2
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -539,23 +498,9 @@
 &lt;p&gt;ESP32 用 socket 构造 HTTP 报文并发送，请求并不返回给本地终端，需要抓包分析出站流量。板子的网络行为都会从电脑出去，所以可以抓到 HTTP 请求&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;电脑开启热点后，系统会新建一个虚拟网卡&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp13.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp13.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;用wireshark抓取这个网卡的流量，追踪http流，发现flag&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp14.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp14.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{Sn1ffer_N3tw0rk_TrAffic_In_7h4_Main_r0aD}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;task3-1&#34;&gt;task3
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -617,12 +562,16 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp15.png&#34;
-	
-	
-	
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp15.png&#34;
+	width=&#34;852&#34;
+	height=&#34;32&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp15_hu_1c0b3d3fdd793134.png 480w, https://th4uma.github.io/post/espthuctf/esp15_hu_314c5f27d4078ddb.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;2662&#34;
+		data-flex-basis=&#34;6390px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -643,14 +592,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo airodump-ng wlan0mon
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp16.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;esp16.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;wireshark抓wlan0mon网卡的包,在字节流中用字符串搜索CTF&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -660,14 +602,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo wireshark
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp17.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;esp17.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{YOu_cAn_s3nd_4nd_sNiff3r_802.11_r4w_pAckag3}&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id=&#34;蓝牙&#34;&gt;蓝牙
 &lt;/h2&gt;&lt;h3 id=&#34;task1-2&#34;&gt;task1
@@ -697,20 +632,28 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;字面意思，修改手机蓝牙名称与串口打印的相同，等待连接即可&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp18.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp18.png&#34;
+	width=&#34;912&#34;
+	height=&#34;30&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp18_hu_b9103ebc85b03905.png 480w, https://th4uma.github.io/post/espthuctf/esp18_hu_e16d9b93cc923560.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;3040&#34;
+		data-flex-basis=&#34;7296px&#34;
 	
 &gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp20.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp20.png&#34;
+	width=&#34;871&#34;
+	height=&#34;51&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp20_hu_fe3c3728d695e472.png 480w, https://th4uma.github.io/post/espthuctf/esp20_hu_5479acb439f21c44.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;1707&#34;
+		data-flex-basis=&#34;4098px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{b1u3t00th_n4me_a1s0_c4n_b3_An_aTT4ck_surfAce}&lt;/code&gt;&lt;/p&gt;
@@ -764,12 +707,16 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp21.png&#34;
-	
-	
-	
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp21.png&#34;
+	width=&#34;1176&#34;
+	height=&#34;48&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp21_hu_c2a7a1bc4ad97d98.png 480w, https://th4uma.github.io/post/espthuctf/esp21_hu_4310100194609a1.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;2450&#34;
+		data-flex-basis=&#34;5880px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -780,9 +727,9 @@
 &lt;p&gt;nRF Connect可用于扫描，调试低功耗蓝牙设备。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;用nRF Connect 抓取广播包，获得一串16进制数据&lt;code&gt;5448554354467B416456443437617D&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp22.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp22.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;转成ascii，获得flag&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp23.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp23.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{AdVD47a}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id=&#34;task3-2&#34;&gt;task3
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -832,21 +779,14 @@
 &lt;p&gt;通过手机写入广播获取的 flag，实现对 BLE 特征值的访问控制。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;用nRF Connect连接上一题的BLE&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp24.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp24.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;在&lt;code&gt;Unknown Service&amp;gt;Unknown Characteristic&lt;/code&gt;中上传task2的flag&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp25.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp26.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp25.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp26.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;读取获得字符串&lt;code&gt;54-48-55-43-54-46-7B-57-72-49-74-45- 5F-34-5F-67-41-37-54-7D-00&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;https://th4uma.github.io/images/esp27.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;img src=&#34;esp27.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;转ascii获得flag&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp27.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp27.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{WrItE_4_gA7T}&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id=&#34;mqtt&#34;&gt;MQTT
 &lt;/h2&gt;&lt;p&gt;题目的域名到期了，需要构建一个MQTT服务器，docker文件夹里有这题的dokerfile，起一个docker，然后打开服务器1833端口&lt;/p&gt;
@@ -881,14 +821,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;日志看到连接成功，打开mqtt.fx，设置broker为自己的ip和端口号并连接&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp28.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-	
-&gt;&lt;/p&gt;
+&lt;img src=&#34;esp28.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;task1-3&#34;&gt;task1
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;你知道MQTT的上帝是谁么&lt;/p&gt;
@@ -920,12 +853,16 @@
 &lt;p&gt;主题通配符：&lt;code&gt;#&lt;/code&gt; 表示订阅所有主题，&lt;code&gt;+&lt;/code&gt; 表示匹配单层主题&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;subscribe输入#订阅所有主题，即可接收 broker 上发布的所有消息，看到flag&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp29.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp29.png&#34;
+	width=&#34;997&#34;
+	height=&#34;722&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp29_hu_ddcbc5091cb1f59e.png 480w, https://th4uma.github.io/post/espthuctf/esp29_hu_c340e7d98246252a.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;138&#34;
+		data-flex-basis=&#34;331px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{#_1s_God_in_MQTT}&lt;/code&gt;&lt;/p&gt;
@@ -1031,12 +968,16 @@
 &lt;/blockquote&gt;
 &lt;p&gt;向flag2主题发送ip，nc监听80端口即可&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;nc -l -p 80&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp30.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp30.png&#34;
+	width=&#34;1152&#34;
+	height=&#34;103&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp30_hu_e1ba208045492c32.png 480w, https://th4uma.github.io/post/espthuctf/esp30_hu_f9a4ba8959ef54ef.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;1118&#34;
+		data-flex-basis=&#34;2684px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{attAck_t0_th3_dev1ce_tcp_r3cV_ch4nnel}&lt;/code&gt;&lt;/p&gt;
@@ -1086,12 +1027,16 @@
 &lt;p&gt;判断时没有验证符号导致安全漏洞。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;向flag2主题发送ip?-1，nc监听80端口即可&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/images/esp31.png&#34;
-	
-	
-	
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/espthuctf/esp31.png&#34;
+	width=&#34;1662&#34;
+	height=&#34;123&#34;
+	srcset=&#34;https://th4uma.github.io/post/espthuctf/esp31_hu_b42df37d2b881e6c.png 480w, https://th4uma.github.io/post/espthuctf/esp31_hu_49b4e096a109dad7.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;1351&#34;
+		data-flex-basis=&#34;3242px&#34;
 	
 &gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;THUCTF{0ver_the_Air_y0u_c4n_a77ack_t0_1ntranet_d3v1ce&lt;/code&gt;&lt;/p&gt;

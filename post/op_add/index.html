@@ -10,10 +10,10 @@
 <meta property='og:description' content="最好用的一集">
 <meta property='og:url' content='https://th4uma.github.io/post/op_add/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-02-16T01:03:02&#43;08:00'/><meta property='article:modified_time' content='2026-02-16T01:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/op1.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-02-16T01:03:02&#43;08:00'/><meta property='article:modified_time' content='2026-02-16T01:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/op1.jpg' />
 <meta name="twitter:title" content="OpenWrt插件推荐与配置">
 <meta name="twitter:description" content="最好用的一集"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/op1.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/op1.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -319,7 +319,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/op_add/">
                 
-                    <img src="/images/op1.jpg" loading="lazy" alt="Featured image of post OpenWrt插件推荐与配置" />
+                    <img src="/op1.jpg" loading="lazy" alt="Featured image of post OpenWrt插件推荐与配置" />
                 
             </a>
         </div>
@@ -390,9 +390,9 @@ unicode: "f6d2"
 </blockquote>
 <h3 id="openwrt设置">OpenWrt设置
 </h3><p><code>网络&gt;DHCP/DNS&gt;设置及端口&gt;DNS 服务器端口</code>设置为<code>5353</code></p>
-<img src="/images/op19.png" style="width: 70%;" />
+<img src="op19.png" style="width: 70%;" />
 <p><code>网络&gt;接口&gt;LAN&gt;DHCP 服务器&gt;高级设置&gt;DHCP 选项</code>设置为<code>6,路由器LAN口地址</code></p>
-<img src="/images/op20.png" style="width: 100%;" />
+<img src="op20.png" style="width: 100%;" />
 <p>在软件包里搜索 <code>adguardhome</code> 安装</p>
 <h3 id="adguardhome配置">AdGuardHome配置
 </h3><p>访问<a class="link" href="http://192.168.10.1:3000"  target="_blank" rel="noopener"
@@ -400,7 +400,7 @@ unicode: "f6d2"
 <blockquote>
 <p>默认 53 端口由 dnsmasq 占用，上一步已将其改为 5353，释放了 53 端口。由于 DHCP 已向客户端下发 192.168.10.1 作为 DNS 服务器地址，客户端的 DNS 请求会发送至路由器 53 端口，因此由 AdGuardHome 处理</p>
 </blockquote>
-<img src="/images/op17.png" style="width: 60%;" />
+<img src="op17.png" style="width: 60%;" />
 <p>进入<code>设置&gt;DNS设置&gt;上游DNS服务器</code>，更改服务器地址</p>
 <blockquote>
 <p>上游DNS服务器是AdGuard Home查询的服务器，设置几个最快的公共DNS服务器。这里建议使用DoH/DoT加密的DNS，不然DNS依旧会被污染和劫持</p>
@@ -420,7 +420,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>接着点击测试上游DNS，成功后右下角就会出现提示，测试完成之后点击应用</p>
-<img src="/images/op18.png" style="width: 80%;" />
+<img src="op18.png" style="width: 80%;" />
 <ul>
 <li>
 <p>Bootstrap DNS 服务器的作用只是解析上游 DoT/​DoH 技术 DNS 服务器的域名，所以建议改成本地运营商DNS</p>
@@ -442,7 +442,7 @@ unicode: "f6d2"
 </li>
 </ul>
 <p>刷新AdGuardHome仪表盘页面，收到DNS查询说明配置成功</p>
-<img src="/images/op21.png" style="width: 100%;" />
+<img src="op21.png" style="width: 100%;" />
 <h3 id="dns黑名单">DNS黑名单
 </h3><blockquote>
 <p>可以挑选下面的规则加入，不建议添加过多，会影响解析速度，够用即可</p>
@@ -478,12 +478,12 @@ unicode: "f6d2"
 <h3 id="创建虚拟局域网">创建虚拟局域网
 </h3><p>在<a class="link" href="https://www.zerotier.com/"  target="_blank" rel="noopener"
     >ZeroTier官网</a>上注册账号，然后创建一个虚拟网络</p>
-<img src="/images/op22.png" style="width: 100%;" />
+<img src="op22.png" style="width: 100%;" />
 <p>记住设置中显示的Network ID</p>
-<img src="/images/op23.png" style="width: 100%;" />
+<img src="op23.png" style="width: 100%;" />
 <h3 id="openwrt配置">OpenWrt配置
 </h3><p>包管理器安装zerotier</p>
-<img src="/images/op24.png" style="width: 100%;" />
+<img src="op24.png" style="width: 100%;" />
 <p>终端运行下面的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -503,11 +503,11 @@ unicode: "f6d2"
 <blockquote>
 <p>这里一定要选择不配置协议，很多教程写的是DHCP客户端协议，实测配置完成无法正常使用</p>
 </blockquote>
-<img src="/images/op25.png" style="width: 100%;" />
+<img src="op25.png" style="width: 100%;" />
 <p>在<code>网络&gt;防火墙&gt;常规设置&gt;区域</code>中点击添加，如图进行设置后保存</p>
-<img src="/images/op26.png" style="width: 100%;" />
+<img src="op26.png" style="width: 100%;" />
 <p>回到<code>网络&gt;接口</code>，点击编辑刚刚创建的接口，在防火墙设置中分配防火墙区域</p>
-<img src="/images/op27.png" style="width: 100%;" />
+<img src="op27.png" style="width: 100%;" />
 <h3 id="添加设备">添加设备
 </h3><p>OpenWrt终端输入下面的指令，将xxx替换为自己的Network ID</p>
 <div class="highlight"><div class="chroma">
@@ -519,12 +519,12 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Android下载ZeroTier One应用，进入Add Network，输入Network ID加入虚拟网络</p>
-<img src="/images/op29.jpg" style="width: 40%;" />
+<img src="op29.jpg" style="width: 40%;" />
 <p>回到官网，发现弹出了设备的加入申请，通过即可</p>
-<img src="/images/op28.png" style="width: 100%;" />
+<img src="op28.png" style="width: 100%;" />
 <p>将需要的设备加入后，互相ping发现能ping通（虽然延迟感人），说明配置成功</p>
-<img src="/images/op28.jpg" style="width: 30%;" />
-<img src="/images/op30.png" style="width: 60%;" />
+<img src="op28.jpg" style="width: 30%;" />
+<img src="op30.png" style="width: 60%;" />
 <h3 id="延迟大的原因分析">延迟大的原因分析
 </h3><p>查看网络信息，可以看到当前设备加入的 ZeroTier 网络信息，意思是 OpenWrt 已经成功加入了一个名为 <code>111</code> 的私有 ZeroTier 网络，分配到的虚拟 IP 是 <code>10.10.160.241</code>，网络正常</p>
 <div class="highlight"><div class="chroma">
@@ -535,7 +535,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zerotier-cli listnetworks
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/op31.png" style="width: 100%;" />
+</div><img src="op31.png" style="width: 100%;" />
 <p>查看peers，从官网中可以知道<code>775372d612</code> 是我设备的ID，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。ZeroTier的中继服务器在国外，这也是延迟极大的原因</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -545,22 +545,22 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zerotier-cli peers
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/op32.png" style="width: 90%;" />
+</div><img src="op32.png" style="width: 90%;" />
 <blockquote>
 <p>ZeroTier默认使用UDP 9993端口通信，如果路由器或上级网络限制UDP 9993，在复杂网络环境下就会自动切到中继模式，因此需要手动放行该端口</p>
 </blockquote>
 <p>进入<code>网络&gt;防火墙&gt;通信规则</code>，添加一条新的规则，设置如图</p>
-<img src="/images/op33.png" style="width: 60%;" />
+<img src="op33.png" style="width: 60%;" />
 <p>如果还是没有效果，大概率是NAT类型或运营商限制导致无法打洞成功，需要另找方法</p>
 <h3 id="访问局域网设备不可用">访问局域网设备（不可用）
 </h3><blockquote>
 <p>ZeroTier虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他ZeroTier节点可以访问路由器下的局域网设备</p>
 </blockquote>
 <p>这一步需要在官网配置Managed Routes，将路由器LAN网段设置为由路由器虚拟IP转发，这时我注意到根本没有这一选项，在之前的配置过程中也有大量和教程不同的地方</p>
-<img src="/images/op34.png" style="width: 40%;" />
+<img src="op34.png" style="width: 40%;" />
 <p>在官方文档搜索Managed Routes并跳转后，发现我访问的是<code>https://central.zerotier.com/</code>，有高级设置的是<code>https://my.zerotier.com/</code>。官方在2025年11月更新了控制面板，新平台将部分高级网络功能纳入付费套餐，现在需要花费18美元才能有这类功能。新版创建的网络不会在旧版管理界面显示，控制面板不互通，就算创建一个新的老版局域网，相信过不了多久也会没有办法使用。因此我选择放弃这个方案</p>
-<img src="/images/op35.png" style="width: 80%;" />
-<img src="/images/op36.png" style="width: 60%;" />
+<img src="op35.png" style="width: 80%;" />
+<img src="op36.png" style="width: 60%;" />
 <blockquote>
 <p>最终我选择使用ZeroTier远程 SSH 访问路由器，而内网设备则通过皎月连来串流</p>
 </blockquote>
@@ -572,8 +572,8 @@ unicode: "f6d2"
     >WOL基础配置</a>进行设置</p>
 <h3 id="连接">连接
 </h3><p>OpenWrt进入<code>系统&gt;管理权&gt;SSH访问</code>，进行如下设置</p>
-<img src="/images/op37.png" style="width: 100%;" />
-<p>我使用的是安卓手机远程开机，手机安装<code>ConnectBot</code>，根据上一步配置好ZeroTier，然后手机加入虚拟局域网</p>
+<img src="op37.png" style="width: 100%;" />
+<p>我使用的是安卓手机远程开机，手机安装<code>ConnectBot</code>，根据上一章配置好ZeroTier，然后手机加入虚拟局域网</p>
 <p>在ConnectBot的添加设备界面填写信息并添加</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -587,9 +587,9 @@ unicode: "f6d2"
 <p>username即设备的用户名
 hostname为虚拟局域网给OpenWrt设备分配的IP地址</p>
 </blockquote>
-<img src="/images/op38.jpg" style="width: 40%;" />
+<img src="op38.jpg" style="width: 40%;" />
 <p>然后输入密码即可登录到路由器后台</p>
-<img src="/images/op40.jpg" style="width: 40%;" />
+<img src="op40.jpg" style="width: 40%;" />
 <h3 id="唤醒">唤醒
 </h3><p>OpenWRT官方提供了两种唤醒工具，wol 和 etherwake，二选一即可</p>
 <p>opkg安装<code>etherwake</code>，或 <code>luci-app-wol</code> 软件包和 <code>luci-i18n-wol-zh-cn</code> 语言包</p>
@@ -613,14 +613,14 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这时即使我手机使用的是移动网络，也可以让电脑开机了</p>
-<img src="/images/op39.jpg" style="width: 40%;" />
+<img src="op39.jpg" style="width: 40%;" />
 <h2 id="openclash">OpenClash
 </h2><blockquote>
 <p>作用：科学上网</p>
 </blockquote>
 <h3 id="安装">安装
 </h3><p>OpenWrt进入<code>系统&gt;软件包</code>卸载原来的dnsmasq。因为 OpenClash 依赖的是功能更完整的 dnsmasq-full，两个软件包提供相同的文件，不能同时存在，opkg 会阻止直接覆盖安装</p>
-<p>进入软路由终端，复制下面的命令安装OpenClash需要的依赖包。我的系统是 OpenWrt 24.10，这一版本默认防火墙是 fw4 + nftables，因此使用nftables的依赖</p>
+<p>进入软路由终端，复制下面的命令安装OpenClash需要的依赖包。我的系统是 OpenWrt 24.10，这一版本默认使用 <code>firewall4</code>，其底层基于 <code>nftables</code>，因此需要安装 nftables 相关依赖</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -648,21 +648,36 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址</p>
 </div><p>下载<a class="link" href="https://github.com/vernesong/OpenClash/releases"  target="_blank" rel="noopener"
     >OpenClash的ipk文件</a></p>
 <p>OpenWrt进入<code>系统&gt;软件包&gt;上传软件包</code>，将刚刚下载的软件包上传并安装</p>
-<img src="/images/op46.png" style="width: 100%;" />
+<img src="op46.png" style="width: 100%;" />
 <blockquote>
 <p>可能的报错：无法执行 opkg install 命令：Error: XHR request aborted by browser</p>
 </blockquote>
 <p>原因：在 OpenWrt 或 ImmortalWrt 的 LuCI 后台安装软件包时，如果安装过程较长或网络延迟较高，浏览器端可能因为 XHR 请求超时而中断请求。此时页面会提示安装失败，但实际上后台的 opkg 进程可能仍在继续运行并完成安装。等待一段时间后重启路由器，通常可以看到 OpenClash 已经安装完成</p>
-<img src="/images/op47.png" style="width: 100%;" />
+<img src="op47.png" style="width: 100%;" />
 <h3 id="配置">配置
-</h3><p>进入<code>系统&gt;服务&gt;OpenClash</code>，这里提示内核未安装，选择一个延迟低的地址安装即可</p>
-<img src="/images/op48.png" style="width: 100%;" />
+</h3><p>进入<code>系统&gt;服务&gt;OpenClash</code>，这里提示内核未安装，选择一个可访问的下载源安装即可</p>
+<img src="op48.png" style="width: 100%;" />
 <p>添加机场的订阅文件，复制链接导入</p>
-<img src="/images/op51.png" style="width: 50%;" />
+<img src="op51.png" style="width: 60%;" />
 <p>进入<code>OpenClash&gt;插件设置&gt;模式设置</code>，点击<code>切换页面到Fake-IP模式</code></p>
-<img src="/images/op49.png" style="width: 100%;" />
-<p>进入<code>GEO数据库订阅</code>，勾选<code>自动更新 GeoIP MMDB 数据库``自动更新 GeoIP Dat 数据库``自动更新 GeoSite 数据库</code></p>
-<img src="/images/op50.png" style="width: 90%;" />
+<blockquote>
+<p>Fake-IP 是 Clash 推荐的 DNS 工作模式，能够提高分流效率并减少 DNS 污染问题</p>
+</blockquote>
+<img src="op49.png" style="width: 100%;" />
+<p>建议启用绕过中国大陆区域IP，以减少直连流量进入内核带来的性能损耗，进入<code>流量控制</code>进行如图设置</p>
+<p>启用后，GeoSite 数据库中分类为 <code>CN</code> 的域名，且解析 IP 位于中国大陆 IP 段范围内的流量，将不进入内核</p>
+<img src="op52.png" style="width: 100%;" />
+<p>进入<code>GEO数据库订阅</code>，勾选<code>自动更新 GeoIP MMDB 数据库</code>、<code>自动更新 GeoIP Dat 数据库</code>、<code>自动更新 GeoSite 数据库</code></p>
+<img src="op50.png" style="width: 90%;" />
+<p><code>大陆白名单订阅</code>中用于直连分流的 IP 白名单必须保持更新，按照图中设置即可</p>
+<img src="op53.png" style="width: 100%;" />
+<p><code>版本更新</code>建议选择 <code>master</code> 版本，稳定性最佳。然后点击下方的检查更新，将内核和主程序更新为最新版</p>
+<img src="op54.png" style="width: 100%;" />
+<p>最后更新配置并启动，查看日志发现启动成功，说明配置完成，之后可以通过<code>运行状态&gt;控制面板</code>来管理OpenClash</p>
+<img src="op55.png" style="width: 100%;" />
+<img src="op56.png" style="width: 100%;" />
+<p>以上是最基础的设置，如果需要更复杂的设置可以参考<a class="link" href="https://github.com/vernesong/OpenClash/wiki"  target="_blank" rel="noopener"
+    >Home · vernesong/OpenClash Wiki</a>这个教程，写的非常详细明了</p>
 <h2 id="其他">其他
 </h2><ul>
 <li><code>luci-app-ttyd</code>：模拟终端，可以直接在浏览器里面使用 SSH 进入路由器后台</li>
@@ -1003,10 +1018,12 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址</p>
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">16</span> 
+      <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">47.69</span> 
+      <span class="number-highlight">48.28</span> 
       k 字
   </div>
   <div>
@@ -1050,6 +1067,12 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
+        
+        
         
         
         

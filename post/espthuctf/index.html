@@ -10,10 +10,10 @@
 <meta property='og:description' content="学习iot安全的入门题目">
 <meta property='og:url' content='https://th4uma.github.io/post/espthuctf/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='article:modified_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/esp0.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='article:modified_time' content='2025-06-28T13:26:44&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/esp0.jpg' />
 <meta name="twitter:title" content="ESP32 IoT CTF 清华校赛版wp">
 <meta name="twitter:description" content="学习iot安全的入门题目"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/esp0.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/esp0.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -319,7 +319,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/espthuctf/">
                 
-                    <img src="/images/esp0.jpg" loading="lazy" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" />
+                    <img src="/images/cover/esp0.jpg" loading="lazy" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" />
                 
             </a>
         </div>
@@ -411,14 +411,7 @@ unicode: "f6d2"
     >esp-idf</a></li>
 </ul>
 <p>安装好后打开ESP-IDF v4.3 PowerShell</p>
-<p><img src="/images/esp1.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp1.png" style="width: 100%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -437,14 +430,7 @@ unicode: "f6d2"
 </ul>
 </li>
 </ul>
-<p><img src="/images/esp2.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp2.png" style="width: 50%;" />
 <ul>
 <li>编译,烧录,监听串口输出</li>
 </ul>
@@ -460,7 +446,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">idf.py monitor
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="/images/esp3.png" style="width: 90%;" />
+</div><img src="esp3.png" style="width: 90%;" />
 <ul>
 <li>
 <p><code>esp_no_flag_source</code>目录中是删掉flag的源码，可以用来分析，但不能烧录</p>
@@ -522,16 +508,9 @@ unicode: "f6d2"
 <p>ESP32 上的 GPIO 是多功能的，每个引脚都可以自由配置成输入、输出或其他特殊用途。</p>
 </blockquote>
 <p>用杜邦线连接3v3与GPIO18，持续3s即可</p>
-<img src="/images/esp4.jpg" style="width: 80%;" />
+<img src="esp4.jpg" style="width: 80%;" />
 <p>此时hit增加，获得flag</p>
-<p><img src="/images/esp5.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp5.png" style="width: 80%;" />
 <p><code>THUCTF{Ev3ryth1ng_st4rt_fr0m_GPIO_!!!}</code></p>
 <h3 id="task2">task2
 </h3><blockquote>
@@ -609,15 +588,8 @@ unicode: "f6d2"
 <p>ESP32 默认的 TX 引脚是持续发送数据的，它的电平会反复在高低之间切换。</p>
 </blockquote>
 <p>用杜邦线连接TX引脚与GPIO18，直到trigger&gt;10000</p>
-<img src="/images/esp6.jpg" style="width: 80%;" />
-<p><img src="/images/esp61.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp6.jpg" style="width: 80%;" />
+<img src="esp61.png" style="width: 80%;" />
 <p><code>THUCTF{AuT0++_is_th3_r1ght_w4y_hhhhhh}</code></p>
 <ul>
 <li>本质上任何能控制输出高低电平切换的引脚都可以用，甚至可以手动连接并断开GPIO18和其他引脚10000次（除了GND），还可以写一个任务让GPIO不断切换输出电平</li>
@@ -661,16 +633,9 @@ unicode: "f6d2"
 <p>UART（通用异步收发器）是串口通信的一种协议，本质就是用两根线（TX 和 RX）来做点对点的串行通信。ESP32 上有多个 UART 通道。默认我们用的是 UART0，它用于 log 输出。但这里题目用的是 UART1。</p>
 </blockquote>
 <p>将USB 转 TTL 模块的RX引脚连接ESP的GPIO4引脚，gnd也对应连接</p>
-<img src="/images/esp7.jpg" style="width: 70%;" />
+<img src="esp7.jpg" style="width: 70%;" />
 <p>用串口工具监听USB 转 TTL 模块</p>
-<p><img src="/images/esp8.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp8.png" style="width: 60%;" />
 <p><code>THUCTF{UART_15_v3ry_imp0r7ant_1n_i0T}</code></p>
 <h2 id="网络">网络
 </h2><h3 id="task1-1">task1
@@ -793,41 +758,35 @@ unicode: "f6d2"
 <p><code>netcat</code>作用是快速建立 TCP 或 UDP 连接，用来读写数据。</p>
 </blockquote>
 <p>修改电脑的热点名称和密码与串口打印的相同</p>
-<p><img src="/images/esp9.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp9.png"
+	width="946"
+	height="37"
+	srcset="/post/espthuctf/esp9_hu_ec5ab904a8792ae8.png 480w, /post/espthuctf/esp9_hu_b76a3381a0d3030d.png 1024w"
 	loading="lazy"
 	
 	
-></p>
-<p><img src="/images/esp12.png"
-	
-	
-	
-	loading="lazy"
-	
+		class="gallery-image" 
+		data-flex-grow="2556"
+		data-flex-basis="6136px"
 	
 ></p>
+<img src="esp12.png" style="width: 40%;" />
 <p>esp32连接成功，获得ip地址<code>192.168.137.188</code></p>
-<p><img src="/images/esp10.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp10.png"
+	width="1170"
+	height="186"
+	srcset="/post/espthuctf/esp10_hu_3965e7ecbd6e9bc0.png 480w, /post/espthuctf/esp10_hu_61d86e789dfb1963.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="629"
+		data-flex-basis="1509px"
 	
 ></p>
 <p>nc一下，输入<code>nc 192.168.137.188 3333</code></p>
 <p><code>getflag</code></p>
-<p><img src="/images/esp11.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp11.png" style="width: 60%;" />
 <p><code>THUCTF{M4k3_A_w1rele55_h0t5p0ts}</code></p>
 <h3 id="task2-1">task2
 </h3><blockquote>
@@ -914,23 +873,9 @@ unicode: "f6d2"
 <p>ESP32 用 socket 构造 HTTP 报文并发送，请求并不返回给本地终端，需要抓包分析出站流量。板子的网络行为都会从电脑出去，所以可以抓到 HTTP 请求</p>
 </blockquote>
 <p>电脑开启热点后，系统会新建一个虚拟网卡</p>
-<p><img src="/images/esp13.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp13.png" style="width: 40%;" />
 <p>用wireshark抓取这个网卡的流量，追踪http流，发现flag</p>
-<p><img src="/images/esp14.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp14.png" style="width: 80%;" />
 <p><code>THUCTF{Sn1ffer_N3tw0rk_TrAffic_In_7h4_Main_r0aD}</code></p>
 <h3 id="task3-1">task3
 </h3><blockquote>
@@ -992,12 +937,16 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><img src="/images/esp15.png"
-	
-	
-	
+</div><p><img src="/post/espthuctf/esp15.png"
+	width="852"
+	height="32"
+	srcset="/post/espthuctf/esp15_hu_1c0b3d3fdd793134.png 480w, /post/espthuctf/esp15_hu_314c5f27d4078ddb.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="2662"
+		data-flex-basis="6390px"
 	
 ></p>
 <ul>
@@ -1018,14 +967,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo airodump-ng wlan0mon
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><img src="/images/esp16.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+</div><img src="esp16.png" style="width: 80%;" />
 <p>wireshark抓wlan0mon网卡的包,在字节流中用字符串搜索CTF</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1035,14 +977,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo wireshark
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><img src="/images/esp17.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+</div><img src="esp17.png" style="width: 100%;" />
 <p><code>THUCTF{YOu_cAn_s3nd_4nd_sNiff3r_802.11_r4w_pAckag3}</code></p>
 <h2 id="蓝牙">蓝牙
 </h2><h3 id="task1-2">task1
@@ -1072,20 +1007,28 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>字面意思，修改手机蓝牙名称与串口打印的相同，等待连接即可</p>
-<p><img src="/images/esp18.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp18.png"
+	width="912"
+	height="30"
+	srcset="/post/espthuctf/esp18_hu_b9103ebc85b03905.png 480w, /post/espthuctf/esp18_hu_e16d9b93cc923560.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="3040"
+		data-flex-basis="7296px"
 	
 ></p>
-<p><img src="/images/esp20.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp20.png"
+	width="871"
+	height="51"
+	srcset="/post/espthuctf/esp20_hu_fe3c3728d695e472.png 480w, /post/espthuctf/esp20_hu_5479acb439f21c44.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="1707"
+		data-flex-basis="4098px"
 	
 ></p>
 <p><code>THUCTF{b1u3t00th_n4me_a1s0_c4n_b3_An_aTT4ck_surfAce}</code></p>
@@ -1139,12 +1082,16 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><img src="/images/esp21.png"
-	
-	
-	
+</div><p><img src="/post/espthuctf/esp21.png"
+	width="1176"
+	height="48"
+	srcset="/post/espthuctf/esp21_hu_c2a7a1bc4ad97d98.png 480w, /post/espthuctf/esp21_hu_4310100194609a1.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="2450"
+		data-flex-basis="5880px"
 	
 ></p>
 <ul>
@@ -1155,9 +1102,9 @@ unicode: "f6d2"
 <p>nRF Connect可用于扫描，调试低功耗蓝牙设备。</p>
 </blockquote>
 <p>用nRF Connect 抓取广播包，获得一串16进制数据<code>5448554354467B416456443437617D</code></p>
-<img src="/images/esp22.jpg" style="width: 50%;" />
+<img src="esp22.jpg" style="width: 50%;" />
 <p>转成ascii，获得flag</p>
-<img src="/images/esp23.png" style="width: 50%;" />
+<img src="esp23.png" style="width: 50%;" />
 <p><code>THUCTF{AdVD47a}</code></p>
 <h3 id="task3-2">task3
 </h3><blockquote>
@@ -1207,21 +1154,14 @@ unicode: "f6d2"
 <p>通过手机写入广播获取的 flag，实现对 BLE 特征值的访问控制。</p>
 </blockquote>
 <p>用nRF Connect连接上一题的BLE</p>
-<img src="/images/esp24.jpg" style="width: 50%;" />
+<img src="esp24.jpg" style="width: 50%;" />
 <p>在<code>Unknown Service&gt;Unknown Characteristic</code>中上传task2的flag</p>
-<img src="/images/esp25.jpg" style="width: 50%;" />
-<img src="/images/esp26.jpg" style="width: 50%;" />
+<img src="esp25.jpg" style="width: 50%;" />
+<img src="esp26.jpg" style="width: 50%;" />
 <p>读取获得字符串<code>54-48-55-43-54-46-7B-57-72-49-74-45- 5F-34-5F-67-41-37-54-7D-00</code></p>
-<img src="/images/esp27.jpg" style="width: 50%;" />
+<img src="esp27.jpg" style="width: 50%;" />
 <p>转ascii获得flag</p>
-<p><img src="/images/esp27.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp27.png" style="width: 60%;" />
 <p><code>THUCTF{WrItE_4_gA7T}</code></p>
 <h2 id="mqtt">MQTT
 </h2><p>题目的域名到期了，需要构建一个MQTT服务器，docker文件夹里有这题的dokerfile，起一个docker，然后打开服务器1833端口</p>
@@ -1256,14 +1196,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>日志看到连接成功，打开mqtt.fx，设置broker为自己的ip和端口号并连接</p>
-<p><img src="/images/esp28.png"
-	
-	
-	
-	loading="lazy"
-	
-	
-></p>
+<img src="esp28.png" style="width: 80%;" />
 <h3 id="task1-3">task1
 </h3><blockquote>
 <p>你知道MQTT的上帝是谁么</p>
@@ -1295,12 +1228,16 @@ unicode: "f6d2"
 <p>主题通配符：<code>#</code> 表示订阅所有主题，<code>+</code> 表示匹配单层主题</p>
 </blockquote>
 <p>subscribe输入#订阅所有主题，即可接收 broker 上发布的所有消息，看到flag</p>
-<p><img src="/images/esp29.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp29.png"
+	width="997"
+	height="722"
+	srcset="/post/espthuctf/esp29_hu_ddcbc5091cb1f59e.png 480w, /post/espthuctf/esp29_hu_c340e7d98246252a.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="138"
+		data-flex-basis="331px"
 	
 ></p>
 <p><code>THUCTF{#_1s_God_in_MQTT}</code></p>
@@ -1406,12 +1343,16 @@ unicode: "f6d2"
 </blockquote>
 <p>向flag2主题发送ip，nc监听80端口即可</p>
 <p><code>nc -l -p 80</code></p>
-<p><img src="/images/esp30.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp30.png"
+	width="1152"
+	height="103"
+	srcset="/post/espthuctf/esp30_hu_e1ba208045492c32.png 480w, /post/espthuctf/esp30_hu_f9a4ba8959ef54ef.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="1118"
+		data-flex-basis="2684px"
 	
 ></p>
 <p><code>THUCTF{attAck_t0_th3_dev1ce_tcp_r3cV_ch4nnel}</code></p>
@@ -1461,12 +1402,16 @@ unicode: "f6d2"
 <p>判断时没有验证符号导致安全漏洞。</p>
 </blockquote>
 <p>向flag2主题发送ip?-1，nc监听80端口即可</p>
-<p><img src="/images/esp31.png"
-	
-	
-	
+<p><img src="/post/espthuctf/esp31.png"
+	width="1662"
+	height="123"
+	srcset="/post/espthuctf/esp31_hu_b42df37d2b881e6c.png 480w, /post/espthuctf/esp31_hu_49b4e096a109dad7.png 1024w"
 	loading="lazy"
 	
+	
+		class="gallery-image" 
+		data-flex-grow="1351"
+		data-flex-basis="3242px"
 	
 ></p>
 <p><code>THUCTF{0ver_the_Air_y0u_c4n_a77ack_t0_1ntranet_d3v1ce</code></p>
@@ -1551,7 +1496,7 @@ unicode: "f6d2"
         
             <div class="article-image">
                 
-                    <img src="/images/l300.jpg" loading="lazy" data-key="" data-hash="/images/l300.jpg"/>
+                    <img src="/images/cover/l300.jpg" loading="lazy" data-key="" data-hash="/images/cover/l300.jpg"/>
                 
             </div>
         
@@ -1749,10 +1694,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">16</span> 
+      <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">47.69</span> 
+      <span class="number-highlight">48.28</span> 
       k 字
   </div>
   <div>
@@ -1796,6 +1743,12 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
+        
+        
         
         
         
