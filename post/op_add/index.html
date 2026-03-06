@@ -279,16 +279,27 @@ unicode: "f6d2"
         <li><a href="#dns黑名单">DNS黑名单</a></li>
       </ol>
     </li>
-    <li><a href="#zerotier不推荐">ZeroTier(不推荐)</a>
+    <li><a href="#zerotier">ZeroTier</a>
       <ol>
         <li><a href="#创建虚拟局域网">创建虚拟局域网</a></li>
         <li><a href="#openwrt配置">OpenWrt配置</a></li>
         <li><a href="#添加设备">添加设备</a></li>
         <li><a href="#延迟大的原因分析">延迟大的原因分析</a></li>
-        <li><a href="#访问局域网设备">访问局域网设备</a></li>
+        <li><a href="#访问局域网设备不可用">访问局域网设备（不可用）</a></li>
       </ol>
     </li>
-    <li><a href="#wake-on-lan">Wake on Lan</a></li>
+    <li><a href="#wake-on-lan">Wake on Lan</a>
+      <ol>
+        <li><a href="#连接">连接</a></li>
+        <li><a href="#唤醒">唤醒</a></li>
+      </ol>
+    </li>
+    <li><a href="#openclash">OpenClash</a>
+      <ol>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#配置">配置</a></li>
+      </ol>
+    </li>
     <li><a href="#其他">其他</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
@@ -387,7 +398,7 @@ unicode: "f6d2"
 </h3><p>访问<a class="link" href="http://192.168.10.1:3000"  target="_blank" rel="noopener"
     >http://路由器IP:3000</a>，WEB端口设置成<code>3000</code>，监听端口设置成<code>53</code>，接着按照提示进行设置，直到进入主界面</p>
 <blockquote>
-<p>默认 53 端口由 dnsmasq 占用，上一步已将其改为 5353 释放 53 端口。由于 DHCP 已向客户端下发 192.168.10.1 作为 DNS 服务器地址，客户端的 DNS 请求会发送至路由器 53 端口，因此由 AdGuardHome 处理</p>
+<p>默认 53 端口由 dnsmasq 占用，上一步已将其改为 5353，释放了 53 端口。由于 DHCP 已向客户端下发 192.168.10.1 作为 DNS 服务器地址，客户端的 DNS 请求会发送至路由器 53 端口，因此由 AdGuardHome 处理</p>
 </blockquote>
 <img src="/images/op17.png" style="width: 60%;" />
 <p>进入<code>设置&gt;DNS设置&gt;上游DNS服务器</code>，更改服务器地址</p>
@@ -460,7 +471,7 @@ unicode: "f6d2"
     >CJX&rsquo;s Annoyance List</a>：过滤烦人的自我推广，并补充EasyPrivacy隐私规则</li>
 </ul>
 <p>如果有特殊屏蔽或者放行需求，可以在自定义规则中添加，至此AdGuardHome就可以正常使用了</p>
-<h2 id="zerotier不推荐">ZeroTier(不推荐)
+<h2 id="zerotier">ZeroTier
 </h2><blockquote>
 <p>作用：创建虚拟局域网，用于远程设备互联</p>
 </blockquote>
@@ -515,7 +526,7 @@ unicode: "f6d2"
 <img src="/images/op28.jpg" style="width: 30%;" />
 <img src="/images/op30.png" style="width: 60%;" />
 <h3 id="延迟大的原因分析">延迟大的原因分析
-</h3><p>查看网络信息，可以发现目前只会出现一行信息，意思是 OpenWrt 已经成功加入了一个名为 <code>111</code> 的私有 ZeroTier 网络，分配到的虚拟 IP 是 <code>10.10.160.241</code>，网络正常</p>
+</h3><p>查看网络信息，可以看到当前设备加入的 ZeroTier 网络信息，意思是 OpenWrt 已经成功加入了一个名为 <code>111</code> 的私有 ZeroTier 网络，分配到的虚拟 IP 是 <code>10.10.160.241</code>，网络正常</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -525,7 +536,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="/images/op31.png" style="width: 100%;" />
-<p>查看peers，从官网中可以知道<code>775372d612</code> 是我的设备，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。ZeroTier的中继服务器在国外，这也是延迟极大的原因</p>
+<p>查看peers，从官网中可以知道<code>775372d612</code> 是我设备的ID，状态是 <code>RELAY</code>，延迟 -1，说明我要通信的设备目前不能直连，只能通过 ZeroTier 的中继服务器转发。ZeroTier的中继服务器在国外，这也是延迟极大的原因</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -541,20 +552,117 @@ unicode: "f6d2"
 <p>进入<code>网络&gt;防火墙&gt;通信规则</code>，添加一条新的规则，设置如图</p>
 <img src="/images/op33.png" style="width: 60%;" />
 <p>如果还是没有效果，大概率是NAT类型或运营商限制导致无法打洞成功，需要另找方法</p>
-<h3 id="访问局域网设备">访问局域网设备
+<h3 id="访问局域网设备不可用">访问局域网设备（不可用）
 </h3><blockquote>
 <p>ZeroTier虚拟网络里有多台设备，其中一台是路由器，路由器下还有电脑等局域网设备，我希望其他ZeroTier节点可以访问路由器下的局域网设备</p>
 </blockquote>
 <p>这一步需要在官网配置Managed Routes，将路由器LAN网段设置为由路由器虚拟IP转发，这时我注意到根本没有这一选项，在之前的配置过程中也有大量和教程不同的地方</p>
 <img src="/images/op34.png" style="width: 40%;" />
-<p>在官方文档搜索Managed Routes并跳转后，发现我访问的是<code>https://central.zerotier.com/</code>，有高级设置的是<code>https://my.zerotier.com/</code>。官方在2025.11进行了更新，现在需要花费18美元才能有这类功能。新版创建的网络不会在旧版管理界面显示，控制面板不互通，就算创建一个新的老版局域网，相信过不了多久也会没有办法使用。因此我选择放弃这个方案</p>
+<p>在官方文档搜索Managed Routes并跳转后，发现我访问的是<code>https://central.zerotier.com/</code>，有高级设置的是<code>https://my.zerotier.com/</code>。官方在2025年11月更新了控制面板，新平台将部分高级网络功能纳入付费套餐，现在需要花费18美元才能有这类功能。新版创建的网络不会在旧版管理界面显示，控制面板不互通，就算创建一个新的老版局域网，相信过不了多久也会没有办法使用。因此我选择放弃这个方案</p>
 <img src="/images/op35.png" style="width: 80%;" />
 <img src="/images/op36.png" style="width: 60%;" />
+<blockquote>
+<p>最终我选择使用ZeroTier远程 SSH 访问路由器，而内网设备则通过皎月连来串流</p>
+</blockquote>
 <h2 id="wake-on-lan">Wake on Lan
 </h2><blockquote>
 <p>作用：远程开机，方便在外访问主机与串流</p>
 </blockquote>
-<p>安装 <code>luci-app-wol</code> 软件包以及 <code>luci-i18n-wol-zh-cn</code> 语言包</p>
+<p>目标主机需要提前开启WOL功能，参考<a class="link" href="https://th4uma.github.io/post/streaming/#wol%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae"  target="_blank" rel="noopener"
+    >WOL基础配置</a>进行设置</p>
+<h3 id="连接">连接
+</h3><p>OpenWrt进入<code>系统&gt;管理权&gt;SSH访问</code>，进行如下设置</p>
+<img src="/images/op37.png" style="width: 100%;" />
+<p>我使用的是安卓手机远程开机，手机安装<code>ConnectBot</code>，根据上一步配置好ZeroTier，然后手机加入虚拟局域网</p>
+<p>在ConnectBot的添加设备界面填写信息并添加</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">username@hostname 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>username即设备的用户名
+hostname为虚拟局域网给OpenWrt设备分配的IP地址</p>
+</blockquote>
+<img src="/images/op38.jpg" style="width: 40%;" />
+<p>然后输入密码即可登录到路由器后台</p>
+<img src="/images/op40.jpg" style="width: 40%;" />
+<h3 id="唤醒">唤醒
+</h3><p>OpenWRT官方提供了两种唤醒工具，wol 和 etherwake，二选一即可</p>
+<p>opkg安装<code>etherwake</code>，或 <code>luci-app-wol</code> 软件包和 <code>luci-i18n-wol-zh-cn</code> 语言包</p>
+<p>SSH输入下面的命令来唤醒目标主机</p>
+<p><strong>wol：</strong> /usr/bin/wol -i &lt;目标主机所在局域网的广播地址&gt; &lt;目标机网卡MAC地址&gt;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/bin/wol -i 192.168.10.255 XX:XX:XX:XX:XX:XX
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>etherwake：</strong> /usr/bin/etherwake -b &lt;目标机网卡MAC地址&gt; -i &lt;路由器网卡名称&gt;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/bin/etherwake -b XX:XX:XX:XX:XX:XX -i br-lan
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这时即使我手机使用的是移动网络，也可以让电脑开机了</p>
+<img src="/images/op39.jpg" style="width: 40%;" />
+<h2 id="openclash">OpenClash
+</h2><blockquote>
+<p>作用：科学上网</p>
+</blockquote>
+<h3 id="安装">安装
+</h3><p>OpenWrt进入<code>系统&gt;软件包</code>卸载原来的dnsmasq。因为 OpenClash 依赖的是功能更完整的 dnsmasq-full，两个软件包提供相同的文件，不能同时存在，opkg 会阻止直接覆盖安装</p>
+<p>进入软路由终端，复制下面的命令安装OpenClash需要的依赖包。我的系统是 OpenWrt 24.10，这一版本默认防火墙是 fw4 + nftables，因此使用nftables的依赖</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#iptables
+</span></span><span class="line"><span class="cl">opkg update
+</span></span><span class="line"><span class="cl">opkg install coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci luci-base
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#nftables
+</span></span><span class="line"><span class="cl">opkg update
+</span></span><span class="line"><span class="cl">opkg install coreutils-nohup bash dnsmasq-full curl ca-certificates ipset ip-full libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip kmod-nft-tproxy luci-compat luci luci-base
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下载<a class="link" href="https://github.com/vernesong/OpenClash/releases"  target="_blank" rel="noopener"
+    >OpenClash的ipk文件</a></p>
+<p>OpenWrt进入<code>系统&gt;软件包&gt;上传软件包</code>，将刚刚下载的软件包上传并安装</p>
+<img src="/images/op46.png" style="width: 100%;" />
+<blockquote>
+<p>可能的报错：无法执行 opkg install 命令：Error: XHR request aborted by browser</p>
+</blockquote>
+<p>原因：在 OpenWrt 或 ImmortalWrt 的 LuCI 后台安装软件包时，如果安装过程较长或网络延迟较高，浏览器端可能因为 XHR 请求超时而中断请求。此时页面会提示安装失败，但实际上后台的 opkg 进程可能仍在继续运行并完成安装。等待一段时间后重启路由器，通常可以看到 OpenClash 已经安装完成</p>
+<img src="/images/op47.png" style="width: 100%;" />
+<h3 id="配置">配置
+</h3><p>进入<code>系统&gt;服务&gt;OpenClash</code>，这里提示内核未安装，选择一个延迟低的地址安装即可</p>
+<img src="/images/op48.png" style="width: 100%;" />
+<p>添加机场的订阅文件，复制链接导入</p>
+<img src="/images/op51.png" style="width: 50%;" />
+<p>进入<code>OpenClash&gt;插件设置&gt;模式设置</code>，点击<code>切换页面到Fake-IP模式</code></p>
+<img src="/images/op49.png" style="width: 100%;" />
+<p>进入<code>GEO数据库订阅</code>，勾选<code>自动更新 GeoIP MMDB 数据库``自动更新 GeoIP Dat 数据库``自动更新 GeoSite 数据库</code></p>
+<img src="/images/op50.png" style="width: 90%;" />
 <h2 id="其他">其他
 </h2><ul>
 <li><code>luci-app-ttyd</code>：模拟终端，可以直接在浏览器里面使用 SSH 进入路由器后台</li>
@@ -577,6 +685,12 @@ unicode: "f6d2"
     >OpenWRT使用ZeroTier来实现异地组网的方案 - MinMin的鸽子窝</a></p>
 <p><a class="link" href="https://www.cnblogs.com/saintyear/p/19049862"  target="_blank" rel="noopener"
     >openwrt原版系统安装zerotier，私有化planet，网段互通 - 大宋666 - 博客园</a></p>
+<p><a class="link" href="https://www.cnblogs.com/NyanKoSenSei/p/14391465.html"  target="_blank" rel="noopener"
+    >openWRT路由器使用WoL唤醒Linux主机 - 苍凉温暖 - 博客园</a></p>
+<p><a class="link" href="https://blog.fxcxy.com/2024/03/17/iStoreOS-OpenWpt%e5%ae%89%e8%a3%85%e5%8f%8a%e9%85%8d%e7%bd%aeOpenClash/"  target="_blank" rel="noopener"
+    >iStoreOS/OpenWrt安装及配置OpenClash - 自由码农</a></p>
+<p><a class="link" href="https://www.luxiyue.com/openwrt/openwrt%e5%ae%89%e8%a3%85openclash/"  target="_blank" rel="noopener"
+    >OpenWrt安装OpenClash - Forever Young</a></p>
 
 </section>
 
@@ -892,7 +1006,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">16</span> 
       篇 ，总计 
-      <span class="number-highlight">46.49</span> 
+      <span class="number-highlight">47.69</span> 
       k 字
   </div>
   <div>

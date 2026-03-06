@@ -20,7 +20,7 @@
 &lt;/h2&gt;&lt;h3 id=&#34;设备&#34;&gt;设备
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;服务端：台式电脑，笔记本&lt;/li&gt;
-&lt;li&gt;客户端：笔记本，平板&lt;/li&gt;
+&lt;li&gt;客户端：手机，平板&lt;/li&gt;
 &lt;li&gt;路由器：OpenWrt&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;软件&#34;&gt;软件
@@ -38,9 +38,9 @@
     &gt;皎月连&lt;/a&gt;：内网穿透&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;wol网络唤醒&#34;&gt;WOL网络唤醒
+&lt;h2 id=&#34;wol基础配置&#34;&gt;WOL基础配置
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;WOL网络唤醒可以通过网络控制电脑开机，这样就解决了电脑关机情况下在外无法随时串流的问题&lt;/p&gt;
+&lt;p&gt;WOL（Wake on LAN）可以通过网络控制电脑开机，这样就解决了电脑关机情况下在外无法随时串流的问题&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;前提条件：&lt;/strong&gt; 主板和网卡必须支持 WOL，需要使用有线网卡&lt;/p&gt;
 &lt;h3 id=&#34;主机端设置&#34;&gt;主机端设置
@@ -58,6 +58,10 @@
 &lt;img src=&#34;https://th4uma.github.io/images/cl2.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;p&gt;进入主机的界面，点击&lt;code&gt;LAN唤醒&lt;/code&gt;，这里会自动填写好信息，点击发送即可&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl3.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果需要远程串流，还需要进一步配置远程WOL，详见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#wake-on-lan&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;OpenWrt插件推荐与配置&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h2 id=&#34;内网串流&#34;&gt;内网串流
 &lt;/h2&gt;&lt;p&gt;服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址&lt;/p&gt;
 &lt;img src=&#34;https://th4uma.github.io/images/cl7.png&#34; style=&#34;width: 80%;&#34; /&gt;
@@ -74,8 +78,8 @@
 &lt;img src=&#34;https://th4uma.github.io/images/cl5.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;外网串流&#34;&gt;外网串流
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#zerotier%e4%b8%8d%e6%8e%a8%e8%8d%90&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;ZeroTier+OpenWrt方案&lt;/a&gt;实测不可用，后来采用了电脑直接安装皎月连的方法&lt;/p&gt;
+&lt;p&gt;有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#zerotier&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ZeroTier+OpenWrt方案&lt;/a&gt;在我的环境下不可用，后来采用了电脑直接安装皎月连的方法&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;服务端与客户端均安装&lt;a class=&#34;link&#34; href=&#34;https://www.natpierce.cn/pc/downloads/index_new.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;皎月连&lt;/a&gt;，然后注册一个账号&lt;/p&gt;
