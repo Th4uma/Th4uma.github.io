@@ -273,7 +273,13 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#前言">前言</a></li>
+    <li><a href="#设备信息">设备信息</a></li>
     <li><a href="#准备">准备</a></li>
+    <li><a href="#设置与下载">设置与下载</a></li>
+    <li><a href="#解锁bootloader">解锁BootLoader</a></li>
+    <li><a href="#解锁root">解锁Root</a></li>
+    <li><a href="#lsposed失效问题">lsposed失效问题</a></li>
+    <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
         </div>
@@ -358,16 +364,60 @@ unicode: "f6d2"
     
     <h1 id="一加ace-3v刷机">一加ACE 3V刷机
 </h1><h2 id="前言">前言
-</h2><p>现在的手机有各种讨厌的功能，臃肿的软件经常包含广告，用的时候很不爽，就像手机有一半并不属于自己一样。为了将手机完全变为自己的东西，解锁root权限就是最好的方法</p>
+</h2><p>手机里臃肿的软件经常包含广告，用的时候很不爽，再加上各种限制，就像手机有一半并不属于自己一样。为了将手机完全变为自己的东西，解锁root权限就是最好的方法</p>
 <p>Root权限就是手机的管理员权限，有了这个权限，就可以任意更改各种软件，安装插件，去掉不喜欢的功能，增加实用的功能</p>
-<p>这算是严格意义上我的第一个项目，我在去年的过年期间将自己的手机刷机了，使用半年体验很好。但前段时间模块不知道为何失效，所以重新刷机一次顺便整理过程</p>
+<p>这算是严格意义上我的第一个项目，我在2025年的过年期间将自己的手机刷机了，使用半年体验很好。但前段时间模块不知道为何失效，所以重新整理一次刷机过程</p>
+<h2 id="设备信息">设备信息
+</h2><p>型号：一加ACE3V</p>
+<p>版本：安卓14</p>
+<p>系统：ColorOS</p>
 <h2 id="准备">准备
 </h2><ul>
-<li><strong>重要：</strong> 刷机需要格式化手机，所以开始之前需要备份全部重要数据</li>
-<li>一根能传输数据的usb线</li>
+<li><strong>重要：</strong> 刷机需要格式化手机，所以开始之前需要备份全部重要数据，并退出谷歌账号</li>
+<li>一根能传输数据的USB线</li>
 <li>一台电脑</li>
-<li>可以解锁bl的手机</li>
+<li>可以解锁BootLoader的手机</li>
 </ul>
+<h2 id="设置与下载">设置与下载
+</h2><p>进入<code>设置&gt;关于本机&gt;版本信息</code>，多次点击版本号打开开发者模式</p>
+<img src="1.jpg" style="width: 40%;" />
+<p><code>设置&gt;系统与更新&gt;开发者选项</code>，打开<code>OEM解锁</code>与<code>USB调试</code></p>
+<img src="2.jpg" style="width: 40%;" />
+<p>电脑下载<a class="link" href="https://optool.daxiaamu.com/optool"  target="_blank" rel="noopener"
+    >一加全能工具箱</a></p>
+<p>打开一加全能工具箱，首先按<code>1</code>安装驱动，我的手机安装的是<a class="link" href="https://yun.daxiaamu.com/files/Tool/adb%e5%92%8cfastboot%e9%a9%b1%e5%8a%a8/fastboot_driver_64.exe?preview"  target="_blank" rel="noopener"
+    > 高通64位Fastboot驱动</a></p>
+<img src="3.png" style="width: 70%;" />
+<p>之后需要下载对应机型与版本号的<a class="link" href="https://pan.quark.cn/s/e171b8c91ee7#/list/share"  target="_blank" rel="noopener"
+    >刷机包</a>，版本号可以在之前的版本信息中看到</p>
+<h2 id="解锁bootloader">解锁BootLoader
+</h2><p>回到工具箱主页，按<code>2</code>解锁BootLoader。输入随机码后回车，然后数据线连接手机和电脑，选择文件传输模式，并允许usb调试</p>
+<img src="4.png" style="width: 80%;" />
+<p>手机这时候会自动重启，进入解锁界面界面按<code>音量减</code>，选最下面的<code>UNLIOCK THE BOOTLOADER</code>选项，然后按<code>电源键</code>确认</p>
+<p>手机再次重启，屏幕上会显示三行黄字，表示解锁成功</p>
+<img src="5.jpg" style="width: 40%;" />
+<h2 id="解锁root">解锁Root
+</h2><p>手机重新打开USB调试，工具箱回到主界面，按p进入专家模式。这里有几种方案可供选择，我选择的是 KernelSU</p>
+<blockquote>
+<p>KernelSU是一种比Magisk更新的ROOT方式</p>
+</blockquote>
+<img src="6.png" style="width: 40%;" />
+<p>连接手机后将rom包拖进工具箱界面，自动解包后安装ksu</p>
+<p>安装好会跳转到<a class="link" href="https://optool.daxiaamu.com/kernelsu_installing?src=root"  target="_blank" rel="noopener"
+    >全能工具箱安装KernelsuSU手机端操作说明 </a>，下载zygisk-Next、lsposed、meta-hybrid，并放入手机存储</p>
+<img src="7.png" style="width: 90%;" />
+<p>打开ks&gt;模块&gt;安装，先安装z，再安装另外两个</p>
+<img src="8.jpg" style="width: 30%;" />
+<img src="9.jpg" style="width: 30%;" />
+<img src="10.jpg" style="width: 30%;" />
+<p>重启后下拉菜单创建lsp的快捷方式，刷机就完成了</p>
+<h2 id="lsposed失效问题">lsposed失效问题
+</h2><p>检查ksubb，版本过低需要更新，更新后重装三个模块</p>
+<h2 id="参考">参考
+</h2><p><a class="link" href="https://www.bilibili.com/video/BV1n4DhYWEZ9/?spm_id_from=333.337.search-card.all.click&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
+    >秒解BL锁！玩机爱好者最具性价比手机，一加Ace3V解锁BL与root玩法_哔哩哔哩_bilibili</a></p>
+<p><a class="link" href="https://www.daxiaamu.com/"  target="_blank" rel="noopener"
+    >大侠阿木博客 - 杂七杂八技术博客</a></p>
 
 </section>
 
@@ -619,7 +669,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">48.42</span> 
+      <span class="number-highlight">49.12</span> 
       k 字
   </div>
   <div>
