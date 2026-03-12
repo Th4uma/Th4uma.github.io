@@ -10,10 +10,10 @@
 <meta property='og:description' content="我的第一个项目">
 <meta property='og:url' content='https://th4uma.github.io/post/root/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='article:modified_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/sj1.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='article:modified_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/sj1.jpg' />
 <meta name="twitter:title" content="一加ACE 3V刷机">
 <meta name="twitter:description" content="我的第一个项目"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/sj1.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/sj1.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -278,6 +278,7 @@ unicode: "f6d2"
     <li><a href="#设置与下载">设置与下载</a></li>
     <li><a href="#解锁bootloader">解锁BootLoader</a></li>
     <li><a href="#解锁root">解锁Root</a></li>
+    <li><a href="#插件">插件</a></li>
     <li><a href="#lsposed失效问题">lsposed失效问题</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
@@ -297,7 +298,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/root/">
                 
-                    <img src="/images/sj1.jpg" loading="lazy" alt="Featured image of post 一加ACE 3V刷机" />
+                    <img src="/images/cover/sj1.jpg" loading="lazy" alt="Featured image of post 一加ACE 3V刷机" />
                 
             </a>
         </div>
@@ -364,13 +365,14 @@ unicode: "f6d2"
     
     <h1 id="一加ace-3v刷机">一加ACE 3V刷机
 </h1><h2 id="前言">前言
-</h2><p>手机里臃肿的软件经常包含广告，用的时候很不爽，再加上各种限制，就像手机有一半并不属于自己一样。为了将手机完全变为自己的东西，解锁root权限就是最好的方法</p>
+</h2><p>手机系统默认有很多限制，用的时候很不爽，如果想完全控制系统，就需要解锁 BootLoader 并获取 Root 权限。</p>
 <p>Root权限就是手机的管理员权限，有了这个权限，就可以任意更改各种软件，安装插件，去掉不喜欢的功能，增加实用的功能</p>
 <p>这算是严格意义上我的第一个项目，我在2025年的过年期间将自己的手机刷机了，使用半年体验很好。但前段时间模块不知道为何失效，所以重新整理一次刷机过程</p>
 <h2 id="设备信息">设备信息
 </h2><p>型号：一加ACE3V</p>
 <p>版本：安卓14</p>
 <p>系统：ColorOS</p>
+<p>处理器：高通 Snapdragon 7+ Gen 3</p>
 <h2 id="准备">准备
 </h2><ul>
 <li><strong>重要：</strong> 刷机需要格式化手机，所以开始之前需要备份全部重要数据，并退出谷歌账号</li>
@@ -389,30 +391,44 @@ unicode: "f6d2"
     > 高通64位Fastboot驱动</a></p>
 <img src="3.png" style="width: 70%;" />
 <p>之后需要下载对应机型与版本号的<a class="link" href="https://pan.quark.cn/s/e171b8c91ee7#/list/share"  target="_blank" rel="noopener"
-    >刷机包</a>，版本号可以在之前的版本信息中看到</p>
+    >ROM包</a>，版本号可以在之前的版本信息中看到</p>
 <h2 id="解锁bootloader">解锁BootLoader
-</h2><p>回到工具箱主页，按<code>2</code>解锁BootLoader。输入随机码后回车，然后数据线连接手机和电脑，选择文件传输模式，并允许usb调试</p>
+</h2><p>回到工具箱主页，按<code>2</code>解锁BootLoader。输入随机码后回车，然后数据线连接手机和电脑，选择文件传输模式，并允许USB调试</p>
 <img src="4.png" style="width: 80%;" />
-<p>手机这时候会自动重启，进入解锁界面界面按<code>音量减</code>，选最下面的<code>UNLIOCK THE BOOTLOADER</code>选项，然后按<code>电源键</code>确认</p>
+<p>手机这时候会自动重启，进入解锁界面界面按<code>音量减</code>，选最下面的<code>UNLOCK THE BOOTLOADER</code>选项，然后按<code>电源键</code>确认</p>
 <p>手机再次重启，屏幕上会显示三行黄字，表示解锁成功</p>
 <img src="5.jpg" style="width: 40%;" />
 <h2 id="解锁root">解锁Root
-</h2><p>手机重新打开USB调试，工具箱回到主界面，按p进入专家模式。这里有几种方案可供选择，我选择的是 KernelSU</p>
+</h2><p>手机重新打开USB调试，工具箱回到主界面，输入<code>p</code>进入专家模式。这里有几种方案可供选择，我选择的是 KernelSU</p>
 <blockquote>
 <p>KernelSU是一种比Magisk更新的ROOT方式</p>
 </blockquote>
 <img src="6.png" style="width: 40%;" />
-<p>连接手机后将rom包拖进工具箱界面，自动解包后安装ksu</p>
+<p>连接手机后将ROM包拖进工具箱界面，自动解包后安装KernelSU</p>
 <p>安装好会跳转到<a class="link" href="https://optool.daxiaamu.com/kernelsu_installing?src=root"  target="_blank" rel="noopener"
-    >全能工具箱安装KernelsuSU手机端操作说明 </a>，下载zygisk-Next、lsposed、meta-hybrid，并放入手机存储</p>
+    >全能工具箱安装KernelsuSU手机端操作说明</a>，下载zygisk-Next、lsposed、meta-hybrid，并放入手机存储</p>
 <img src="7.png" style="width: 90%;" />
-<p>打开ks&gt;模块&gt;安装，先安装z，再安装另外两个</p>
+<p>打开<code>KernelSU&gt;模块&gt;安装</code>，先安装ZygiskNext，再安装 LSPosed，最后安装 Meta-Hybrid，完成后重启</p>
 <img src="8.jpg" style="width: 30%;" />
 <img src="9.jpg" style="width: 30%;" />
 <img src="10.jpg" style="width: 30%;" />
-<p>重启后下拉菜单创建lsp的快捷方式，刷机就完成了</p>
+<p>重启后创建LSPosed的快捷方式，打开后可以看到lsposed正常运行，这样刷机就完成了</p>
+<img src="11.jpg" style="width: 45%;" />
+<img src="12.jpg" style="width: 45%;" />
+<h2 id="插件">插件
+</h2><p>root完成后最重要的当然是安装插件来实现各种功能，比较好用的如下</p>
+<ul>
+<li><a class="link" href="https://github.com/cledwynl/mbga/releases"  target="_blank" rel="noopener"
+    >MBGA</a>：Make Bilibili Great Again!</li>
+</ul>
+<p>安装模块后进入lsp&gt;模块，进入模块界面勾选需要应用的软件并打开开关，模块就生效了</p>
 <h2 id="lsposed失效问题">lsposed失效问题
-</h2><p>检查ksubb，版本过低需要更新，更新后重装三个模块</p>
+</h2><p>检查ksu，提示版本过低需要更新，更新后重装三个模块</p>
+<img src="13.jpg" style="width: 45%;" />
+<p>重启后发现lsposed依旧无法启动，原因是没有给shell root权限，在ksu里面打开这个选项</p>
+<img src="14.jpg" style="width: 45%;" />
+<img src="15.jpg" style="width: 45%;" />
+<p>lsposed和ksu都运行正常，但lsp模块无法使用</p>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://www.bilibili.com/video/BV1n4DhYWEZ9/?spm_id_from=333.337.search-card.all.click&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
     >秒解BL锁！玩机爱好者最具性价比手机，一加Ace3V解锁BL与root玩法_哔哩哔哩_bilibili</a></p>
@@ -669,7 +685,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">17</span> 
       篇 ，总计 
-      <span class="number-highlight">49.12</span> 
+      <span class="number-highlight">49.33</span> 
       k 字
   </div>
   <div>
