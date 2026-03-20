@@ -7,7 +7,58 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Fri, 06 Mar 2026 17:29:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 19 Mar 2026 15:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Arch Linux &#43; Windows双系统安装与配置</title>
+        <link>https://th4uma.github.io/post/archlinux/</link>
+        <pubDate>Thu, 19 Mar 2026 15:03:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/archlinux/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/linux.jpg" alt="Featured image of post Arch Linux &#43; Windows双系统安装与配置" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+&lt;/h2&gt;&lt;p&gt;一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，于是一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用&lt;/p&gt;
+&lt;h2 id=&#34;准备&#34;&gt;准备
+&lt;/h2&gt;&lt;h3 id=&#34;确定电脑启动类型&#34;&gt;确定电脑启动类型
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;电脑启动类型可以分为传统 BIOS和UEFI，双系统推荐使用UEFI/GPT启动方式，不建议在BIOS/MBR平台上安装双系统，引导易出问题&lt;/p&gt;
+&lt;p&gt;Win11仅支持UEFI启动，老设备传统BIOS启动的概率比较大&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;按下&lt;code&gt;Win+R&lt;/code&gt;，输入&lt;code&gt;msinfo32&lt;/code&gt;后回车打开系统信息，在打开的窗口中查看&lt;code&gt;BIOS模式&lt;/code&gt;，如果是UEFI则是UEFI引导，Legacy则是传统BIOS引导&lt;/p&gt;
+&lt;img src=&#34;1.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;h3 id=&#34;设置-windows-时区偏移&#34;&gt;设置 Windows 时区偏移
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Linux 和 Windows 对硬件时钟的处理方式不同，如果不加以特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;制作启动u盘&#34;&gt;制作启动U盘
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;准备一个4G以上的空U盘&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;下载Arch Linux的&lt;a class=&#34;link&#34; href=&#34;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;系统镜像&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.ventoy.net/cn/download.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Ventoy&lt;/a&gt;的Windows版本&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;解压下载的Ventoy，运行&lt;code&gt;Ventoy2Disk.exe&lt;/code&gt;，在右上角配置选项中将分区类型改为GPT&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://th4uma.github.io/post/aio/aio3.png&#34; style=&#34;width:60%;&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;选择U盘，点击安装，然后将archlinux的镜像复制进U盘&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src=&#34;https://th4uma.github.io/post/aio/aio4.png&#34; style=&#34;width:60%;&#34;&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Windows+Arch Linux双系统基本安装 - 团子的血域城堡&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.linioi.com/posts/18/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Arch Linux + Windows 双系统安装教程&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://coast23.github.io/2025/04/29/%e5%ae%89%e8%a3%85-Arch-Win11-%e5%8f%8c%e7%b3%bb%e7%bb%9f%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;安装 Arch + Win11 双系统过程记录 | Coast23&amp;rsquo;s Blog&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>一加Ace 3V刷机</title>
         <link>https://th4uma.github.io/post/root/</link>
         <pubDate>Fri, 06 Mar 2026 17:29:02 +0800</pubDate>

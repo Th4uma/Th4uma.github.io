@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="我的第一个项目">
-<title>一加Ace 3V刷机</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="笔记本新系统的折腾记录">
+<title>Arch Linux &#43; Windows双系统安装与配置</title>
 
-<link rel='canonical' href='https://th4uma.github.io/post/root/'>
+<link rel='canonical' href='https://th4uma.github.io/post/archlinux/'>
 
-<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="一加Ace 3V刷机">
-<meta property='og:description' content="我的第一个项目">
-<meta property='og:url' content='https://th4uma.github.io/post/root/'>
+<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="Arch Linux + Windows双系统安装与配置">
+<meta property='og:description' content="笔记本新系统的折腾记录">
+<meta property='og:url' content='https://th4uma.github.io/post/archlinux/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='article:modified_time' content='2026-03-06T17:29:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/sj1.jpg' />
-<meta name="twitter:title" content="一加Ace 3V刷机">
-<meta name="twitter:description" content="我的第一个项目"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/sj1.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-03-19T15:03:02&#43;08:00'/><meta property='article:modified_time' content='2026-03-19T15:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/linux.jpg' />
+<meta name="twitter:title" content="Arch Linux + Windows双系统安装与配置">
+<meta name="twitter:description" content="笔记本新系统的折腾记录"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/linux.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -273,17 +273,11 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#前言">前言</a></li>
-    <li><a href="#设备信息">设备信息</a></li>
-    <li><a href="#准备">准备</a></li>
-    <li><a href="#设置与下载">设置与下载</a></li>
-    <li><a href="#解锁bootloader">解锁BootLoader</a></li>
-    <li><a href="#解锁root">解锁Root</a></li>
-    <li><a href="#插件">插件</a></li>
-    <li><a href="#lsposed不可用问题">LSPosed不可用问题</a>
+    <li><a href="#准备">准备</a>
       <ol>
-        <li><a href="#打开报错">打开报错</a></li>
-        <li><a href="#启动卡在白屏">启动卡在白屏</a></li>
-        <li><a href="#模块不生效">模块不生效</a></li>
+        <li><a href="#确定电脑启动类型">确定电脑启动类型</a></li>
+        <li><a href="#设置-windows-时区偏移">设置 Windows 时区偏移</a></li>
+        <li><a href="#制作启动u盘">制作启动U盘</a></li>
       </ol>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -302,9 +296,9 @@ unicode: "f6d2"
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/post/root/">
+            <a href="/post/archlinux/">
                 
-                    <img src="/images/cover/sj1.jpg" loading="lazy" alt="Featured image of post 一加Ace 3V刷机" />
+                    <img src="/images/cover/linux.jpg" loading="lazy" alt="Featured image of post Arch Linux &#43; Windows双系统安装与配置" />
                 
             </a>
         </div>
@@ -314,12 +308,8 @@ unicode: "f6d2"
     
     <header class="article-category">
         
-            <a href="/categories/root/" >
-                Root
-            </a>
-        
-            <a href="/categories/android/" >
-                Android
+            <a href="/categories/linux/" >
+                Linux
             </a>
         
     </header>
@@ -327,12 +317,12 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/root/">一加Ace 3V刷机</a>
+            <a href="/post/archlinux/">Arch Linux &#43; Windows双系统安装与配置</a>
         </h2>
     
         
         <h3 class="article-subtitle">
-            我的第一个项目
+            笔记本新系统的折腾记录
         </h3>
         
     </div>
@@ -353,7 +343,7 @@ unicode: "f6d2"
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">2026-03-06</time>
+                <time class="article-time--published">2026-03-19</time>
             </div>
         
 
@@ -370,91 +360,48 @@ unicode: "f6d2"
     
     
     <h2 id="前言">前言
-</h2><p>手机系统默认有很多限制，用的时候很不爽，如果想完全控制系统，就需要解锁 BootLoader 并获取 Root 权限</p>
-<p>Root权限就是手机的管理员权限，有了这个权限，就可以修改系统行为，安装插件，去掉不喜欢的功能，增加实用的功能</p>
-<p>这算是严格意义上我的第一个项目，我在2025年的过年期间将自己的手机刷机了，使用半年体验很好。但前段时间模块不知道为何失效，所以重新整理并记录刷机过程</p>
-<h2 id="设备信息">设备信息
-</h2><p>型号：一加Ace3V</p>
-<p>版本：安卓14</p>
-<p>系统：ColorOS</p>
-<p>处理器：高通 Snapdragon 7+ Gen 3</p>
+</h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，于是一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
 <h2 id="准备">准备
-</h2><ul>
-<li><strong>重要：</strong> 刷机需要格式化手机，所以开始之前需要备份全部重要数据，并退出谷歌账号</li>
-<li>一根能传输数据的USB线</li>
-<li>一台电脑</li>
-<li>确认手机可以解锁BootLoader</li>
-</ul>
-<h2 id="设置与下载">设置与下载
-</h2><p>进入<code>设置&gt;关于本机&gt;版本信息</code>，连续点击版本号打开开发者模式</p>
-<img src="1.jpg" style="width: 40%;" />
-<p><code>设置&gt;系统与更新&gt;开发者选项</code>，打开<code>OEM解锁</code>与<code>USB调试</code></p>
-<img src="2.jpg" style="width: 40%;" />
-<p>电脑下载<a class="link" href="https://optool.daxiaamu.com/optool"  target="_blank" rel="noopener"
-    >一加全能工具箱</a></p>
-<p>打开一加全能工具箱，首先按<code>1</code>安装驱动，我的手机安装的是<a class="link" href="https://yun.daxiaamu.com/files/Tool/adb%e5%92%8cfastboot%e9%a9%b1%e5%8a%a8"  target="_blank" rel="noopener"
-    > 高通64位Fastboot驱动</a></p>
-<img src="3.png" style="width: 70%;" />
-<p>之后需要下载对应机型与版本号的<a class="link" href="https://pan.quark.cn/s/e171b8c91ee7#/list/share"  target="_blank" rel="noopener"
-    >ROM包</a>，版本号可以在之前的版本信息中看到</p>
-<h2 id="解锁bootloader">解锁BootLoader
-</h2><p>回到工具箱主页，按<code>2</code>解锁BootLoader。输入随机码后回车，然后数据线连接手机和电脑，选择文件传输模式，并允许USB调试</p>
-<img src="4.png" style="width: 80%;" />
-<p>手机这时候会自动重启，进入解锁界面按<code>音量减</code>，选最下面的<code>UNLOCK THE BOOTLOADER</code>选项，然后按<code>电源键</code>确认</p>
-<p>手机再次重启，屏幕上会显示三行黄字，表示解锁成功</p>
-<img src="5.jpg" style="width: 40%;" />
-<h2 id="解锁root">解锁Root
-</h2><p>手机重新打开USB调试，工具箱回到主界面，输入<code>p</code>进入专家模式。这里有几种方案可供选择，我选择的是 KernelSU</p>
-<blockquote>
-<p>KernelSU 运行在内核空间，相比 Magisk 具有更强的隐蔽性，能够更轻松地通过Root检测</p>
+</h2><h3 id="确定电脑启动类型">确定电脑启动类型
+</h3><blockquote>
+<p>电脑启动类型可以分为传统 BIOS和UEFI，双系统推荐使用UEFI/GPT启动方式，不建议在BIOS/MBR平台上安装双系统，引导易出问题</p>
+<p>Win11仅支持UEFI启动，老设备传统BIOS启动的概率比较大</p>
 </blockquote>
-<img src="6.png" style="width: 40%;" />
-<p>连接手机后将ROM包拖进工具箱界面，自动解包后安装KernelSU。注意<strong>系统全量包一定不能下错</strong>，否则很可能变砖</p>
-<p>安装好会跳转到<a class="link" href="https://optool.daxiaamu.com/kernelsu_installing?src=root"  target="_blank" rel="noopener"
-    >全能工具箱安装KernelSU手机端操作说明</a>，下载Zygisk-Next、LSPosed、Meta-Hybrid，并放入手机存储</p>
-<img src="7.png" style="width: 90%;" />
-<p>打开<code>KernelSU&gt;模块&gt;安装</code>，先安装ZygiskNext，再安装 LSPosed，最后安装 Meta-Hybrid，完成后重启</p>
-<img src="8.jpg" style="width: 30%;" />
-<img src="9.jpg" style="width: 30%;" />
-<img src="10.jpg" style="width: 30%;" />
-<p>重启后创建LSPosed的快捷方式，打开后可以看到LSPosed正常运行，这样刷机就完成了</p>
-<img src="11.jpg" style="width: 45%;" />
-<img src="12.jpg" style="width: 45%;" />
-<h2 id="插件">插件
-</h2><p>Root完成后最重要的当然是安装插件来实现各种功能，比较好用的如下</p>
+<p>按下<code>Win+R</code>，输入<code>msinfo32</code>后回车打开系统信息，在打开的窗口中查看<code>BIOS模式</code>，如果是UEFI则是UEFI引导，Legacy则是传统BIOS引导</p>
+<img src="1.png" style="width: 50%;" />
+<h3 id="设置-windows-时区偏移">设置 Windows 时区偏移
+</h3><blockquote>
+<p>Linux 和 Windows 对硬件时钟的处理方式不同，如果不加以特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移</p>
+</blockquote>
+<h3 id="制作启动u盘">制作启动U盘
+</h3><ul>
+<li>
+<p>准备一个4G以上的空U盘</p>
+</li>
+<li>
+<p>下载Arch Linux的<a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/"  target="_blank" rel="noopener"
+    >系统镜像</a></p>
+</li>
+<li>
+<p>下载<a class="link" href="https://www.ventoy.net/cn/download.html"  target="_blank" rel="noopener"
+    >Ventoy</a>的Windows版本</p>
+</li>
+<li>
+<p>解压下载的Ventoy，运行<code>Ventoy2Disk.exe</code>，在右上角配置选项中将分区类型改为GPT</p>
+</li>
+</ul>
+<img src="https://th4uma.github.io/post/aio/aio3.png" style="width:60%;">
 <ul>
-<li><a class="link" href="https://github.com/cledwynl/mbga/releases"  target="_blank" rel="noopener"
-    >MBGA</a>：Make Bilibili Great Again!</li>
-<li><a class="link" href="https://github.com/Xposed-Modules-Repo/com.fkzhang.wechatxposed"  target="_blank" rel="noopener"
-    >微X模块</a>：解锁微信更多功能</li>
+<li>选择U盘，点击安装，然后将archlinux的镜像复制进U盘</li>
 </ul>
-<p>安装模块后进入<code>LSPosed&gt;模块</code>，进入模块界面，勾选需要应用的软件并打开开关，模块就生效了</p>
-<img src="16.jpg" style="width: 45%;" />
-<h2 id="lsposed不可用问题">LSPosed不可用问题
-</h2><h3 id="打开报错">打开报错
-</h3><blockquote>
-<p>通知栏显示LSPosed已加载，但打开快捷方式就会有如下报错，关闭报错后闪退</p>
-</blockquote>
-<img src="17.jpg" style="width: 45%;" />
-<p>检查KernelSU，发现提示版本过低需要更新，更新后重新刷写三个模块，问题解决</p>
-<img src="13.jpg" style="width: 45%;" />
-<h3 id="启动卡在白屏">启动卡在白屏
-</h3><blockquote>
-<p>完成上一步后，LSPosed依旧无法启动，会卡死在启动后的白屏界面</p>
-</blockquote>
-<img src="14.jpg" style="width: 45%;" />
-<p>原因是没有给 <code>shell</code>分配 root权限，在KernelSU里面打开这个选项，问题解决</p>
-<img src="15.jpg" style="width: 45%;" />
-<h3 id="模块不生效">模块不生效
-</h3><blockquote>
-<p>LSPosed和KernelSU都运行正常，但LSPosed中的模块全部不生效</p>
-</blockquote>
-<p>排查过模块设置，重装了LSPosed，安装了LSPosed Manager并给予root权限，给了所有模块root权限并勾选系统框架，均不生效。打算空闲时间重新刷机一次来修复这个问题</p>
+<img src="https://th4uma.github.io/post/aio/aio4.png" style="width:60%;">
 <h2 id="参考">参考
-</h2><p><a class="link" href="https://www.bilibili.com/video/BV1n4DhYWEZ9/?spm_id_from=333.337.search-card.all.click&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
-    >秒解BL锁！玩机爱好者最具性价比手机，一加Ace3V解锁BL与root玩法_哔哩哔哩_bilibili</a></p>
-<p><a class="link" href="https://www.daxiaamu.com/"  target="_blank" rel="noopener"
-    >大侠阿木博客 - 杂七杂八技术博客</a></p>
+</h2><p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
+    >Windows+Arch Linux双系统基本安装 - 团子的血域城堡</a></p>
+<p><a class="link" href="https://blog.linioi.com/posts/18/"  target="_blank" rel="noopener"
+    >Arch Linux + Windows 双系统安装教程</a></p>
+<p><a class="link" href="https://coast23.github.io/2025/04/29/%e5%ae%89%e8%a3%85-Arch-Win11-%e5%8f%8c%e7%b3%bb%e7%bb%9f%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95"  target="_blank" rel="noopener"
+    >安装 Arch + Win11 双系统过程记录 | Coast23&rsquo;s Blog</a></p>
 
 </section>
 
