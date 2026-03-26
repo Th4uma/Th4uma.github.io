@@ -15,6 +15,7 @@
         <guid>https://th4uma.github.io/post/archlinux/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/linux.jpg" alt="Featured image of post Arch Linux &#43; Windows双系统安装与配置" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，于是一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用&lt;/p&gt;
+&lt;p&gt;我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装archLinux并和Windows共用资料分区&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备
 &lt;/h2&gt;&lt;h3 id=&#34;确定电脑启动类型&#34;&gt;确定电脑启动类型
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -25,8 +26,17 @@
 &lt;img src=&#34;1.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;设置-windows-时区偏移&#34;&gt;设置 Windows 时区偏移
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Linux 和 Windows 对硬件时钟的处理方式不同，如果不加以特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移&lt;/p&gt;
+&lt;p&gt;Windows默认使用Local: 直接把硬件时间设为本地时间，然后系统显示的时间与硬件时间同步，而Linux默认使用UTC: 把硬件时间固定设为UTC时间，然后系统根据时区设置，将硬件时间转换为本地时间，如果不特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;h3 id=&#34;禁用快速启动和安全启动&#34;&gt;禁用快速启动和安全启动
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。&lt;/p&gt;
+&lt;p&gt;快速启动会导致Windows关机的时候实质变成进入休眠状态，因此需要禁用Windows的快速启动，也推荐同时禁用休眠功能，ArchLinux也不支持安全启动，因此需要一并禁用&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;重启计算机，进入bios，关闭安全启动(Secure Boot)&lt;/p&gt;
 &lt;h3 id=&#34;制作启动u盘&#34;&gt;制作启动U盘
 &lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;
@@ -34,7 +44,7 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载Arch Linux的&lt;a class=&#34;link&#34; href=&#34;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;系统镜像&lt;/a&gt;&lt;/p&gt;
+    &gt;系统镜像&lt;/a&gt;，推荐校验sha256与pgp签名&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.ventoy.net/cn/download.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -50,7 +60,9 @@
 &lt;/ul&gt;
 &lt;img src=&#34;https://th4uma.github.io/post/aio/aio4.png&#34; style=&#34;width:60%;&#34;&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
-&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;安装指南 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Windows+Arch Linux双系统基本安装 - 团子的血域城堡&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://blog.linioi.com/posts/18/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Arch Linux + Windows 双系统安装教程&lt;/a&gt;&lt;/p&gt;
@@ -138,7 +150,7 @@
 &lt;p&gt;完成上一步后，LSPosed依旧无法启动，会卡死在启动后的白屏界面&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;img src=&#34;14.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
-&lt;p&gt;原因是没有给 &lt;code&gt;shell&lt;/code&gt;分配 root权限，在KernelSU里面打开这个选项，问题解决&lt;/p&gt;
+&lt;p&gt;原因是没有给&lt;code&gt;shell&lt;/code&gt;分配root权限，在KernelSU里面打开这个选项，问题解决&lt;/p&gt;
 &lt;img src=&#34;15.jpg&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;h3 id=&#34;模块不生效&#34;&gt;模块不生效
 &lt;/h3&gt;&lt;blockquote&gt;
