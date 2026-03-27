@@ -281,6 +281,7 @@ unicode: "f6d2"
         <li><a href="#制作启动u盘">制作启动U盘</a></li>
       </ol>
     </li>
+    <li><a href="#分区">分区</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -362,7 +363,7 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，于是一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
-<p>我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装archLinux并和Windows共用资料分区</p>
+<p>我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装ArchLinux并和Windows共用资料分区</p>
 <h2 id="准备">准备
 </h2><h3 id="确定电脑启动类型">确定电脑启动类型
 </h3><blockquote>
@@ -375,7 +376,16 @@ unicode: "f6d2"
 </h3><blockquote>
 <p>Windows默认使用Local: 直接把硬件时间设为本地时间，然后系统显示的时间与硬件时间同步，而Linux默认使用UTC: 把硬件时间固定设为UTC时间，然后系统根据时区设置，将硬件时间转换为本地时间，如果不特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移</p>
 </blockquote>
-<h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
+<p>Windows以管理员权限执行下面的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">reg add <span class="s2">&#34;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation&#34;</span> /v RealTimeIsUniversal /d <span class="m">1</span> /t REG_DWORD /f
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
 </h3><blockquote>
 <p>如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。</p>
 <p>快速启动会导致Windows关机的时候实质变成进入休眠状态，因此需要禁用Windows的快速启动，也推荐同时禁用休眠功能，ArchLinux也不支持安全启动，因此需要一并禁用</p>
@@ -383,7 +393,8 @@ unicode: "f6d2"
 <p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code></p>
 <img src="2.png" style="width: 100%;" />
 <img src="3.png" style="width: 100%;" />
-<p>重启计算机，进入bios，关闭安全启动(Secure Boot)</p>
+<p>重启计算机，进入bios，关闭安全启动(Secure Boot)，不同电脑方法不同，我的是开机按f2进bios，然后点击更多设置，进入security，Secure Boot设置为disabled，然后f10保存</p>
+<img src="4.png" style="width: 100%;" />
 <h3 id="制作启动u盘">制作启动U盘
 </h3><ul>
 <li>
@@ -391,7 +402,7 @@ unicode: "f6d2"
 </li>
 <li>
 <p>下载Arch Linux的<a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/"  target="_blank" rel="noopener"
-    >系统镜像</a>，推荐校验sha256与pgp签名</p>
+    >系统镜像</a>X86 64版本，推荐校验sha256与pgp签名</p>
 </li>
 <li>
 <p>下载<a class="link" href="https://www.ventoy.net/cn/download.html"  target="_blank" rel="noopener"
@@ -406,7 +417,8 @@ unicode: "f6d2"
 <li>选择U盘，点击安装，然后将archlinux的镜像复制进U盘</li>
 </ul>
 <img src="https://th4uma.github.io/post/aio/aio4.png" style="width:60%;">
-<h2 id="参考">参考
+<h2 id="分区">分区
+</h2><h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
@@ -668,7 +680,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">50.58</span> 
+      <span class="number-highlight">50.81</span> 
       k 字
   </div>
   <div>
