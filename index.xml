@@ -57,7 +57,7 @@
 &lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;禁用快速启动和安全启动&#34;&gt;禁用快速启动和安全启动
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。ArchLinux也不支持安全启动，因此需要一并禁用&lt;/p&gt;
+&lt;p&gt;Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -111,10 +111,11 @@
 &lt;img src=&#34;11.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h2 id=&#34;连接网络与时间校准&#34;&gt;连接网络与时间校准
 &lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;有三种常用的联网方式&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;如果条件允许，最好的办法是直接插网线连接网络&lt;/li&gt;
+&lt;li&gt;直接插网线连接网络&lt;/li&gt;
 &lt;li&gt;如果电脑有无线网卡，可以通过 archiso 中的 iwd 连接 WiFi&lt;/li&gt;
-&lt;li&gt;还可以用 Android 手机给电脑 USB 共享网络&lt;/li&gt;
+&lt;li&gt;Android 手机给电脑 USB 共享网络&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;我这里使用的是iwctl连接wifi，先进入iwctl&lt;/p&gt;
@@ -149,7 +150,7 @@
 &lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;我在这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;如果报错 &lt;code&gt;No station on device: &#39;wlan0&#39;&lt;/code&gt; ，可以检查 &lt;code&gt;device&lt;/code&gt; 的 &lt;code&gt;Powered&lt;/code&gt; 状态，如果是 &lt;code&gt;off&lt;/code&gt;，需要&lt;code&gt;Ctrl+c&lt;/code&gt; 退出 iwctl 的 shell ，再通过以下命令将&lt;code&gt;wlan0&lt;/code&gt;的电源打开&lt;/p&gt;
+&lt;p&gt;如果报错 &lt;code&gt;No station on device: &#39;wlan0&#39;&lt;/code&gt; ，可以检查 &lt;code&gt;device&lt;/code&gt; 的 &lt;code&gt;Powered&lt;/code&gt; 状态，如果是 &lt;code&gt;off&lt;/code&gt;，需要&lt;code&gt;Ctrl+c&lt;/code&gt; 退出 iwctl 的 shell ，再通过下面的命令将&lt;code&gt;wlan0&lt;/code&gt;的电源打开&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -168,7 +169,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;再重新进入 &lt;code&gt;iwctl&lt;/code&gt;，连接 WIFI。&lt;code&gt;device&lt;/code&gt; 需要替换成电脑网卡的设备名，&lt;code&gt;SSID&lt;/code&gt; 需要替换成想要连接且上面已经列出的 WiFi 名称&lt;/p&gt;
+&lt;p&gt;再重新进入 &lt;code&gt;iwctl&lt;/code&gt;，连接 WIFI。&lt;code&gt;device&lt;/code&gt; 需要替换成电脑网卡的设备名，&lt;code&gt;SSID&lt;/code&gt; 需要替换成想连接的 WiFi 名&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：shell不能识别中文和名字中的空格，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，且不能有空格。如果不符合命名规范，修改后等待信息刷新，重新连接即可&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -239,23 +240,15 @@
 &lt;p&gt;我即将分区的盘是&lt;code&gt;/dev/nvme1n1&lt;/code&gt;，这里只会显示已分区的空间，所以看不到空闲空间&lt;/p&gt;
 &lt;h3 id=&#34;分区&#34;&gt;分区
 &lt;/h3&gt;&lt;h4 id=&#34;规则&#34;&gt;规则
-&lt;/h4&gt;&lt;p&gt;一般情况初学者分三个区即可&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/boot&lt;/code&gt;分区，用来存储启动信息（有时候内核也会安装在这个分区），该分区一般 512M 足够。BIOS 引导可以不单独分这个分区，但是 UEFI 引导&lt;strong&gt;必须&lt;/strong&gt;有该分区（或者能完成引导要求的类似分区）作为 EFI 分区。双系统启动可以在此时不分出&lt;code&gt;/boot&lt;/code&gt;分区，因为双系统启动可以直接把 Windows 的 EFI 分区挂载到&lt;code&gt;/boot&lt;/code&gt;上，但是据反馈因为 Windows 的 EFI 分区只有 100MB，在 Windows 11 上可能出现分区大小不足的问题。UEFI 引导&lt;strong&gt;必须&lt;/strong&gt;有独立的 boot 分区作为 EFI 分区，&lt;strong&gt;否则系统将因无引导而无法启动&lt;/strong&gt;。双系统安装虽然可以直接挂载 Windows 的 EFI 分区，但容易因为Windows更新等各种问题导致Linux系统引导损坏，因此建议新建一个分区给Linux使用&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/swap&lt;/code&gt;分区，交换分区，该分区功能很多，不等同于 Windows 的虚拟内存，建议每一个用户至少创建一个 2G 大小的交换分区。该分区大小视电脑内存大小而定。电脑小于或等于 2G 内存则建议设为内存大小的 2 倍及以上，即 4G，不过太大也没有意义。电脑内存大于 2G 可以设置为 4G。你也可以设置交换文件代替交换分区，这里不进行介绍。请不要担心 swap 分区会造成磁盘读写量过多而不设立 swap 分区（这通常是某些被厨子迫害到 ptsd 的 Mac 玩家的奇怪想法），关于 swap 分区的更多介绍可以参阅&lt;a class=&#34;link&#34; href=&#34;https://farseerfc.me/zhs/in-defence-of-swap.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt; 【译】替 swap 辩护：常见的误解&lt;/a&gt; 和 &lt;a class=&#34;link&#34; href=&#34;https://farseerfc.me/zhs/followup-about-swap.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;关于 swap 的一些补充&lt;/a&gt;。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/mnt&lt;/code&gt;分区，即根目录，用来存储系统和将来安装的软件等数据，如果你创建单独的 &lt;code&gt;/home&lt;/code&gt; 分区，则建议该分区大小不小于 20G，根据你的需求和剩余空间大小而定；如果不创建单独的 &lt;code&gt;/home&lt;/code&gt; 分区，请把磁盘所有剩余空间留给 &lt;code&gt;/mnt&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/home&lt;/code&gt;分区（可选），即用户分区，用于存储用户的数据。该分区是用户自己数据存储的地方。如果你不单独分出 &lt;code&gt;home&lt;/code&gt; 分区，则你的所有数据将仅存储在 &lt;code&gt;/mnt &lt;/code&gt;分区。你可以将 &lt;code&gt;/mnt&lt;/code&gt; 分区理解为 Windows 下的 C 盘，&lt;code&gt;/home&lt;/code&gt; 是 Windows 下的 D 盘、E 盘。对于新手，建议不创建单独的 &lt;code&gt;/home&lt;/code&gt; 分区；对于有一点经验并有相关需求的用户，建议先创建 &lt;code&gt;/mnt&lt;/code&gt; 再创建 &lt;code&gt;/home&lt;/code&gt;，并把磁盘剩余的所有空间都留给 &lt;code&gt;/home&lt;/code&gt;。&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
+&lt;/h4&gt;&lt;p&gt;在安装 Linux 时，磁盘需要划分几个区域来存放不同类型的数据。初学者可以简单分三个区：启动区、交换区和根区，用户区可以选做&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;启动区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这是电脑启动 Linux 时必须用的空间，用来存放启动程序和内核文件。UEFI 系统一定要有这个区，建议 512MB 左右，BIOS 系统可以不单独分区。双系统安装时，可以直接用 Windows 的 EFI 分区，但 Windows 的分区通常很小（100MB），可能不够用，而且 Windows 更新可能会破坏 Linux 的启动，所以更稳妥的做法是给 Linux 单独分一个 EFI 分区。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;交换区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;相当于 Linux 的备用内存，系统在内存不足时会用它来临时存数据。不是 Windows 的虚拟内存，但功能有点类似。建议至少 2GB，如果电脑内存小于 2GB，可以设置成内存的两倍；内存大于 2GB，一般 4GB 就够了。也可以用交换文件替代，不一定非要分区&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;根区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这是系统和软件的主要存储区。如果不单独划 &lt;code&gt;/home&lt;/code&gt;，所有系统和用户数据都会放在这里。建议留至少 20GB，大小可以根据你的需求和剩余空间调整。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;用户区 &lt;code&gt;/home&lt;/code&gt;（可选）&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;用来存自己的文件和数据。没分的话，所有数据都在根区，相当于 Windows 的 C 盘；单独分出来就像 D 盘或者 E 盘，可以避免系统问题影响个人数据。新手可以不分这个区，有经验或者有特定需求的人可以单独分 &lt;code&gt;/home&lt;/code&gt;，把剩余空间都给它。&lt;/p&gt;
 &lt;p&gt;推荐的分区方式：&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
@@ -471,7 +464,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;useradd -m -G wheel -s /bin/bash 你的用户名 
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;useradd -m -G wheel -s /bin/bash 用户名 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;设置密码&lt;/p&gt;
@@ -480,10 +473,67 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;passwd 你的用户名
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;passwd 用户名
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/div&gt;&lt;img src=&#34;24.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;为了让普通用户能获取临时 root 权限，需要修改 wheel 的权限设置，首先打开sudoers文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/sudoers
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;找到以下两行，将wheel取消注释。去掉&lt;code&gt;#&lt;/code&gt;，但务必保留&lt;code&gt;%&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Uncomment to allow members of group wheel to execute any command 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# %wheel ALL=(ALL) ALL
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;26.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;然后&lt;code&gt;Esc&lt;/code&gt;退出编辑模式，&lt;code&gt;:wq&lt;/code&gt;保存退出&lt;/p&gt;
+&lt;p&gt;为电脑设置主机名，注意名字不能包含空格&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;echo 你电脑的主机名 &amp;gt; /etc/hostname
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;配置host&#34;&gt;配置host
+&lt;/h3&gt;&lt;p&gt;配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano /etc/hosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在最后一行添加下面的一句&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;电脑主机名.localdomain	电脑主机名
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;如果系统有一个永久的 IP 地址，请使用这个永久的 IP 地址而不是 &lt;code&gt;127.0.1.1&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;img src=&#34;25.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;确认无误后，按&lt;code&gt;Ctrl + X&lt;/code&gt;，输入&lt;code&gt;y&lt;/code&gt;，回车再退出&lt;/p&gt;
+&lt;h3 id=&#34;grub引导&#34;&gt;GRUB引导
+&lt;/h3&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;安装指南 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;

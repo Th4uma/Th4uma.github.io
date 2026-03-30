@@ -307,6 +307,8 @@ unicode: "f6d2"
     <li><a href="#其他设置">其他设置</a>
       <ol>
         <li><a href="#用户">用户</a></li>
+        <li><a href="#配置host">配置host</a></li>
+        <li><a href="#grub引导">GRUB引导</a></li>
       </ol>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -432,7 +434,7 @@ unicode: "f6d2"
 </div><img src="5.png" style="width: 100%;" />
 <h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
 </h3><blockquote>
-<p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。ArchLinux也不支持安全启动，因此需要一并禁用</p>
+<p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用</p>
 </blockquote>
 <p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code></p>
 <img src="2.png" style="width: 100%;" />
@@ -486,10 +488,11 @@ unicode: "f6d2"
 <img src="11.jpg" style="width: 80%;" />
 <h2 id="连接网络与时间校准">连接网络与时间校准
 </h2><blockquote>
+<p>有三种常用的联网方式</p>
 <ul>
-<li>如果条件允许，最好的办法是直接插网线连接网络</li>
+<li>直接插网线连接网络</li>
 <li>如果电脑有无线网卡，可以通过 archiso 中的 iwd 连接 WiFi</li>
-<li>还可以用 Android 手机给电脑 USB 共享网络</li>
+<li>Android 手机给电脑 USB 共享网络</li>
 </ul>
 </blockquote>
 <p>我这里使用的是iwctl连接wifi，先进入iwctl</p>
@@ -524,7 +527,7 @@ unicode: "f6d2"
 </div><blockquote>
 <p>我在这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态</p>
 </blockquote>
-<p>如果报错 <code>No station on device: 'wlan0'</code> ，可以检查 <code>device</code> 的 <code>Powered</code> 状态，如果是 <code>off</code>，需要<code>Ctrl+c</code> 退出 iwctl 的 shell ，再通过以下命令将<code>wlan0</code>的电源打开</p>
+<p>如果报错 <code>No station on device: 'wlan0'</code> ，可以检查 <code>device</code> 的 <code>Powered</code> 状态，如果是 <code>off</code>，需要<code>Ctrl+c</code> 退出 iwctl 的 shell ，再通过下面的命令将<code>wlan0</code>的电源打开</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -543,7 +546,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="12.jpg" style="width: 100%;" />
-<p>再重新进入 <code>iwctl</code>，连接 WIFI。<code>device</code> 需要替换成电脑网卡的设备名，<code>SSID</code> 需要替换成想要连接且上面已经列出的 WiFi 名称</p>
+<p>再重新进入 <code>iwctl</code>，连接 WIFI。<code>device</code> 需要替换成电脑网卡的设备名，<code>SSID</code> 需要替换成想连接的 WiFi 名</p>
 <blockquote>
 <p>注意：shell不能识别中文和名字中的空格，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，且不能有空格。如果不符合命名规范，修改后等待信息刷新，重新连接即可</p>
 </blockquote>
@@ -614,23 +617,15 @@ unicode: "f6d2"
 <p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
 <h3 id="分区">分区
 </h3><h4 id="规则">规则
-</h4><p>一般情况初学者分三个区即可</p>
-<ul>
-<li>
-<p><code>/boot</code>分区，用来存储启动信息（有时候内核也会安装在这个分区），该分区一般 512M 足够。BIOS 引导可以不单独分这个分区，但是 UEFI 引导<strong>必须</strong>有该分区（或者能完成引导要求的类似分区）作为 EFI 分区。双系统启动可以在此时不分出<code>/boot</code>分区，因为双系统启动可以直接把 Windows 的 EFI 分区挂载到<code>/boot</code>上，但是据反馈因为 Windows 的 EFI 分区只有 100MB，在 Windows 11 上可能出现分区大小不足的问题。UEFI 引导<strong>必须</strong>有独立的 boot 分区作为 EFI 分区，<strong>否则系统将因无引导而无法启动</strong>。双系统安装虽然可以直接挂载 Windows 的 EFI 分区，但容易因为Windows更新等各种问题导致Linux系统引导损坏，因此建议新建一个分区给Linux使用</p>
-</li>
-<li>
-<p><code>/swap</code>分区，交换分区，该分区功能很多，不等同于 Windows 的虚拟内存，建议每一个用户至少创建一个 2G 大小的交换分区。该分区大小视电脑内存大小而定。电脑小于或等于 2G 内存则建议设为内存大小的 2 倍及以上，即 4G，不过太大也没有意义。电脑内存大于 2G 可以设置为 4G。你也可以设置交换文件代替交换分区，这里不进行介绍。请不要担心 swap 分区会造成磁盘读写量过多而不设立 swap 分区（这通常是某些被厨子迫害到 ptsd 的 Mac 玩家的奇怪想法），关于 swap 分区的更多介绍可以参阅<a class="link" href="https://farseerfc.me/zhs/in-defence-of-swap.html"  target="_blank" rel="noopener"
-    > 【译】替 swap 辩护：常见的误解</a> 和 <a class="link" href="https://farseerfc.me/zhs/followup-about-swap.html"  target="_blank" rel="noopener"
-    >关于 swap 的一些补充</a>。</p>
-</li>
-<li>
-<p><code>/mnt</code>分区，即根目录，用来存储系统和将来安装的软件等数据，如果你创建单独的 <code>/home</code> 分区，则建议该分区大小不小于 20G，根据你的需求和剩余空间大小而定；如果不创建单独的 <code>/home</code> 分区，请把磁盘所有剩余空间留给 <code>/mnt</code></p>
-</li>
-<li>
-<p><code>/home</code>分区（可选），即用户分区，用于存储用户的数据。该分区是用户自己数据存储的地方。如果你不单独分出 <code>home</code> 分区，则你的所有数据将仅存储在 <code>/mnt </code>分区。你可以将 <code>/mnt</code> 分区理解为 Windows 下的 C 盘，<code>/home</code> 是 Windows 下的 D 盘、E 盘。对于新手，建议不创建单独的 <code>/home</code> 分区；对于有一点经验并有相关需求的用户，建议先创建 <code>/mnt</code> 再创建 <code>/home</code>，并把磁盘剩余的所有空间都留给 <code>/home</code>。</p>
-</li>
-</ul>
+</h4><p>在安装 Linux 时，磁盘需要划分几个区域来存放不同类型的数据。初学者可以简单分三个区：启动区、交换区和根区，用户区可以选做</p>
+<p><strong>启动区 <code>/boot</code></strong></p>
+<p>这是电脑启动 Linux 时必须用的空间，用来存放启动程序和内核文件。UEFI 系统一定要有这个区，建议 512MB 左右，BIOS 系统可以不单独分区。双系统安装时，可以直接用 Windows 的 EFI 分区，但 Windows 的分区通常很小（100MB），可能不够用，而且 Windows 更新可能会破坏 Linux 的启动，所以更稳妥的做法是给 Linux 单独分一个 EFI 分区。</p>
+<p><strong>交换区 <code>/swap</code></strong></p>
+<p>相当于 Linux 的备用内存，系统在内存不足时会用它来临时存数据。不是 Windows 的虚拟内存，但功能有点类似。建议至少 2GB，如果电脑内存小于 2GB，可以设置成内存的两倍；内存大于 2GB，一般 4GB 就够了。也可以用交换文件替代，不一定非要分区</p>
+<p><strong>根区 <code>/</code></strong></p>
+<p>这是系统和软件的主要存储区。如果不单独划 <code>/home</code>，所有系统和用户数据都会放在这里。建议留至少 20GB，大小可以根据你的需求和剩余空间调整。</p>
+<p><strong>用户区 <code>/home</code>（可选）</strong></p>
+<p>用来存自己的文件和数据。没分的话，所有数据都在根区，相当于 Windows 的 C 盘；单独分出来就像 D 盘或者 E 盘，可以避免系统问题影响个人数据。新手可以不分这个区，有经验或者有特定需求的人可以单独分 <code>/home</code>，把剩余空间都给它。</p>
 <p>推荐的分区方式：</p>
 <div class="table-wrapper"><table>
   <thead>
@@ -846,7 +841,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">useradd -m -G wheel -s /bin/bash 你的用户名 
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">useradd -m -G wheel -s /bin/bash 用户名 
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>设置密码</p>
@@ -855,10 +850,67 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd 你的用户名
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd 用户名
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="参考">参考
+</div><img src="24.jpg" style="width: 100%;" />
+<p>为了让普通用户能获取临时 root 权限，需要修改 wheel 的权限设置，首先打开sudoers文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/sudoers
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>找到以下两行，将wheel取消注释。去掉<code>#</code>，但务必保留<code>%</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Uncomment to allow members of group wheel to execute any command 
+</span></span><span class="line"><span class="cl"># %wheel ALL=(ALL) ALL
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="26.jpg" style="width: 100%;" />
+<p>然后<code>Esc</code>退出编辑模式，<code>:wq</code>保存退出</p>
+<p>为电脑设置主机名，注意名字不能包含空格</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">echo 你电脑的主机名 &gt; /etc/hostname
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="配置host">配置host
+</h3><p>配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /etc/hosts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在最后一行添加下面的一句</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">电脑主机名.localdomain	电脑主机名
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>如果系统有一个永久的 IP 地址，请使用这个永久的 IP 地址而不是 <code>127.0.1.1</code></p>
+</blockquote>
+<img src="25.jpg" style="width: 100%;" />
+<p>确认无误后，按<code>Ctrl + X</code>，输入<code>y</code>，回车再退出</p>
+<h3 id="grub引导">GRUB引导
+</h3><h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
@@ -1122,7 +1174,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">54.11</span> 
+      <span class="number-highlight">54.07</span> 
       k 字
   </div>
   <div>
