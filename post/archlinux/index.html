@@ -302,15 +302,20 @@ unicode: "f6d2"
         <li><a href="#禁用reflector">禁用reflector</a></li>
         <li><a href="#换源">换源</a></li>
         <li><a href="#下载-1">下载</a></li>
+        <li><a href="#生成fstab文件">生成fstab文件</a></li>
       </ol>
     </li>
     <li><a href="#其他设置">其他设置</a>
       <ol>
         <li><a href="#用户">用户</a></li>
         <li><a href="#配置host">配置host</a></li>
+        <li><a href="#设置时区">设置时区</a></li>
+        <li><a href="#本地化">本地化</a></li>
         <li><a href="#grub引导">GRUB引导</a></li>
       </ol>
     </li>
+    <li><a href="#新系统联网">新系统联网</a></li>
+    <li><a href="#引导加入windows">引导加入Windows</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -609,11 +614,17 @@ unicode: "f6d2"
 <p>或者输入<code>lsblk</code>，查看当前电脑硬盘的简要状态</p>
 <img src="16.jpg" style="width: 70%;" />
 <blockquote>
-<p><code>/dev/sdX</code>：代表的是你电脑的硬盘。</p>
+<p><code>/dev/sdX</code>：代表通过 SATA / USB 接口连接的存储设备，可能是机械硬盘或 SATA 固态</p>
 <p><code>/dev/nvme0n1</code> ：代表NVMe SSD</p>
 <p><code>/dev/mmcblk0</code> ：代表eMMC 存储</p>
 </blockquote>
-<p><code>/dev/nvme0n1p1</code> 中的数字，第一个代表磁盘的次序，第二个代表，第三个代表这个磁盘下的第几个分区</p>
+<p>以<code>/dev/nvme0n1p1</code> 中的数字为例：</p>
+<ul>
+<li><code>nvme</code> ：设备类型</li>
+<li><code>0</code> ：第几个 NVMe 控制器</li>
+<li><code>n1</code> ： 该控制器下的第几个命名空间</li>
+<li><code>p1</code> ： 第几个分区</li>
+</ul>
 <p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
 <h3 id="分区">分区
 </h3><h4 id="规则">规则
@@ -814,6 +825,8 @@ unicode: "f6d2"
 </div>
 </div><img src="23.jpg" style="width: 100%;" />
 <p>下载完成后，基本的安装就完成了</p>
+<h3 id="生成fstab文件">生成fstab文件
+</h3><img src="28.jpg" style="width: 100%;" />
 <h2 id="其他设置">其他设置
 </h2><p>输入下面的命令进入安装好的系统，这时进入了电脑的硬盘，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
 <div class="highlight"><div class="chroma">
@@ -895,13 +908,17 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /etc/hosts
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在最后一行添加下面的一句</p>
+</div><p>写</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">电脑主机名.localdomain	电脑主机名
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">127.0.0.1	localhost
+</span></span><span class="line"><span class="cl">::1	localhost
+</span></span><span class="line"><span class="cl">127.0.1.1	dualarch.localdomain	dualarch
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
@@ -909,8 +926,22 @@ unicode: "f6d2"
 </blockquote>
 <img src="25.jpg" style="width: 100%;" />
 <p>确认无误后，按<code>Ctrl + X</code>，输入<code>y</code>，回车再退出</p>
+<h3 id="设置时区">设置时区
+</h3><img src="32.jpg" style="width: 100%;" />
+<h3 id="本地化">本地化
+</h3><img src="37.jpg" style="width: 100%;" />
 <h3 id="grub引导">GRUB引导
-</h3><h2 id="参考">参考
+</h3><img src="27.jpg" style="width: 100%;" />
+<img src="29.jpg" style="width: 100%;" />
+<img src="30.jpg" style="width: 100%;" />
+<img src="31.jpg" style="width: 100%;" />
+<h2 id="新系统联网">新系统联网
+</h2><img src="33.jpg" style="width: 100%;" />
+<h2 id="引导加入windows">引导加入Windows
+</h2><img src="34.jpg" style="width: 100%;" />
+<img src="35.jpg" style="width: 100%;" />
+<img src="36.jpg" style="width: 100%;" />
+<h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
@@ -1174,7 +1205,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">54.07</span> 
+      <span class="number-highlight">54.12</span> 
       k 字
   </div>
   <div>
