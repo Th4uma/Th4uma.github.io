@@ -57,7 +57,7 @@
 &lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;禁用快速启动和安全启动&#34;&gt;禁用快速启动和安全启动
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用&lt;/p&gt;
+&lt;p&gt;Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的磁盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -86,7 +86,7 @@
 &lt;li&gt;选择U盘，点击安装，然后将archlinux的镜像复制进U盘&lt;/li&gt;
 &lt;/ul&gt;
 &lt;img src=&#34;https://th4uma.github.io/post/aio/aio4.png&#34; style=&#34;width:60%;&#34;&gt;
-&lt;h3 id=&#34;准备空闲的硬盘空间&#34;&gt;准备空闲的硬盘空间
+&lt;h3 id=&#34;准备空闲的磁盘空间&#34;&gt;准备空闲的磁盘空间
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;由于我的1T固态中只有一个分区，因此我选择从空闲空间中压缩一部分空间来安装 Arch Linux。如果有多个分区可以考虑转移资料并删除其中一个分区&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -224,12 +224,12 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timedatectl set-ntp 1
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;硬盘分区&#34;&gt;硬盘分区
+&lt;/div&gt;&lt;h2 id=&#34;磁盘配置&#34;&gt;磁盘配置
 &lt;/h2&gt;&lt;p&gt;这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置&lt;/p&gt;
-&lt;h3 id=&#34;准备-1&#34;&gt;准备
-&lt;/h3&gt;&lt;p&gt;输入&lt;code&gt;fdisk -l&lt;/code&gt;查看当前电脑硬盘的详细状态&lt;/p&gt;
+&lt;h3 id=&#34;查看磁盘信息&#34;&gt;查看磁盘信息
+&lt;/h3&gt;&lt;p&gt;输入&lt;code&gt;fdisk -l&lt;/code&gt;查看当前电脑磁盘的详细状态&lt;/p&gt;
 &lt;img src=&#34;15.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;或者输入&lt;code&gt;lsblk&lt;/code&gt;，查看当前电脑硬盘的简要状态&lt;/p&gt;
+&lt;p&gt;或者输入&lt;code&gt;lsblk&lt;/code&gt;，查看当前电脑磁盘的简要状态&lt;/p&gt;
 &lt;img src=&#34;16.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;/dev/sdX&lt;/code&gt;：代表通过 SATA / USB 接口连接的存储设备，可能是机械硬盘或 SATA 固态&lt;/p&gt;
@@ -245,7 +245,7 @@
 &lt;/ul&gt;
 &lt;p&gt;我即将分区的盘是&lt;code&gt;/dev/nvme1n1&lt;/code&gt;，这里只会显示已分区的空间，所以看不到空闲空间&lt;/p&gt;
 &lt;h3 id=&#34;分区&#34;&gt;分区
-&lt;/h3&gt;&lt;h4 id=&#34;规则&#34;&gt;规则
+&lt;/h3&gt;&lt;h4 id=&#34;分区方法&#34;&gt;分区方法
 &lt;/h4&gt;&lt;p&gt;在安装 Linux 时，磁盘需要划分几个区域来存放不同类型的数据。初学者可以简单分三个区：启动区、交换区和根区，用户区可以选做&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;启动区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;这是电脑启动 Linux 时必须用的空间，用来存放启动程序和内核文件。UEFI 系统一定要有这个区，建议 512MB 左右，BIOS 系统可以不单独分区。双系统安装时，可以直接用 Windows 的 EFI 分区，但 Windows 的分区通常很小（100MB），可能不够用，而且 Windows 更新可能会破坏 Linux 的启动，所以更稳妥的做法是给 Linux 单独分一个 EFI 分区。&lt;/p&gt;
@@ -287,7 +287,7 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h4 id=&#34;操作&#34;&gt;操作
-&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的硬盘和分区不一样，所以下面要根据自己实际情况来&lt;/strong&gt;&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，所以下面要根据自己实际情况来&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;进入cfdisk&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -299,7 +299,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;如果之前的步骤正确，这里可以看到绿色的&lt;code&gt;Free space&lt;/code&gt;，这就是在 Windows 中压缩给 Arch Linux 的空间。 将光标通过键盘上下方向键移至&lt;code&gt;Free space&lt;/code&gt;，再通过键盘左右方向键选择&lt;code&gt;[New]&lt;/code&gt;，输入分区大小，回车后就建立成功了&lt;/p&gt;
 &lt;p&gt;我准备分3个区，一个是1G的efi分区，一个是8G的swap分区，一个是195g的数据分区&lt;/p&gt;
-&lt;p&gt;由于我的Linux安装在硬盘的尾部空间，为了之后方便扩容或者给资料分区让出空间，我分区的顺序是数据，swap，efi&lt;/p&gt;
+&lt;p&gt;由于我的Linux安装在磁盘的尾部空间，为了之后方便扩容或者给资料分区让出空间，我分区的顺序是数据，swap，efi&lt;/p&gt;
 &lt;p&gt;将光标移到freespace，用同样的方法再新建好其他分区，然后将光标移到type，将分区类型改成上面表格对应的类型&lt;/p&gt;
 &lt;img src=&#34;17.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;使用左右方向键选择&lt;code&gt;Write&lt;/code&gt;，输入&lt;code&gt;yes&lt;/code&gt;回车，然后&lt;code&gt;Quit&lt;/code&gt;；
@@ -382,7 +382,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir /mnt/home mount /dev/sda4 /mnt/home
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;输入&lt;code&gt;lsblk&lt;/code&gt;命检查硬盘分区情况，可以看到每个分区后面出现了挂载的目录&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;输入&lt;code&gt;lsblk&lt;/code&gt;命检查磁盘分区情况，可以看到每个分区后面出现了挂载的目录&lt;/p&gt;
 &lt;img src=&#34;20.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;如果发现挂载目录错误，可以卸载后重新挂载，如卸载&lt;code&gt;mnt/boot&lt;/code&gt;的命令是&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -393,7 +393,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unmount /dev/nvme1n1p5 /mnt/boot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;下载&#34;&gt;下载
+&lt;/div&gt;&lt;h2 id=&#34;下载软件包&#34;&gt;下载软件包
 &lt;/h2&gt;&lt;h3 id=&#34;禁用reflector&#34;&gt;禁用reflector
 &lt;/h3&gt;&lt;p&gt;reflector会在最新的20个镜像源中测速，并根据速度排序镜像；由于大陆的特殊网络环境，只考虑最新的20个镜像源往往得不到理想的结果，同时它还会覆盖自行配置的源信息，所以先将其禁用：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -432,7 +432,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;&lt;code&gt;Esc&lt;/code&gt;退出编辑模式，&lt;code&gt;:wq&lt;/code&gt;保存退出。&lt;/p&gt;
 &lt;img src=&#34;22.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;下载-1&#34;&gt;下载
+&lt;h3 id=&#34;下载&#34;&gt;下载
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -445,8 +445,8 @@
 &lt;p&gt;下载完成后，基本的安装就完成了&lt;/p&gt;
 &lt;h3 id=&#34;生成fstab文件&#34;&gt;生成fstab文件
 &lt;/h3&gt;&lt;img src=&#34;28.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;其他设置&#34;&gt;其他设置
-&lt;/h2&gt;&lt;p&gt;输入下面的命令进入安装好的系统，这时进入了电脑的硬盘，提示符由 &lt;code&gt;root@archiso ~ #&lt;/code&gt; 变为 &lt;code&gt;[root@archiso /]#&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;安装后基础配置&#34;&gt;安装后基础配置
+&lt;/h2&gt;&lt;p&gt;输入下面的命令进入安装好的系统环境，提示符由 &lt;code&gt;root@archiso ~ #&lt;/code&gt; 变为 &lt;code&gt;[root@archiso /]#&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -455,7 +455,9 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;arch-chroot /mnt /bin/bash
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;用户&#34;&gt;用户
+&lt;/div&gt;&lt;h3 id=&#34;联网&#34;&gt;联网
+&lt;/h3&gt;&lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;用户设置&#34;&gt;用户设置
 &lt;/h3&gt;&lt;p&gt;目前登陆的用户是root，为其设置密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -548,15 +550,14 @@
 &lt;/h3&gt;&lt;img src=&#34;32.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;本地化&#34;&gt;本地化
 &lt;/h3&gt;&lt;img src=&#34;37.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;grub引导&#34;&gt;GRUB引导
+&lt;h2 id=&#34;grub引导配置&#34;&gt;GRUB引导配置
+&lt;/h2&gt;&lt;h3 id=&#34;基本配置&#34;&gt;基本配置
 &lt;/h3&gt;&lt;img src=&#34;27.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;29.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;30.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;31.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;新系统联网&#34;&gt;新系统联网
-&lt;/h2&gt;&lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;引导加入windows&#34;&gt;引导加入Windows
-&lt;/h2&gt;&lt;img src=&#34;34.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;引导加入windows&#34;&gt;引导加入Windows
+&lt;/h3&gt;&lt;img src=&#34;34.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;35.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;36.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考

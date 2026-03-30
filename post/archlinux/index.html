@@ -279,17 +279,17 @@ unicode: "f6d2"
         <li><a href="#设置-windows-时区偏移">设置 Windows 时区偏移</a></li>
         <li><a href="#禁用快速启动和安全启动">禁用快速启动和安全启动</a></li>
         <li><a href="#制作启动u盘">制作启动U盘</a></li>
-        <li><a href="#准备空闲的硬盘空间">准备空闲的硬盘空间</a></li>
+        <li><a href="#准备空闲的磁盘空间">准备空闲的磁盘空间</a></li>
       </ol>
     </li>
     <li><a href="#启动arch-linux安装介质">启动Arch Linux安装介质</a></li>
     <li><a href="#连接网络与时间校准">连接网络与时间校准</a></li>
-    <li><a href="#硬盘分区">硬盘分区</a>
+    <li><a href="#磁盘配置">磁盘配置</a>
       <ol>
-        <li><a href="#准备-1">准备</a></li>
+        <li><a href="#查看磁盘信息">查看磁盘信息</a></li>
         <li><a href="#分区">分区</a>
           <ol>
-            <li><a href="#规则">规则</a></li>
+            <li><a href="#分区方法">分区方法</a></li>
             <li><a href="#操作">操作</a></li>
           </ol>
         </li>
@@ -297,25 +297,29 @@ unicode: "f6d2"
         <li><a href="#挂载">挂载</a></li>
       </ol>
     </li>
-    <li><a href="#下载">下载</a>
+    <li><a href="#下载软件包">下载软件包</a>
       <ol>
         <li><a href="#禁用reflector">禁用reflector</a></li>
         <li><a href="#换源">换源</a></li>
-        <li><a href="#下载-1">下载</a></li>
+        <li><a href="#下载">下载</a></li>
         <li><a href="#生成fstab文件">生成fstab文件</a></li>
       </ol>
     </li>
-    <li><a href="#其他设置">其他设置</a>
+    <li><a href="#安装后基础配置">安装后基础配置</a>
       <ol>
-        <li><a href="#用户">用户</a></li>
+        <li><a href="#联网">联网</a></li>
+        <li><a href="#用户设置">用户设置</a></li>
         <li><a href="#配置host">配置host</a></li>
         <li><a href="#设置时区">设置时区</a></li>
         <li><a href="#本地化">本地化</a></li>
-        <li><a href="#grub引导">GRUB引导</a></li>
       </ol>
     </li>
-    <li><a href="#新系统联网">新系统联网</a></li>
-    <li><a href="#引导加入windows">引导加入Windows</a></li>
+    <li><a href="#grub引导配置">GRUB引导配置</a>
+      <ol>
+        <li><a href="#基本配置">基本配置</a></li>
+        <li><a href="#引导加入windows">引导加入Windows</a></li>
+      </ol>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -439,7 +443,7 @@ unicode: "f6d2"
 </div><img src="5.png" style="width: 100%;" />
 <h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
 </h3><blockquote>
-<p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用</p>
+<p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的磁盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用</p>
 </blockquote>
 <p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code></p>
 <img src="2.png" style="width: 100%;" />
@@ -468,7 +472,7 @@ unicode: "f6d2"
 <li>选择U盘，点击安装，然后将archlinux的镜像复制进U盘</li>
 </ul>
 <img src="https://th4uma.github.io/post/aio/aio4.png" style="width:60%;">
-<h3 id="准备空闲的硬盘空间">准备空闲的硬盘空间
+<h3 id="准备空闲的磁盘空间">准备空闲的磁盘空间
 </h3><blockquote>
 <p>由于我的1T固态中只有一个分区，因此我选择从空闲空间中压缩一部分空间来安装 Arch Linux。如果有多个分区可以考虑转移资料并删除其中一个分区</p>
 </blockquote>
@@ -606,12 +610,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timedatectl set-ntp 1
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="硬盘分区">硬盘分区
+</div><h2 id="磁盘配置">磁盘配置
 </h2><p>这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置</p>
-<h3 id="准备-1">准备
-</h3><p>输入<code>fdisk -l</code>查看当前电脑硬盘的详细状态</p>
+<h3 id="查看磁盘信息">查看磁盘信息
+</h3><p>输入<code>fdisk -l</code>查看当前电脑磁盘的详细状态</p>
 <img src="15.jpg" style="width: 70%;" />
-<p>或者输入<code>lsblk</code>，查看当前电脑硬盘的简要状态</p>
+<p>或者输入<code>lsblk</code>，查看当前电脑磁盘的简要状态</p>
 <img src="16.jpg" style="width: 70%;" />
 <blockquote>
 <p><code>/dev/sdX</code>：代表通过 SATA / USB 接口连接的存储设备，可能是机械硬盘或 SATA 固态</p>
@@ -627,7 +631,7 @@ unicode: "f6d2"
 </ul>
 <p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
 <h3 id="分区">分区
-</h3><h4 id="规则">规则
+</h3><h4 id="分区方法">分区方法
 </h4><p>在安装 Linux 时，磁盘需要划分几个区域来存放不同类型的数据。初学者可以简单分三个区：启动区、交换区和根区，用户区可以选做</p>
 <p><strong>启动区 <code>/boot</code></strong></p>
 <p>这是电脑启动 Linux 时必须用的空间，用来存放启动程序和内核文件。UEFI 系统一定要有这个区，建议 512MB 左右，BIOS 系统可以不单独分区。双系统安装时，可以直接用 Windows 的 EFI 分区，但 Windows 的分区通常很小（100MB），可能不够用，而且 Windows 更新可能会破坏 Linux 的启动，所以更稳妥的做法是给 Linux 单独分一个 EFI 分区。</p>
@@ -669,7 +673,7 @@ unicode: "f6d2"
   </tbody>
 </table></div>
 <h4 id="操作">操作
-</h4><p><strong>注意：不同电脑的硬盘和分区不一样，所以下面要根据自己实际情况来</strong></p>
+</h4><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面要根据自己实际情况来</strong></p>
 <p>进入cfdisk</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -681,7 +685,7 @@ unicode: "f6d2"
 </div>
 </div><p>如果之前的步骤正确，这里可以看到绿色的<code>Free space</code>，这就是在 Windows 中压缩给 Arch Linux 的空间。 将光标通过键盘上下方向键移至<code>Free space</code>，再通过键盘左右方向键选择<code>[New]</code>，输入分区大小，回车后就建立成功了</p>
 <p>我准备分3个区，一个是1G的efi分区，一个是8G的swap分区，一个是195g的数据分区</p>
-<p>由于我的Linux安装在硬盘的尾部空间，为了之后方便扩容或者给资料分区让出空间，我分区的顺序是数据，swap，efi</p>
+<p>由于我的Linux安装在磁盘的尾部空间，为了之后方便扩容或者给资料分区让出空间，我分区的顺序是数据，swap，efi</p>
 <p>将光标移到freespace，用同样的方法再新建好其他分区，然后将光标移到type，将分区类型改成上面表格对应的类型</p>
 <img src="17.jpg" style="width: 50%;" />
 <p>使用左右方向键选择<code>Write</code>，输入<code>yes</code>回车，然后<code>Quit</code>；
@@ -764,7 +768,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir /mnt/home mount /dev/sda4 /mnt/home
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输入<code>lsblk</code>命检查硬盘分区情况，可以看到每个分区后面出现了挂载的目录</p>
+</div><p>输入<code>lsblk</code>命检查磁盘分区情况，可以看到每个分区后面出现了挂载的目录</p>
 <img src="20.jpg" style="width: 70%;" />
 <p>如果发现挂载目录错误，可以卸载后重新挂载，如卸载<code>mnt/boot</code>的命令是</p>
 <div class="highlight"><div class="chroma">
@@ -775,7 +779,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">unmount /dev/nvme1n1p5 /mnt/boot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="下载">下载
+</div><h2 id="下载软件包">下载软件包
 </h2><h3 id="禁用reflector">禁用reflector
 </h3><p>reflector会在最新的20个镜像源中测速，并根据速度排序镜像；由于大陆的特殊网络环境，只考虑最新的20个镜像源往往得不到理想的结果，同时它还会覆盖自行配置的源信息，所以先将其禁用：</p>
 <div class="highlight"><div class="chroma">
@@ -814,7 +818,7 @@ unicode: "f6d2"
 </div>
 </div><p><code>Esc</code>退出编辑模式，<code>:wq</code>保存退出。</p>
 <img src="22.jpg" style="width: 100%;" />
-<h3 id="下载-1">下载
+<h3 id="下载">下载
 </h3><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -827,8 +831,8 @@ unicode: "f6d2"
 <p>下载完成后，基本的安装就完成了</p>
 <h3 id="生成fstab文件">生成fstab文件
 </h3><img src="28.jpg" style="width: 100%;" />
-<h2 id="其他设置">其他设置
-</h2><p>输入下面的命令进入安装好的系统，这时进入了电脑的硬盘，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
+<h2 id="安装后基础配置">安装后基础配置
+</h2><p>输入下面的命令进入安装好的系统环境，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -837,7 +841,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch-chroot /mnt /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="用户">用户
+</div><h3 id="联网">联网
+</h3><img src="33.jpg" style="width: 100%;" />
+<h3 id="用户设置">用户设置
 </h3><p>目前登陆的用户是root，为其设置密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -930,15 +936,14 @@ unicode: "f6d2"
 </h3><img src="32.jpg" style="width: 100%;" />
 <h3 id="本地化">本地化
 </h3><img src="37.jpg" style="width: 100%;" />
-<h3 id="grub引导">GRUB引导
+<h2 id="grub引导配置">GRUB引导配置
+</h2><h3 id="基本配置">基本配置
 </h3><img src="27.jpg" style="width: 100%;" />
 <img src="29.jpg" style="width: 100%;" />
 <img src="30.jpg" style="width: 100%;" />
 <img src="31.jpg" style="width: 100%;" />
-<h2 id="新系统联网">新系统联网
-</h2><img src="33.jpg" style="width: 100%;" />
-<h2 id="引导加入windows">引导加入Windows
-</h2><img src="34.jpg" style="width: 100%;" />
+<h3 id="引导加入windows">引导加入Windows
+</h3><img src="34.jpg" style="width: 100%;" />
 <img src="35.jpg" style="width: 100%;" />
 <img src="36.jpg" style="width: 100%;" />
 <h2 id="参考">参考
