@@ -279,9 +279,36 @@ unicode: "f6d2"
         <li><a href="#设置-windows-时区偏移">设置 Windows 时区偏移</a></li>
         <li><a href="#禁用快速启动和安全启动">禁用快速启动和安全启动</a></li>
         <li><a href="#制作启动u盘">制作启动U盘</a></li>
+        <li><a href="#准备空闲的硬盘空间">准备空闲的硬盘空间</a></li>
       </ol>
     </li>
-    <li><a href="#分区">分区</a></li>
+    <li><a href="#启动arch-linux安装介质">启动Arch Linux安装介质</a></li>
+    <li><a href="#连接网络与时间校准">连接网络与时间校准</a></li>
+    <li><a href="#硬盘分区">硬盘分区</a>
+      <ol>
+        <li><a href="#准备-1">准备</a></li>
+        <li><a href="#分区">分区</a>
+          <ol>
+            <li><a href="#规则">规则</a></li>
+            <li><a href="#操作">操作</a></li>
+          </ol>
+        </li>
+        <li><a href="#格式化">格式化</a></li>
+        <li><a href="#挂载">挂载</a></li>
+      </ol>
+    </li>
+    <li><a href="#下载">下载</a>
+      <ol>
+        <li><a href="#禁用reflector">禁用reflector</a></li>
+        <li><a href="#换源">换源</a></li>
+        <li><a href="#下载-1">下载</a></li>
+      </ol>
+    </li>
+    <li><a href="#其他设置">其他设置</a>
+      <ol>
+        <li><a href="#用户">用户</a></li>
+      </ol>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -362,21 +389,20 @@ unicode: "f6d2"
     
     
     <h2 id="前言">前言
-</h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，于是一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
+</h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，就一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
 <p>我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装ArchLinux并和Windows共用资料分区</p>
 <h2 id="准备">准备
 </h2><h3 id="确定电脑启动类型">确定电脑启动类型
 </h3><blockquote>
-<p>电脑启动类型可以分为传统 BIOS和UEFI，双系统推荐使用UEFI/GPT启动方式，不建议在BIOS/MBR平台上安装双系统，引导易出问题</p>
-<p>Win11仅支持UEFI启动，老设备传统BIOS启动的概率比较大</p>
+<p>电脑启动类型分为传统BIOS和UEFI。双系统推荐UEFI/GPT，不推荐BIOS/MBR，因为引导容易出问题。Win11只支持UEFI启动，如果是老设备，可能还是传统BIOS</p>
 </blockquote>
-<p>按下<code>Win+R</code>，输入<code>msinfo32</code>后回车打开系统信息，在打开的窗口中查看<code>BIOS模式</code>，如果是UEFI则是UEFI引导，Legacy则是传统BIOS引导</p>
+<p>按下<code>Win+R</code>，输入<code>msinfo32</code>后回车打开系统信息，查看<code>BIOS模式</code>是<code>UEFI</code>还是<code>Legacy</code></p>
 <img src="1.png" style="width: 50%;" />
 <h3 id="设置-windows-时区偏移">设置 Windows 时区偏移
 </h3><blockquote>
-<p>Windows默认使用Local: 直接把硬件时间设为本地时间，然后系统显示的时间与硬件时间同步，而Linux默认使用UTC: 把硬件时间固定设为UTC时间，然后系统根据时区设置，将硬件时间转换为本地时间，如果不特别设置容易造成两个系统时间混乱，因此需要设置 Windows 时区偏移</p>
+<p>Windows默认使用本地时间，而Linux默认使用UTC，这会导致两个系统的时间对不上。解决办法是在Windows里将硬件时间设置为UTC</p>
 </blockquote>
-<p>Windows以管理员权限执行下面的命令</p>
+<p>管理员权限运行PowerShell，执行下面的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -385,16 +411,34 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">reg add <span class="s2">&#34;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation&#34;</span> /v RealTimeIsUniversal /d <span class="m">1</span> /t REG_DWORD /f
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
+</div><p>改完后可以确认一下，按 <code>Win + R</code>  输入 <code>regedit</code> 回车，进入下面的路径</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>右侧有下面的一行就是成功了，否则就是没生效</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">RealTimeIsUniversal    REG_DWORD    0x1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="5.png" style="width: 100%;" />
+<h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
 </h3><blockquote>
-<p>如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。</p>
-<p>快速启动会导致Windows关机的时候实质变成进入休眠状态，因此需要禁用Windows的快速启动，也推荐同时禁用休眠功能，ArchLinux也不支持安全启动，因此需要一并禁用</p>
+<p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的任意系统，然后启动了另一个系统，那么在休眠的系统中已经被挂载的硬盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏。ArchLinux也不支持安全启动，因此需要一并禁用</p>
 </blockquote>
 <p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code></p>
 <img src="2.png" style="width: 100%;" />
 <img src="3.png" style="width: 100%;" />
-<p>重启计算机，进入bios，关闭安全启动(Secure Boot)，不同电脑方法不同，我的是开机按f2进bios，然后点击更多设置，进入security，Secure Boot设置为disabled，然后f10保存</p>
-<img src="4.png" style="width: 100%;" />
+<p>重启计算机，进入Bios，关闭<code>安全启动(Secure Boot)</code>，不同电脑方法不同。我的是开机时按<code>F2</code>进入Bios，点击<code>更多设置</code>，进入<code>security</code>，<code>Secure Boot</code>设置为<code>Disabled</code>，然后<code>F10</code>保存</p>
+<img src="4.jpg" style="width: 100%;" />
 <h3 id="制作启动u盘">制作启动U盘
 </h3><ul>
 <li>
@@ -417,14 +461,412 @@ unicode: "f6d2"
 <li>选择U盘，点击安装，然后将archlinux的镜像复制进U盘</li>
 </ul>
 <img src="https://th4uma.github.io/post/aio/aio4.png" style="width:60%;">
-<h2 id="分区">分区
-</h2><h2 id="参考">参考
+<h3 id="准备空闲的硬盘空间">准备空闲的硬盘空间
+</h3><blockquote>
+<p>由于我的1T固态中只有一个分区，因此我选择从空闲空间中压缩一部分空间来安装 Arch Linux。如果有多个分区可以考虑转移资料并删除其中一个分区</p>
+</blockquote>
+<p>我使用的是微PE系统中的DiskGenius。首先选中需要压缩的分区，然后右键菜单栏点击调整分区大小</p>
+<img src="7.jpg" style="width: 80%;" />
+<p>弹出的界面里，将<code>分区后部的空间</code>设置为需要的大小，然后点击开始并确认警告，压缩卷就完成了</p>
+<blockquote>
+<p>这里建议留出50g以上大小的空间，否则存储数据的空间会很少</p>
+</blockquote>
+<img src="6.png" style="width: 80%;" />
+<h2 id="启动arch-linux安装介质">启动Arch Linux安装介质
+</h2><p>将刚刚制作的U盘插在电脑上，重启按<code>F12</code>进入选择启动项的界面，选择U盘</p>
+<img src="8.jpg" style="width: 100%;" />
+<p>进入Ventoy界面，选择ArchLinux的镜像然后回车</p>
+<img src="9.jpg" style="width: 80%;" />
+<p>看到这个界面说明是UEFI模式启动的，回车即可</p>
+<img src="10.jpg" style="width: 80%;" />
+<blockquote>
+<p>如果是左上角有一个archlinux图标的界面，而且启动项的结尾是BIOS，说明是用传统BIOS启动的，没有启动到UEFI模式，需要关机重新设置</p>
+</blockquote>
+<p>等待一会进入这个界面说明启动成功</p>
+<img src="11.jpg" style="width: 80%;" />
+<h2 id="连接网络与时间校准">连接网络与时间校准
+</h2><blockquote>
+<ul>
+<li>如果条件允许，最好的办法是直接插网线连接网络</li>
+<li>如果电脑有无线网卡，可以通过 archiso 中的 iwd 连接 WiFi</li>
+<li>还可以用 Android 手机给电脑 USB 共享网络</li>
+</ul>
+</blockquote>
+<p>我这里使用的是iwctl连接wifi，先进入iwctl</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">iwctl
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入下面的命令查看无线网卡设备名，比如<code>wlan0</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">device list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>扫描可用网络，并将可用网络列出来，<code>wlan0</code>需要替换成上一步自己的网卡设备名</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">station wlan0 scan
+</span></span><span class="line"><span class="cl">station wlan0 get-networks
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>我在这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态</p>
+</blockquote>
+<p>如果报错 <code>No station on device: 'wlan0'</code> ，可以检查 <code>device</code> 的 <code>Powered</code> 状态，如果是 <code>off</code>，需要<code>Ctrl+c</code> 退出 iwctl 的 shell ，再通过以下命令将<code>wlan0</code>的电源打开</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">ip link set wlan0 up
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果报错<code>Operation not possible due to RF-kill</code>，说明网卡被<code>rfkill</code>禁用。有些电脑会自动禁用无线网卡和蓝牙，输入以下命令解除</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">rfkill unblock all
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="12.jpg" style="width: 100%;" />
+<p>再重新进入 <code>iwctl</code>，连接 WIFI。<code>device</code> 需要替换成电脑网卡的设备名，<code>SSID</code> 需要替换成想要连接且上面已经列出的 WiFi 名称</p>
+<blockquote>
+<p>注意：shell不能识别中文和名字中的空格，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，且不能有空格。如果不符合命名规范，修改后等待信息刷新，重新连接即可</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">station device connect SSID
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果 WiFi 有密码，这里会提示输入密码，输入 WiFi 密码后回车</p>
+<p>连接后输入 <code>exit</code> 退出iwctl，测试是否成功联网，ping一下任意可直连的网址</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ping www.baidu.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果已连接上网络，输出会像下图一样是一些延迟数据，否则就是没有连接成功或者网络不可用。按<code>Ctrl+C</code>终止进程</p>
+<blockquote>
+<p>在 Linux 中，<code>Ctrl+C</code> 可以近似理解为强行终止当前终端的活动进程</p>
+</blockquote>
+<img src="13.jpg" style="width: 90%;" />
+<p>输入下面的命令设置时间为 UTC 并完成 NTP 时间同步</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">hwclock --systohc --utc timedatectl set-ntp true
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入下面的命令进行检查，<code>NTP service</code>显示为<code>active</code>状态说明时间同步服务正常运行。正确的系统时间对于安装部分软件包是<strong>必须</strong>的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timedatectl
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="14.jpg" style="width: 70%;" />
+<p>如果显示<code>inactive</code>，说明没有正常运行，输入下面的命令开启</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timedatectl set-ntp 1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="硬盘分区">硬盘分区
+</h2><p>这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置</p>
+<h3 id="准备-1">准备
+</h3><p>输入<code>fdisk -l</code>查看当前电脑硬盘的详细状态</p>
+<img src="15.jpg" style="width: 70%;" />
+<p>或者输入<code>lsblk</code>，查看当前电脑硬盘的简要状态</p>
+<img src="16.jpg" style="width: 70%;" />
+<blockquote>
+<p><code>/dev/sdX</code>：代表的是你电脑的硬盘。</p>
+<p><code>/dev/nvme0n1</code> ：代表NVMe SSD</p>
+<p><code>/dev/mmcblk0</code> ：代表eMMC 存储</p>
+</blockquote>
+<p><code>/dev/nvme0n1p1</code> 中的数字，第一个代表磁盘的次序，第二个代表，第三个代表这个磁盘下的第几个分区</p>
+<p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
+<h3 id="分区">分区
+</h3><h4 id="规则">规则
+</h4><p>一般情况初学者分三个区即可</p>
+<ul>
+<li>
+<p><code>/boot</code>分区，用来存储启动信息（有时候内核也会安装在这个分区），该分区一般 512M 足够。BIOS 引导可以不单独分这个分区，但是 UEFI 引导<strong>必须</strong>有该分区（或者能完成引导要求的类似分区）作为 EFI 分区。双系统启动可以在此时不分出<code>/boot</code>分区，因为双系统启动可以直接把 Windows 的 EFI 分区挂载到<code>/boot</code>上，但是据反馈因为 Windows 的 EFI 分区只有 100MB，在 Windows 11 上可能出现分区大小不足的问题。UEFI 引导<strong>必须</strong>有独立的 boot 分区作为 EFI 分区，<strong>否则系统将因无引导而无法启动</strong>。双系统安装虽然可以直接挂载 Windows 的 EFI 分区，但容易因为Windows更新等各种问题导致Linux系统引导损坏，因此建议新建一个分区给Linux使用</p>
+</li>
+<li>
+<p><code>/swap</code>分区，交换分区，该分区功能很多，不等同于 Windows 的虚拟内存，建议每一个用户至少创建一个 2G 大小的交换分区。该分区大小视电脑内存大小而定。电脑小于或等于 2G 内存则建议设为内存大小的 2 倍及以上，即 4G，不过太大也没有意义。电脑内存大于 2G 可以设置为 4G。你也可以设置交换文件代替交换分区，这里不进行介绍。请不要担心 swap 分区会造成磁盘读写量过多而不设立 swap 分区（这通常是某些被厨子迫害到 ptsd 的 Mac 玩家的奇怪想法），关于 swap 分区的更多介绍可以参阅<a class="link" href="https://farseerfc.me/zhs/in-defence-of-swap.html"  target="_blank" rel="noopener"
+    > 【译】替 swap 辩护：常见的误解</a> 和 <a class="link" href="https://farseerfc.me/zhs/followup-about-swap.html"  target="_blank" rel="noopener"
+    >关于 swap 的一些补充</a>。</p>
+</li>
+<li>
+<p><code>/mnt</code>分区，即根目录，用来存储系统和将来安装的软件等数据，如果你创建单独的 <code>/home</code> 分区，则建议该分区大小不小于 20G，根据你的需求和剩余空间大小而定；如果不创建单独的 <code>/home</code> 分区，请把磁盘所有剩余空间留给 <code>/mnt</code></p>
+</li>
+<li>
+<p><code>/home</code>分区（可选），即用户分区，用于存储用户的数据。该分区是用户自己数据存储的地方。如果你不单独分出 <code>home</code> 分区，则你的所有数据将仅存储在 <code>/mnt </code>分区。你可以将 <code>/mnt</code> 分区理解为 Windows 下的 C 盘，<code>/home</code> 是 Windows 下的 D 盘、E 盘。对于新手，建议不创建单独的 <code>/home</code> 分区；对于有一点经验并有相关需求的用户，建议先创建 <code>/mnt</code> 再创建 <code>/home</code>，并把磁盘剩余的所有空间都留给 <code>/home</code>。</p>
+</li>
+</ul>
+<p>推荐的分区方式：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th style="text-align: center">挂载点</th>
+          <th style="text-align: center">分区</th>
+          <th style="text-align: center">分区类型</th>
+          <th style="text-align: center">推荐大小</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: center">/mnt/boot</td>
+          <td style="text-align: center"><em>/dev/efi_system_partition</em></td>
+          <td style="text-align: center">EFI 系统分区</td>
+          <td style="text-align: center">至少 300MB</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">[SWAP]</td>
+          <td style="text-align: center"><em>/dev/swap_partition</em></td>
+          <td style="text-align: center">Linux swap</td>
+          <td style="text-align: center">大于512MB</td>
+      </tr>
+      <tr>
+          <td style="text-align: center">/mnt</td>
+          <td style="text-align: center">/dev/root_partition</td>
+          <td style="text-align: center">Linux x86-64 root (/)</td>
+          <td style="text-align: center">设备的所有剩余空间</td>
+      </tr>
+  </tbody>
+</table></div>
+<h4 id="操作">操作
+</h4><p><strong>注意：不同电脑的硬盘和分区不一样，所以下面要根据自己实际情况来</strong></p>
+<p>进入cfdisk</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cfdisk /dev/nvme1n1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果之前的步骤正确，这里可以看到绿色的<code>Free space</code>，这就是在 Windows 中压缩给 Arch Linux 的空间。 将光标通过键盘上下方向键移至<code>Free space</code>，再通过键盘左右方向键选择<code>[New]</code>，输入分区大小，回车后就建立成功了</p>
+<p>我准备分3个区，一个是1G的efi分区，一个是8G的swap分区，一个是195g的数据分区</p>
+<p>由于我的Linux安装在硬盘的尾部空间，为了之后方便扩容或者给资料分区让出空间，我分区的顺序是数据，swap，efi</p>
+<p>将光标移到freespace，用同样的方法再新建好其他分区，然后将光标移到type，将分区类型改成上面表格对应的类型</p>
+<img src="17.jpg" style="width: 50%;" />
+<p>使用左右方向键选择<code>Write</code>，输入<code>yes</code>回车，然后<code>Quit</code>；
+最后使用<code>lsblk</code>命令复查一下分区结果</p>
+<img src="18.jpg" style="width: 70%;" />
+<h3 id="格式化">格式化
+</h3><p>格式化<code>/mnt</code>分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.btrfs /dev/nvme0n1p6
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>格式化<code>/boot</code>分区，为了通用性，建议将该分区格式化为<code>fat32</code>格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.vfat -F32 /dev/sda2 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>初始化<code>/swap</code>分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkswap /dev/nvme0n1p7
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>格式化<code>/home</code>分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.ext4 /dev/sda4
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="19.jpg" style="width: 100%;" />
+<h3 id="挂载">挂载
+</h3><p>挂载<code>/mnt</code>分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount /dev/sda1 /mnt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>挂载<code>/boot</code>分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir -p /mnt/boot 
+</span></span><span class="line"><span class="cl">mount /dev/nvme1n1p5 /mnt/boot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>/swap</code>分区无需挂载，但是需要进行启用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">swapon /dev/sda3
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>建立<code>/home</code>分区目录并挂载分区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir /mnt/home mount /dev/sda4 /mnt/home
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入<code>lsblk</code>命检查硬盘分区情况，可以看到每个分区后面出现了挂载的目录</p>
+<img src="20.jpg" style="width: 70%;" />
+<p>如果发现挂载目录错误，可以卸载后重新挂载，如卸载<code>mnt/boot</code>的命令是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">unmount /dev/nvme1n1p5 /mnt/boot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="下载">下载
+</h2><h3 id="禁用reflector">禁用reflector
+</h3><p>reflector会在最新的20个镜像源中测速，并根据速度排序镜像；由于大陆的特殊网络环境，只考虑最新的20个镜像源往往得不到理想的结果，同时它还会覆盖自行配置的源信息，所以先将其禁用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl stop reflector.service #停用
+</span></span><span class="line"><span class="cl">systemctl status reflector.service #复查，然后按q退出
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="21.jpg" style="width: 100%;" />
+<h3 id="换源">换源
+</h3><blockquote>
+<p>这里我首先参考<a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
+    >这个教程</a>换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
+</blockquote>
+<p>编辑源的列表</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.d/mirrorlist
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入7j也就是将光标下移7行，按<code>yy</code>复制整行，输入<code>3k</code>上移3行，然后按<code>p</code>粘贴，输入<code>4w</code>向右移动4个单词，输入<code>c7w</code>，然后输入<code>mirrors.tuna.tsinghua.edu.cn</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>Esc</code>退出编辑模式，<code>:wq</code>保存退出。</p>
+<img src="22.jpg" style="width: 100%;" />
+<h3 id="下载-1">下载
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacstrap -K /mnt base base-devel linux linux-firmware nano vim bash-completion networkmanager btrfs-progs intel-ucode ntfs-3g
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="23.jpg" style="width: 100%;" />
+<p>下载完成后，基本的安装就完成了</p>
+<h2 id="其他设置">其他设置
+</h2><p>输入下面的命令进入安装好的系统，这时进入了电脑的硬盘，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch-chroot /mnt /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="用户">用户
+</h3><p>目前登陆的用户是root，为其设置密码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入密码不会显示，需要输入两次</p>
+<p>archLinux是多用户系统，root用户拥有最高权限，甚至可以<code>rm -rf /*</code>删除系统本身，因此需要创建一个普通用户，以防误删重要文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">useradd -m -G wheel -s /bin/bash 你的用户名 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>设置密码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd 你的用户名
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
     >Windows+Arch Linux双系统基本安装 - 团子的血域城堡</a></p>
 <p><a class="link" href="https://blog.linioi.com/posts/18/"  target="_blank" rel="noopener"
     >Arch Linux + Windows 双系统安装教程</a></p>
+<p><a class="link" href="https://www.bilibili.com/video/BV1XY4y1f77S/?spm_id_from=333.1391.0.0&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
+    >【超简单】Windows+Arch Linux双系统双磁盘方案，全程不废话_哔哩哔哩_bilibili</a></p>
 <p><a class="link" href="https://coast23.github.io/2025/04/29/%e5%ae%89%e8%a3%85-Arch-Win11-%e5%8f%8c%e7%b3%bb%e7%bb%9f%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95"  target="_blank" rel="noopener"
     >安装 Arch + Win11 双系统过程记录 | Coast23&rsquo;s Blog</a></p>
 
@@ -680,7 +1122,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">50.81</span> 
+      <span class="number-highlight">54.11</span> 
       k 字
   </div>
   <div>
