@@ -294,12 +294,13 @@ unicode: "f6d2"
           </ol>
         </li>
         <li><a href="#格式化">格式化</a></li>
+        <li><a href="#创建btrfs子卷">创建btrfs子卷</a></li>
         <li><a href="#挂载">挂载</a></li>
       </ol>
     </li>
-    <li><a href="#下载软件包">下载软件包</a>
+    <li><a href="#下载基础软件包">下载基础软件包</a>
       <ol>
-        <li><a href="#禁用reflector">禁用reflector</a></li>
+        <li><a href="#禁用reflector">禁用Reflector</a></li>
         <li><a href="#换源">换源</a></li>
         <li><a href="#下载">下载</a></li>
         <li><a href="#生成fstab文件">生成fstab文件</a></li>
@@ -320,6 +321,7 @@ unicode: "f6d2"
         <li><a href="#将windows加入引导项">将Windows加入引导项</a></li>
       </ol>
     </li>
+    <li><a href="#重启">重启</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -623,20 +625,37 @@ unicode: "f6d2"
 <li><code>p1</code> ： 第几个分区</li>
 </ul>
 <p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
+<blockquote>
+<p>注意：之后的操作中一定不能搞错磁盘设备名，否则很可能导致数据丢失</p>
+</blockquote>
 <h3 id="分区">分区
-</h3><p>首先确定根目录的格式，</p>
+</h3><p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区</p>
+<p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
 <h4 id="分区方法">分区方法
-</h4><p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区，用户分区可根据需求决定是否单独划分</p>
-<p><strong>启动区 <code>/boot</code></strong></p>
+</h4><p><strong>启动分区 <code>/boot</code></strong>：</p>
 <p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。</p>
 <p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此，更稳妥的做法是为 Linux 创建单独的 EFI 分区</p>
-<p><strong>交换区 <code>/swap</code></strong></p>
+<p><strong>交换分区 <code>/swap</code></strong>：</p>
 <p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，不一定需要分区。</p>
-<p><strong>根区 <code>/</code></strong></p>
+<p><strong>根分区 <code>/</code></strong>：</p>
 <p>根分区用于存放操作系统及其所有文件。如果不单独划分 <code>/home</code>，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整。</p>
-<p><strong>用户区 <code>/home</code>（可选）</strong></p>
-<p>如果希望将用户数据与系统文件分开，可以在安装时单独创建 <code>home</code> 分区，挂载在<code>/home</code>，用来存放个人文件和数据，类似于 Windows 的D盘。单独划分 <code>/home</code> 可以确保系统重装时不影响个人数据，提高数据安全性。</p>
-<p>**推荐的分区方式 **</p>
+<p><strong>btrfs子卷</strong>：</p>
+<blockquote>
+<p>由于我选择了 <strong>btrfs</strong> 作为根分区的格式，因此可以利用子卷这个功能来实现分区隔离。类似在根分区这个大分区中划出多个小分区。</p>
+<p>与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时，重装系统时只需格式化 <code>@</code> 子卷， <code>@home</code> 数据依然会被完整保留。</p>
+</blockquote>
+<ul>
+<li>
+<p><strong>@</strong>： 这是挂载为根目录 <code>/</code> 的子卷，用于存放操作系统文件。在 btrfs 架构中，一般将系统文件放在独立的 <code>@</code> 子卷中，系统崩溃时可以方便地进行快照还原，而不会影响到其他子卷。</p>
+</li>
+<li>
+<p><strong>@home</strong>： 这是挂载为 <code>/home</code> 的子卷，用于存放个人数据、配置文件和下载内容，类似Windows的D盘</p>
+</li>
+<li>
+<p><strong>@swap</strong> (可选)：如果你没有划分独立的物理交换分区，也可以在 btrfs 分区内创建一个子卷来存放交换文件</p>
+</li>
+</ul>
+<p><strong>推荐的分区方式</strong></p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -662,18 +681,19 @@ unicode: "f6d2"
       <tr>
           <td style="text-align: center">/mnt</td>
           <td style="text-align: center">/dev/root_partition</td>
-          <td style="text-align: center">filesystem</td>
+          <td style="text-align: center">Linux filesystem</td>
           <td style="text-align: center">设备的所有剩余空间，至少20G</td>
       </tr>
   </tbody>
 </table></div>
 <blockquote>
-<p>在 Linux 安装环境中，挂载点通常带有 <code>/mnt</code> 前缀，但最终系统中的挂载点不带 <code>/mnt</code></p>
+<p>在 Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
+<p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现</p>
 </blockquote>
 <h4 id="操作步骤">操作步骤
 </h4><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面要根据自己实际情况来</strong></p>
 <blockquote>
-<p>这里我准备分3个区，一个是1G的EFI分区，一个是8G的swap分区，一个是195G的数据分区</p>
+<p>这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的数据分区</p>
 <p>由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux数据分区和Windows资料分区的大小，我让资料分区和数据分区相邻，分区的顺序是数据，swap，EFI</p>
 </blockquote>
 <p>进入cfdisk</p>
@@ -692,33 +712,13 @@ unicode: "f6d2"
 <p>然后选中<code>Quit</code>，退出<code>cfdisk</code>，最后输入<code>lsblk</code>命令检查一下分区</p>
 <img src="18.jpg" style="width: 70%;" />
 <h3 id="格式化">格式化
-</h3><p>格式化根分区为<code>btrfs</code>：</p>
+</h3><p>格式化根分区为<code>btrfs</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.btrfs /dev/nvme1n1p3
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p><code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
-</blockquote>
-<p>创建btrfs子卷</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume create /mnt/@ #创建@子卷作为根目录
-</span></span><span class="line"><span class="cl">btrfs subvolume create /mnt/@home #创建@home子卷作为家目录
-</span></span><span class="line"><span class="cl">btrfs subvolume create /mnt/@swap #可选，但是如果想使用swap文件，就为它单独创建一个子卷
-</span></span><span class="line"><span class="cl">btrfs subvolume list /mnt #复查一遍子卷创建的情况
-</span></span><span class="line"><span class="cl">umount /mnt #卸载分区
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>初始化<code>swap</code>分区：</p>
@@ -730,7 +730,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkswap /dev/nvme1n1p4
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>格式化EFI分区，建议格式化为<code>fat32</code>格式：</p>
+</div><p>格式化<code>EFI</code>分区，建议格式化为<code>fat32</code>格式：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -739,36 +739,94 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.vfat -F32 /dev/nvme1n1p5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>格式化<code>home</code>分区（可选）：</p>
+</div><img src="19.jpg" style="width: 100%;" />
+<h3 id="创建btrfs子卷">创建btrfs子卷
+</h3><p>将根分区挂载到<code>/mnt</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkfs.ext4 /dev/nvme1n1p6
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -t btrfs -o compress=zstd /dev/nvme1n1p3 /mnt
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="19.jpg" style="width: 100%;" />
-<h3 id="挂载">挂载
+</div><p>创建@子卷作为根目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume create /mnt/@
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>创建@home子卷作为家目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume create /mnt/@home
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>创建@swap子卷作为swap目录(可选)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume create /mnt/@swap
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>检查子卷创建的情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume list /mnt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>卸载分区，为了在下一步将<code>/mnt</code>指向子卷</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /mnt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="挂载">挂载
 </h3><blockquote>
 <p>此时正在使用的是 Live USB 环境，<code>/mnt</code> 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
 </blockquote>
-<p>mount -t btrfs -o compress=zstd,subvol=@ /dev/nvme0n1p6 /mnt #挂载根目录
-mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme0n1p6 /mnt/home &ndash;mkdir #挂载家目录
-mount -t btrfs -o compress=zstd,subvol=@swap /dev/nvme0n1p6 /mnt/swap &ndash;mkdir #可选，挂载未来可能用到的swap文件
-mount /dev/nvme0n1p1 /mnt/efi &ndash;mkdir #挂载efi分区
-mount /dev/nvme0n1p8 /mnt/boot &ndash;mkdir #挂载/boot分区
-swapon /dev/nvme0n1p7 #启用swap分区</p>
-<p>挂载根目录<code>/mnt</code>：</p>
+<p>挂载根目录</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount /dev/nvme1n1p3 /mnt
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -t btrfs -o compress=zstd,subvol=@ /dev/nvme1n1p3 /mnt
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>创建<code>/boot</code>目录并挂载EFI分区：</p>
+</div><p>挂载家目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home --mkdir
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>挂载swap子卷(可选)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -o subvol=@swap,noatime /dev/nvme1n1p3 /mnt/swap --mkdir
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>创建<code>/boot</code>目录并挂载EFI分区</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -779,24 +837,13 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </span></span><span class="line"><span class="cl">mount /dev/nvme1n1p5 /mnt/boot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>启用<code>/swap</code>分区：</p>
+</div><p>启用<code>swap</code>分区</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">swapon /dev/nvme1n1p4
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>创建<code>/home</code>目录并挂载（可选）：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir /mnt/home
-</span></span><span class="line"><span class="cl">mount /dev/nvme1n1p6 /mnt/home
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输入<code>lsblk</code>命检查磁盘分区情况，可以看到每个分区后面出现了挂载的目录</p>
@@ -810,19 +857,27 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /dev/nvme1n1p5 /mnt/boot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="下载软件包">下载软件包
-</h2><h3 id="禁用reflector">禁用reflector
+</div><h2 id="下载基础软件包">下载基础软件包
+</h2><h3 id="禁用reflector">禁用Reflector
 </h3><blockquote>
-<p>reflector会在最新的20个镜像源中测速，并根据速度排序镜像；由于大陆的特殊网络环境，只考虑最新的20个镜像源往往得不到理想的结果，同时它还会覆盖自行配置的源信息，所以先将其禁用：</p>
+<p>Reflector 是一个自动获取并过滤镜像列表的脚本。在系统启动时，它会自动在最新的 20 个镜像源中进行测速并重新排序。由于大陆特殊的网络环境，这样往往得不到理想的下载速度。Reflector还会自动覆盖手动配置好的镜像信息，导致安装过程中断或下载极其缓慢。因此，在手动配置国内镜像源之前，必须先将其禁用。</p>
 </blockquote>
+<p>禁用服务</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl stop reflector.service #停用
-</span></span><span class="line"><span class="cl">systemctl status reflector.service #复查，然后按q退出
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl stop reflector.service 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>复查，然后按q退出</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl status reflector.service 
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="21.jpg" style="width: 100%;" />
@@ -830,7 +885,7 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </h3><blockquote>
 <p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
 </blockquote>
-<p>编辑源的列表</p>
+<p>编辑源的列表文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -839,7 +894,10 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.d/mirrorlist
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输入7j也就是将光标下移7行，按<code>yy</code>复制整行，输入<code>3k</code>上移3行，然后按<code>p</code>粘贴，输入<code>4w</code>向右移动4个单词，输入<code>c7w</code>，然后输入<code>mirrors.tuna.tsinghua.edu.cn</code></p>
+</div><p>在文件第一行插入清华源</p>
+<blockquote>
+<p>Pacman 会从上到下尝试，第一行成功后就不会再找后面的</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -854,70 +912,65 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </h3><div class="table-wrapper"><table>
   <thead>
       <tr>
-          <th>名称</th>
-          <th>作用</th>
-          <th>备注</th>
+          <th><strong>名称</strong></th>
+          <th><strong>作用</strong></th>
+          <th><strong>备注</strong></th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>base</td>
-          <td></td>
-          <td></td>
+          <td><strong>base</strong></td>
+          <td>系统的最基础组件</td>
+          <td>包含最核心的工具，不含内核</td>
       </tr>
       <tr>
-          <td>base-devel</td>
-          <td></td>
-          <td></td>
+          <td><strong>base-devel</strong></td>
+          <td>开发工具包</td>
+          <td>包含 <code>gcc</code>, <code>make</code> 等，AUR 编译必装</td>
       </tr>
       <tr>
-          <td>linux</td>
-          <td></td>
-          <td></td>
+          <td><strong>linux</strong></td>
+          <td>Linux 内核</td>
+          <td>系统的核心引擎</td>
       </tr>
       <tr>
-          <td>linux-firmware</td>
-          <td></td>
-          <td></td>
+          <td><strong>linux-firmware</strong></td>
+          <td>硬件固件驱动</td>
+          <td>包含显卡、声卡、网卡等驱动</td>
       </tr>
       <tr>
-          <td>nano</td>
-          <td></td>
-          <td></td>
+          <td><strong>nano / vim</strong></td>
+          <td>文本编辑器</td>
+          <td>进入新系统后修改配置文件的唯一手段</td>
       </tr>
       <tr>
-          <td>vim</td>
-          <td></td>
-          <td></td>
+          <td><strong>networkmanager</strong></td>
+          <td>网络管理服务</td>
+          <td>自动处理 WiFi 和有线连接</td>
       </tr>
       <tr>
-          <td>networkmanager</td>
-          <td></td>
-          <td></td>
+          <td><strong>btrfs-progs</strong></td>
+          <td>Btrfs 文件系统工具</td>
+          <td>Btrfs必装的工具</td>
       </tr>
       <tr>
-          <td>btrfs-progs</td>
-          <td></td>
-          <td></td>
+          <td><strong>intel-ucode</strong></td>
+          <td>Intel CPU 微代码更新</td>
+          <td>提升 CPU 稳定性和安全性（AMD 用户换成 <code>amd-ucode</code>）</td>
       </tr>
       <tr>
-          <td>intel-ucode</td>
-          <td></td>
-          <td></td>
+          <td><strong>ntfs-3g</strong></td>
+          <td>NTFS 读写支持</td>
+          <td>方便在 Arch 中读写 Windows 资料盘</td>
       </tr>
       <tr>
-          <td>ntfs-3g</td>
-          <td></td>
-          <td></td>
-      </tr>
-      <tr>
-          <td>bash-completion</td>
-          <td></td>
-          <td></td>
+          <td><strong>bash-completion</strong></td>
+          <td>命令行自动补全</td>
+          <td>提高敲命令的效率</td>
       </tr>
   </tbody>
 </table></div>
-<p>输入下面的命令，pacstrap是Linux系统中的包管理器，可以自动完成配置</p>
+<p>输入下面的命令进行安装，pacstrap是Linux系统中的包管理器，可以自动完成配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -928,7 +981,14 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </div>
 </div><img src="23.jpg" style="width: 100%;" />
 <h3 id="生成fstab文件">生成fstab文件
-</h3><div class="highlight"><div class="chroma">
+</h3><blockquote>
+<p><code>fstab</code> (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录</p>
+</blockquote>
+<ul>
+<li>使用 <code>-U</code> 参数生成 UUID（通用唯一识别码）。相比传统的 <code>/dev/sdX</code> 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式</li>
+<li>由于使用了子卷和压缩，生成的 <code>fstab</code> 中会自动包含 <code>subvol=@</code> 和 <code>compress=zstd</code> 等参数。</li>
+</ul>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
@@ -958,11 +1018,40 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>当系统崩溃到无法进入系统的时候，使用liveCD启动，挂载硬盘然后<code>arch-chroot</code>就可以回到系统进行修复了，这是修系统最有力的武器；
-所以理论上ArchLinux永远不需要重装系统</p>
+<p><strong>arch-chroot</strong> 是 Arch 安装与维护的核心工具。本质是将当前运行环境的根目录切换到硬盘中已安装的分区</p>
+<p>当主系统因引导损坏、内核故障或配置错误无法启动时，可通过 LiveCD 启动临时环境。通过手动挂载分区并执行 <code>arch-chroot</code>，就可以直接接管硬盘系统</p>
+<p>在此状态下，执行的 <code>pacman</code> 修复或 <code>passwd</code> 修改等操作都会直接作用于物理磁盘。由于 Arch 采用滚动更新机制，配合 <code>arch-chroot</code> 提供的外部修复能力，绝大多数软件层面的崩溃均可在不擦除数据的前提下完成修复，无需重装</p>
 </blockquote>
 <h3 id="联网">联网
-</h3><img src="33.jpg" style="width: 100%;" />
+</h3><p>启动联网服务，并设为开机自启</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable --now NetworkManager 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>扫描可用网络然后列出来</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi list 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入下面的命令连接网络，<code>SSID</code> 需要替换成想连接的 WiFi 名，<code>passwd</code> 需要替换成WiFi密码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi connect &#34;SSID&#34; password &#34;passwd&#34; 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>连接好后用<code>ping</code>命令测试网络</p>
+<img src="33.jpg" style="width: 100%;" />
 <h3 id="用户设置">用户设置
 </h3><p>目前登陆的用户是root，为其设置密码</p>
 <div class="highlight"><div class="chroma">
@@ -973,7 +1062,7 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输入密码不会显示，需要输入两次</p>
+</div><p>输入的密码不会显示，需要输入两次</p>
 <p>archLinux是多用户系统，root用户拥有最高权限，甚至可以<code>rm -rf /*</code>删除系统本身，因此需要创建一个普通用户，以防不小心执行错误的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -993,7 +1082,7 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="24.jpg" style="width: 100%;" />
-<p>为了让普通用户能获取临时 root 权限，需要修改 wheel 的权限设置。打开sudoers文件</p>
+<p>为了让普通用户能获取临时 root 权限，需要修改<code>wheel</code>的权限设置。打开<code>sudoers</code>文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1002,7 +1091,7 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/sudoers
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>找到下面的两行，将wheel取消注释。去掉<code>#</code>，但务必保留<code>%</code></p>
+</div><p>找到下面的两行，将<code>wheel</code>取消注释。去掉<code>#</code>，但务必保留<code>%</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1233,7 +1322,8 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="35.jpg" style="width: 100%;" />
-<h2 id="参考">参考
+<h2 id="重启">重启
+</h2><h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
@@ -1497,7 +1587,7 @@ swapon /dev/nvme0n1p7 #启用swap分区</p>
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">55.66</span> 
+      <span class="number-highlight">56.48</span> 
       k 字
   </div>
   <div>

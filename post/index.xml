@@ -237,20 +237,37 @@
 &lt;li&gt;&lt;code&gt;p1&lt;/code&gt; ： 第几个分区&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;我即将分区的盘是&lt;code&gt;/dev/nvme1n1&lt;/code&gt;，这里只会显示已分区的空间，所以看不到空闲空间&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：之后的操作中一定不能搞错磁盘设备名，否则很可能导致数据丢失&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h3 id=&#34;分区&#34;&gt;分区
-&lt;/h3&gt;&lt;p&gt;首先确定根目录的格式，&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区&lt;/p&gt;
+&lt;p&gt;首先确定根分区的格式，常见的格式有&lt;code&gt;btrfs&lt;/code&gt;和&lt;code&gt;ext4&lt;/code&gt;。&lt;code&gt;btrfs&lt;/code&gt; 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 &lt;code&gt;ext4&lt;/code&gt; 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是&lt;code&gt;btrfs&lt;/code&gt;。&lt;/p&gt;
 &lt;h4 id=&#34;分区方法&#34;&gt;分区方法
-&lt;/h4&gt;&lt;p&gt;安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区，用户分区可根据需求决定是否单独划分&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;启动区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;启动分区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建&lt;code&gt;EFI 系统分区&lt;/code&gt;，通常挂载到 &lt;code&gt;/boot&lt;/code&gt;，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。&lt;/p&gt;
 &lt;p&gt;如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此，更稳妥的做法是为 Linux 创建单独的 EFI 分区&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;交换区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;交换分区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，不一定需要分区。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;根区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;根分区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;根分区用于存放操作系统及其所有文件。如果不单独划分 &lt;code&gt;/home&lt;/code&gt;，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;用户区 &lt;code&gt;/home&lt;/code&gt;（可选）&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;如果希望将用户数据与系统文件分开，可以在安装时单独创建 &lt;code&gt;home&lt;/code&gt; 分区，挂载在&lt;code&gt;/home&lt;/code&gt;，用来存放个人文件和数据，类似于 Windows 的D盘。单独划分 &lt;code&gt;/home&lt;/code&gt; 可以确保系统重装时不影响个人数据，提高数据安全性。&lt;/p&gt;
-&lt;p&gt;**推荐的分区方式 **&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;btrfs子卷&lt;/strong&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;由于我选择了 &lt;strong&gt;btrfs&lt;/strong&gt; 作为根分区的格式，因此可以利用子卷这个功能来实现分区隔离。类似在根分区这个大分区中划出多个小分区。&lt;/p&gt;
+&lt;p&gt;与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时，重装系统时只需格式化 &lt;code&gt;@&lt;/code&gt; 子卷， &lt;code&gt;@home&lt;/code&gt; 数据依然会被完整保留。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;@&lt;/strong&gt;： 这是挂载为根目录 &lt;code&gt;/&lt;/code&gt; 的子卷，用于存放操作系统文件。在 btrfs 架构中，一般将系统文件放在独立的 &lt;code&gt;@&lt;/code&gt; 子卷中，系统崩溃时可以方便地进行快照还原，而不会影响到其他子卷。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;@home&lt;/strong&gt;： 这是挂载为 &lt;code&gt;/home&lt;/code&gt; 的子卷，用于存放个人数据、配置文件和下载内容，类似Windows的D盘&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;@swap&lt;/strong&gt; (可选)：如果你没有划分独立的物理交换分区，也可以在 btrfs 分区内创建一个子卷来存放交换文件&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;推荐的分区方式&lt;/strong&gt;&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
@@ -276,18 +293,19 @@
       &lt;tr&gt;
           &lt;td style=&#34;text-align: center&#34;&gt;/mnt&lt;/td&gt;
           &lt;td style=&#34;text-align: center&#34;&gt;/dev/root_partition&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;filesystem&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;Linux filesystem&lt;/td&gt;
           &lt;td style=&#34;text-align: center&#34;&gt;设备的所有剩余空间，至少20G&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;在 Linux 安装环境中，挂载点通常带有 &lt;code&gt;/mnt&lt;/code&gt; 前缀，但最终系统中的挂载点不带 &lt;code&gt;/mnt&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;在 Live USB安装环境中，内存系统已经有了一个自己的根目录 &lt;code&gt;/&lt;/code&gt;。如果直接把硬盘分区挂载到 &lt;code&gt;/&lt;/code&gt;，会覆盖掉安装环境正在运行的文件，导致系统崩溃。&lt;/p&gt;
+&lt;p&gt;因此，安装环境提供了一个名为 &lt;code&gt;/mnt&lt;/code&gt; 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;操作步骤&#34;&gt;操作步骤
 &lt;/h4&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，所以下面要根据自己实际情况来&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这里我准备分3个区，一个是1G的EFI分区，一个是8G的swap分区，一个是195G的数据分区&lt;/p&gt;
+&lt;p&gt;这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的数据分区&lt;/p&gt;
 &lt;p&gt;由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux数据分区和Windows资料分区的大小，我让资料分区和数据分区相邻，分区的顺序是数据，swap，EFI&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入cfdisk&lt;/p&gt;
@@ -306,33 +324,13 @@
 &lt;p&gt;然后选中&lt;code&gt;Quit&lt;/code&gt;，退出&lt;code&gt;cfdisk&lt;/code&gt;，最后输入&lt;code&gt;lsblk&lt;/code&gt;命令检查一下分区&lt;/p&gt;
 &lt;img src=&#34;18.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;格式化&#34;&gt;格式化
-&lt;/h3&gt;&lt;p&gt;格式化根分区为&lt;code&gt;btrfs&lt;/code&gt;：&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;格式化根分区为&lt;code&gt;btrfs&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkfs.btrfs /dev/nvme1n1p3
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;btrfs&lt;/code&gt; 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 &lt;code&gt;ext4&lt;/code&gt; 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是&lt;code&gt;btrfs&lt;/code&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;创建btrfs子卷&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@ #创建@子卷作为根目录
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@home #创建@home子卷作为家目录
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@swap #可选，但是如果想使用swap文件，就为它单独创建一个子卷
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume list /mnt #复查一遍子卷创建的情况
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /mnt #卸载分区
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;初始化&lt;code&gt;swap&lt;/code&gt;分区：&lt;/p&gt;
@@ -344,7 +342,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkswap /dev/nvme1n1p4
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;格式化EFI分区，建议格式化为&lt;code&gt;fat32&lt;/code&gt;格式：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;格式化&lt;code&gt;EFI&lt;/code&gt;分区，建议格式化为&lt;code&gt;fat32&lt;/code&gt;格式：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -353,36 +351,94 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkfs.vfat -F32 /dev/nvme1n1p5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;格式化&lt;code&gt;home&lt;/code&gt;分区（可选）：&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;19.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;创建btrfs子卷&#34;&gt;创建btrfs子卷
+&lt;/h3&gt;&lt;p&gt;将根分区挂载到&lt;code&gt;/mnt&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkfs.ext4 /dev/nvme1n1p6
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd /dev/nvme1n1p3 /mnt
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;19.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;挂载&#34;&gt;挂载
+&lt;/div&gt;&lt;p&gt;创建@子卷作为根目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;创建@home子卷作为家目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@home
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;创建@swap子卷作为swap目录(可选)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@swap
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;检查子卷创建的情况&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume list /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;卸载分区，为了在下一步将&lt;code&gt;/mnt&lt;/code&gt;指向子卷&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;挂载&#34;&gt;挂载
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;此时正在使用的是 Live USB 环境，&lt;code&gt;/mnt&lt;/code&gt; 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有&lt;code&gt;/mnt&lt;/code&gt;，而当安装完成进入新系统的时候，这个目录就会消失&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;mount -t btrfs -o compress=zstd,subvol=@ /dev/nvme0n1p6 /mnt #挂载根目录
-mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme0n1p6 /mnt/home &amp;ndash;mkdir #挂载家目录
-mount -t btrfs -o compress=zstd,subvol=@swap /dev/nvme0n1p6 /mnt/swap &amp;ndash;mkdir #可选，挂载未来可能用到的swap文件
-mount /dev/nvme0n1p1 /mnt/efi &amp;ndash;mkdir #挂载efi分区
-mount /dev/nvme0n1p8 /mnt/boot &amp;ndash;mkdir #挂载/boot分区
-swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
-&lt;p&gt;挂载根目录&lt;code&gt;/mnt&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;挂载根目录&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/nvme1n1p3 /mnt
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd,subvol=@ /dev/nvme1n1p3 /mnt
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;创建&lt;code&gt;/boot&lt;/code&gt;目录并挂载EFI分区：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;挂载家目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home --mkdir
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;挂载swap子卷(可选)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -o subvol=@swap,noatime /dev/nvme1n1p3 /mnt/swap --mkdir
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;创建&lt;code&gt;/boot&lt;/code&gt;目录并挂载EFI分区&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -393,24 +449,13 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/nvme1n1p5 /mnt/boot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;启用&lt;code&gt;/swap&lt;/code&gt;分区：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;启用&lt;code&gt;swap&lt;/code&gt;分区&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;swapon /dev/nvme1n1p4
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;创建&lt;code&gt;/home&lt;/code&gt;目录并挂载（可选）：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir /mnt/home
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/nvme1n1p6 /mnt/home
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;输入&lt;code&gt;lsblk&lt;/code&gt;命检查磁盘分区情况，可以看到每个分区后面出现了挂载的目录&lt;/p&gt;
@@ -424,19 +469,27 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /dev/nvme1n1p5 /mnt/boot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;下载软件包&#34;&gt;下载软件包
-&lt;/h2&gt;&lt;h3 id=&#34;禁用reflector&#34;&gt;禁用reflector
+&lt;/div&gt;&lt;h2 id=&#34;下载基础软件包&#34;&gt;下载基础软件包
+&lt;/h2&gt;&lt;h3 id=&#34;禁用reflector&#34;&gt;禁用Reflector
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;reflector会在最新的20个镜像源中测速，并根据速度排序镜像；由于大陆的特殊网络环境，只考虑最新的20个镜像源往往得不到理想的结果，同时它还会覆盖自行配置的源信息，所以先将其禁用：&lt;/p&gt;
+&lt;p&gt;Reflector 是一个自动获取并过滤镜像列表的脚本。在系统启动时，它会自动在最新的 20 个镜像源中进行测速并重新排序。由于大陆特殊的网络环境，这样往往得不到理想的下载速度。Reflector还会自动覆盖手动配置好的镜像信息，导致安装过程中断或下载极其缓慢。因此，在手动配置国内镜像源之前，必须先将其禁用。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;禁用服务&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl stop reflector.service #停用
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl status reflector.service #复查，然后按q退出
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl stop reflector.service 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;复查，然后按q退出&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl status reflector.service 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;21.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -444,7 +497,7 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;编辑源的列表&lt;/p&gt;
+&lt;p&gt;编辑源的列表文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -453,7 +506,10 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.d/mirrorlist
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;输入7j也就是将光标下移7行，按&lt;code&gt;yy&lt;/code&gt;复制整行，输入&lt;code&gt;3k&lt;/code&gt;上移3行，然后按&lt;code&gt;p&lt;/code&gt;粘贴，输入&lt;code&gt;4w&lt;/code&gt;向右移动4个单词，输入&lt;code&gt;c7w&lt;/code&gt;，然后输入&lt;code&gt;mirrors.tuna.tsinghua.edu.cn&lt;/code&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在文件第一行插入清华源&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Pacman 会从上到下尝试，第一行成功后就不会再找后面的&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -468,70 +524,65 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/h3&gt;&lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
-          &lt;th&gt;名称&lt;/th&gt;
-          &lt;th&gt;作用&lt;/th&gt;
-          &lt;th&gt;备注&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;名称&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;作用&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;备注&lt;/strong&gt;&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
-          &lt;td&gt;base&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;base&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;系统的最基础组件&lt;/td&gt;
+          &lt;td&gt;包含最核心的工具，不含内核&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;base-devel&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;base-devel&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;开发工具包&lt;/td&gt;
+          &lt;td&gt;包含 &lt;code&gt;gcc&lt;/code&gt;, &lt;code&gt;make&lt;/code&gt; 等，AUR 编译必装&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;linux&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;linux&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Linux 内核&lt;/td&gt;
+          &lt;td&gt;系统的核心引擎&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;linux-firmware&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;linux-firmware&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;硬件固件驱动&lt;/td&gt;
+          &lt;td&gt;包含显卡、声卡、网卡等驱动&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;nano&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;nano / vim&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;文本编辑器&lt;/td&gt;
+          &lt;td&gt;进入新系统后修改配置文件的唯一手段&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;vim&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;networkmanager&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;网络管理服务&lt;/td&gt;
+          &lt;td&gt;自动处理 WiFi 和有线连接&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;networkmanager&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;btrfs-progs&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Btrfs 文件系统工具&lt;/td&gt;
+          &lt;td&gt;Btrfs必装的工具&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;btrfs-progs&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;intel-ucode&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Intel CPU 微代码更新&lt;/td&gt;
+          &lt;td&gt;提升 CPU 稳定性和安全性（AMD 用户换成 &lt;code&gt;amd-ucode&lt;/code&gt;）&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;intel-ucode&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;ntfs-3g&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;NTFS 读写支持&lt;/td&gt;
+          &lt;td&gt;方便在 Arch 中读写 Windows 资料盘&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;ntfs-3g&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bash-completion&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;bash-completion&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;命令行自动补全&lt;/td&gt;
+          &lt;td&gt;提高敲命令的效率&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;输入下面的命令，pacstrap是Linux系统中的包管理器，可以自动完成配置&lt;/p&gt;
+&lt;p&gt;输入下面的命令进行安装，pacstrap是Linux系统中的包管理器，可以自动完成配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -542,7 +593,14 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;23.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;生成fstab文件&#34;&gt;生成fstab文件
-&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;fstab&lt;/code&gt; (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;-U&lt;/code&gt; 参数生成 UUID（通用唯一识别码）。相比传统的 &lt;code&gt;/dev/sdX&lt;/code&gt; 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式&lt;/li&gt;
+&lt;li&gt;由于使用了子卷和压缩，生成的 &lt;code&gt;fstab&lt;/code&gt; 中会自动包含 &lt;code&gt;subvol=@&lt;/code&gt; 和 &lt;code&gt;compress=zstd&lt;/code&gt; 等参数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
@@ -572,11 +630,40 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;当系统崩溃到无法进入系统的时候，使用liveCD启动，挂载硬盘然后&lt;code&gt;arch-chroot&lt;/code&gt;就可以回到系统进行修复了，这是修系统最有力的武器；
-所以理论上ArchLinux永远不需要重装系统&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;arch-chroot&lt;/strong&gt; 是 Arch 安装与维护的核心工具。本质是将当前运行环境的根目录切换到硬盘中已安装的分区&lt;/p&gt;
+&lt;p&gt;当主系统因引导损坏、内核故障或配置错误无法启动时，可通过 LiveCD 启动临时环境。通过手动挂载分区并执行 &lt;code&gt;arch-chroot&lt;/code&gt;，就可以直接接管硬盘系统&lt;/p&gt;
+&lt;p&gt;在此状态下，执行的 &lt;code&gt;pacman&lt;/code&gt; 修复或 &lt;code&gt;passwd&lt;/code&gt; 修改等操作都会直接作用于物理磁盘。由于 Arch 采用滚动更新机制，配合 &lt;code&gt;arch-chroot&lt;/code&gt; 提供的外部修复能力，绝大多数软件层面的崩溃均可在不擦除数据的前提下完成修复，无需重装&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;联网&#34;&gt;联网
-&lt;/h3&gt;&lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/h3&gt;&lt;p&gt;启动联网服务，并设为开机自启&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl enable --now NetworkManager 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;扫描可用网络然后列出来&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nmcli dev wifi list 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;输入下面的命令连接网络，&lt;code&gt;SSID&lt;/code&gt; 需要替换成想连接的 WiFi 名，&lt;code&gt;passwd&lt;/code&gt; 需要替换成WiFi密码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nmcli dev wifi connect &amp;#34;SSID&amp;#34; password &amp;#34;passwd&amp;#34; 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;连接好后用&lt;code&gt;ping&lt;/code&gt;命令测试网络&lt;/p&gt;
+&lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;用户设置&#34;&gt;用户设置
 &lt;/h3&gt;&lt;p&gt;目前登陆的用户是root，为其设置密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -587,7 +674,7 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;passwd
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;输入密码不会显示，需要输入两次&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;输入的密码不会显示，需要输入两次&lt;/p&gt;
 &lt;p&gt;archLinux是多用户系统，root用户拥有最高权限，甚至可以&lt;code&gt;rm -rf /*&lt;/code&gt;删除系统本身，因此需要创建一个普通用户，以防不小心执行错误的命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -607,7 +694,7 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;24.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;为了让普通用户能获取临时 root 权限，需要修改 wheel 的权限设置。打开sudoers文件&lt;/p&gt;
+&lt;p&gt;为了让普通用户能获取临时 root 权限，需要修改&lt;code&gt;wheel&lt;/code&gt;的权限设置。打开&lt;code&gt;sudoers&lt;/code&gt;文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -616,7 +703,7 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/sudoers
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;找到下面的两行，将wheel取消注释。去掉&lt;code&gt;#&lt;/code&gt;，但务必保留&lt;code&gt;%&lt;/code&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;找到下面的两行，将&lt;code&gt;wheel&lt;/code&gt;取消注释。去掉&lt;code&gt;#&lt;/code&gt;，但务必保留&lt;code&gt;%&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -847,7 +934,8 @@ swapon /dev/nvme0n1p7 #启用swap分区&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;35.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;h2 id=&#34;重启&#34;&gt;重启
+&lt;/h2&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;安装指南 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
