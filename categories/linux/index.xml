@@ -59,9 +59,10 @@
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的磁盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;，并将休眠关闭&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;注意：这里还需要在Windows设置中将休眠关闭，否则还是会自动休眠&lt;/p&gt;
 &lt;p&gt;重启计算机，进入Bios，关闭&lt;code&gt;安全启动(Secure Boot)&lt;/code&gt;，不同电脑方法不同。我的是开机时按&lt;code&gt;F2&lt;/code&gt;进入Bios，点击&lt;code&gt;更多设置&lt;/code&gt;，进入&lt;code&gt;security&lt;/code&gt;，&lt;code&gt;Secure Boot&lt;/code&gt;设置为&lt;code&gt;Disabled&lt;/code&gt;，然后&lt;code&gt;F10&lt;/code&gt;保存&lt;/p&gt;
 &lt;img src=&#34;4.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;制作启动u盘&#34;&gt;制作启动U盘

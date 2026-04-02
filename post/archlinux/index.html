@@ -445,9 +445,10 @@ unicode: "f6d2"
 </h3><blockquote>
 <p>Windows的快速启动本质上是将关机改为休眠。如果休眠了双系统中的其中一个，然后启动了另一个系统，那么在休眠的系统中已经被挂载的磁盘，不应该被挂载在另一个系统上，这样会导致文件系统错误，而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能遭到破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用</p>
 </blockquote>
-<p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code></p>
+<p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code>，并将休眠关闭</p>
 <img src="2.png" style="width: 100%;" />
 <img src="3.png" style="width: 100%;" />
+<p>注意：这里还需要在Windows设置中将休眠关闭，否则还是会自动休眠</p>
 <p>重启计算机，进入Bios，关闭<code>安全启动(Secure Boot)</code>，不同电脑方法不同。我的是开机时按<code>F2</code>进入Bios，点击<code>更多设置</code>，进入<code>security</code>，<code>Secure Boot</code>设置为<code>Disabled</code>，然后<code>F10</code>保存</p>
 <img src="4.jpg" style="width: 100%;" />
 <h3 id="制作启动u盘">制作启动U盘
@@ -1210,7 +1211,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">54.12</span> 
+      <span class="number-highlight">54.17</span> 
       k 字
   </div>
   <div>
