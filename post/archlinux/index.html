@@ -282,34 +282,34 @@ unicode: "f6d2"
         <li><a href="#准备空闲的磁盘空间">准备空闲的磁盘空间</a></li>
       </ol>
     </li>
-    <li><a href="#启动arch-linux安装介质">启动Arch Linux安装介质</a></li>
-    <li><a href="#连接网络与时间校准">连接网络与时间校准</a></li>
-    <li><a href="#磁盘配置">磁盘配置</a>
+    <li><a href="#启动与联网">启动与联网</a>
+      <ol>
+        <li><a href="#进入arch-linux安装介质">进入Arch Linux安装介质</a></li>
+        <li><a href="#连接网络与时间校准">连接网络与时间校准</a></li>
+      </ol>
+    </li>
+    <li><a href="#磁盘分区与挂载">磁盘分区与挂载</a>
       <ol>
         <li><a href="#查看磁盘信息">查看磁盘信息</a></li>
-        <li><a href="#分区">分区</a>
-          <ol>
-            <li><a href="#分区方法">分区方法</a></li>
-            <li><a href="#操作步骤">操作步骤</a></li>
-          </ol>
-        </li>
+        <li><a href="#分区方案">分区方案</a></li>
+        <li><a href="#分区操作">分区操作</a></li>
         <li><a href="#格式化">格式化</a></li>
-        <li><a href="#创建btrfs子卷">创建btrfs子卷</a></li>
+        <li><a href="#创建btrfs子卷">创建Btrfs子卷</a></li>
         <li><a href="#挂载">挂载</a></li>
       </ol>
     </li>
-    <li><a href="#下载基础软件包">下载基础软件包</a>
+    <li><a href="#系统安装">系统安装</a>
       <ol>
         <li><a href="#禁用reflector">禁用Reflector</a></li>
-        <li><a href="#换源">换源</a></li>
-        <li><a href="#下载">下载</a></li>
-        <li><a href="#生成fstab文件">生成fstab文件</a></li>
+        <li><a href="#更换软件源">更换软件源</a></li>
+        <li><a href="#安装软件包">安装软件包</a></li>
+        <li><a href="#生成挂载表">生成挂载表</a></li>
       </ol>
     </li>
     <li><a href="#系统基本配置">系统基本配置</a>
       <ol>
-        <li><a href="#用户设置">用户设置</a></li>
-        <li><a href="#配置host">配置host</a></li>
+        <li><a href="#用户与权限">用户与权限</a></li>
+        <li><a href="#配置hosts文件">配置Hosts文件</a></li>
         <li><a href="#本地化与时区">本地化与时区</a></li>
       </ol>
     </li>
@@ -319,7 +319,7 @@ unicode: "f6d2"
         <li><a href="#将windows加入引导项">将Windows加入引导项</a></li>
       </ol>
     </li>
-    <li><a href="#安装完成">安装完成</a>
+    <li><a href="#后续">后续</a>
       <ol>
         <li><a href="#联网">联网</a></li>
         <li><a href="#并行下载">并行下载</a></li>
@@ -490,8 +490,9 @@ unicode: "f6d2"
 <p>这里建议留出50g以上大小的空间，否则存储数据的空间很可能不足</p>
 </blockquote>
 <img src="6.png" style="width: 80%;" />
-<h2 id="启动arch-linux安装介质">启动Arch Linux安装介质
-</h2><p>将刚刚制作的U盘插在电脑上，重启按<code>F12</code>进入选择启动项的界面，选择U盘</p>
+<h2 id="启动与联网">启动与联网
+</h2><h3 id="进入arch-linux安装介质">进入Arch Linux安装介质
+</h3><p>将刚刚制作的U盘插在电脑上，重启按<code>F12</code>进入选择启动项的界面，选择U盘</p>
 <img src="8.jpg" style="width: 100%;" />
 <p>进入Ventoy界面，选择ArchLinux的镜像然后回车</p>
 <img src="9.jpg" style="width: 80%;" />
@@ -502,8 +503,8 @@ unicode: "f6d2"
 </blockquote>
 <p>等待一会进入这个界面说明启动成功</p>
 <img src="11.jpg" style="width: 80%;" />
-<h2 id="连接网络与时间校准">连接网络与时间校准
-</h2><blockquote>
+<h3 id="连接网络与时间校准">连接网络与时间校准
+</h3><blockquote>
 <p>安装ArchLinux需要全程联网，有三种常用的方式</p>
 <ul>
 <li>直接插网线连接网络</li>
@@ -608,7 +609,7 @@ unicode: "f6d2"
 </div><blockquote>
 <p><code>timedatectl</code> 的 NTP 同步依赖于网络。如果 <code>ping</code> 不通，这个服务即便显示 <code>active</code>，时间也可能无法同步成功。建议在检查时多看一眼 <code>System clock synchronized: yes</code> 这一行</p>
 </blockquote>
-<h2 id="磁盘配置">磁盘配置
+<h2 id="磁盘分区与挂载">磁盘分区与挂载
 </h2><p>这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置</p>
 <h3 id="查看磁盘信息">查看磁盘信息
 </h3><p>输入<code>fdisk -l</code>查看当前电脑磁盘的详细状态</p>
@@ -631,11 +632,12 @@ unicode: "f6d2"
 <blockquote>
 <p>注意：之后的操作中一定不能搞错磁盘设备名，否则很可能导致数据丢失</p>
 </blockquote>
-<h3 id="分区">分区
-</h3><p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区</p>
+<h3 id="分区方案">分区方案
+</h3><blockquote>
+<p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区</p>
+</blockquote>
 <p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
-<h4 id="分区方法">分区方法
-</h4><p><strong>启动分区 <code>/boot</code></strong>：</p>
+<p><strong>启动分区 <code>/boot</code></strong>：</p>
 <p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。</p>
 <p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此，更稳妥的做法是为 Linux 创建单独的 EFI 分区</p>
 <p><strong>交换分区 <code>/swap</code></strong>：</p>
@@ -693,8 +695,8 @@ unicode: "f6d2"
 <p>在 Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
 <p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现</p>
 </blockquote>
-<h4 id="操作步骤">操作步骤
-</h4><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面要根据自己实际情况来</strong></p>
+<h3 id="分区操作">分区操作
+</h3><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面的命令需要以自己磁盘的序号为准</strong></p>
 <blockquote>
 <p>这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的数据分区</p>
 <p>由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux数据分区和Windows资料分区的大小，我让资料分区和数据分区相邻，分区的顺序是数据，swap，EFI</p>
@@ -743,7 +745,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="19.jpg" style="width: 100%;" />
-<h3 id="创建btrfs子卷">创建btrfs子卷
+<h3 id="创建btrfs子卷">创建Btrfs子卷
 </h3><p>将根分区挂载到<code>/mnt</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -771,7 +773,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">btrfs subvolume create /mnt/@home
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>创建@swap子卷作为swap目录(可选)</p>
+</div><p>创建@swap子卷作为swap目录(如果有swap分区就不需要)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -860,10 +862,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /dev/nvme1n1p5 /mnt/boot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="下载基础软件包">下载基础软件包
+</div><h2 id="系统安装">系统安装
 </h2><h3 id="禁用reflector">禁用Reflector
 </h3><blockquote>
-<p>Reflector 是一个自动获取并过滤镜像列表的脚本。在系统启动时，它会自动在最新的 20 个镜像源中进行测速并重新排序。由于大陆特殊的网络环境，这样往往得不到理想的下载速度。Reflector还会自动覆盖手动配置好的镜像信息，导致安装过程中断或下载极其缓慢。因此，在手动配置国内镜像源之前，必须先将其禁用。</p>
+<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接往往不稳定，导致安装过程出现报错或卡顿</p>
 </blockquote>
 <p>禁用服务</p>
 <div class="highlight"><div class="chroma">
@@ -884,7 +886,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="21.jpg" style="width: 100%;" />
-<h3 id="换源">换源
+<h3 id="更换软件源">更换软件源
 </h3><blockquote>
 <p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
 </blockquote>
@@ -911,7 +913,7 @@ unicode: "f6d2"
 </div>
 </div><p><code>Esc</code>退出编辑模式，<code>:wq</code>保存退出。</p>
 <img src="22.jpg" style="width: 100%;" />
-<h3 id="下载">下载
+<h3 id="安装软件包">安装软件包
 </h3><div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -996,7 +998,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="23.jpg" style="width: 100%;" />
-<h3 id="生成fstab文件">生成fstab文件
+<h3 id="生成挂载表">生成挂载表
 </h3><blockquote>
 <p><code>fstab</code> (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录</p>
 </blockquote>
@@ -1031,9 +1033,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p><strong>arch-chroot</strong> 是</p>
+<p>arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，比如设置密码或安装引导程序，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复</p>
 </blockquote>
-<h3 id="用户设置">用户设置
+<h3 id="用户与权限">用户与权限
 </h3><p>目前登陆的用户是root，为其设置密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1097,7 +1099,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">echo 你电脑的主机名 &gt; /etc/hostname
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="配置host">配置host
+</div><h3 id="配置hosts文件">配置Hosts文件
 </h3><p>配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题但不是必须。首先打开hosts文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1320,14 +1322,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">	<span class="n">insmod</span> <span class="n">fat</span>
 </span></span><span class="line"><span class="cl">	<span class="n">insmod</span> <span class="n">chain</span>
 </span></span><span class="line"><span class="cl">	<span class="n">search</span> <span class="o">--</span> <span class="n">fs</span><span class="o">-</span><span class="n">uuid</span> <span class="o">--</span> <span class="n">no</span><span class="o">-</span><span class="n">floppy</span> <span class="o">--</span> <span class="n">set</span><span class="o">=</span><span class="n">root</span> <span class="err">刚才查看的</span><span class="n">UUID</span>
-</span></span><span class="line"><span class="cl">	<span class="n">chainloader</span> <span class="p">(</span><span class="o">$</span><span class="p">(</span><span class="n">root</span><span class="p">})</span><span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">Microsoft</span><span class="o">/</span><span class="n">Boot</span><span class="o">/</span><span class="n">bootmgfw</span><span class="o">.</span><span class="n">efi_</span>
+</span></span><span class="line"><span class="cl">	<span class="n">chainloader</span> <span class="p">(</span><span class="o">$</span><span class="p">{</span><span class="n">root</span><span class="p">})</span><span class="o">/</span><span class="n">EFI</span><span class="o">/</span><span class="n">Microsoft</span><span class="o">/</span><span class="n">Boot</span><span class="o">/</span><span class="n">bootmgfw</span><span class="o">.</span><span class="n">efi</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="35.jpg" style="width: 100%;" />
-<h2 id="安装完成">安装完成
-</h2><p>到了这一步ArchLinux就安装成功了，首先输入<code>exit</code>退出chroot</p>
-<p><code>reboot</code>重启并检查启动项情况</p>
+<h2 id="后续">后续
+</h2><p>到了这一步ArchLinux就安装成功了，首先输入<code>exit</code>退出chroot，<code>reboot</code>重启并检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常</p>
 <h3 id="联网">联网
 </h3><p>启动联网服务，并设为开机自启</p>
 <div class="highlight"><div class="chroma">
@@ -1632,7 +1633,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">56.53</span> 
+      <span class="number-highlight">56.68</span> 
       k 字
   </div>
   <div>
