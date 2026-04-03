@@ -306,13 +306,11 @@ unicode: "f6d2"
         <li><a href="#生成fstab文件">生成fstab文件</a></li>
       </ol>
     </li>
-    <li><a href="#安装后基本配置">安装后基本配置</a>
+    <li><a href="#系统基本配置">系统基本配置</a>
       <ol>
-        <li><a href="#联网">联网</a></li>
         <li><a href="#用户设置">用户设置</a></li>
         <li><a href="#配置host">配置host</a></li>
-        <li><a href="#设置时区">设置时区</a></li>
-        <li><a href="#本地化">本地化</a></li>
+        <li><a href="#本地化与时区">本地化与时区</a></li>
       </ol>
     </li>
     <li><a href="#grub引导配置">GRUB引导配置</a>
@@ -321,7 +319,12 @@ unicode: "f6d2"
         <li><a href="#将windows加入引导项">将Windows加入引导项</a></li>
       </ol>
     </li>
-    <li><a href="#重启">重启</a></li>
+    <li><a href="#安装完成">安装完成</a>
+      <ol>
+        <li><a href="#联网">联网</a></li>
+        <li><a href="#并行下载">并行下载</a></li>
+      </ol>
+    </li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -934,6 +937,16 @@ unicode: "f6d2"
           <td>系统的核心引擎</td>
       </tr>
       <tr>
+          <td><strong>linux-zen</strong></td>
+          <td></td>
+          <td></td>
+      </tr>
+      <tr>
+          <td><strong>linux-lts</strong></td>
+          <td></td>
+          <td></td>
+      </tr>
+      <tr>
           <td><strong>linux-firmware</strong></td>
           <td>硬件固件驱动</td>
           <td>包含显卡、声卡、网卡等驱动</td>
@@ -970,6 +983,9 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
+<blockquote>
+<p>linux内核可以安装多个，如果某一个内核崩溃可以随时切换</p>
+</blockquote>
 <p>输入下面的命令进行安装，pacstrap是Linux系统中的包管理器，可以自动完成配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -984,10 +1000,7 @@ unicode: "f6d2"
 </h3><blockquote>
 <p><code>fstab</code> (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录</p>
 </blockquote>
-<ul>
-<li>使用 <code>-U</code> 参数生成 UUID（通用唯一识别码）。相比传统的 <code>/dev/sdX</code> 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式</li>
-<li>由于使用了子卷和压缩，生成的 <code>fstab</code> 中会自动包含 <code>subvol=@</code> 和 <code>compress=zstd</code> 等参数。</li>
-</ul>
+<p>使用 <code>-U</code> 参数生成 UUID（通用唯一识别码）。相比传统的 <code>/dev/sdX</code> 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -996,7 +1009,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">genfstab -U /mnt &gt; /mnt/etc/fstab
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>检查一下是否创建成功</p>
+</div><p>检查一下是否创建成功。由于使用了子卷和压缩，生成的 <code>fstab</code> 中会自动包含 <code>subvol=@</code> 和 <code>compress=zstd</code> 等参数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1007,7 +1020,7 @@ unicode: "f6d2"
 </div>
 </div><img src="28.jpg" style="width: 100%;" />
 <p>至此基本的安装就完成了</p>
-<h2 id="安装后基本配置">安装后基本配置
+<h2 id="系统基本配置">系统基本配置
 </h2><p>输入下面的命令进入安装好的系统环境，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1018,40 +1031,8 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p><strong>arch-chroot</strong> 是 Arch 安装与维护的核心工具。本质是将当前运行环境的根目录切换到硬盘中已安装的分区</p>
-<p>当主系统因引导损坏、内核故障或配置错误无法启动时，可通过 LiveCD 启动临时环境。通过手动挂载分区并执行 <code>arch-chroot</code>，就可以直接接管硬盘系统</p>
-<p>在此状态下，执行的 <code>pacman</code> 修复或 <code>passwd</code> 修改等操作都会直接作用于物理磁盘。由于 Arch 采用滚动更新机制，配合 <code>arch-chroot</code> 提供的外部修复能力，绝大多数软件层面的崩溃均可在不擦除数据的前提下完成修复，无需重装</p>
+<p><strong>arch-chroot</strong> 是</p>
 </blockquote>
-<h3 id="联网">联网
-</h3><p>启动联网服务，并设为开机自启</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable --now NetworkManager 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>扫描可用网络然后列出来</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi list 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输入下面的命令连接网络，<code>SSID</code> 需要替换成想连接的 WiFi 名，<code>passwd</code> 需要替换成WiFi密码</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi connect &#34;SSID&#34; password &#34;passwd&#34; 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>连接好后用<code>ping</code>命令测试网络</p>
-<img src="33.jpg" style="width: 100%;" />
 <h3 id="用户设置">用户设置
 </h3><p>目前登陆的用户是root，为其设置密码</p>
 <div class="highlight"><div class="chroma">
@@ -1082,7 +1063,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="24.jpg" style="width: 100%;" />
-<p>为了让普通用户能获取临时 root 权限，需要修改<code>wheel</code>的权限设置。打开<code>sudoers</code>文件</p>
+<p>需要修改<code>wheel</code>的权限设置来让普通用户能获取临时 root 权限，打开<code>sudoers</code>文件</p>
+<blockquote>
+<p>普通用户通过在命令前加sudo，回车后输入密码来获得临时root权限</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1114,7 +1098,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="配置host">配置host
-</h3><p>配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题。首先打开hosts文件</p>
+</h3><p>配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题但不是必须。首先打开hosts文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1141,9 +1125,7 @@ unicode: "f6d2"
 </blockquote>
 <img src="25.jpg" style="width: 100%;" />
 <p>确认无误后，按<code>Ctrl + X</code>，输入<code>y</code>，回车再退出</p>
-<h3 id="设置时区">设置时区
-</h3><img src="32.jpg" style="width: 100%;" />
-<h3 id="本地化">本地化
+<h3 id="本地化与时区">本地化与时区
 </h3><p>编辑<code>locale.gen</code>文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1153,7 +1135,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/locale.gen
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>将下面几项的注释删除，然后保存</p>
+</div><p>将下面几项的注释删除</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1166,8 +1148,40 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">zh_TW.UTF-8 UTF-8
 </span></span></code></pre></td></tr></table>
 </div>
+</div><p>刷新区域信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">locale-gen
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将区域信息写入<code>locale-conf</code>文件</p>
+<blockquote>
+<p>locale-conf是全局设置，这是为了使命令行显示英文，以防汉化在命令行显示乱码，LANG的值必须是上一步已经设置过的值</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">echo LANG=en_US.UTF-8 &gt; /etc/locale.conf
+</span></span></code></pre></td></tr></table>
+</div>
 </div><img src="37.jpg" style="width: 100%;" />
-<h2 id="grub引导配置">GRUB引导配置
+<p>设置时区为亚洲上海</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+</span></span><span class="line"><span class="cl">hwclock --systohc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="grub引导配置">GRUB引导配置
 </h2><h3 id="基本配置">基本配置
 </h3><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1180,14 +1194,14 @@ unicode: "f6d2"
 </div><div class="table-wrapper"><table>
   <thead>
       <tr>
-          <th>软件包</th>
-          <th>功能</th>
+          <th>名称</th>
+          <th>作用</th>
       </tr>
   </thead>
   <tbody>
       <tr>
           <td><code>grub</code></td>
-          <td>引导程序本身</td>
+          <td>引导程序</td>
       </tr>
       <tr>
           <td><code>efibootmgr</code></td>
@@ -1224,7 +1238,7 @@ unicode: "f6d2"
 <ul>
 <li>启用<code>os-prober</code>：</li>
 </ul>
-<p><code>GRUB_DISABLE_OS_PROBER=false</code>取消注释，这是为了探测硬盘上存在的Windows启动项</p>
+<p><code>GRUB_DISABLE_OS_PROBER=false</code>取消注释，这是为了探测硬盘上的Windows启动项</p>
 <img src="29.jpg" style="width: 100%;" />
 <p>把os-prober的位置提前，使引导界面中Windows排在第一位，Linux排在第二位</p>
 <div class="highlight"><div class="chroma">
@@ -1254,20 +1268,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="31.jpg" style="width: 100%;" />
-<p>重启并查看启动项情况</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit #退出chroot
-</span></span><span class="line"><span class="cl">reboot #重启计算机
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="将windows加入引导项">将Windows加入引导项
+<h3 id="将windows加入引导项">将Windows加入引导项
 </h3><blockquote>
-<p>经过刚刚的设置后，开机进入引导选择界面应该有3个选项，Arch Linux、Linux内核选择、Windows的Bios，但没有Windows，这一步是将Windows加入引导界面，使开机后可以自由选择进入的系统</p>
+<p>经过刚刚的设置后，引导选择界面应该有3个选项，Arch Linux、Linux内核选择、Windows的Bios，但没有Windows，这一步是将Windows加入引导界面，使开机后可以自由选择进入的系统</p>
 </blockquote>
 <p>查看Windows的EFI分区信息，记住这里的UUID</p>
 <div class="highlight"><div class="chroma">
@@ -1300,7 +1303,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="36.jpg" style="width: 100%;" />
-<p>在这两行中间加入下面的代码并保存，重启后Windows启动项就被加入引导界面了</p>
+<p>在这两行中间加入下面的代码并保存，Windows启动项就被加入引导界面了</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1322,8 +1325,50 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="35.jpg" style="width: 100%;" />
-<h2 id="重启">重启
-</h2><h2 id="参考">参考
+<h2 id="安装完成">安装完成
+</h2><p>到了这一步ArchLinux就安装成功了，首先输入<code>exit</code>退出chroot</p>
+<p><code>reboot</code>重启并检查启动项情况</p>
+<h3 id="联网">联网
+</h3><p>启动联网服务，并设为开机自启</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable --now NetworkManager 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>扫描可用网络然后列出来</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi list 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入下面的命令连接网络，<code>SSID</code> 需要替换成想连接的 WiFi 名，<code>passwd</code> 需要替换成WiFi密码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nmcli dev wifi connect &#34;SSID&#34; password &#34;passwd&#34; 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>连接好后用<code>ping</code>命令测试网络</p>
+<img src="33.jpg" style="width: 100%;" />
+<h3 id="并行下载">并行下载
+</h3><p>编辑<code>/etc/pacman.conf</code>，将<code>#ParallelDownloads = 5</code>行取消注释，并把5改成20</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
 <p><a class="link" href="https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#"  target="_blank" rel="noopener"
@@ -1587,7 +1632,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">56.48</span> 
+      <span class="number-highlight">56.53</span> 
       k 字
   </div>
   <div>
