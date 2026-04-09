@@ -474,7 +474,7 @@
 &lt;/div&gt;&lt;h2 id=&#34;系统安装&#34;&gt;系统安装
 &lt;/h2&gt;&lt;h3 id=&#34;禁用reflector&#34;&gt;禁用Reflector
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接往往不稳定，导致安装过程出现报错或卡顿&lt;/p&gt;
+&lt;p&gt;Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;禁用服务&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -645,7 +645,7 @@
 &lt;p&gt;arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，比如设置密码或安装引导程序，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;用户与权限&#34;&gt;用户与权限
-&lt;/h3&gt;&lt;p&gt;目前登陆的用户是root，为其设置密码&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;目前登陆的用户是root，设置该用户的密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -709,7 +709,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;配置hosts文件&#34;&gt;配置Hosts文件
-&lt;/h3&gt;&lt;p&gt;配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题但不是必须。首先打开hosts文件&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Hosts文件是操作系统中用于域名解析的重要配置文件。它的主要作用是将常用的网址域名与其对应的IP地址建立关联，以便在用户输入网址时，系统能够快速找到对应的IP地址。如果不配置这一步，可能会在网络变更时出现应用无法启动等问题&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;打开hosts文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -732,10 +735,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;如果系统有一个永久的 IP 地址，请使用这个永久的 IP 地址而不是 &lt;code&gt;127.0.1.1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;如果系统有一个永久的 IP 地址，应该使用这个永久的 IP 地址而不是 &lt;code&gt;127.0.1.1&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;img src=&#34;25.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;确认无误后，按&lt;code&gt;Ctrl + X&lt;/code&gt;，输入&lt;code&gt;y&lt;/code&gt;，回车再退出&lt;/p&gt;
+&lt;p&gt;按 &lt;code&gt;Esc&lt;/code&gt;，输入 &lt;code&gt;:wq&lt;/code&gt; 保存退出&lt;/p&gt;
 &lt;h3 id=&#34;本地化与时区&#34;&gt;本地化与时区
 &lt;/h3&gt;&lt;p&gt;编辑&lt;code&gt;locale.gen&lt;/code&gt;文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -746,7 +749,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/locale.gen
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;将下面几项的注释删除&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;将下面几项的注释删除，这一步是将英文，简体中文和繁体中文添加到本地&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -768,7 +771,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;locale-gen
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;将区域信息写入&lt;code&gt;locale-conf&lt;/code&gt;文件&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;将区域信息写入&lt;code&gt;locale.conf&lt;/code&gt;文件&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;locale-conf是全局设置，这是为了使命令行显示英文，以防汉化在命令行显示乱码，LANG的值必须是上一步已经设置过的值&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -891,7 +894,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;os-prober
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;blkid /dev/nume0n1p1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;blkid /dev/nvme0n1p1
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;34.jpg&#34; style=&#34;width: 100%;&#34; /&gt;

@@ -865,7 +865,7 @@ unicode: "f6d2"
 </div><h2 id="系统安装">系统安装
 </h2><h3 id="禁用reflector">禁用Reflector
 </h3><blockquote>
-<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接往往不稳定，导致安装过程出现报错或卡顿</p>
+<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿</p>
 </blockquote>
 <p>禁用服务</p>
 <div class="highlight"><div class="chroma">
@@ -1036,7 +1036,7 @@ unicode: "f6d2"
 <p>arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，比如设置密码或安装引导程序，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复</p>
 </blockquote>
 <h3 id="用户与权限">用户与权限
-</h3><p>目前登陆的用户是root，为其设置密码</p>
+</h3><p>目前登陆的用户是root，设置该用户的密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1100,7 +1100,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="配置hosts文件">配置Hosts文件
-</h3><p>配置这一步是为了，如果不设置可能会在网络变更时出现应用无法启动等问题但不是必须。首先打开hosts文件</p>
+</h3><blockquote>
+<p>Hosts文件是操作系统中用于域名解析的重要配置文件。它的主要作用是将常用的网址域名与其对应的IP地址建立关联，以便在用户输入网址时，系统能够快速找到对应的IP地址。如果不配置这一步，可能会在网络变更时出现应用无法启动等问题</p>
+</blockquote>
+<p>打开hosts文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1123,10 +1126,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>如果系统有一个永久的 IP 地址，请使用这个永久的 IP 地址而不是 <code>127.0.1.1</code></p>
+<p>如果系统有一个永久的 IP 地址，应该使用这个永久的 IP 地址而不是 <code>127.0.1.1</code></p>
 </blockquote>
 <img src="25.jpg" style="width: 100%;" />
-<p>确认无误后，按<code>Ctrl + X</code>，输入<code>y</code>，回车再退出</p>
+<p>按 <code>Esc</code>，输入 <code>:wq</code> 保存退出</p>
 <h3 id="本地化与时区">本地化与时区
 </h3><p>编辑<code>locale.gen</code>文件</p>
 <div class="highlight"><div class="chroma">
@@ -1137,7 +1140,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/locale.gen
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>将下面几项的注释删除</p>
+</div><p>将下面几项的注释删除，这一步是将英文，简体中文和繁体中文添加到本地</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1159,7 +1162,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">locale-gen
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>将区域信息写入<code>locale-conf</code>文件</p>
+</div><p>将区域信息写入<code>locale.conf</code>文件</p>
 <blockquote>
 <p>locale-conf是全局设置，这是为了使命令行显示英文，以防汉化在命令行显示乱码，LANG的值必须是上一步已经设置过的值</p>
 </blockquote>
@@ -1282,7 +1285,7 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">os-prober
-</span></span><span class="line"><span class="cl">blkid /dev/nume0n1p1
+</span></span><span class="line"><span class="cl">blkid /dev/nvme0n1p1
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="34.jpg" style="width: 100%;" />
@@ -1633,7 +1636,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">18</span> 
       篇 ，总计 
-      <span class="number-highlight">56.68</span> 
+      <span class="number-highlight">56.77</span> 
       k 字
   </div>
   <div>
