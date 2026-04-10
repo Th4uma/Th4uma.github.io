@@ -19,13 +19,13 @@
 &lt;h2 id=&#34;准备&#34;&gt;准备
 &lt;/h2&gt;&lt;h3 id=&#34;确定电脑启动类型&#34;&gt;确定电脑启动类型
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;电脑启动类型分为传统BIOS和UEFI。双系统推荐UEFI/GPT，不推荐BIOS/MBR，因为引导容易出问题。Win11只支持UEFI启动，如果是老设备，可能还是Legecy&lt;/p&gt;
+&lt;p&gt;电脑启动类型分为传统BIOS和UEFI。双系统推荐UEFI/GPT，不推荐BIOS/MBR，因为引导容易出问题。Win11只支持UEFI启动，如果是老设备，可能还是Legacy&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;按下&lt;code&gt;Win+R&lt;/code&gt;，输入&lt;code&gt;msinfo32&lt;/code&gt;后回车打开系统信息，查看&lt;code&gt;BIOS模式&lt;/code&gt;是&lt;code&gt;UEFI&lt;/code&gt;还是&lt;code&gt;Legacy&lt;/code&gt;，后面的操作都基于&lt;code&gt;UEFI&lt;/code&gt;进行&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;设置-windows-时区偏移&#34;&gt;设置 Windows 时区偏移
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows默认使用本地时间，而Linux默认使用UTC，这会导致两个系统的时间对不上。解决办法是在Windows里将硬件时间设置为UTC&lt;/p&gt;
+&lt;p&gt;Windows默认将硬件时钟当作本地时间，而Linux默认按UTC解释硬件时钟，这会导致双系统时间错乱。解决办法是在Windows里将硬件时间设置为UTC&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;管理员权限运行PowerShell，执行下面的命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -57,7 +57,7 @@
 &lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;禁用快速启动和安全启动&#34;&gt;禁用快速启动和安全启动
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区， EFI 系统分区可能被破坏，因此需要禁用快速启动。ArchLinux也不支持安全启动，需要一并禁用&lt;/p&gt;
+&lt;p&gt;Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区，可能导致NTFS分区处于未完全关闭状态，从而在Linux中挂载时报错甚至损坏数据，因此需要禁用快速启动。默认安装的Arch Linux未配置Secure Boot，因此需要关闭，或者自行额外配置&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;，并将休眠关闭&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -73,7 +73,7 @@
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载Arch Linux的&lt;a class=&#34;link&#34; href=&#34;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;系统镜像&lt;/a&gt;X86 64版本&lt;/p&gt;
+    &gt;系统镜像&lt;/a&gt;X86  64版本&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.ventoy.net/cn/download.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -174,7 +174,7 @@
 &lt;/div&gt;&lt;img src=&#34;12.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;再重新进入 &lt;code&gt;iwctl&lt;/code&gt;，连接 WIFI。&lt;code&gt;device&lt;/code&gt; 需要替换成电脑网卡的设备名，&lt;code&gt;SSID&lt;/code&gt; 需要替换成想连接的 WiFi 名&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注意：shell不能识别中文，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，若有空格需要用双引号包裹。如果不符合命名规范，修改后等待信息刷新，重新连接即可&lt;/p&gt;
+&lt;p&gt;注意：安装环境下shell不能识别中文，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，若有空格需要用双引号包裹。如果不符合命名规范，修改后等待信息刷新，重新连接即可&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -196,7 +196,16 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;如果已连接上网络，输出会像下图一样是一些延迟数据，否则就是没有连接成功或者网络不可用。按&lt;code&gt;Ctrl+C&lt;/code&gt;终止&lt;/p&gt;
 &lt;img src=&#34;13.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;输入下面的命令检查时间同步服务。&lt;code&gt;NTP service&lt;/code&gt;显示为&lt;code&gt;active&lt;/code&gt;状态说明服务正常运行，正确的系统时间对于安装部分软件包是必须的&lt;/p&gt;
+&lt;p&gt;输入下面的命令开启时间同步&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timedatectl set-ntp true
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;检查时间同步服务。&lt;code&gt;NTP service&lt;/code&gt;显示为&lt;code&gt;active&lt;/code&gt;状态说明服务正常运行，如果显示&lt;code&gt;inactive&lt;/code&gt;，就是没有正常运行。正确的系统时间对于安装部分软件包是必须的&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -206,17 +215,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;14.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;如果显示&lt;code&gt;inactive&lt;/code&gt;，说明没有正常运行，输入下面的命令开启&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timedatectl set-ntp true
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;timedatectl&lt;/code&gt; 的 NTP 同步依赖于网络。如果 &lt;code&gt;ping&lt;/code&gt; 不通，这个服务即便显示 &lt;code&gt;active&lt;/code&gt;，时间也可能无法同步成功。建议在检查时多看一眼 &lt;code&gt;System clock synchronized: yes&lt;/code&gt; 这一行&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;timedatectl&lt;/code&gt; 的 NTP 同步依赖于网络。如果 &lt;code&gt;ping&lt;/code&gt; 不通，这个服务即便显示 &lt;code&gt;active&lt;/code&gt;，时间也可能无法同步成功。建议检查一下&lt;code&gt;System clock synchronized: yes&lt;/code&gt; 这一行&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;磁盘分区与挂载&#34;&gt;磁盘分区与挂载
 &lt;/h2&gt;&lt;p&gt;这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置&lt;/p&gt;
@@ -256,14 +256,14 @@
 &lt;p&gt;&lt;strong&gt;btrfs子卷&lt;/strong&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;由于我选择了 &lt;strong&gt;btrfs&lt;/strong&gt; 作为根分区的格式，因此可以利用子卷这个功能来实现分区隔离。类似在根分区这个大分区中划出多个小分区。&lt;/p&gt;
-&lt;p&gt;与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时，重装系统时只需格式化 &lt;code&gt;@&lt;/code&gt; 子卷， &lt;code&gt;@home&lt;/code&gt; 数据依然会被完整保留。&lt;/p&gt;
+&lt;p&gt;与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时重装系统时只需格式化 &lt;code&gt;@&lt;/code&gt; 子卷， &lt;code&gt;@home&lt;/code&gt; 数据依然会被完整保留。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;@&lt;/strong&gt;： 这是挂载为根目录 &lt;code&gt;/&lt;/code&gt; 的子卷，用于存放操作系统文件。在 btrfs 架构中，一般将系统文件放在独立的 &lt;code&gt;@&lt;/code&gt; 子卷中，系统崩溃时可以方便地进行快照还原，而不会影响到其他子卷。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;@home&lt;/strong&gt;： 这是挂载为 &lt;code&gt;/home&lt;/code&gt; 的子卷，用于存放个人数据、配置文件和下载内容，类似Windows的D盘&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;@home&lt;/strong&gt;： 这是挂载为 &lt;code&gt;/home&lt;/code&gt; 的子卷，用于存放个人数据、配置文件和下载内容，与系统文件分离，方便重装系统时保留个人文件&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;@swap&lt;/strong&gt; (可选)：如果你没有划分独立的物理交换分区，也可以在 btrfs 分区内创建一个子卷来存放交换文件&lt;/p&gt;
@@ -301,7 +301,7 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;在 Live USB安装环境中，内存系统已经有了一个自己的根目录 &lt;code&gt;/&lt;/code&gt;。如果直接把硬盘分区挂载到 &lt;code&gt;/&lt;/code&gt;，会覆盖掉安装环境正在运行的文件，导致系统崩溃。&lt;/p&gt;
+&lt;p&gt;在Live USB安装环境中，内存系统已经有了一个自己的根目录 &lt;code&gt;/&lt;/code&gt;。如果直接把硬盘分区挂载到 &lt;code&gt;/&lt;/code&gt;，会覆盖掉安装环境正在运行的文件，导致系统崩溃。&lt;/p&gt;
 &lt;p&gt;因此，安装环境提供了一个名为 &lt;code&gt;/mnt&lt;/code&gt; 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;分区操作&#34;&gt;分区操作
@@ -382,7 +382,11 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;btrfs subvolume create /mnt/@home
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;创建@swap子卷作为swap目录(如果有swap分区就不需要)&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;创建@swap子卷作为swap目录&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果使用swap分区，则不需要@swap子卷
+如果使用swap文件，则需要创建@swap子卷并在其中创建swapfile&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -413,6 +417,9 @@
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;此时正在使用的是 Live USB 环境，&lt;code&gt;/mnt&lt;/code&gt; 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有&lt;code&gt;/mnt&lt;/code&gt;，而当安装完成进入新系统的时候，这个目录就会消失&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;挂载分区一定要遵循顺序，先挂载根分区到 &lt;code&gt;/mnt&lt;/code&gt;，再挂载引导分区到 &lt;code&gt;/mnt/boot&lt;/code&gt; ，最后再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;挂载根目录&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -420,6 +427,17 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd,subvol=@ /dev/nvme1n1p3 /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;创建&lt;code&gt;/boot&lt;/code&gt;目录并挂载EFI分区&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /mnt/boot 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/nvme1n1p5 /mnt/boot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;挂载家目录&lt;/p&gt;
@@ -438,17 +456,6 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -o subvol=@swap,noatime /dev/nvme1n1p3 /mnt/swap --mkdir
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;创建&lt;code&gt;/boot&lt;/code&gt;目录并挂载EFI分区&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /mnt/boot 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount /dev/nvme1n1p5 /mnt/boot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;启用&lt;code&gt;swap&lt;/code&gt;分区&lt;/p&gt;
@@ -545,17 +552,17 @@
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;系统的核心引擎&lt;/td&gt;
+          &lt;td&gt;主线内核&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-zen&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;Linux 内核&lt;/td&gt;
+          &lt;td&gt;提供长期支持版本&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-lts&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;Linux 内核&lt;/td&gt;
+          &lt;td&gt;偏向性能优化&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-firmware&lt;/strong&gt;&lt;/td&gt;
@@ -597,7 +604,7 @@
 &lt;blockquote&gt;
 &lt;p&gt;linux内核可以安装多个，如果某一个内核崩溃可以随时切换&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;输入下面的命令进行安装，pacstrap是Linux系统中的包管理器，可以自动完成配置&lt;/p&gt;
+&lt;p&gt;输入下面的命令进行安装，pacstrap是用于将基础系统安装到目标目录的工具，底层调用pacman，可以自动完成配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -620,7 +627,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;genfstab -U /mnt &amp;gt; /mnt/etc/fstab
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;检查一下是否创建成功。由于使用了子卷和压缩，生成的 &lt;code&gt;fstab&lt;/code&gt; 中会自动包含 &lt;code&gt;subvol=@&lt;/code&gt; 和 &lt;code&gt;compress=zstd&lt;/code&gt; 等参数&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;执行之后，一定要检查 &lt;code&gt;/mnt/etc/fstab&lt;/code&gt;。Btrfs 的子卷挂载在 &lt;code&gt;fstab&lt;/code&gt; 里，如果没写对，重启后系统会挂载物理分区的根，导致找不到 &lt;code&gt;/home&lt;/code&gt; 里的数据。这里由于使用了子卷和压缩，生成的 &lt;code&gt;fstab&lt;/code&gt; 中会自动包含 &lt;code&gt;subvol=@&lt;/code&gt; 和 &lt;code&gt;compress=zstd&lt;/code&gt; 等参数&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -642,7 +649,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，比如设置密码或安装引导程序，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复&lt;/p&gt;
+&lt;p&gt;arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;用户与权限&#34;&gt;用户与权限
 &lt;/h3&gt;&lt;p&gt;目前登陆的用户是root，设置该用户的密码&lt;/p&gt;
@@ -749,7 +756,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/locale.gen
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;将下面几项的注释删除，这一步是将英文，简体中文和繁体中文添加到本地&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;将下面几项的注释删除&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -762,7 +769,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;zh_TW.UTF-8 UTF-8
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;刷新区域信息&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;让系统生成这些语言环境的数据&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -771,9 +778,9 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;locale-gen
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;将区域信息写入&lt;code&gt;locale.conf&lt;/code&gt;文件&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;设置系统默认语言&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;locale-conf是全局设置，这是为了使命令行显示英文，以防汉化在命令行显示乱码，LANG的值必须是上一步已经设置过的值&lt;/p&gt;
+&lt;p&gt;locale-conf是全局设置，设置成英文是为了避免部分程序或终端在中文环境下显示异常，且系统的日志会用英文显示，这样更容易判断和处理问题。LANG的值必须是上一步已经设置过的值&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -784,7 +791,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;37.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;设置时区为亚洲上海&lt;/p&gt;
+&lt;p&gt;设置系统时区为亚洲上海，并把当前系统时间写入硬件时钟&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -795,8 +802,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hwclock --systohc
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;grub引导配置&#34;&gt;GRUB引导配置
-&lt;/h2&gt;&lt;h3 id=&#34;基本配置&#34;&gt;基本配置
+&lt;/div&gt;&lt;h2 id=&#34;安装引导程序&#34;&gt;安装引导程序
+&lt;/h2&gt;&lt;p&gt;这是安装的最后一步也是关键的一步，必须正确安装好引导加载程序后再重新启动，否则重启后将无法正常进入 Arch Linux 系统&lt;/p&gt;
+&lt;h3 id=&#34;基本配置&#34;&gt;基本配置
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -827,12 +835,13 @@
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;p&gt;调用 GRUB 的安装工具，把引导文件写到磁盘，指定目标平台64位 UEFI 固件，指定EFI分区的挂载点并设置启动项名字&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;install&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x86_64&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;directory&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bootloader&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Arch&lt;/span&gt;\ &lt;span class=&#34;n&#34;&gt;Linux&lt;/span&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;install&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x86_64&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;directory&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;boot&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bootloader&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;recheck&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;27.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -852,10 +861,19 @@
 &lt;ul&gt;
 &lt;li&gt;启用&lt;code&gt;os-prober&lt;/code&gt;：&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;code&gt;GRUB_DISABLE_OS_PROBER=false&lt;/code&gt;取消注释，这是为了探测硬盘上的Windows启动项&lt;/p&gt;
+&lt;p&gt;Arch 默认是关闭 os-prober 的。将&lt;code&gt;GRUB_DISABLE_OS_PROBER=false&lt;/code&gt;取消注释，这是为了探测硬盘上的Windows启动项&lt;/p&gt;
 &lt;img src=&#34;29.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;把os-prober的位置提前，使引导界面中Windows排在第一位，Linux排在第二位&lt;/p&gt;
+&lt;p&gt;把os-prober中的位置提前，使引导界面中Windows排在第一位，Linux排在第二位，这里数字越小显示越靠前&lt;/p&gt;
+&lt;p&gt;或者：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GRUB_TOP_LEVEL=&amp;#34;/boot/vmlinuz-linux&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -872,7 +890,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;30.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;生成grub配置文件&lt;/p&gt;
+&lt;p&gt;生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含可以跳过下一步&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -882,28 +900,34 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;31.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;将windows加入引导项&#34;&gt;将Windows加入引导项
-&lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;经过刚刚的设置后，引导选择界面应该有3个选项，Arch Linux、Linux内核选择、Windows的Bios，但没有Windows，这一步是将Windows加入引导界面，使开机后可以自由选择进入的系统&lt;/p&gt;
+&lt;h3 id=&#34;os-prober-未检测到-windows的解决方法&#34;&gt;os-prober 未检测到 Windows的解决方法
+&lt;/h3&gt;&lt;p&gt;经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Linux内核选择、Windows的Bios、Windows，如果没有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;确保 &lt;code&gt;/etc/default/grub&lt;/code&gt; 中 &lt;code&gt;GRUB_DISABLE_OS_PROBER&lt;/code&gt; 未设置为 &lt;code&gt;true&lt;/code&gt;，并重新生成配置&lt;/li&gt;
+&lt;li&gt;安装 &lt;code&gt;ntfs-3g&lt;/code&gt;：&lt;code&gt;pacman -S ntfs-3g&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果依旧没有作用，按照下面的步骤配置：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意：此步骤修改的是grub的配置文件，修改后重新生成配置会导致修改被覆盖&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;查看Windows的EFI分区信息，记住这里的UUID&lt;/p&gt;
+&lt;p&gt;查看Windows的EFI分区信息，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;os-prober
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;blkid /dev/nvme0n1p1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;blkid /dev/nvme0n1p1
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;34.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;输入命令打开文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /boot/grub/grub.cfg
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;找到下面两行内容&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -917,7 +941,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;36.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;在这两行中间加入下面的代码并保存，Windows启动项就被加入引导界面了&lt;/p&gt;
+&lt;p&gt;在这两行中间加入下面的代码并保存，Windows启动项就被添加到引导界面了&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -933,14 +957,27 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;insmod&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;part_gpt&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;insmod&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fat&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;insmod&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;chain&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;search&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;uuid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;no&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;floppy&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;刚才查看的&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UUID&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;search&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;uuid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;no&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;floppy&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;root&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;刚才查看的&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UUID&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;chainloader&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;$&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;EFI&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Microsoft&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Boot&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bootmgfw&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;35.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;后续&#34;&gt;后续
-&lt;/h2&gt;&lt;p&gt;到了这一步ArchLinux就安装成功了，首先输入&lt;code&gt;exit&lt;/code&gt;退出chroot，&lt;code&gt;reboot&lt;/code&gt;重启并检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;到了这一步ArchLinux就安装成功了，首先退出chroot，&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;exit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount -R /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常&lt;/p&gt;
 &lt;h3 id=&#34;联网&#34;&gt;联网
 &lt;/h3&gt;&lt;p&gt;启动联网服务，并设为开机自启&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -971,17 +1008,60 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;连接好后用&lt;code&gt;ping&lt;/code&gt;命令测试网络&lt;/p&gt;
 &lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;并行下载&#34;&gt;并行下载
-&lt;/h3&gt;&lt;p&gt;编辑&lt;code&gt;/etc/pacman.conf&lt;/code&gt;，将&lt;code&gt;#ParallelDownloads = 5&lt;/code&gt;行取消注释，并把5改成20&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;h3 id=&#34;安装显卡驱动&#34;&gt;安装显卡驱动
+&lt;/h3&gt;&lt;h3 id=&#34;安装gui&#34;&gt;安装GUI
+&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.conf
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S gnome gnome-tweaks
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/div&gt;&lt;p&gt;nvidia显卡的驱动可以之后再安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl enable gdm
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;linux常用命令&#34;&gt;Linux常用命令
+&lt;/h2&gt;&lt;p&gt;&lt;code&gt;ls&lt;/code&gt; ：列出目录内容
+&lt;code&gt;cd 目录&lt;/code&gt; ：切换工作目录
+&lt;code&gt;pwd&lt;/code&gt; ：显示当前路径
+&lt;code&gt;cp 源 目标&lt;/code&gt; ：复制文件或目录
+&lt;code&gt;mv 源 目标&lt;/code&gt; ：移动或重命名文件
+&lt;code&gt;rm 文件&lt;/code&gt; ：删除文件或目录
+&lt;code&gt;mkdir 目录名&lt;/code&gt; ：创建目录
+&lt;code&gt;rmdir 目录名&lt;/code&gt; ：删除空目录
+&lt;code&gt;pacman -S 包名&lt;/code&gt; ：安装软件
+&lt;code&gt;pacman -Syu&lt;/code&gt; ：更新系统
+&lt;code&gt;pacman -Rns 包名&lt;/code&gt; ：卸载软件及依赖配置
+&lt;code&gt;pacman -Ss 关键词&lt;/code&gt; ：搜索软件
+&lt;code&gt;ps&lt;/code&gt; ：查看进程
+&lt;code&gt;top&lt;/code&gt; ：实时查看进程和资源占用
+&lt;code&gt;kill PID&lt;/code&gt; ：结束进程
+&lt;code&gt;free -h&lt;/code&gt; ：查看内存使用情况
+&lt;code&gt;uname -a&lt;/code&gt; ：查看系统信息
+&lt;code&gt;df -h&lt;/code&gt; ：查看磁盘空间
+&lt;code&gt;du -sh 目录&lt;/code&gt; ：查看目录占用大小
+&lt;code&gt;lsblk&lt;/code&gt; ：查看磁盘和分区
+&lt;code&gt;grep 关键词 文件&lt;/code&gt; ：搜索文本内容
+&lt;code&gt;find 路径 条件&lt;/code&gt; ：查找文件
+&lt;code&gt;which 命令&lt;/code&gt; ：查找命令路径
+&lt;code&gt;tar -xvf 文件.tar&lt;/code&gt; ：解包
+&lt;code&gt;tar -cvf 文件.tar 目录&lt;/code&gt; ：打包
+&lt;code&gt;gzip 文件&lt;/code&gt; ：压缩文件
+&lt;code&gt;gunzip 文件.gz&lt;/code&gt; ：解压
+&lt;code&gt;systemctl status 服务&lt;/code&gt; ：查看服务状态
+&lt;code&gt;systemctl start 服务&lt;/code&gt; ：启动服务
+&lt;code&gt;systemctl enable 服务&lt;/code&gt; ：开机自启
+&lt;code&gt;ip a&lt;/code&gt; ：查看网络信息&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;安装指南 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://silvertuanzi.github.io/2025/02/10/windows-with-arch/#&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -990,8 +1070,8 @@
     &gt;Arch Linux + Windows 双系统安装教程&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV1XY4y1f77S/?spm_id_from=333.1391.0.0&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;【超简单】Windows+Arch Linux双系统双磁盘方案，全程不废话_哔哩哔哩_bilibili&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://coast23.github.io/2025/04/29/%e5%ae%89%e8%a3%85-Arch-Win11-%e5%8f%8c%e7%b3%bb%e7%bb%9f%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;安装 Arch + Win11 双系统过程记录 | Coast23&amp;rsquo;s Blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://geek-blogs.com/blog/arch-linux-os-prober/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Arch Linux 中的 os-prober：深度解析与实践指南 — geek-blogs.com&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         
