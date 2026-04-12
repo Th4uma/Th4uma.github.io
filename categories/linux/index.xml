@@ -151,7 +151,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;我在这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态&lt;/p&gt;
+&lt;p&gt;这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;如果报错 &lt;code&gt;No station on device: &#39;wlan0&#39;&lt;/code&gt; ，可以检查 &lt;code&gt;device&lt;/code&gt; 的 &lt;code&gt;Powered&lt;/code&gt; 状态，如果是 &lt;code&gt;off&lt;/code&gt;，需要&lt;code&gt;Ctrl+c&lt;/code&gt; 退出 iwctl，再通过下面的命令将&lt;code&gt;wlan0&lt;/code&gt;的电源打开&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -300,10 +300,6 @@
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;blockquote&gt;
-&lt;p&gt;在Live USB安装环境中，内存系统已经有了一个自己的根目录 &lt;code&gt;/&lt;/code&gt;。如果直接把硬盘分区挂载到 &lt;code&gt;/&lt;/code&gt;，会覆盖掉安装环境正在运行的文件，导致系统崩溃。&lt;/p&gt;
-&lt;p&gt;因此，安装环境提供了一个名为 &lt;code&gt;/mnt&lt;/code&gt; 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现&lt;/p&gt;
-&lt;/blockquote&gt;
 &lt;h3 id=&#34;分区操作&#34;&gt;分区操作
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，所以下面的命令需要以自己磁盘的序号为准&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
@@ -415,11 +411,10 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;挂载&#34;&gt;挂载
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;此时正在使用的是 Live USB 环境，&lt;code&gt;/mnt&lt;/code&gt; 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有&lt;code&gt;/mnt&lt;/code&gt;，而当安装完成进入新系统的时候，这个目录就会消失&lt;/p&gt;
+&lt;p&gt;在Live USB安装环境中，内存系统已经有了一个自己的根目录 &lt;code&gt;/&lt;/code&gt;。如果直接把硬盘分区挂载到 &lt;code&gt;/&lt;/code&gt;，会覆盖掉安装环境正在运行的文件，导致系统崩溃。&lt;/p&gt;
+&lt;p&gt;因此，安装环境提供了一个名为 &lt;code&gt;/mnt&lt;/code&gt; 的空目录作为临时挂载点，&lt;code&gt;/mnt&lt;/code&gt; 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有&lt;code&gt;/mnt&lt;/code&gt;，而当安装完成进入新系统的时候，这个目录就会消失&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;blockquote&gt;
-&lt;p&gt;挂载分区一定要遵循顺序，先挂载根分区到 &lt;code&gt;/mnt&lt;/code&gt;，再挂载引导分区到 &lt;code&gt;/mnt/boot&lt;/code&gt; ，最后再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意：挂载分区一定要遵循顺序，先挂载根分区到 &lt;code&gt;/mnt&lt;/code&gt;，再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;挂载根目录&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -444,9 +439,11 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home --mkdir
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mkdir -p /mnt/home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;挂载swap子卷(可选)&lt;/p&gt;
@@ -481,7 +478,7 @@
 &lt;/div&gt;&lt;h2 id=&#34;系统安装&#34;&gt;系统安装
 &lt;/h2&gt;&lt;h3 id=&#34;禁用reflector&#34;&gt;禁用Reflector
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿&lt;/p&gt;
+&lt;p&gt;Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但都在国外，由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;禁用服务&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -502,7 +499,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;21.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;更换软件源&#34;&gt;更换软件源
+&lt;h3 id=&#34;更换源&#34;&gt;更换源
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -515,7 +512,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.d/mirrorlist
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在文件第一行插入清华源&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在文件第一行插入清华源，按i进行编辑&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Pacman 会从上到下尝试，第一行成功后就不会再找后面的&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -557,12 +554,12 @@
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-zen&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;提供长期支持版本&lt;/td&gt;
+          &lt;td&gt;偏向性能优化&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-lts&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;偏向性能优化&lt;/td&gt;
+          &lt;td&gt;提供长期支持版本&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;linux-firmware&lt;/strong&gt;&lt;/td&gt;
@@ -610,7 +607,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacstrap -K /mnt base base-devel linux linux-firmware nano vim bash-completion networkmanager btrfs-progs intel-ucode ntfs-3g
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacstrap -K /mnt base base-devel linux linux-firmware nano vim bash-completion networkmanager btrfs-progs intel-ucode ntfs-3g
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;23.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -706,6 +703,9 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;26.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;然后&lt;code&gt;Esc&lt;/code&gt;退出编辑模式，&lt;code&gt;:wq&lt;/code&gt;保存退出&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里如果报错，可以尝试:q!退出，然后用visudo来编辑&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;为电脑设置主机名，注意名字不能包含空格和特殊符号&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -845,11 +845,11 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;27.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-编辑`/etc/default/grub`：
+编辑 `/etc/default/grub`
 &lt;ul&gt;
 &lt;li&gt;将grub的语言设置为英文：&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;在文件添加一行&lt;code&gt;LANG=C&lt;/code&gt;，这是为了防止只有一部分有翻译，显示混乱的情况&lt;/p&gt;
+&lt;p&gt;在文件顶端添加一行&lt;code&gt;LANG=C&lt;/code&gt;，这是为了防止只有一部分有翻译，显示混乱的情况&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;让grub记住上次选择的选项：&lt;/li&gt;
 &lt;/ul&gt;
@@ -864,16 +864,7 @@
 &lt;p&gt;Arch 默认是关闭 os-prober 的。将&lt;code&gt;GRUB_DISABLE_OS_PROBER=false&lt;/code&gt;取消注释，这是为了探测硬盘上的Windows启动项&lt;/p&gt;
 &lt;img src=&#34;29.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;把os-prober中的位置提前，使引导界面中Windows排在第一位，Linux排在第二位，这里数字越小显示越靠前&lt;/p&gt;
-&lt;p&gt;或者：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GRUB_TOP_LEVEL=&amp;#34;/boot/vmlinuz-linux&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -890,7 +881,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;30.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含可以跳过下一步&lt;/p&gt;
+&lt;p&gt;生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含说明一切正常&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -900,17 +891,34 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;31.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;到了这一步ArchLinux就安装成功了，首先退出chroot，&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;exit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount -R /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常，这种情况可以跳过下一步直接来到&lt;a class=&#34;link&#34; href=&#34;#%e5%90%8e%e7%bb%ad&#34; &gt;后续&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;os-prober-未检测到-windows的解决方法&#34;&gt;os-prober 未检测到 Windows的解决方法
-&lt;/h3&gt;&lt;p&gt;经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Linux内核选择、Windows的Bios、Windows，如果没有：&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Advanced options for Arch Linux、UEFI Firmware Settings、Windows，如果没有：&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;确保 &lt;code&gt;/etc/default/grub&lt;/code&gt; 中 &lt;code&gt;GRUB_DISABLE_OS_PROBER&lt;/code&gt; 未设置为 &lt;code&gt;true&lt;/code&gt;，并重新生成配置&lt;/li&gt;
 &lt;li&gt;安装 &lt;code&gt;ntfs-3g&lt;/code&gt;：&lt;code&gt;pacman -S ntfs-3g&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;重新生成：&lt;code&gt;grub-mkconfig -o /boot/grub/grub.cfg&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;如果依旧没有作用，按照下面的步骤配置：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：此步骤修改的是grub的配置文件，修改后重新生成配置会导致修改被覆盖&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;查看Windows的EFI分区信息，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上&lt;/p&gt;
+&lt;p&gt;查看Windows的EFI分区信息，nvme0n1p1替换为自己电脑efi分区的盘符，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -964,20 +972,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;35.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;后续&#34;&gt;后续
-&lt;/h2&gt;&lt;p&gt;到了这一步ArchLinux就安装成功了，首先退出chroot，&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;exit
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount -R /mnt
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;启动后先使用root用户登录&lt;/p&gt;
 &lt;h3 id=&#34;联网&#34;&gt;联网
 &lt;/h3&gt;&lt;p&gt;启动联网服务，并设为开机自启&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1008,59 +1003,349 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;连接好后用&lt;code&gt;ping&lt;/code&gt;命令测试网络&lt;/p&gt;
 &lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;安装显卡驱动&#34;&gt;安装显卡驱动
-&lt;/h3&gt;&lt;h3 id=&#34;安装gui&#34;&gt;安装GUI
-&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;h3 id=&#34;dns服务配置&#34;&gt;DNS服务配置
+&lt;/h3&gt;&lt;p&gt;NetworkManager 默认自带的 DNS 管理功能较为简单，可以开启 &lt;code&gt;systemd-resolved&lt;/code&gt; 配合使用，这也是很多发行版的默认方案：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S gnome gnome-tweaks
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl enable --now systemd-resolved.service
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;nvidia显卡的驱动可以之后再安装&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;接下来设置配置文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;检查一下符号链接是否正常：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /etc/resolv.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;应该见到类似这样的输出：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;前面是各种权限和日期信息&amp;gt; /etc/resolv.conf -&amp;gt; ../run/systemd/resolve/stub-resolv.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果符号链接正确，那 &lt;code&gt;systemd-resolved&lt;/code&gt; 就应该被正确启用了，随后重启来开启服务&lt;/p&gt;
+&lt;h3 id=&#34;添加软件源&#34;&gt;添加软件源
+&lt;/h3&gt;&lt;p&gt;编辑 pacman.conf 文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在文件末尾添加以下内容：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl enable gdm
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[archlinuxcn]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;linux常用命令&#34;&gt;Linux常用命令
-&lt;/h2&gt;&lt;p&gt;&lt;code&gt;ls&lt;/code&gt; ：列出目录内容
-&lt;code&gt;cd 目录&lt;/code&gt; ：切换工作目录
-&lt;code&gt;pwd&lt;/code&gt; ：显示当前路径
-&lt;code&gt;cp 源 目标&lt;/code&gt; ：复制文件或目录
-&lt;code&gt;mv 源 目标&lt;/code&gt; ：移动或重命名文件
-&lt;code&gt;rm 文件&lt;/code&gt; ：删除文件或目录
-&lt;code&gt;mkdir 目录名&lt;/code&gt; ：创建目录
-&lt;code&gt;rmdir 目录名&lt;/code&gt; ：删除空目录
-&lt;code&gt;pacman -S 包名&lt;/code&gt; ：安装软件
-&lt;code&gt;pacman -Syu&lt;/code&gt; ：更新系统
-&lt;code&gt;pacman -Rns 包名&lt;/code&gt; ：卸载软件及依赖配置
-&lt;code&gt;pacman -Ss 关键词&lt;/code&gt; ：搜索软件
-&lt;code&gt;ps&lt;/code&gt; ：查看进程
-&lt;code&gt;top&lt;/code&gt; ：实时查看进程和资源占用
-&lt;code&gt;kill PID&lt;/code&gt; ：结束进程
-&lt;code&gt;free -h&lt;/code&gt; ：查看内存使用情况
-&lt;code&gt;uname -a&lt;/code&gt; ：查看系统信息
-&lt;code&gt;df -h&lt;/code&gt; ：查看磁盘空间
-&lt;code&gt;du -sh 目录&lt;/code&gt; ：查看目录占用大小
-&lt;code&gt;lsblk&lt;/code&gt; ：查看磁盘和分区
-&lt;code&gt;grep 关键词 文件&lt;/code&gt; ：搜索文本内容
-&lt;code&gt;find 路径 条件&lt;/code&gt; ：查找文件
-&lt;code&gt;which 命令&lt;/code&gt; ：查找命令路径
-&lt;code&gt;tar -xvf 文件.tar&lt;/code&gt; ：解包
-&lt;code&gt;tar -cvf 文件.tar 目录&lt;/code&gt; ：打包
-&lt;code&gt;gzip 文件&lt;/code&gt; ：压缩文件
-&lt;code&gt;gunzip 文件.gz&lt;/code&gt; ：解压
-&lt;code&gt;systemctl status 服务&lt;/code&gt; ：查看服务状态
-&lt;code&gt;systemctl start 服务&lt;/code&gt; ：启动服务
-&lt;code&gt;systemctl enable 服务&lt;/code&gt; ：开机自启
-&lt;code&gt;ip a&lt;/code&gt; ：查看网络信息&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;把&lt;code&gt;multilib&lt;/code&gt;所在的两行注释，开启32位库的支持&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[multilib]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Include = /etc/pacman.d/mirrorlist
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;保存退出后然后安装 GPG key&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -Syy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S archlinuxcn-keyring
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;安装-yay&#34;&gt;安装 yay
+&lt;/h3&gt;&lt;p&gt;yay 是常用的 AUR 助手，可以方便安装社区软件。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S yay
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;避免使用 &lt;code&gt;sudo yay&lt;/code&gt;，保持普通用户执行&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;测试安装示例：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;yay -S google-chrome
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;安装gui&#34;&gt;安装GUI
+&lt;/h3&gt;&lt;p&gt;安装显示管理器和 X.Org&lt;/p&gt;
+&lt;p&gt;pacman -Sy&lt;/p&gt;
+&lt;p&gt;如果你想要一个图形化的桌面环境，那么你需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 &lt;a class=&#34;link&#34; href=&#34;https://link.zhihu.com/?target=http%3A//x.org/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;X.Org&lt;/a&gt;，你可以用下面的命令来安装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S xorg
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;关于桌面环境，生命在于折腾，我选择了kde&lt;/p&gt;
+&lt;p&gt;输入如下命令安装 SDDM 和 KDE Plasma 桌面和某些 KDE 基础组件：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;code&gt;1 &lt;/code&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;code&gt;pacman -S plasma sddm konsole dolphin ark gwenview &lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;网络 GUI（不然只能命令行连 WiFi）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S networkmanager network-manager-applet
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;字体（不然中文可能不正常）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;音频&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S pipewire pipewire-pulse wireplumber
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;一个浏览器（不然你进桌面啥也干不了）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S firefox
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;最关键一步（别忘了）&lt;/p&gt;
+&lt;p&gt;启用登录界面：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl enable sddm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;目前为止，KDE 默认使用的是 X11，Wayland 支持尚不完善。如果你想使用 Wayland，则需要安装 plasma-wayland，然后在 SDDM 登录时选择 Wayland 版本 Plasma。&lt;/p&gt;
+&lt;p&gt;输入如下命令安装 plasma-wayland：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;code&gt;1 &lt;/code&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;code&gt;pacman -S plasma-wayland &lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Copy&lt;/p&gt;
+&lt;p&gt;如果你使用 Nvida 显卡，则需要额外安装 egl-wayland：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;code&gt;1 &lt;/code&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;code&gt;pacman -S egl-wayland &lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Copy&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;输入如下命令设置 SDDM 开机自启：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;code&gt;1 &lt;/code&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;code&gt;systemctl enable sddm &lt;/code&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Copy&lt;/p&gt;
+&lt;p&gt;输入完命令后，下次开机会直接进入图形界面，而非命令行界面。完成安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S fastfetch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;fastfetch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;查看一下版本信息吧。&lt;/p&gt;
+&lt;h3 id=&#34;其他&#34;&gt;其他
+&lt;/h3&gt;&lt;p&gt;sudo pacman -S timeshift&lt;/p&gt;
+&lt;h2 id=&#34;linux常用命令&#34;&gt;Linux常用命令
+&lt;/h2&gt;&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;strong&gt;常用操作与管理&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;系统信息与网络&lt;/strong&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;文件与目录操作&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;系统信息&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;ls&lt;/code&gt;：列出目录内容&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;uname -a&lt;/code&gt;：查看系统信息&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;cd 目录&lt;/code&gt;：切换工作目录&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;df -h&lt;/code&gt;：查看磁盘空间&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;pwd&lt;/code&gt;：显示当前路径&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;du -sh 目录&lt;/code&gt;：查看目录占用大小&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;cp 源 目标&lt;/code&gt;：复制/目录&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;lsblk&lt;/code&gt;：查看磁盘和分区&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;mv 源 目标&lt;/code&gt;：移动/重命名&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;文件内容与搜索&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;rm 文件&lt;/code&gt;：删除文件/目录&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;grep 关键词 文件&lt;/code&gt;：搜索文本内容&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;mkdir 目录名&lt;/code&gt;：创建目录&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;find 路径 条件&lt;/code&gt;：查找文件&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;rmdir 目录名&lt;/code&gt;：删除空目录&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;which 命令&lt;/code&gt;：查找命令路径&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;软件包管理&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;压缩与解压&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;pacman -S 包名&lt;/code&gt;：安装软件&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;tar -xvf 文件.tar&lt;/code&gt;：解包&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;pacman -Syu&lt;/code&gt;：更新系统&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;tar -cvf 文件.tar&lt;/code&gt;：打包&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;pacman -Rns 包名&lt;/code&gt;：卸载软件&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;gzip 文件&lt;/code&gt;：压缩文件&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;pacman -Ss 关键词&lt;/code&gt;：搜索软件&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;gunzip 文件.gz&lt;/code&gt;：解压&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;进程管理&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;服务管理&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;ps&lt;/code&gt;：查看进程&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl status 服务&lt;/code&gt;：查看状态&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;top&lt;/code&gt;：实时查看进程/资源&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl start 服务&lt;/code&gt;：启动服务&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;kill PID&lt;/code&gt;：结束进程&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;systemctl enable 服务&lt;/code&gt;：开机自启&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;free -h&lt;/code&gt;：查看内存使用&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;网络相关&lt;/strong&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;ip a&lt;/code&gt;：查看网络信息&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;安装指南 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;

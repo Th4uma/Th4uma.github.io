@@ -301,7 +301,7 @@ unicode: "f6d2"
     <li><a href="#系统安装">系统安装</a>
       <ol>
         <li><a href="#禁用reflector">禁用Reflector</a></li>
-        <li><a href="#更换软件源">更换软件源</a></li>
+        <li><a href="#更换源">更换源</a></li>
         <li><a href="#安装软件包">安装软件包</a></li>
         <li><a href="#生成挂载表">生成挂载表</a></li>
       </ol>
@@ -322,8 +322,11 @@ unicode: "f6d2"
     <li><a href="#后续">后续</a>
       <ol>
         <li><a href="#联网">联网</a></li>
-        <li><a href="#安装显卡驱动">安装显卡驱动</a></li>
+        <li><a href="#dns服务配置">DNS服务配置</a></li>
+        <li><a href="#添加软件源">添加软件源</a></li>
+        <li><a href="#安装-yay">安装 yay</a></li>
         <li><a href="#安装gui">安装GUI</a></li>
+        <li><a href="#其他">其他</a></li>
       </ol>
     </li>
     <li><a href="#linux常用命令">Linux常用命令</a></li>
@@ -544,7 +547,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>我在这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态</p>
+<p>这里遇到了报错，原因是网卡被rfkill禁用，是关闭状态</p>
 </blockquote>
 <p>如果报错 <code>No station on device: 'wlan0'</code> ，可以检查 <code>device</code> 的 <code>Powered</code> 状态，如果是 <code>off</code>，需要<code>Ctrl+c</code> 退出 iwctl，再通过下面的命令将<code>wlan0</code>的电源打开</p>
 <div class="highlight"><div class="chroma">
@@ -693,10 +696,6 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
-<blockquote>
-<p>在Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
-<p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，仅用于安装过程，在安装好的新系统中不会出现</p>
-</blockquote>
 <h3 id="分区操作">分区操作
 </h3><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面的命令需要以自己磁盘的序号为准</strong></p>
 <blockquote>
@@ -808,11 +807,10 @@ unicode: "f6d2"
 </div>
 </div><h3 id="挂载">挂载
 </h3><blockquote>
-<p>此时正在使用的是 Live USB 环境，<code>/mnt</code> 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
+<p>在Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
+<p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，<code>/mnt</code> 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
 </blockquote>
-<blockquote>
-<p>挂载分区一定要遵循顺序，先挂载根分区到 <code>/mnt</code>，再挂载引导分区到 <code>/mnt/boot</code> ，最后再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题</p>
-</blockquote>
+<p><strong>注意：挂载分区一定要遵循顺序，先挂载根分区到 <code>/mnt</code>，再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题</strong></p>
 <p>挂载根目录</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -837,9 +835,11 @@ unicode: "f6d2"
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home --mkdir
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir -p /mnt/home
+</span></span><span class="line"><span class="cl">mount -t btrfs -o compress=zstd,subvol=@home /dev/nvme1n1p3 /mnt/home
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>挂载swap子卷(可选)</p>
@@ -874,7 +874,7 @@ unicode: "f6d2"
 </div><h2 id="系统安装">系统安装
 </h2><h3 id="禁用reflector">禁用Reflector
 </h3><blockquote>
-<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿</p>
+<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但都在国外，由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿</p>
 </blockquote>
 <p>禁用服务</p>
 <div class="highlight"><div class="chroma">
@@ -895,7 +895,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="21.jpg" style="width: 100%;" />
-<h3 id="更换软件源">更换软件源
+<h3 id="更换源">更换源
 </h3><blockquote>
 <p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
 </blockquote>
@@ -908,7 +908,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.d/mirrorlist
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在文件第一行插入清华源</p>
+</div><p>在文件第一行插入清华源，按i进行编辑</p>
 <blockquote>
 <p>Pacman 会从上到下尝试，第一行成功后就不会再找后面的</p>
 </blockquote>
@@ -950,12 +950,12 @@ unicode: "f6d2"
       <tr>
           <td><strong>linux-zen</strong></td>
           <td>Linux 内核</td>
-          <td>提供长期支持版本</td>
+          <td>偏向性能优化</td>
       </tr>
       <tr>
           <td><strong>linux-lts</strong></td>
           <td>Linux 内核</td>
-          <td>偏向性能优化</td>
+          <td>提供长期支持版本</td>
       </tr>
       <tr>
           <td><strong>linux-firmware</strong></td>
@@ -1003,7 +1003,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacstrap -K /mnt base base-devel linux linux-firmware nano vim bash-completion networkmanager btrfs-progs intel-ucode ntfs-3g
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pacstrap -K /mnt base base-devel linux linux-firmware nano vim bash-completion networkmanager btrfs-progs intel-ucode ntfs-3g
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="23.jpg" style="width: 100%;" />
@@ -1099,6 +1099,9 @@ unicode: "f6d2"
 </div>
 </div><img src="26.jpg" style="width: 100%;" />
 <p>然后<code>Esc</code>退出编辑模式，<code>:wq</code>保存退出</p>
+<blockquote>
+<p>这里如果报错，可以尝试:q!退出，然后用visudo来编辑</p>
+</blockquote>
 <p>为电脑设置主机名，注意名字不能包含空格和特殊符号</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1238,11 +1241,11 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="27.jpg" style="width: 100%;" />
-编辑`/etc/default/grub`：
+编辑 `/etc/default/grub`
 <ul>
 <li>将grub的语言设置为英文：</li>
 </ul>
-<p>在文件添加一行<code>LANG=C</code>，这是为了防止只有一部分有翻译，显示混乱的情况</p>
+<p>在文件顶端添加一行<code>LANG=C</code>，这是为了防止只有一部分有翻译，显示混乱的情况</p>
 <ul>
 <li>让grub记住上次选择的选项：</li>
 </ul>
@@ -1257,16 +1260,7 @@ unicode: "f6d2"
 <p>Arch 默认是关闭 os-prober 的。将<code>GRUB_DISABLE_OS_PROBER=false</code>取消注释，这是为了探测硬盘上的Windows启动项</p>
 <img src="29.jpg" style="width: 100%;" />
 <p>把os-prober中的位置提前，使引导界面中Windows排在第一位，Linux排在第二位，这里数字越小显示越靠前</p>
-<p>或者：</p>
 <div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">GRUB_TOP_LEVEL=&#34;/boot/vmlinuz-linux&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -1283,7 +1277,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="30.jpg" style="width: 100%;" />
-<p>生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含可以跳过下一步</p>
+<p>生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含说明一切正常</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1293,17 +1287,34 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="31.jpg" style="width: 100%;" />
+<p>到了这一步ArchLinux就安装成功了，首先退出chroot，<code>reboot</code>重启</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit
+</span></span><span class="line"><span class="cl">umount -R /mnt
+</span></span><span class="line"><span class="cl">reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常，这种情况可以跳过下一步直接来到<a class="link" href="#%e5%90%8e%e7%bb%ad" >后续</a></p>
 <h3 id="os-prober-未检测到-windows的解决方法">os-prober 未检测到 Windows的解决方法
-</h3><p>经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Linux内核选择、Windows的Bios、Windows，如果没有：</p>
+</h3><blockquote>
+<p>经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Advanced options for Arch Linux、UEFI Firmware Settings、Windows，如果没有：</p>
+</blockquote>
 <ul>
 <li>确保 <code>/etc/default/grub</code> 中 <code>GRUB_DISABLE_OS_PROBER</code> 未设置为 <code>true</code>，并重新生成配置</li>
 <li>安装 <code>ntfs-3g</code>：<code>pacman -S ntfs-3g</code></li>
+<li>重新生成：<code>grub-mkconfig -o /boot/grub/grub.cfg</code></li>
 </ul>
 <p>如果依旧没有作用，按照下面的步骤配置：</p>
 <blockquote>
 <p>注意：此步骤修改的是grub的配置文件，修改后重新生成配置会导致修改被覆盖</p>
 </blockquote>
-<p>查看Windows的EFI分区信息，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上</p>
+<p>查看Windows的EFI分区信息，nvme0n1p1替换为自己电脑efi分区的盘符，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1357,20 +1368,7 @@ unicode: "f6d2"
 </div>
 </div><img src="35.jpg" style="width: 100%;" />
 <h2 id="后续">后续
-</h2><p>到了这一步ArchLinux就安装成功了，首先退出chroot，<code>reboot</code>重启</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit
-</span></span><span class="line"><span class="cl">umount -R /mnt
-</span></span><span class="line"><span class="cl">reboot
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>检查启动项情况。如果前面的步骤没有出错，启动项选择界面可以看到有Windows和Linux，可以自主选择进入哪个系统，并且均运行正常</p>
+</h2><p>启动后先使用root用户登录</p>
 <h3 id="联网">联网
 </h3><p>启动联网服务，并设为开机自启</p>
 <div class="highlight"><div class="chroma">
@@ -1401,59 +1399,349 @@ unicode: "f6d2"
 </div>
 </div><p>连接好后用<code>ping</code>命令测试网络</p>
 <img src="33.jpg" style="width: 100%;" />
-<h3 id="安装显卡驱动">安装显卡驱动
-</h3><h3 id="安装gui">安装GUI
-</h3><div class="highlight"><div class="chroma">
+<h3 id="dns服务配置">DNS服务配置
+</h3><p>NetworkManager 默认自带的 DNS 管理功能较为简单，可以开启 <code>systemd-resolved</code> 配合使用，这也是很多发行版的默认方案：</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S gnome gnome-tweaks
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable --now systemd-resolved.service
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>nvidia显卡的驱动可以之后再安装</p>
+</div><p>接下来设置配置文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>检查一下符号链接是否正常：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ls -l /etc/resolv.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>应该见到类似这样的输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;前面是各种权限和日期信息&gt; /etc/resolv.conf -&gt; ../run/systemd/resolve/stub-resolv.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果符号链接正确，那 <code>systemd-resolved</code> 就应该被正确启用了，随后重启来开启服务</p>
+<h3 id="添加软件源">添加软件源
+</h3><p>编辑 pacman.conf 文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在文件末尾添加以下内容：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable gdm
-</span></span><span class="line"><span class="cl">reboot
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[archlinuxcn]
+</span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="linux常用命令">Linux常用命令
-</h2><p><code>ls</code> ：列出目录内容
-<code>cd 目录</code> ：切换工作目录
-<code>pwd</code> ：显示当前路径
-<code>cp 源 目标</code> ：复制文件或目录
-<code>mv 源 目标</code> ：移动或重命名文件
-<code>rm 文件</code> ：删除文件或目录
-<code>mkdir 目录名</code> ：创建目录
-<code>rmdir 目录名</code> ：删除空目录
-<code>pacman -S 包名</code> ：安装软件
-<code>pacman -Syu</code> ：更新系统
-<code>pacman -Rns 包名</code> ：卸载软件及依赖配置
-<code>pacman -Ss 关键词</code> ：搜索软件
-<code>ps</code> ：查看进程
-<code>top</code> ：实时查看进程和资源占用
-<code>kill PID</code> ：结束进程
-<code>free -h</code> ：查看内存使用情况
-<code>uname -a</code> ：查看系统信息
-<code>df -h</code> ：查看磁盘空间
-<code>du -sh 目录</code> ：查看目录占用大小
-<code>lsblk</code> ：查看磁盘和分区
-<code>grep 关键词 文件</code> ：搜索文本内容
-<code>find 路径 条件</code> ：查找文件
-<code>which 命令</code> ：查找命令路径
-<code>tar -xvf 文件.tar</code> ：解包
-<code>tar -cvf 文件.tar 目录</code> ：打包
-<code>gzip 文件</code> ：压缩文件
-<code>gunzip 文件.gz</code> ：解压
-<code>systemctl status 服务</code> ：查看服务状态
-<code>systemctl start 服务</code> ：启动服务
-<code>systemctl enable 服务</code> ：开机自启
-<code>ip a</code> ：查看网络信息</p>
+</div><p>把<code>multilib</code>所在的两行注释，开启32位库的支持</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[multilib]
+</span></span><span class="line"><span class="cl">Include = /etc/pacman.d/mirrorlist
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>保存退出后然后安装 GPG key</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -Syy
+</span></span><span class="line"><span class="cl">sudo pacman -S archlinuxcn-keyring
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装-yay">安装 yay
+</h3><p>yay 是常用的 AUR 助手，可以方便安装社区软件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S yay
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>避免使用 <code>sudo yay</code>，保持普通用户执行</p>
+</blockquote>
+<p>测试安装示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S google-chrome
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装gui">安装GUI
+</h3><p>安装显示管理器和 X.Org</p>
+<p>pacman -Sy</p>
+<p>如果你想要一个图形化的桌面环境，那么你需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 <a class="link" href="https://link.zhihu.com/?target=http%3A//x.org/"  target="_blank" rel="noopener"
+    >X.Org</a>，你可以用下面的命令来安装：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sudo pacman -S xorg
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关于桌面环境，生命在于折腾，我选择了kde</p>
+<p>输入如下命令安装 SDDM 和 KDE Plasma 桌面和某些 KDE 基础组件：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>1 </code></th>
+          <th><code>pacman -S plasma sddm konsole dolphin ark gwenview </code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>网络 GUI（不然只能命令行连 WiFi）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S networkmanager network-manager-applet
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>字体（不然中文可能不正常）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>音频</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S pipewire pipewire-pulse wireplumber
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一个浏览器（不然你进桌面啥也干不了）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S firefox
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最关键一步（别忘了）</p>
+<p>启用登录界面：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl enable sddm
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>目前为止，KDE 默认使用的是 X11，Wayland 支持尚不完善。如果你想使用 Wayland，则需要安装 plasma-wayland，然后在 SDDM 登录时选择 Wayland 版本 Plasma。</p>
+<p>输入如下命令安装 plasma-wayland：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>1 </code></th>
+          <th><code>pacman -S plasma-wayland </code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>Copy</p>
+<p>如果你使用 Nvida 显卡，则需要额外安装 egl-wayland：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>1 </code></th>
+          <th><code>pacman -S egl-wayland </code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>Copy</p>
+</blockquote>
+<p>输入如下命令设置 SDDM 开机自启：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>1 </code></th>
+          <th><code>systemctl enable sddm </code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>Copy</p>
+<p>输入完命令后，下次开机会直接进入图形界面，而非命令行界面。完成安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S fastfetch
+</span></span><span class="line"><span class="cl">fastfetch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看一下版本信息吧。</p>
+<h3 id="其他">其他
+</h3><p>sudo pacman -S timeshift</p>
+<h2 id="linux常用命令">Linux常用命令
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><strong>常用操作与管理</strong></th>
+          <th><strong>系统信息与网络</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>文件与目录操作</strong></td>
+          <td><strong>系统信息</strong></td>
+      </tr>
+      <tr>
+          <td><code>ls</code>：列出目录内容</td>
+          <td><code>uname -a</code>：查看系统信息</td>
+      </tr>
+      <tr>
+          <td><code>cd 目录</code>：切换工作目录</td>
+          <td><code>df -h</code>：查看磁盘空间</td>
+      </tr>
+      <tr>
+          <td><code>pwd</code>：显示当前路径</td>
+          <td><code>du -sh 目录</code>：查看目录占用大小</td>
+      </tr>
+      <tr>
+          <td><code>cp 源 目标</code>：复制/目录</td>
+          <td><code>lsblk</code>：查看磁盘和分区</td>
+      </tr>
+      <tr>
+          <td><code>mv 源 目标</code>：移动/重命名</td>
+          <td><strong>文件内容与搜索</strong></td>
+      </tr>
+      <tr>
+          <td><code>rm 文件</code>：删除文件/目录</td>
+          <td><code>grep 关键词 文件</code>：搜索文本内容</td>
+      </tr>
+      <tr>
+          <td><code>mkdir 目录名</code>：创建目录</td>
+          <td><code>find 路径 条件</code>：查找文件</td>
+      </tr>
+      <tr>
+          <td><code>rmdir 目录名</code>：删除空目录</td>
+          <td><code>which 命令</code>：查找命令路径</td>
+      </tr>
+      <tr>
+          <td><strong>软件包管理</strong></td>
+          <td><strong>压缩与解压</strong></td>
+      </tr>
+      <tr>
+          <td><code>pacman -S 包名</code>：安装软件</td>
+          <td><code>tar -xvf 文件.tar</code>：解包</td>
+      </tr>
+      <tr>
+          <td><code>pacman -Syu</code>：更新系统</td>
+          <td><code>tar -cvf 文件.tar</code>：打包</td>
+      </tr>
+      <tr>
+          <td><code>pacman -Rns 包名</code>：卸载软件</td>
+          <td><code>gzip 文件</code>：压缩文件</td>
+      </tr>
+      <tr>
+          <td><code>pacman -Ss 关键词</code>：搜索软件</td>
+          <td><code>gunzip 文件.gz</code>：解压</td>
+      </tr>
+      <tr>
+          <td><strong>进程管理</strong></td>
+          <td><strong>服务管理</strong></td>
+      </tr>
+      <tr>
+          <td><code>ps</code>：查看进程</td>
+          <td><code>systemctl status 服务</code>：查看状态</td>
+      </tr>
+      <tr>
+          <td><code>top</code>：实时查看进程/资源</td>
+          <td><code>systemctl start 服务</code>：启动服务</td>
+      </tr>
+      <tr>
+          <td><code>kill PID</code>：结束进程</td>
+          <td><code>systemctl enable 服务</code>：开机自启</td>
+      </tr>
+      <tr>
+          <td><code>free -h</code>：查看内存使用</td>
+          <td><strong>网络相关</strong></td>
+      </tr>
+      <tr>
+          <td></td>
+          <td><code>ip a</code>：查看网络信息</td>
+      </tr>
+  </tbody>
+</table></div>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97"  target="_blank" rel="noopener"
     >安装指南 - Arch Linux 中文维基</a></p>
@@ -1720,7 +2008,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">19</span> 
       篇 ，总计 
-      <span class="number-highlight">61.29</span> 
+      <span class="number-highlight">62.26</span> 
       k 字
   </div>
   <div>
@@ -1764,6 +2052,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         

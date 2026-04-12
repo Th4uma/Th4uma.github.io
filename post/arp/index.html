@@ -345,6 +345,10 @@ unicode: "f6d2"
                 计算机网络
             </a>
         
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
+            </a>
+        
     </header>
     
 
@@ -963,7 +967,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">./arp_poisoning_mitm.py 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="10.png" style="width: 100%;" />
+</div><img src="10.png" style="width: 80%;" />
 <p>容器 A 查看 ARP 缓存，可以发现显示的是容器B的IP地址和攻击者的MAC</p>
 <img src="11.png" style="width: 100%;" />
 <p>容器 B 查看 ARP 缓存，可以发现显示的是容器A的IP地址和攻击者的MAC</p>
@@ -982,7 +986,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>主机A ping主机B，发现大量丢包</p>
-<img src="13.png" style="width: 100%;" />
+<img src="13.png" style="width: 80%;" />
 <blockquote>
 <p>数据包被骗到了 M 这里，但 M 关闭了路由转发功能，所以包被 M 直接丢弃了</p>
 </blockquote>
@@ -996,7 +1000,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>主机A ping主机B，发现没有丢包</p>
-<img src="14.png" style="width: 100%;" />
+<img src="14.png" style="width: 80%;" />
 <p>ping的过程中攻击者打开icmp监听</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1007,7 +1011,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到大量 ICMP 重定向消息</p>
-<img src="15.png" style="width: 100%;" />
+<img src="15.png" style="width: 90%;" />
 <blockquote>
 <p>M 开启了转发，所以包能到达 B。但 M 发现 A 其实可以直接联系 B（在同一个子网 ），于是 M 遵守 ICMP 协议提醒 A 走错了路。</p>
 </blockquote>
@@ -1083,7 +1087,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&#34;tcp&#34;</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">process</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>脚本不显示字符是因为缺少了对攻击者自身发出包的过滤逻辑（src == MY_MAC），导致脚本陷入“抓取-&gt;伪造发送-&gt;再次抓取”的死循环。这引发了极其严重的包冲突和重传风暴，使正常的 Telnet 回显流量无法到达终端。解决方法是获取攻击者网卡 MAC 地址并在处理前加一行 if 判断跳过自身发出的包</p>
+</div><p>问题在于直接修改捕获到的原始数据包并重新发送，这种做法没有区分原始流量和自己注入的流量，很容易导致同一个包被反复抓取和处理，同时破坏了 TCP 连接的正常状态，进而触发大量重传，表现为卡顿甚至无响应。解决方法是获取攻击者网卡 MAC 地址并在处理前加一行 if 判断跳过自身发出的包</p>
 </blockquote>
 <blockquote>
 <details>
@@ -1154,7 +1158,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>通过设置 store=0 杜绝内存堆积，配合 MAC 过滤防止嗅探回环死循环，并采用 1:1 字节等长替换确保 TCP 序列号对齐，彻底解决了 Scapy 脚本导致的网络卡死与连接中断</p>
+</div><p>虽然改成了重新构造数据包并做字符替换，结构上更规范，但仍然没有解决 TCP 流量一致性问题。修改 payload 后如果不正确处理序列号和确认号，同时又在 sniff 和 send 之间形成回灌，就会让通信双方的 TCP 状态不断偏移，最终进入持续重传的状态，连接变得不稳定甚至卡死</p>
+<p>通过设置 store=0 减少 sniff 过程中的内存占用，结合 MAC 或流量方向过滤避免自身注入包被再次捕获造成回环处理，同时在 payload 修改时保持等长替换以降低 TCP 序列偏移带来的异常影响，从而显著缓解 Scapy 中间人脚本引起的卡顿与连接不稳定问题。</p>
 </blockquote>
 <p>最终代码如下：</p>
 <div class="highlight"><div class="chroma">
@@ -1263,7 +1268,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在登陆这里输入任何字符都会变成 A，说明数据在传输过程中被修改</p>
-<img src="16.png" style="width: 100%;" />
+<img src="16.png" style="width: 60%;" />
 <h2 id="任务三netcat-中间人攻击">任务三：Netcat 中间人攻击
 </h2><p>目标：精准替换字符串</p>
 <p>步骤：</p>
@@ -1730,7 +1735,7 @@ ARP 可被欺骗</p>
       共发表文章 
       <span class="number-highlight">19</span> 
       篇 ，总计 
-      <span class="number-highlight">61.29</span> 
+      <span class="number-highlight">62.26</span> 
       k 字
   </div>
   <div>
@@ -1774,6 +1779,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         
