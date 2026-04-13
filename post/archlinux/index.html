@@ -325,10 +325,10 @@ unicode: "f6d2"
         <li><a href="#dns服务配置">DNS服务配置</a></li>
         <li><a href="#添加软件源">添加软件源</a></li>
         <li><a href="#安装-yay">安装 yay</a></li>
-        <li><a href="#安装gui">安装GUI</a></li>
         <li><a href="#其他">其他</a></li>
       </ol>
     </li>
+    <li><a href="#安装gui">安装GUI</a></li>
     <li><a href="#linux常用命令">Linux常用命令</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
@@ -567,7 +567,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">rfkill unblock all
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="12.jpg" style="width: 100%;" />
+</div><img src="12.jpg" style="width: 90%;" />
 <p>再重新进入 <code>iwctl</code>，连接 WIFI。<code>device</code> 需要替换成电脑网卡的设备名，<code>SSID</code> 需要替换成想连接的 WiFi 名</p>
 <blockquote>
 <p>注意：安装环境下shell不能识别中文，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，若有空格需要用双引号包裹。如果不符合命名规范，修改后等待信息刷新，重新连接即可</p>
@@ -805,7 +805,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /mnt
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="挂载">挂载
+</div><img src="39.jpg" style="width: 75%;" />
+<h3 id="挂载">挂载
 </h3><blockquote>
 <p>在Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
 <p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，<code>/mnt</code> 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
@@ -861,7 +862,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输入<code>lsblk</code>命检查磁盘分区情况，可以看到每个分区后面出现了挂载的目录</p>
-<img src="20.jpg" style="width: 70%;" />
+<img src="20.jpg" style="width: 80%;" />
 <p>如果发现挂载目录错误，可以卸载后重新挂载，如卸载<code>mnt/boot</code>的命令是</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -894,7 +895,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl status reflector.service 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="21.jpg" style="width: 100%;" />
+</div><img src="21.jpg" style="width: 80%;" />
 <h3 id="更换源">更换源
 </h3><blockquote>
 <p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
@@ -921,7 +922,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>Esc</code>退出编辑模式，<code>:wq</code>保存退出。</p>
-<img src="22.jpg" style="width: 100%;" />
+<img src="22.jpg" style="width: 70%;" />
 <h3 id="安装软件包">安装软件包
 </h3><div class="table-wrapper"><table>
   <thead>
@@ -1041,7 +1042,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch-chroot /mnt /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><blockquote>
+</div><img src="40.jpg" style="width: 50%;" />
+<blockquote>
 <p>arch-chroot能将当前的操作环境从启动 U 盘临时切换到硬盘上刚装好的新系统中。执行后，在终端输入的命令将直接作用于硬盘系统，而不再影响 U 盘环境。利用它的特性可以在系统挂掉的时候进入U盘环境进行修复</p>
 </blockquote>
 <h3 id="用户与权限">用户与权限
@@ -1073,7 +1075,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passwd 用户名
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="24.jpg" style="width: 100%;" />
+</div><img src="24.jpg" style="width: 60%;" />
 <p>需要修改<code>wheel</code>的权限设置来让普通用户能获取临时 root 权限，打开<code>sudoers</code>文件</p>
 <blockquote>
 <p>普通用户通过在命令前加sudo，回车后输入密码来获得临时root权限</p>
@@ -1097,10 +1099,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"># %wheel ALL=(ALL) ALL
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="26.jpg" style="width: 100%;" />
+</div><img src="26.jpg" style="width: 70%;" />
 <p>然后<code>Esc</code>退出编辑模式，<code>:wq</code>保存退出</p>
 <blockquote>
-<p>这里如果报错，可以尝试:q!退出，然后用visudo来编辑</p>
+<p>这里如果报错，可以尝试<code>:q!</code>不保存退出，然后用<code>visudo</code>命令来编辑</p>
 </blockquote>
 <p>为电脑设置主机名，注意名字不能包含空格和特殊符号</p>
 <div class="highlight"><div class="chroma">
@@ -1140,7 +1142,7 @@ unicode: "f6d2"
 </div><blockquote>
 <p>如果系统有一个永久的 IP 地址，应该使用这个永久的 IP 地址而不是 <code>127.0.1.1</code></p>
 </blockquote>
-<img src="25.jpg" style="width: 100%;" />
+<img src="25.jpg" style="width: 60%;" />
 <p>按 <code>Esc</code>，输入 <code>:wq</code> 保存退出</p>
 <h3 id="本地化与时区">本地化与时区
 </h3><p>编辑<code>locale.gen</code>文件</p>
@@ -1186,7 +1188,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">echo LANG=en_US.UTF-8 &gt; /etc/locale.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="37.jpg" style="width: 100%;" />
+</div><img src="37.jpg" style="width: 40%;" />
 <p>设置系统时区为亚洲上海，并把当前系统时间写入硬件时钟</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1235,30 +1237,22 @@ unicode: "f6d2"
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">grub</span><span class="o">-</span><span class="n">install</span> <span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">x86_64</span><span class="o">-</span><span class="n">efi</span> <span class="o">--</span><span class="n">efi</span><span class="o">-</span><span class="n">directory</span><span class="o">=/</span><span class="n">boot</span> <span class="o">--</span><span class="n">bootloader</span><span class="o">-</span><span class="n">id</span><span class="o">=</span><span class="n">grub</span> <span class="o">--</span><span class="n">recheck</span>
+</span></span><span class="line"><span class="cl"><span class="err">编辑</span> <span class="err">`</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">grub</span><span class="err">`</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="27.jpg" style="width: 100%;" />
-编辑 `/etc/default/grub`
-<ul>
-<li>将grub的语言设置为英文：</li>
-</ul>
+</div><p><strong>将grub的语言设置为英文：</strong></p>
 <p>在文件顶端添加一行<code>LANG=C</code>，这是为了防止只有一部分有翻译，显示混乱的情况</p>
-<ul>
-<li>让grub记住上次选择的选项：</li>
-</ul>
+<p><strong>让grub记住上次选择的选项：</strong></p>
 <p>将<code>GRUB_DEFAULT</code>改为<code>saved</code>，<code>GRUB_SAVEDEFAULT=true</code>取消注释</p>
-<ul>
-<li>增加内核日志的项目和数量：</li>
-</ul>
+<p><strong>增加内核日志的项目和数量</strong>：</p>
 <p><code>GRUB_CMDLINE_LINUX_DEFAULT</code>中，去掉<code>quiet</code>，并且把<code>loglevel</code>提高到<code>5</code>，这是为了出现问题的时候更加便于排查</p>
-<ul>
-<li>启用<code>os-prober</code>：</li>
-</ul>
+<p><strong>启用<code>os-prober</code>：</strong></p>
 <p>Arch 默认是关闭 os-prober 的。将<code>GRUB_DISABLE_OS_PROBER=false</code>取消注释，这是为了探测硬盘上的Windows启动项</p>
-<img src="29.jpg" style="width: 100%;" />
+<img src="29.jpg" style="width: 80%;" />
 <p>把os-prober中的位置提前，使引导界面中Windows排在第一位，Linux排在第二位，这里数字越小显示越靠前</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1286,7 +1280,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grub-mkconfig -o /boot/grub/grub.cfg
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="31.jpg" style="width: 100%;" />
+</div><img src="31.jpg" style="width: 80%;" />
 <p>到了这一步ArchLinux就安装成功了，首先退出chroot，<code>reboot</code>重启</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1304,6 +1298,7 @@ unicode: "f6d2"
 <h3 id="os-prober-未检测到-windows的解决方法">os-prober 未检测到 Windows的解决方法
 </h3><blockquote>
 <p>经过刚刚的设置后，引导选择界面应该有4个选项，Arch Linux、Advanced options for Arch Linux、UEFI Firmware Settings、Windows，如果没有：</p>
+<img src="27.jpg" style="width: 40%;" />
 </blockquote>
 <ul>
 <li>确保 <code>/etc/default/grub</code> 中 <code>GRUB_DISABLE_OS_PROBER</code> 未设置为 <code>true</code>，并重新生成配置</li>
@@ -1344,8 +1339,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">### END /etc/grub.d/09_os-prober ###
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="36.jpg" style="width: 100%;" />
-<p>在这两行中间加入下面的代码并保存，Windows启动项就被添加到引导界面了</p>
+</div><img src="36.jpg" style="width: 50%;" />
+<p>在这两行中间加入下面的代码并保存</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1366,9 +1361,23 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="35.jpg" style="width: 100%;" />
+</div><img src="35.jpg" style="width: 70%;" />
+<p>重启后Windows启动项就被添加到引导界面了</p>
+<img src="41.jpg" style="width: 40%;" />
 <h2 id="后续">后续
 </h2><p>启动后先使用root用户登录</p>
+<p>可以看一下版本信息和arch Linux图标</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S fastfetch
+</span></span><span class="line"><span class="cl">fastfetch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="44.jpg" style="width: 100%;" />
 <h3 id="联网">联网
 </h3><p>启动联网服务，并设为开机自启</p>
 <div class="highlight"><div class="chroma">
@@ -1437,6 +1446,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>如果符号链接正确，那 <code>systemd-resolved</code> 就应该被正确启用了，随后重启来开启服务</p>
+<img src="42.jpg" style="width: 100%;" />
 <h3 id="添加软件源">添加软件源
 </h3><p>编辑 pacman.conf 文件</p>
 <div class="highlight"><div class="chroma">
@@ -1469,14 +1479,15 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">Include = /etc/pacman.d/mirrorlist
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>保存退出后然后安装 GPG key</p>
+</div><img src="43.jpg" style="width: 70%;" />
+<p>保存退出后然后安装 GPG key</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -Syy
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -Syu
 </span></span><span class="line"><span class="cl">sudo pacman -S archlinuxcn-keyring
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1491,7 +1502,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>避免使用 <code>sudo yay</code>，保持普通用户执行</p>
+<p>避免使用 <code>sudo yay</code>，保持普通用户执行，sudo会导致文件权限过高从而损坏某些文件</p>
 </blockquote>
 <p>测试安装示例：</p>
 <div class="highlight"><div class="chroma">
@@ -1502,36 +1513,35 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S google-chrome
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="安装gui">安装GUI
-</h3><p>安装显示管理器和 X.Org</p>
-<p>pacman -Sy</p>
-<p>如果你想要一个图形化的桌面环境，那么你需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 <a class="link" href="https://link.zhihu.com/?target=http%3A//x.org/"  target="_blank" rel="noopener"
-    >X.Org</a>，你可以用下面的命令来安装：</p>
+</div><h3 id="其他">其他
+</h3><p>sudo pacman -S timeshift</p>
+<h2 id="安装gui">安装GUI
+</h2><blockquote>
+<p>明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。日常使用肯定是安装一个桌面会更加方便</p>
+<p>如果想要图形化的桌面环境，那么需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 X.Org</p>
+</blockquote>
+<p>安装X.Org</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">pacman -Syu
+</span></span><span class="line"><span class="cl">sudo pacman -S xorg
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关于桌面环境，主流的有两个，gnome和kde。gnome默认更像macos风格，不需要怎么折腾就可以使用，而kde更像windows，需要一定的自定义才能使用，这两个桌面环境都有一些bug。生命在于折腾，我选择了kde</p>
+<p>输入如下命令安装 SDDM 和 KDE Plasma 桌面和某些 KDE 基础组件：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sudo pacman -S xorg
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S plasma sddm konsole dolphin ark gwenview
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>关于桌面环境，生命在于折腾，我选择了kde</p>
-<p>输入如下命令安装 SDDM 和 KDE Plasma 桌面和某些 KDE 基础组件：</p>
-<div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th><code>1 </code></th>
-          <th><code>pacman -S plasma sddm konsole dolphin ark gwenview </code></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td></td>
-          <td></td>
-      </tr>
-  </tbody>
-</table></div>
-<p>网络 GUI（不然只能命令行连 WiFi）</p>
+</div><p>网络 GUI</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1540,7 +1550,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S networkmanager network-manager-applet
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>字体（不然中文可能不正常）</p>
+</div><p>字体</p>
+<ul>
+<li>Google Noto Fonts 系列 noto-fonts noto-fonts-cjk noto-fonts-emoji</li>
+<li>思源黑体 adobe-source-han-sans-otc-fonts</li>
+<li>文泉驿 wqy-microhei wqy-zenhei</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1558,7 +1573,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S pipewire pipewire-pulse wireplumber
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>一个浏览器（不然你进桌面啥也干不了）</p>
+</div><p>浏览器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1567,28 +1582,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S firefox
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>最关键一步（别忘了）</p>
-<p>启用登录界面：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl enable sddm
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>启动</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">reboot
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
-<p>目前为止，KDE 默认使用的是 X11，Wayland 支持尚不完善。如果你想使用 Wayland，则需要安装 plasma-wayland，然后在 SDDM 登录时选择 Wayland 版本 Plasma。</p>
+</div><p>目前为止，KDE 默认使用的是 X11，Wayland 支持尚不完善。如果你想使用 Wayland，则需要安装 plasma-wayland，然后在 SDDM 登录时选择 Wayland 版本 Plasma。</p>
 <p>输入如下命令安装 plasma-wayland：</p>
+<blockquote>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -1636,21 +1632,7 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
-<p>Copy</p>
 <p>输入完命令后，下次开机会直接进入图形界面，而非命令行界面。完成安装</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S fastfetch
-</span></span><span class="line"><span class="cl">fastfetch
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看一下版本信息吧。</p>
-<h3 id="其他">其他
-</h3><p>sudo pacman -S timeshift</p>
 <h2 id="linux常用命令">Linux常用命令
 </h2><div class="table-wrapper"><table>
   <thead>
@@ -2008,7 +1990,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">19</span> 
       篇 ，总计 
-      <span class="number-highlight">62.26</span> 
+      <span class="number-highlight">62.39</span> 
       k 字
   </div>
   <div>
