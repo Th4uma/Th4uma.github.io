@@ -410,7 +410,7 @@ unicode: "f6d2"
     
     
     <h2 id="前言">前言
-</h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，就一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
+</h2><p>一直很想学Linux，但由于平时很忙，再加上我很讨厌背概念这种枯燥的学习，就一直没有开始。前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用</p>
 <p>我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装ArchLinux并和Windows共用资料分区</p>
 <h2 id="准备">准备
 </h2><h3 id="确定电脑启动类型">确定电脑启动类型
@@ -421,7 +421,7 @@ unicode: "f6d2"
 <img src="1.png" style="width: 50%;" />
 <h3 id="设置-windows-时区偏移">设置 Windows 时区偏移
 </h3><blockquote>
-<p>Windows默认将硬件时钟当作本地时间，而Linux默认按UTC解释硬件时钟，这会导致双系统时间错乱。解决办法是在Windows里将硬件时间设置为UTC</p>
+<p>Windows默认将硬件时钟当作本地时间，而Linux默认将硬件时钟当作UTC时间，这会导致双系统时间错乱。解决办法是在Windows里将硬件时间设置为UTC</p>
 </blockquote>
 <p>管理员权限运行PowerShell，执行下面的命令</p>
 <div class="highlight"><div class="chroma">
@@ -469,7 +469,7 @@ unicode: "f6d2"
 </li>
 <li>
 <p>下载Arch Linux的<a class="link" href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/"  target="_blank" rel="noopener"
-    >系统镜像</a>X86  64版本</p>
+    >系统镜像</a>X86_64版本</p>
 </li>
 <li>
 <p>下载<a class="link" href="https://www.ventoy.net/cn/download.html"  target="_blank" rel="noopener"
@@ -481,7 +481,7 @@ unicode: "f6d2"
 </ul>
 <img src="https://th4uma.github.io/post/aio/aio3.png" style="width:60%;">
 <ul>
-<li>选择U盘，点击安装，然后将ArchLinux的镜像复制进U盘</li>
+<li>选择U盘，点击安装，完成后将ArchLinux的镜像复制进U盘</li>
 </ul>
 <img src="https://th4uma.github.io/post/aio/aio4.png" style="width:60%;">
 <h3 id="准备空闲的磁盘空间">准备空闲的磁盘空间
@@ -498,9 +498,9 @@ unicode: "f6d2"
 <h2 id="启动与联网">启动与联网
 </h2><h3 id="进入arch-linux安装介质">进入Arch Linux安装介质
 </h3><p>将刚刚制作的U盘插在电脑上，重启按<code>F12</code>进入选择启动项的界面，选择U盘</p>
-<img src="8.jpg" style="width: 100%;" />
-<p>进入Ventoy界面，选择ArchLinux的镜像然后回车</p>
 <img src="9.jpg" style="width: 80%;" />
+<p>进入Ventoy界面，选择ArchLinux的镜像然后回车</p>
+<img src="8.jpg" style="width: 100%;" />
 <p>看到这个界面说明是UEFI模式启动的，回车即可</p>
 <img src="10.jpg" style="width: 80%;" />
 <blockquote>
@@ -517,7 +517,7 @@ unicode: "f6d2"
 <li>Android 手机给电脑 USB 共享网络</li>
 </ul>
 </blockquote>
-<p>我这里使用的是iwctl连接wifi，先进入iwctl</p>
+<p>我这里使用的是iwctl连接WiFi，先进入iwctl</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -568,10 +568,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="12.jpg" style="width: 90%;" />
-<p>再重新进入 <code>iwctl</code>，连接 WIFI。<code>device</code> 需要替换成电脑网卡的设备名，<code>SSID</code> 需要替换成想连接的 WiFi 名</p>
-<blockquote>
-<p>注意：安装环境下shell不能识别中文，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，若有空格需要用双引号包裹。如果不符合命名规范，修改后等待信息刷新，重新连接即可</p>
-</blockquote>
+<p>再重新进入 <code>iwctl</code>，连接 WiFi。<code>device</code>替换成电脑网卡的设备名，<code>SSID</code>替换成想连接的 WiFi 名，如果 WiFi 有密码，这里会提示输入密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -580,7 +577,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">station device connect SSID
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>如果 WiFi 有密码，这里会提示输入密码，输入 WiFi 密码后回车</p>
+</div><blockquote>
+<p>注意：当前环境下shell不能识别中文，因此WiFi的名称和密码只能由英文字母、数字和常见符号组成，若包含空格需要用双引号包裹。如果不符合命名规范，修改SSID后等待信息刷新，重新连接即可</p>
+</blockquote>
 <p>连接后输入 <code>exit</code> 退出iwctl，测试是否成功联网，ping一下任意可直连的网址</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -626,6 +625,7 @@ unicode: "f6d2"
 <p><code>/dev/nvme0n1</code> ：代表NVMe SSD</p>
 <p><code>/dev/mmcblk0</code> ：代表eMMC 存储</p>
 </blockquote>
+<blockquote>
 <p>以<code>/dev/nvme0n1p1</code> 中的数字为例：</p>
 <ul>
 <li><code>nvme</code> ：设备类型</li>
@@ -633,26 +633,24 @@ unicode: "f6d2"
 <li><code>n1</code> ： 该控制器下的第几个命名空间</li>
 <li><code>p1</code> ： 第几个分区</li>
 </ul>
-<p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
-<blockquote>
-<p>注意：之后的操作中一定不能搞错磁盘设备名，否则很可能导致数据丢失</p>
 </blockquote>
+<p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
 <h3 id="分区方案">分区方案
 </h3><blockquote>
 <p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区</p>
 </blockquote>
-<p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
+<p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定、性能优越的文件系统，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
 <p><strong>启动分区 <code>/boot</code></strong>：</p>
 <p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。</p>
-<p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此，更稳妥的做法是为 Linux 创建单独的 EFI 分区</p>
+<p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区</p>
 <p><strong>交换分区 <code>/swap</code></strong>：</p>
-<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，不一定需要分区。</p>
+<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，分区不是必须</p>
 <p><strong>根分区 <code>/</code></strong>：</p>
-<p>根分区用于存放操作系统及其所有文件。如果不单独划分 <code>/home</code>，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整。</p>
+<p>根分区用于存放操作系统及其所有文件。如果不单独划分 <code>/home</code>，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整</p>
 <p><strong>btrfs子卷</strong>：</p>
 <blockquote>
 <p>由于我选择了 <strong>btrfs</strong> 作为根分区的格式，因此可以利用子卷这个功能来实现分区隔离。类似在根分区这个大分区中划出多个小分区。</p>
-<p>与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时重装系统时只需格式化 <code>@</code> 子卷， <code>@home</code> 数据依然会被完整保留。</p>
+<p>与传统的物理分区不同，子卷是动态共享空间的。这样就不需要考虑给每个子卷分配多大空间的问题，只要硬盘有剩余空间，子卷都能自动使用。同时重装系统时只需格式化 <code>@</code> 子卷， <code>@home</code> 中的数据依然会被完整保留。</p>
 </blockquote>
 <ul>
 <li>
@@ -697,10 +695,10 @@ unicode: "f6d2"
   </tbody>
 </table></div>
 <h3 id="分区操作">分区操作
-</h3><p><strong>注意：不同电脑的磁盘和分区不一样，所以下面的命令需要以自己磁盘的序号为准</strong></p>
+</h3><p><strong>注意：不同电脑的磁盘和分区不一样，之后的操作需要以自己磁盘的情况为准，千万不要搞错磁盘设备名，否则很可能导致数据丢失</strong></p>
 <blockquote>
-<p>这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的数据分区</p>
-<p>由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux数据分区和Windows资料分区的大小，我让资料分区和数据分区相邻，分区的顺序是数据，swap，EFI</p>
+<p>这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的根分区</p>
+<p>由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux根分区和Windows资料分区的大小，我让资料分区和根分区相邻，分区的顺序是根，swap，EFI</p>
 </blockquote>
 <p>进入cfdisk</p>
 <div class="highlight"><div class="chroma">
@@ -869,7 +867,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /dev/nvme1n1p5 /mnt/boot
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">umount /dev/nvme1n1p5
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="系统安装">系统安装
@@ -886,7 +884,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl stop reflector.service 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>复查，然后按q退出</p>
+</div><p>复查，可以看到<code>Active:inactive(dead)</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -897,10 +895,7 @@ unicode: "f6d2"
 </div>
 </div><img src="21.jpg" style="width: 80%;" />
 <h3 id="更换源">更换源
-</h3><blockquote>
-<p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
-</blockquote>
-<p>编辑源的列表文件</p>
+</h3><p>编辑<code>mirrorlist</code>文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -909,9 +904,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.d/mirrorlist
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在文件第一行插入清华源，按i进行编辑</p>
+</div><p>按<code>i</code>进行编辑，在文件第一行插入清华源</p>
 <blockquote>
 <p>Pacman 会从上到下尝试，第一行成功后就不会再找后面的</p>
+</blockquote>
+<blockquote>
+<p>这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源</p>
 </blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1010,9 +1008,9 @@ unicode: "f6d2"
 </div><img src="23.jpg" style="width: 100%;" />
 <h3 id="生成挂载表">生成挂载表
 </h3><blockquote>
-<p><code>fstab</code> (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录</p>
+<p><code>fstab</code>是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录</p>
 </blockquote>
-<p>使用 <code>-U</code> 参数生成 UUID（通用唯一识别码）。相比传统的 <code>/dev/sdX</code> 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式</p>
+<p>使用 <code>-U</code> 参数生成 UUID（通用唯一识别码 ）。相比传统的 <code>/dev/sdX</code> 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1021,7 +1019,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">genfstab -U /mnt &gt; /mnt/etc/fstab
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>执行之后，一定要检查 <code>/mnt/etc/fstab</code>。Btrfs 的子卷挂载在 <code>fstab</code> 里，如果没写对，重启后系统会挂载物理分区的根，导致找不到 <code>/home</code> 里的数据。这里由于使用了子卷和压缩，生成的 <code>fstab</code> 中会自动包含 <code>subvol=@</code> 和 <code>compress=zstd</code> 等参数</p>
+</div><p>执行之后，一定要检查 <code>/mnt/etc/fstab</code>。Btrfs 的子卷挂载在 <code>fstab</code> 里，如果没写对，重启后系统会挂载物理分区的根，导致找不到 <code>/home</code> 里的数据</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1030,7 +1028,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cat /mnt/etc/fstab
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="28.jpg" style="width: 100%;" />
+</div><p>这里由于使用了子卷和压缩，生成的 <code>fstab</code> 中会自动包含 <code>subvol=@</code> 和 <code>compress=zstd</code> 等参数</p>
+<img src="28.jpg" style="width: 100%;" />
 <p>至此基本的安装就完成了</p>
 <h2 id="系统基本配置">系统基本配置
 </h2><p>输入下面的命令进入安装好的系统环境，提示符由 <code>root@archiso ~ #</code> 变为 <code>[root@archiso /]#</code></p>
@@ -1126,7 +1125,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/hosts
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>将文件写成下面的格式</p>
+</div><p>将文件写成下面的格式，如果系统有一个永久的 IP 地址，应该使用这个IP地址而不是 <code>127.0.1.1</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1134,15 +1133,12 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">127.0.0.1	localhost
-</span></span><span class="line"><span class="cl">::1	localhost
-</span></span><span class="line"><span class="cl">127.0.1.1	主机名.localdomain	主机名
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">127.0.0.1    localhost
+</span></span><span class="line"><span class="cl">::1          localhost
+</span></span><span class="line"><span class="cl">127.0.1.1    主机名.localdomain 主机名
 </span></span></code></pre></td></tr></table>
 </div>
-</div><blockquote>
-<p>如果系统有一个永久的 IP 地址，应该使用这个永久的 IP 地址而不是 <code>127.0.1.1</code></p>
-</blockquote>
-<img src="25.jpg" style="width: 60%;" />
+</div><img src="25.jpg" style="width: 60%;" />
 <p>按 <code>Esc</code>，输入 <code>:wq</code> 保存退出</p>
 <h3 id="本地化与时区">本地化与时区
 </h3><p>编辑<code>locale.gen</code>文件</p>
@@ -1176,9 +1172,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">locale-gen
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>设置系统默认语言</p>
+</div><p>修改<code>locale.conf</code>来设置系统默认语言为英文</p>
 <blockquote>
-<p>locale-conf是全局设置，设置成英文是为了避免部分程序或终端在中文环境下显示异常，且系统的日志会用英文显示，这样更容易判断和处理问题。LANG的值必须是上一步已经设置过的值</p>
+<p>locale.conf是全局设置，设置成英文是为了避免部分程序或终端在中文环境下显示异常，且系统的日志会用英文显示，更容易排查问题。LANG的值必须是上一步已经设置过的值</p>
 </blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1201,7 +1197,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="安装引导程序">安装引导程序
-</h2><p>这是安装的最后一步也是关键的一步，必须正确安装好引导加载程序后再重新启动，否则重启后将无法正常进入 Arch Linux 系统</p>
+</h2><p>这是启动系统前的最后一步，必须正确安装好引导加载程序后再重启，否则将无法正常进入 Arch Linux 系统</p>
 <h3 id="基本配置">基本配置
 </h3><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1237,14 +1233,15 @@ unicode: "f6d2"
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">grub</span><span class="o">-</span><span class="n">install</span> <span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">x86_64</span><span class="o">-</span><span class="n">efi</span> <span class="o">--</span><span class="n">efi</span><span class="o">-</span><span class="n">directory</span><span class="o">=/</span><span class="n">boot</span> <span class="o">--</span><span class="n">bootloader</span><span class="o">-</span><span class="n">id</span><span class="o">=</span><span class="n">grub</span> <span class="o">--</span><span class="n">recheck</span>
-</span></span><span class="line"><span class="cl"><span class="err">编辑</span> <span class="err">`</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">grub</span><span class="err">`</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><strong>将grub的语言设置为英文：</strong></p>
+</div><blockquote>
+<p>编辑 <code>/etc/default/grub</code>：</p>
+</blockquote>
+<p><strong>将grub的语言设置为英文：</strong></p>
 <p>在文件顶端添加一行<code>LANG=C</code>，这是为了防止只有一部分有翻译，显示混乱的情况</p>
 <p><strong>让grub记住上次选择的选项：</strong></p>
 <p>将<code>GRUB_DEFAULT</code>改为<code>saved</code>，<code>GRUB_SAVEDEFAULT=true</code>取消注释</p>
@@ -1271,7 +1268,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="30.jpg" style="width: 100%;" />
-<p>生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含说明一切正常</p>
+<p>生成grub配置文件，输出的<code>Found</code>后面就是系统，这里可以检查一下是否包含<code>Linux</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1281,7 +1278,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="31.jpg" style="width: 80%;" />
-<p>到了这一步ArchLinux就安装成功了，首先退出chroot，<code>reboot</code>重启</p>
+<p>到了这一步ArchLinux就安装成功了，首先退出chroot，卸载<code>/mnt</code>分区，<code>reboot</code>重启</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1309,7 +1306,7 @@ unicode: "f6d2"
 <blockquote>
 <p>注意：此步骤修改的是grub的配置文件，修改后重新生成配置会导致修改被覆盖</p>
 </blockquote>
-<p>查看Windows的EFI分区信息，nvme0n1p1替换为自己电脑efi分区的盘符，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上</p>
+<p>查看Windows的EFI分区信息，<code>nvme0n1p1</code>替换为自己电脑efi分区的盘符，记住这里的UUID。这个是Windows启动分区的UUID</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1319,7 +1316,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="34.jpg" style="width: 100%;" />
-<p>输入命令打开文件</p>
+<p>打开配置文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1365,8 +1362,7 @@ unicode: "f6d2"
 <p>重启后Windows启动项就被添加到引导界面了</p>
 <img src="41.jpg" style="width: 40%;" />
 <h2 id="后续">后续
-</h2><p>启动后先使用root用户登录</p>
-<p>可以看一下版本信息和arch Linux图标</p>
+</h2><p>启动后先进行登录，可以看一下版本信息</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1379,7 +1375,7 @@ unicode: "f6d2"
 </div>
 </div><img src="44.jpg" style="width: 100%;" />
 <h3 id="联网">联网
-</h3><p>启动联网服务，并设为开机自启</p>
+</h3><p>开启联网服务，并设为开机自启</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1409,7 +1405,10 @@ unicode: "f6d2"
 </div><p>连接好后用<code>ping</code>命令测试网络</p>
 <img src="33.jpg" style="width: 100%;" />
 <h3 id="dns服务配置">DNS服务配置
-</h3><p>NetworkManager 默认自带的 DNS 管理功能较为简单，可以开启 <code>systemd-resolved</code> 配合使用，这也是很多发行版的默认方案：</p>
+</h3><blockquote>
+<p>NetworkManager 负责管理网络连接，但它的 DNS 处理方式相对基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求。</p>
+</blockquote>
+<p>启用服务</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1418,7 +1417,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">systemctl enable --now systemd-resolved.service
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>接下来设置配置文件：</p>
+</div><p>将系统 DNS 入口切换为 systemd-resolved 提供的 stub 接口</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1427,7 +1426,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>检查一下符号链接是否正常：</p>
+</div><p>检查是否生效</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1436,19 +1435,13 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ls -l /etc/resolv.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>应该见到类似这样的输出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;前面是各种权限和日期信息&gt; /etc/resolv.conf -&gt; ../run/systemd/resolve/stub-resolv.conf
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果符号链接正确，那 <code>systemd-resolved</code> 就应该被正确启用了，随后重启来开启服务</p>
+</div><p>当 <code>/etc/resolv.conf</code> 指向 systemd-resolved 的 stub 文件时，说明 DNS 解析已由 systemd-resolved 统一接管</p>
 <img src="42.jpg" style="width: 100%;" />
 <h3 id="添加软件源">添加软件源
-</h3><p>编辑 pacman.conf 文件</p>
+</h3><blockquote>
+<p>pacman 默认只使用官方仓库，如果需要使用社区软件，需要手动添加第三方源</p>
+</blockquote>
+<p>编辑<code>pacman.conf</code>文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1457,7 +1450,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim /etc/pacman.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在文件末尾添加以下内容：</p>
+</div><p>在文件末尾添加下面的内容，加入archlinuxcn仓库</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1468,7 +1461,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>把<code>multilib</code>所在的两行注释，开启32位库的支持</p>
+</div><p>删除这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1480,7 +1473,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="43.jpg" style="width: 70%;" />
-<p>保存退出后然后安装 GPG key</p>
+<p>更新软件包索引并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1492,7 +1485,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="安装-yay">安装 yay
-</h3><p>yay 是常用的 AUR 助手，可以方便安装社区软件。</p>
+</h3><p>yay是AUR工具，可以自动构建和安装社区软件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1501,10 +1494,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S yay
 </span></span></code></pre></td></tr></table>
 </div>
-</div><blockquote>
-<p>避免使用 <code>sudo yay</code>，保持普通用户执行，sudo会导致文件权限过高从而损坏某些文件</p>
+</div><p>安装成功后进行测试</p>
+<blockquote>
+<p>使用 yay 时不要使用 sudo，因为 AUR 构建过程会在本地生成文件，使用 root 权限会导致文件归属异常，导致后续产生一系列错误</p>
 </blockquote>
-<p>测试安装示例：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1517,17 +1510,16 @@ unicode: "f6d2"
 </h3><p>sudo pacman -S timeshift</p>
 <h2 id="安装gui">安装GUI
 </h2><blockquote>
-<p>明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。日常使用肯定是安装一个桌面会更加方便</p>
-<p>如果想要图形化的桌面环境，那么需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 X.Org</p>
+<p>明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。如果想要图形化的桌面环境，就需要设置显示服务器、显示管理器与桌面环境</p>
 </blockquote>
-<p>安装X.Org</p>
+<p>安装X.Org作为显示服务器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">pacman -Syu
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sudo pacman -Syu
 </span></span><span class="line"><span class="cl">sudo pacman -S xorg
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1588,7 +1580,7 @@ unicode: "f6d2"
 <div class="table-wrapper"><table>
   <thead>
       <tr>
-          <th><code>1 </code></th>
+          <th></th>
           <th><code>pacman -S plasma-wayland </code></th>
       </tr>
   </thead>
@@ -1599,7 +1591,6 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
-<p>Copy</p>
 <p>如果你使用 Nvida 显卡，则需要额外安装 egl-wayland：</p>
 <div class="table-wrapper"><table>
   <thead>
@@ -1615,9 +1606,16 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
-<p>Copy</p>
 </blockquote>
-<p>输入如下命令设置 SDDM 开机自启：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nvidia` (或 `nvidia-lts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入如下命令设置 SDDM 开机自启：</p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -1990,7 +1988,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">19</span> 
       篇 ，总计 
-      <span class="number-highlight">62.39</span> 
+      <span class="number-highlight">62.78</span> 
       k 字
   </div>
   <div>

@@ -43,7 +43,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;apt&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;install&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;git&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;curl&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;net&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tools&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;apt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;transport&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;https&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ca&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;certificates&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;software&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;properties&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;common&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;添加 Docker 的官方 GPG 密钥以确保下载的软件包安全&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;添加 Docker 的官方 GPG 密钥&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -85,7 +85,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; docker
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;安装docker compose&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;安装Docker Compose&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -179,7 +179,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;判断是执行权限不足，命令前加sudo解决&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;strong&gt;出现这个报错&lt;code&gt;the attribute &lt;/code&gt;version&lt;code&gt; is obsolete, it will be ignored, please remove it to avoid potential confusion&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;出现这个报错：the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;是因为&lt;code&gt;docker-compose.yml&lt;/code&gt; 文件中的 &lt;code&gt;version:&lt;/code&gt; 字段在 Docker Compose v1.27.0+ 和 v2 中已经被弃用，不再需要指定，因此手动编辑删除即可&lt;/p&gt;
 &lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;/blockquote&gt;
@@ -191,7 +191,8 @@
 &lt;/ul&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;任务一arp-缓存投毒&#34;&gt;任务一：ARP 缓存投毒
-&lt;/h2&gt;&lt;p&gt;ARP 协议本身不具备认证机制，主机在接收到 ARP 报文时，会根据报文中的 IP-MAC 映射信息更新本地缓存，而不会验证该信息的真实性。这使得攻击者可以通过构造伪造报文实现缓存投毒&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但该协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证其真实性。
+这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径。&lt;/p&gt;
 &lt;h3 id=&#34;task-1aarp-request-进行缓存投毒&#34;&gt;Task 1.A：ARP Request 进行缓存投毒
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;实验目标：使 Host A 错误地将伪造 IP (10.9.0.99) 映射到攻击者指定的 MAC 地址&lt;/p&gt;
@@ -244,7 +245,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sendp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;packet&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;eth0&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;运行脚本&lt;/p&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;虽然 ARP Request 本质是查询，但很多情况下，只要报文中包含 IP-MAC 映射信息，仍然可能被写入缓存。因此可以利用伪造的 ARP Request 实现缓存投毒。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;运行脚本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -280,7 +284,7 @@
 &lt;/div&gt;&lt;p&gt;Host A 出现伪造 IP 10.9.0.99，对应攻击者 MAC 地址&lt;/p&gt;
 &lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;结论：ARP Request 可直接生成伪造缓存，当 Host A 向该 IP 发起通信时，会把数据发到攻击者的 MAC&lt;/p&gt;
+&lt;p&gt;结论：ARP Request 可直接生成伪造缓存，ARP 缓存更新并不严格依赖于请求响应关系，只要报文格式合法，就可能被信任并写入缓存。当 Host A 向该 IP 发起通信时，会把数据发到攻击者的 MAC&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;task-1barp-reply-投毒&#34;&gt;Task 1.B：ARP Reply 投毒
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -391,13 +395,14 @@
 &lt;/div&gt;&lt;p&gt;在容器 A 查看 ARP 缓存， MAC 被篡改&lt;/p&gt;
 &lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;结论：出于安全防御机制，Linux 系统通常不会为未请求过的 IP 创建新的 ARP 缓存条目，但会更新已有条目&lt;/p&gt;
+&lt;p&gt;结论：Linux 在处理 ARP Reply 时通常不会为未请求的 IP 创建新的缓存项，但允许更新已有条目&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;task-1carp-无端报文&#34;&gt;Task 1.C：&lt;strong&gt;ARP&lt;/strong&gt; &lt;strong&gt;无端报文&lt;/strong&gt;
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;实验目标：测试源 IP 和目的 IP 相同的特殊广播 ARP 报文的投毒效果&lt;/p&gt;
 &lt;p&gt;方法：在攻击者 M 中发送无端 ARP 广播包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;Gratuitous ARP（无端 ARP）本质是主机主动广播自己的 IP-MAC 映射，用于更新网络中其他主机的缓存&lt;/p&gt;
 &lt;h4 id=&#34;缓存中不存在ip-1&#34;&gt;缓存中不存在IP
 &lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中不存在的 IP&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -503,18 +508,18 @@
 &lt;/div&gt;&lt;p&gt;在容器 A 查看 ARP 缓存， MAC 被篡改&lt;/p&gt;
 &lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;结论：与 Task 1.B 完全一致。无端 ARP 只能更新受害者缓存中已有的记录，无法凭空捏造新记录。&lt;/p&gt;
+&lt;p&gt;结论：与 Task 1.B 完全一致。无端 ARP 只能更新受害者缓存中已有的记录，无法凭空捏造新记录&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;任务二telnet-中间人攻击&#34;&gt;任务二：Telnet 中间人攻击
-&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;实验目标：拦截 Host A 与 Host B 之间的 Telnet 流量，并将用户输入的所有字母篡改为 &lt;code&gt;A&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;双向投毒&#34;&gt;双向投毒
-&lt;/h3&gt;&lt;p&gt;攻击者持续发送 ARP 伪造包，使：&lt;/p&gt;
+&lt;/h2&gt;&lt;h3 id=&#34;双向投毒&#34;&gt;双向投毒
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;要实现中间人攻击，仅欺骗单一主机是不够的。攻击者必须同时欺骗通信双方，持续发送 ARP 伪造包，使：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;A 认为 B 的 MAC 是攻击者&lt;/li&gt;
 &lt;li&gt;B 认为 A 的 MAC 是攻击者&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;这样双方的二层转发路径被劫持，所有流量都会先到达攻击者，再由攻击者转发&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;在容器M构造投毒脚本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -591,7 +596,7 @@
 &lt;img src=&#34;12.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;ip-转发&#34;&gt;IP 转发
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;投毒完成后，攻击者实际上变成a与b的路由器，因此m开不开启IP转发会对A与B的通信产生影响&lt;/p&gt;
+&lt;p&gt;投毒完成后，攻击者实际上变成A与B的路由器，因此M开不开启IP转发会对A与B的通信产生影响&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;原来的终端不动，重新打开一个终端，进入容器M，关闭IP转发&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -605,7 +610,7 @@
 &lt;/div&gt;&lt;p&gt;主机A ping主机B，发现大量丢包&lt;/p&gt;
 &lt;img src=&#34;13.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;blockquote&gt;
-&lt;p&gt;数据包被骗到了 M 这里，但 M 关闭了路由转发功能，所以包被 M 直接丢弃了&lt;/p&gt;
+&lt;p&gt;此时攻击者已经成为链路中的中间节点，如果不开启 IP 转发，相当于数据被截获但不再继续转发，从而表现为网络中断，包被 M 直接丢弃了&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;攻击者开启IP转发&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -634,7 +639,7 @@
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;数据篡改&#34;&gt;数据篡改
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;在攻击者 M 中关闭IP转发，随后通过 Python 篡改脚本来实现篡改信息内容的目的&lt;/p&gt;
+&lt;p&gt;在攻击者 M 中关闭IP转发，随后通过 Python 篡改脚本来实现篡改信息内容的目的，拦截 Host A 与 Host B 之间的 Telnet 流量，并将用户输入的所有字母篡改为 &lt;code&gt;A&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;在容器M构造脚本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -778,6 +783,10 @@
 &lt;/div&gt;&lt;p&gt;虽然改成了重新构造数据包并做字符替换，结构上更规范，但仍然没有解决 TCP 流量一致性问题。修改 payload 后如果不正确处理序列号和确认号，同时又在 sniff 和 send 之间形成回灌，就会让通信双方的 TCP 状态不断偏移，最终进入持续重传的状态，连接变得不稳定甚至卡死&lt;/p&gt;
 &lt;p&gt;通过设置 store=0 减少 sniff 过程中的内存占用，结合 MAC 或流量方向过滤避免自身注入包被再次捕获造成回环处理，同时在 payload 修改时保持等长替换以降低 TCP 序列偏移带来的异常影响，从而显著缓解 Scapy 中间人脚本引起的卡顿与连接不稳定问题。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;TCP 是面向连接的可靠传输协议，依赖序列号与确认号维持状态一致性。
+如果中间人随意修改数据而不保证长度或序列一致，就会破坏连接状态，导致重传甚至连接中断&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;最终代码如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -887,9 +896,21 @@
 &lt;/div&gt;&lt;p&gt;在登陆这里输入任何字符都会变成 A，说明数据在传输过程中被修改&lt;/p&gt;
 &lt;img src=&#34;16.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h2 id=&#34;任务三netcat-中间人攻击&#34;&gt;任务三：Netcat 中间人攻击
-&lt;/h2&gt;&lt;p&gt;目标：精准替换字符串&lt;/p&gt;
-&lt;p&gt;步骤：&lt;/p&gt;
-&lt;p&gt;建立连接：&lt;/p&gt;
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信，将特定字符串 seedlabs 替换为 AAAAAAAA。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;建立连接&#34;&gt;建立连接
+&lt;/h3&gt;&lt;p&gt;由于 Netcat 需要完成 TCP 三次握手，为避免 Python 脚本处理过慢导致握手超时，首先在攻击者 M 中开启内核转发 (ip_forward=1)。随后在 Host B 监听端口，并在 Host A 发起连接。&lt;/p&gt;
+&lt;p&gt;攻击者开启IP转发&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;建立连接：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -906,7 +927,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 10.9.0.6 9090
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;攻击者：&lt;/p&gt;
+&lt;/div&gt;&lt;h3 id=&#34;接管流量&#34;&gt;接管流量
+&lt;/h3&gt;&lt;p&gt;流量接管与篡改：确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发 (ip_forward=0) 切断原生路由，并立即启动 Python 中间人脚本接管会话。&lt;/p&gt;
+&lt;p&gt;攻击者：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -939,44 +962,9 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;AAAAAAAA
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;hr&gt;
-&lt;h1 id=&#34;二arp-攻击原理&#34;&gt;二、ARP 攻击原理
-&lt;/h1&gt;&lt;h2 id=&#34;arp-协议原理&#34;&gt;ARP 协议原理
-&lt;/h2&gt;&lt;p&gt;ARP 用于建立：
-IP地址 ↔ MAC地址 映射关系&lt;/p&gt;
-&lt;p&gt;通信流程：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;广播 ARP 请求&lt;/li&gt;
-&lt;li&gt;目标主机响应&lt;/li&gt;
-&lt;li&gt;返回 MAC 地址&lt;/li&gt;
-&lt;li&gt;写入缓存&lt;/li&gt;
-&lt;/ol&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;arp-缓存机制&#34;&gt;ARP 缓存机制
-&lt;/h2&gt;&lt;p&gt;每个主机维护缓存表&lt;/p&gt;
-&lt;p&gt;特点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;有超时（约 60–120 秒）&lt;/li&gt;
-&lt;li&gt;可被更新覆盖&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;安全问题&#34;&gt;安全问题
-&lt;/h2&gt;&lt;p&gt;ARP 是无状态协议&lt;/p&gt;
-&lt;p&gt;任何主机收到 ARP 响应：
-→ 直接更新缓存&lt;/p&gt;
-&lt;p&gt;导致：
-ARP 可被欺骗&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;arp-缓存中毒攻击&#34;&gt;ARP 缓存中毒攻击
-&lt;/h2&gt;&lt;p&gt;原理：伪造 ARP 响应&lt;/p&gt;
-&lt;p&gt;攻击过程：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;发送假 ARP&lt;/li&gt;
-&lt;li&gt;受害者更新缓存&lt;/li&gt;
-&lt;li&gt;流量流向攻击者&lt;/li&gt;
-&lt;li&gt;实现中间人攻击&lt;/li&gt;
-&lt;/ol&gt;
-&lt;hr&gt;
+&lt;/div&gt;&lt;h3 id=&#34;发出攻击&#34;&gt;发出攻击
+&lt;/h3&gt;&lt;p&gt;验证攻击：在 Host A 终端发送字符串 seedlabs。&lt;/p&gt;
+&lt;p&gt;观察结果：Host B 终端实际接收到的内容为 AAAAAAAA，攻击成功且连接未断开。&lt;/p&gt;
 &lt;h2 id=&#34;攻击效果&#34;&gt;攻击效果
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;窃听通信&lt;/li&gt;
@@ -984,7 +972,6 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;li&gt;会话劫持&lt;/li&gt;
 &lt;li&gt;拒绝服务&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr&gt;
 &lt;h2 id=&#34;防御方法&#34;&gt;防御方法
 &lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;静态 ARP 绑定&lt;/li&gt;
@@ -992,19 +979,6 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;li&gt;端口安全&lt;/li&gt;
 &lt;li&gt;使用加密协议（HTTPS / SSH）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;实验核心结论总结&#34;&gt;实验核心结论总结
-&lt;/h2&gt;&lt;p&gt;ARP Request：
-可以直接创建伪造记录&lt;/p&gt;
-&lt;p&gt;ARP Reply：
-只能修改已有记录&lt;/p&gt;
-&lt;p&gt;MITM 成功条件：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;双向投毒&lt;/li&gt;
-&lt;li&gt;控制流量路径&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;TCP 篡改关键点：
-数据长度必须一致，否则连接会断开&lt;/p&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/29053435112&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Ubuntu 24.04 安装 docker 并配置镜像源 - 知乎&lt;/a&gt;&lt;/p&gt;
@@ -1021,7 +995,7 @@ ARP 可被欺骗&lt;/p&gt;
         
         <guid>https://th4uma.github.io/post/archlinux/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/linux.jpg" alt="Featured image of post Arch Linux &#43; Windows双系统安装与配置" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
-&lt;/h2&gt;&lt;p&gt;一直很想学Linux，但由于平时很忙，再加上我很讨厌枯燥的学习，就一直没有开始，前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;一直很想学Linux，但由于平时很忙，再加上我很讨厌背概念这种枯燥的学习，就一直没有开始。前段时间灵机一动，可以通过安装配置Arch Linux的过程来顺便学习，配置完成后还能作为主力系统使用&lt;/p&gt;
 &lt;p&gt;我准备在我的笔记本上安装，目前有一块500g的固态装了Windows，一块1T的固态作为资料盘，这次准备在不影响Windows的情况下，在1T固态中安装ArchLinux并和Windows共用资料分区&lt;/p&gt;
 &lt;h2 id=&#34;准备&#34;&gt;准备
 &lt;/h2&gt;&lt;h3 id=&#34;确定电脑启动类型&#34;&gt;确定电脑启动类型
@@ -1032,7 +1006,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h3 id=&#34;设置-windows-时区偏移&#34;&gt;设置 Windows 时区偏移
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows默认将硬件时钟当作本地时间，而Linux默认按UTC解释硬件时钟，这会导致双系统时间错乱。解决办法是在Windows里将硬件时间设置为UTC&lt;/p&gt;
+&lt;p&gt;Windows默认将硬件时钟当作本地时间，而Linux默认将硬件时钟当作UTC时间，这会导致双系统时间错乱。解决办法是在Windows里将硬件时间设置为UTC&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;管理员权限运行PowerShell，执行下面的命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1080,7 +1054,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载Arch Linux的&lt;a class=&#34;link&#34; href=&#34;https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;系统镜像&lt;/a&gt;X86  64版本&lt;/p&gt;
+    &gt;系统镜像&lt;/a&gt;X86_64版本&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://www.ventoy.net/cn/download.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -1092,7 +1066,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/ul&gt;
 &lt;img src=&#34;https://th4uma.github.io/post/aio/aio3.png&#34; style=&#34;width:60%;&#34;&gt;
 &lt;ul&gt;
-&lt;li&gt;选择U盘，点击安装，然后将ArchLinux的镜像复制进U盘&lt;/li&gt;
+&lt;li&gt;选择U盘，点击安装，完成后将ArchLinux的镜像复制进U盘&lt;/li&gt;
 &lt;/ul&gt;
 &lt;img src=&#34;https://th4uma.github.io/post/aio/aio4.png&#34; style=&#34;width:60%;&#34;&gt;
 &lt;h3 id=&#34;准备空闲的磁盘空间&#34;&gt;准备空闲的磁盘空间
@@ -1109,9 +1083,9 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;h2 id=&#34;启动与联网&#34;&gt;启动与联网
 &lt;/h2&gt;&lt;h3 id=&#34;进入arch-linux安装介质&#34;&gt;进入Arch Linux安装介质
 &lt;/h3&gt;&lt;p&gt;将刚刚制作的U盘插在电脑上，重启按&lt;code&gt;F12&lt;/code&gt;进入选择启动项的界面，选择U盘&lt;/p&gt;
-&lt;img src=&#34;8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;进入Ventoy界面，选择ArchLinux的镜像然后回车&lt;/p&gt;
 &lt;img src=&#34;9.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;进入Ventoy界面，选择ArchLinux的镜像然后回车&lt;/p&gt;
+&lt;img src=&#34;8.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;看到这个界面说明是UEFI模式启动的，回车即可&lt;/p&gt;
 &lt;img src=&#34;10.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;blockquote&gt;
@@ -1128,7 +1102,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;li&gt;Android 手机给电脑 USB 共享网络&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;我这里使用的是iwctl连接wifi，先进入iwctl&lt;/p&gt;
+&lt;p&gt;我这里使用的是iwctl连接WiFi，先进入iwctl&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1179,10 +1153,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;12.jpg&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;再重新进入 &lt;code&gt;iwctl&lt;/code&gt;，连接 WIFI。&lt;code&gt;device&lt;/code&gt; 需要替换成电脑网卡的设备名，&lt;code&gt;SSID&lt;/code&gt; 需要替换成想连接的 WiFi 名&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;注意：安装环境下shell不能识别中文，因此WiFI的名称和密码只能由英文字母，数字和常见符号组成，若有空格需要用双引号包裹。如果不符合命名规范，修改后等待信息刷新，重新连接即可&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;再重新进入 &lt;code&gt;iwctl&lt;/code&gt;，连接 WiFi。&lt;code&gt;device&lt;/code&gt;替换成电脑网卡的设备名，&lt;code&gt;SSID&lt;/code&gt;替换成想连接的 WiFi 名，如果 WiFi 有密码，这里会提示输入密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1191,7 +1162,9 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;station device connect SSID
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;如果 WiFi 有密码，这里会提示输入密码，输入 WiFi 密码后回车&lt;/p&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;注意：当前环境下shell不能识别中文，因此WiFi的名称和密码只能由英文字母、数字和常见符号组成，若包含空格需要用双引号包裹。如果不符合命名规范，修改SSID后等待信息刷新，重新连接即可&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;连接后输入 &lt;code&gt;exit&lt;/code&gt; 退出iwctl，测试是否成功联网，ping一下任意可直连的网址&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1237,6 +1210,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;/dev/nvme0n1&lt;/code&gt; ：代表NVMe SSD&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;/dev/mmcblk0&lt;/code&gt; ：代表eMMC 存储&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;p&gt;以&lt;code&gt;/dev/nvme0n1p1&lt;/code&gt; 中的数字为例：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;nvme&lt;/code&gt; ：设备类型&lt;/li&gt;
@@ -1244,26 +1218,24 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;li&gt;&lt;code&gt;n1&lt;/code&gt; ： 该控制器下的第几个命名空间&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;p1&lt;/code&gt; ： 第几个分区&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;我即将分区的盘是&lt;code&gt;/dev/nvme1n1&lt;/code&gt;，这里只会显示已分区的空间，所以看不到空闲空间&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;注意：之后的操作中一定不能搞错磁盘设备名，否则很可能导致数据丢失&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;我即将分区的盘是&lt;code&gt;/dev/nvme1n1&lt;/code&gt;，这里只会显示已分区的空间，所以看不到空闲空间&lt;/p&gt;
 &lt;h3 id=&#34;分区方案&#34;&gt;分区方案
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;首先确定根分区的格式，常见的格式有&lt;code&gt;btrfs&lt;/code&gt;和&lt;code&gt;ext4&lt;/code&gt;。&lt;code&gt;btrfs&lt;/code&gt; 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 &lt;code&gt;ext4&lt;/code&gt; 是一个稳定且性能优越的文件系统，尤其在稳定性和兼容性上表现更佳，适合追求稳定的人。我这里选用的是&lt;code&gt;btrfs&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;首先确定根分区的格式，常见的格式有&lt;code&gt;btrfs&lt;/code&gt;和&lt;code&gt;ext4&lt;/code&gt;。&lt;code&gt;btrfs&lt;/code&gt; 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 &lt;code&gt;ext4&lt;/code&gt; 是一个稳定、性能优越的文件系统，适合追求稳定的人。我这里选用的是&lt;code&gt;btrfs&lt;/code&gt;。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;启动分区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建&lt;code&gt;EFI 系统分区&lt;/code&gt;，通常挂载到 &lt;code&gt;/boot&lt;/code&gt;，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。&lt;/p&gt;
-&lt;p&gt;如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此，更稳妥的做法是为 Linux 创建单独的 EFI 分区&lt;/p&gt;
+&lt;p&gt;如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;交换分区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
-&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，不一定需要分区。&lt;/p&gt;
+&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，分区不是必须&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;根分区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
-&lt;p&gt;根分区用于存放操作系统及其所有文件。如果不单独划分 &lt;code&gt;/home&lt;/code&gt;，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整。&lt;/p&gt;
+&lt;p&gt;根分区用于存放操作系统及其所有文件。如果不单独划分 &lt;code&gt;/home&lt;/code&gt;，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;btrfs子卷&lt;/strong&gt;：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;由于我选择了 &lt;strong&gt;btrfs&lt;/strong&gt; 作为根分区的格式，因此可以利用子卷这个功能来实现分区隔离。类似在根分区这个大分区中划出多个小分区。&lt;/p&gt;
-&lt;p&gt;与传统的物理分区不同，子卷是动态共享空间的。这意味着不需要预先纠结给家目录分多少 GB，只要硬盘有剩余空间，子卷都能自动使用。同时重装系统时只需格式化 &lt;code&gt;@&lt;/code&gt; 子卷， &lt;code&gt;@home&lt;/code&gt; 数据依然会被完整保留。&lt;/p&gt;
+&lt;p&gt;与传统的物理分区不同，子卷是动态共享空间的。这样就不需要考虑给每个子卷分配多大空间的问题，只要硬盘有剩余空间，子卷都能自动使用。同时重装系统时只需格式化 &lt;code&gt;@&lt;/code&gt; 子卷， &lt;code&gt;@home&lt;/code&gt; 中的数据依然会被完整保留。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -1308,10 +1280,10 @@ ARP 可被欺骗&lt;/p&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h3 id=&#34;分区操作&#34;&gt;分区操作
-&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，所以下面的命令需要以自己磁盘的序号为准&lt;/strong&gt;&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，之后的操作需要以自己磁盘的情况为准，千万不要搞错磁盘设备名，否则很可能导致数据丢失&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的数据分区&lt;/p&gt;
-&lt;p&gt;由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux数据分区和Windows资料分区的大小，我让资料分区和数据分区相邻，分区的顺序是数据，swap，EFI&lt;/p&gt;
+&lt;p&gt;这里我准备分3个区，一个是1G的EFI分区，一个是4G的swap分区，一个是195G的根分区&lt;/p&gt;
+&lt;p&gt;由于我的Linux安装在磁盘的尾部空间，为了之后方便调整Linux根分区和Windows资料分区的大小，我让资料分区和根分区相邻，分区的顺序是根，swap，EFI&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入cfdisk&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1480,7 +1452,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /dev/nvme1n1p5 /mnt/boot
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount /dev/nvme1n1p5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;系统安装&#34;&gt;系统安装
@@ -1497,7 +1469,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl stop reflector.service 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;复查，然后按q退出&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;复查，可以看到&lt;code&gt;Active:inactive(dead)&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1508,10 +1480,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;21.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;更换源&#34;&gt;更换源
-&lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;编辑源的列表文件&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;编辑&lt;code&gt;mirrorlist&lt;/code&gt;文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1520,9 +1489,12 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.d/mirrorlist
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在文件第一行插入清华源，按i进行编辑&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;按&lt;code&gt;i&lt;/code&gt;进行编辑，在文件第一行插入清华源&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Pacman 会从上到下尝试，第一行成功后就不会再找后面的&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里我首先参考教程换了cernet源，但下载时会报错找不到文件，而且速度极慢，说明至少在我的环境中，这个源不可用，因此我最后改成了清华源&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1621,9 +1593,9 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/div&gt;&lt;img src=&#34;23.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;生成挂载表&#34;&gt;生成挂载表
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;fstab&lt;/code&gt; (File System Table) 是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;fstab&lt;/code&gt;是 Linux 的磁盘挂载表。它告诉系统在开机时，应该如何对应硬盘的不同分区挂载的目录&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;使用 &lt;code&gt;-U&lt;/code&gt; 参数生成 UUID（通用唯一识别码）。相比传统的 &lt;code&gt;/dev/sdX&lt;/code&gt; 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘，这是目前最稳妥的挂载方式&lt;/p&gt;
+&lt;p&gt;使用 &lt;code&gt;-U&lt;/code&gt; 参数生成 UUID（通用唯一识别码 ）。相比传统的 &lt;code&gt;/dev/sdX&lt;/code&gt; 命名，UUID即使插拔硬盘导致盘符变化，系统依然能准确找到启动盘&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1632,7 +1604,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;genfstab -U /mnt &amp;gt; /mnt/etc/fstab
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;执行之后，一定要检查 &lt;code&gt;/mnt/etc/fstab&lt;/code&gt;。Btrfs 的子卷挂载在 &lt;code&gt;fstab&lt;/code&gt; 里，如果没写对，重启后系统会挂载物理分区的根，导致找不到 &lt;code&gt;/home&lt;/code&gt; 里的数据。这里由于使用了子卷和压缩，生成的 &lt;code&gt;fstab&lt;/code&gt; 中会自动包含 &lt;code&gt;subvol=@&lt;/code&gt; 和 &lt;code&gt;compress=zstd&lt;/code&gt; 等参数&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;执行之后，一定要检查 &lt;code&gt;/mnt/etc/fstab&lt;/code&gt;。Btrfs 的子卷挂载在 &lt;code&gt;fstab&lt;/code&gt; 里，如果没写对，重启后系统会挂载物理分区的根，导致找不到 &lt;code&gt;/home&lt;/code&gt; 里的数据&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1641,7 +1613,8 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cat /mnt/etc/fstab
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;28.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/div&gt;&lt;p&gt;这里由于使用了子卷和压缩，生成的 &lt;code&gt;fstab&lt;/code&gt; 中会自动包含 &lt;code&gt;subvol=@&lt;/code&gt; 和 &lt;code&gt;compress=zstd&lt;/code&gt; 等参数&lt;/p&gt;
+&lt;img src=&#34;28.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;至此基本的安装就完成了&lt;/p&gt;
 &lt;h2 id=&#34;系统基本配置&#34;&gt;系统基本配置
 &lt;/h2&gt;&lt;p&gt;输入下面的命令进入安装好的系统环境，提示符由 &lt;code&gt;root@archiso ~ #&lt;/code&gt; 变为 &lt;code&gt;[root@archiso /]#&lt;/code&gt;&lt;/p&gt;
@@ -1737,7 +1710,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/hosts
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;将文件写成下面的格式&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;将文件写成下面的格式，如果系统有一个永久的 IP 地址，应该使用这个IP地址而不是 &lt;code&gt;127.0.1.1&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1745,15 +1718,12 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;127.0.0.1	localhost
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;::1	localhost
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;127.0.1.1	主机名.localdomain	主机名
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;127.0.0.1    localhost
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;::1          localhost
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;127.0.1.1    主机名.localdomain 主机名
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;如果系统有一个永久的 IP 地址，应该使用这个永久的 IP 地址而不是 &lt;code&gt;127.0.1.1&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;img src=&#34;25.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;25.jpg&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;按 &lt;code&gt;Esc&lt;/code&gt;，输入 &lt;code&gt;:wq&lt;/code&gt; 保存退出&lt;/p&gt;
 &lt;h3 id=&#34;本地化与时区&#34;&gt;本地化与时区
 &lt;/h3&gt;&lt;p&gt;编辑&lt;code&gt;locale.gen&lt;/code&gt;文件&lt;/p&gt;
@@ -1787,9 +1757,9 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;locale-gen
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;设置系统默认语言&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;修改&lt;code&gt;locale.conf&lt;/code&gt;来设置系统默认语言为英文&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;locale-conf是全局设置，设置成英文是为了避免部分程序或终端在中文环境下显示异常，且系统的日志会用英文显示，这样更容易判断和处理问题。LANG的值必须是上一步已经设置过的值&lt;/p&gt;
+&lt;p&gt;locale.conf是全局设置，设置成英文是为了避免部分程序或终端在中文环境下显示异常，且系统的日志会用英文显示，更容易排查问题。LANG的值必须是上一步已经设置过的值&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1812,7 +1782,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;安装引导程序&#34;&gt;安装引导程序
-&lt;/h2&gt;&lt;p&gt;这是安装的最后一步也是关键的一步，必须正确安装好引导加载程序后再重新启动，否则重启后将无法正常进入 Arch Linux 系统&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;这是启动系统前的最后一步，必须正确安装好引导加载程序后再重启，否则将无法正常进入 Arch Linux 系统&lt;/p&gt;
 &lt;h3 id=&#34;基本配置&#34;&gt;基本配置
 &lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1848,14 +1818,15 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;install&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x86_64&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;efi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;directory&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;boot&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bootloader&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;--&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;recheck&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;编辑&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;etc&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;grub&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;`&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;将grub的语言设置为英文：&lt;/strong&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;编辑 &lt;code&gt;/etc/default/grub&lt;/code&gt;：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;将grub的语言设置为英文：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;在文件顶端添加一行&lt;code&gt;LANG=C&lt;/code&gt;，这是为了防止只有一部分有翻译，显示混乱的情况&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;让grub记住上次选择的选项：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;将&lt;code&gt;GRUB_DEFAULT&lt;/code&gt;改为&lt;code&gt;saved&lt;/code&gt;，&lt;code&gt;GRUB_SAVEDEFAULT=true&lt;/code&gt;取消注释&lt;/p&gt;
@@ -1882,7 +1853,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;30.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;生成grub配置文件，输出的found后面就是系统，这里可以检查一下是否包含Linux和Windows，如果包含说明一切正常&lt;/p&gt;
+&lt;p&gt;生成grub配置文件，输出的&lt;code&gt;Found&lt;/code&gt;后面就是系统，这里可以检查一下是否包含&lt;code&gt;Linux&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1892,7 +1863,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;31.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;到了这一步ArchLinux就安装成功了，首先退出chroot，&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
+&lt;p&gt;到了这一步ArchLinux就安装成功了，首先退出chroot，卸载&lt;code&gt;/mnt&lt;/code&gt;分区，&lt;code&gt;reboot&lt;/code&gt;重启&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1920,7 +1891,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：此步骤修改的是grub的配置文件，修改后重新生成配置会导致修改被覆盖&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;查看Windows的EFI分区信息，nvme0n1p1替换为自己电脑efi分区的盘符，记住这里的UUID。这个是win系统启动分区的uuid，这个分区可以和linux启动分区不在同一块物理磁盘上&lt;/p&gt;
+&lt;p&gt;查看Windows的EFI分区信息，&lt;code&gt;nvme0n1p1&lt;/code&gt;替换为自己电脑efi分区的盘符，记住这里的UUID。这个是Windows启动分区的UUID&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1930,7 +1901,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;34.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;输入命令打开文件&lt;/p&gt;
+&lt;p&gt;打开配置文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1976,8 +1947,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;p&gt;重启后Windows启动项就被添加到引导界面了&lt;/p&gt;
 &lt;img src=&#34;41.jpg&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h2 id=&#34;后续&#34;&gt;后续
-&lt;/h2&gt;&lt;p&gt;启动后先使用root用户登录&lt;/p&gt;
-&lt;p&gt;可以看一下版本信息和arch Linux图标&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;启动后先进行登录，可以看一下版本信息&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1990,7 +1960,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;44.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;联网&#34;&gt;联网
-&lt;/h3&gt;&lt;p&gt;启动联网服务，并设为开机自启&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;开启联网服务，并设为开机自启&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2020,7 +1990,10 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/div&gt;&lt;p&gt;连接好后用&lt;code&gt;ping&lt;/code&gt;命令测试网络&lt;/p&gt;
 &lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;dns服务配置&#34;&gt;DNS服务配置
-&lt;/h3&gt;&lt;p&gt;NetworkManager 默认自带的 DNS 管理功能较为简单，可以开启 &lt;code&gt;systemd-resolved&lt;/code&gt; 配合使用，这也是很多发行版的默认方案：&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;NetworkManager 负责管理网络连接，但它的 DNS 处理方式相对基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;启用服务&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2029,7 +2002,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;systemctl enable --now systemd-resolved.service
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;接下来设置配置文件：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;将系统 DNS 入口切换为 systemd-resolved 提供的 stub 接口&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2038,7 +2011,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;检查一下符号链接是否正常：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;检查是否生效&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2047,19 +2020,13 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /etc/resolv.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;应该见到类似这样的输出：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;前面是各种权限和日期信息&amp;gt; /etc/resolv.conf -&amp;gt; ../run/systemd/resolve/stub-resolv.conf
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;如果符号链接正确，那 &lt;code&gt;systemd-resolved&lt;/code&gt; 就应该被正确启用了，随后重启来开启服务&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;当 &lt;code&gt;/etc/resolv.conf&lt;/code&gt; 指向 systemd-resolved 的 stub 文件时，说明 DNS 解析已由 systemd-resolved 统一接管&lt;/p&gt;
 &lt;img src=&#34;42.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;添加软件源&#34;&gt;添加软件源
-&lt;/h3&gt;&lt;p&gt;编辑 pacman.conf 文件&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;pacman 默认只使用官方仓库，如果需要使用社区软件，需要手动添加第三方源&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;编辑&lt;code&gt;pacman.conf&lt;/code&gt;文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2068,7 +2035,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim /etc/pacman.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在文件末尾添加以下内容：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在文件末尾添加下面的内容，加入archlinuxcn仓库&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2079,7 +2046,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;把&lt;code&gt;multilib&lt;/code&gt;所在的两行注释，开启32位库的支持&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;删除这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2091,7 +2058,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;43.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;保存退出后然后安装 GPG key&lt;/p&gt;
+&lt;p&gt;更新软件包索引并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2103,7 +2070,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;安装-yay&#34;&gt;安装 yay
-&lt;/h3&gt;&lt;p&gt;yay 是常用的 AUR 助手，可以方便安装社区软件。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;yay是AUR工具，可以自动构建和安装社区软件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2112,10 +2079,10 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S yay
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;避免使用 &lt;code&gt;sudo yay&lt;/code&gt;，保持普通用户执行，sudo会导致文件权限过高从而损坏某些文件&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;安装成功后进行测试&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;使用 yay 时不要使用 sudo，因为 AUR 构建过程会在本地生成文件，使用 root 权限会导致文件归属异常，导致后续产生一系列错误&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;测试安装示例：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2128,17 +2095,16 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;/h3&gt;&lt;p&gt;sudo pacman -S timeshift&lt;/p&gt;
 &lt;h2 id=&#34;安装gui&#34;&gt;安装GUI
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。日常使用肯定是安装一个桌面会更加方便&lt;/p&gt;
-&lt;p&gt;如果想要图形化的桌面环境，那么需要设置一个显示服务器、显示管理器与桌面环境。显示服务器的最佳选择是 X.Org&lt;/p&gt;
+&lt;p&gt;明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。如果想要图形化的桌面环境，就需要设置显示服务器、显示管理器与桌面环境&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;安装X.Org&lt;/p&gt;
+&lt;p&gt;安装X.Org作为显示服务器&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -Syu
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -Syu
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S xorg
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
@@ -2199,7 +2165,7 @@ ARP 可被欺骗&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
-          &lt;th&gt;&lt;code&gt;1 &lt;/code&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
           &lt;th&gt;&lt;code&gt;pacman -S plasma-wayland &lt;/code&gt;&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
@@ -2210,7 +2176,6 @@ ARP 可被欺骗&lt;/p&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;Copy&lt;/p&gt;
 &lt;p&gt;如果你使用 Nvida 显卡，则需要额外安装 egl-wayland：&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
@@ -2226,9 +2191,16 @@ ARP 可被欺骗&lt;/p&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;Copy&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;输入如下命令设置 SDDM 开机自启：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nvidia` (或 `nvidia-lts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;输入如下命令设置 SDDM 开机自启：&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
