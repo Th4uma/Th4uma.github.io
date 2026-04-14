@@ -325,11 +325,14 @@ unicode: "f6d2"
         <li><a href="#dns服务配置">DNS服务配置</a></li>
         <li><a href="#添加软件源">添加软件源</a></li>
         <li><a href="#安装-yay">安装 yay</a></li>
-        <li><a href="#快照">快照</a></li>
-        <li><a href="#网络-gui">网络 GUI</a></li>
-        <li><a href="#字体">字体</a></li>
-        <li><a href="#音频">音频</a></li>
-        <li><a href="#浏览器">浏览器</a></li>
+        <li><a href="#中文支持">中文支持</a>
+          <ol>
+            <li><a href="#字体">字体</a></li>
+            <li><a href="#输入法">输入法</a></li>
+          </ol>
+        </li>
+        <li><a href="#蓝牙">蓝牙</a></li>
+        <li><a href="#其他">其他</a></li>
       </ol>
     </li>
     <li><a href="#显卡驱动">显卡驱动</a></li>
@@ -1511,19 +1514,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S google-chrome
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="快照">快照
-</h3><p>sudo pacman -S timeshift</p>
-<h3 id="网络-gui">网络 GUI
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S network-manager-applet
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="字体">字体
-</h3><ul>
+</div><h3 id="中文支持">中文支持
+</h3><h4 id="字体">字体
+</h4><ul>
 <li>Google Noto Fonts 系列 noto-fonts noto-fonts-cjk noto-fonts-emoji</li>
 <li>思源黑体 adobe-source-han-sans-otc-fonts</li>
 <li>文泉驿 wqy-microhei wqy-zenhei</li>
@@ -1536,50 +1529,114 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="音频">音频
-</h3><div class="highlight"><div class="chroma">
+</div><h4 id="输入法">输入法
+</h4><p>安装 fcitx 输入法模块：</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S pipewire pipewire-pulse wireplumber
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S fcitx5-im fcitx5-chinese-addons
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="浏览器">浏览器
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S firefox
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="显卡驱动">显卡驱动
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S nvidia nvidia-lts
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="table-wrapper"><table>
+</div><p>配置输入法的环境变量，输入如下命令编辑 /etc/environment</p>
+<div class="table-wrapper"><table>
   <thead>
       <tr>
-          <th><code>linux-headers</code> <code>linux-lts-headers</code> <code>linux-zen-headers</code></th>
-          <th>内核相应的头文件</th>
-          <th>非必需，但是对NVIDIA显卡以及其它硬件安装的<code>dkms</code>驱动是必需的</th>
+          <th><code>1 </code></th>
+          <th><code>sudo nano /etc/environment </code></th>
       </tr>
   </thead>
   <tbody>
       <tr>
           <td></td>
           <td></td>
+      </tr>
+  </tbody>
+</table></div>
+<p>Copy</p>
+<p>在文件中添加以下内容：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><code>1 2 3 4 </code></th>
+          <th><code>GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx SDL_IM_MODULE=fcitx </code></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td></td>
           <td></td>
       </tr>
   </tbody>
 </table></div>
-<p>.2 确定是否为 Optimus (双显卡) 系统</p>
+<p>　　修改完成后，保存退出。</p>
+<blockquote>
+<p>重启电脑后在 fcitx 设置即可选择中文输入法。你也可以根据自己的需求安装其他输入法，如搜狗输入法。</p>
+</blockquote>
+<h3 id="蓝牙">蓝牙
+</h3><p>安装蓝牙并启动蓝牙服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bluez bluez-utils
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> bluetooth.service
+</span></span><span class="line"><span class="cl">sudo systemctl start bluetooth.service
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装蓝牙音频</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S pulseaudio-bluetooth
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>蓝牙图形化管理工具安装</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bluedevil
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="其他">其他
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><strong>软件包</strong></th>
+          <th><strong>作用</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>pipewire pipewire-pulse wireplumber</code></td>
+          <td>系统音频服务</td>
+      </tr>
+      <tr>
+          <td><code>firefox</code></td>
+          <td>浏览器</td>
+      </tr>
+      <tr>
+          <td><code>network-manager-applet</code></td>
+          <td>NetworkManager 图形化托盘</td>
+      </tr>
+      <tr>
+          <td><code>timeshift</code></td>
+          <td>系统快照与备份工具</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="显卡驱动">显卡驱动
+</h2><p>首先安装内核相应的头文件</p>
+<p><code>linux-headers</code> <code>linux-lts-headers</code> `linux-zen-headers</p>
+<p>确定是否为 Optimus (双显卡) 系统</p>
 <p>大多数笔记本电脑（特别是游戏本）都配备了 Intel/AMD 集成显卡（iGPU）和 NVIDIA 独立显卡（dGPU），这种架构称为 <strong>Optimus</strong>。桌面用户通常是单 NVIDIA 显卡。</p>
 <p>运行以下命令检查：</p>
 <div class="highlight"><div class="chroma">
@@ -1660,49 +1717,13 @@ unicode: "f6d2"
 </table></div>
 <p><strong>最佳实践</strong>：</p>
 <ul>
-<li>若使用官方内核且追求稳定：选择 <code>nvidia</code>。</li>
-<li>若使用非官方内核（如 <code>linux-zen</code>）或频繁更新内核：选择 <code>nvidia-dkms</code>（推荐大多数用户）。</li>
-<li>新显卡（如 RTX 40 系）可能需要 <code>nvidia-open</code>（需确认 <a class="link" href="https://docs.nvidia.com/datacenter/tesla/drivers/open-gpu-kernel-modules/index.html"  target="_blank" rel="noopener"
-    >NVIDIA 开源驱动支持列表</a>）。</li>
+<li>
+<p>若使用官方内核且追求稳定：选择 <code>nvidia</code>。</p>
+</li>
+<li>
+<p>若使用非官方内核（如 <code>linux-zen</code>）或频繁更新内核：选择 <code>nvidia-dkms</code>（推荐大多数用户）。</p>
+</li>
 </ul>
-<ol start="3">
-<li>驱动安装：从基础到进阶步骤<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#3-qu1-dong4-an1-zhuang1-cong2-ji1-chu3-dao4-jin4-jie1-bu4-zhou4"  target="_blank" rel="noopener"
-    >#</a></li>
-</ol>
-<p>3.1 禁用开源驱动 Nouveau<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#31-jin4-yong4-kai1-yuan2-qu1-dong4-nouveau"  target="_blank" rel="noopener"
-    >#</a>NVIDIA 闭源驱动与开源驱动 <code>nouveau</code> 冲突，必须先禁用 <code>nouveau</code>：</p>
-<p>步骤 1：检查 Nouveau 是否加载<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#bu4-zhou4-1-jian3-cha2-nouveau-shi4-fou3-jia1-zai4"  target="_blank" rel="noopener"
-    >#</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lsmod | grep nouveau  # 若输出结果，说明 nouveau 正在运行
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>步骤 2：创建黑名单文件<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#bu4-zhou4-2-chuang4-jian4-hei1-ming2-dan1-wen2-jian4"  target="_blank" rel="noopener"
-    >#</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo tee /etc/modprobe.d/blacklist-nouveau.conf &lt;&lt;EOFblacklist nouveauoptions nouveau modeset=0EOF
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>步骤 3：重建 initramfs（初始化内存文件系统）<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#bu4-zhou4-3-chong2-jian4-initramfs-chu1-shi3-hua4-nei4-cun2-wen2-jian4-xi4-tong3"  target="_blank" rel="noopener"
-    >#</a></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo mkinitcpio -P  # -P 表示重建所有预设的 initramfs 镜像
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>3.2 安装闭源驱动<a class="link" href="https://geek-blogs.com/blog/arch-linux-nvidia/#32-an1-zhuang1-bi4-yuan2-qu1-dong4"  target="_blank" rel="noopener"
-    >#</a></p>
 <p>根据第 2 节选择的包，执行安装命令。以 <code>nvidia-dkms</code> 为例（兼容性最好）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1742,6 +1763,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>若输出类似以下内容，说明驱动安装成功：</p>
+<p>dkms 和 utils 必须版本一致，不能混用官方仓库与 AUR 版本</p>
 <h2 id="安装gui">安装GUI
 </h2><blockquote>
 <p>明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。如果想要图形化的桌面环境，就需要设置显示服务器、显示管理器与桌面环境</p>
@@ -2142,7 +2164,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">19</span> 
       篇 ，总计 
-      <span class="number-highlight">63.81</span> 
+      <span class="number-highlight">63.79</span> 
       k 字
   </div>
   <div>
