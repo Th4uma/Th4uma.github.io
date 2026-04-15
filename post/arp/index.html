@@ -302,15 +302,8 @@ unicode: "f6d2"
         <li><a href="#数据篡改">数据篡改</a></li>
       </ol>
     </li>
-    <li><a href="#任务三netcat-中间人攻击">任务三：Netcat 中间人攻击</a>
-      <ol>
-        <li><a href="#建立连接">建立连接</a></li>
-        <li><a href="#接管流量">接管流量</a></li>
-        <li><a href="#发出攻击">发出攻击</a></li>
-      </ol>
-    </li>
-    <li><a href="#攻击效果">攻击效果</a></li>
-    <li><a href="#防御方法">防御方法</a></li>
+    <li><a href="#任务三netcat-中间人攻击">任务三：Netcat 中间人攻击</a></li>
+    <li><a href="#结论">结论</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -509,11 +502,9 @@ unicode: "f6d2"
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone https://github.com/seed-labs/seed-labs.git
-</span></span><span class="line"><span class="cl">cd seed-labs/category-network/ARP_Attack/Labsetup
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>启动实验环境：</p>
@@ -521,10 +512,12 @@ unicode: "f6d2"
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker compose up -d
-</span></span><span class="line"><span class="cl">sudo docker ps
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd seed-labs/category-network/ARP_Attack/Labsetup
+</span></span><span class="line"><span class="cl">sudo docker compose build
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
@@ -560,11 +553,19 @@ unicode: "f6d2"
 </div>
 </div><p>判断是执行权限不足，命令前加sudo解决</p>
 <img src="2.png" style="width: 100%;" />
-<p><strong>出现这个报错：the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion</strong></p>
+<p><strong>出现这个警告：the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion</strong></p>
 <p>是因为<code>docker-compose.yml</code> 文件中的 <code>version:</code> 字段在 Docker Compose v1.27.0+ 和 v2 中已经被弃用，不再需要指定，因此手动编辑删除即可</p>
 <img src="4.png" style="width: 100%;" />
 </blockquote>
-<p>记录三个主机：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker ps
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>记录三个主机：</p>
 <ul>
 <li>Host A：10.9.0.5</li>
 <li>Host B：10.9.0.6</li>
@@ -640,7 +641,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">./arp_request.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="5.png" style="width: 80%;" />
+</div><img src="5.png" style="width: 70%;" />
 <p>查看攻击者MAC</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -975,6 +976,9 @@ unicode: "f6d2"
 <img src="11.png" style="width: 100%;" />
 <p>容器 B 查看 ARP 缓存，可以发现显示的是容器A的IP地址和攻击者的MAC</p>
 <img src="12.png" style="width: 100%;" />
+<blockquote>
+<p>ARP 缓存是有状态和生命周期的，且会被正常 ARP 报文刷新，因此攻击者必须持续高频发送伪造报文与合法更新竞争，才能维持投毒效果</p>
+</blockquote>
 <h3 id="ip-转发">IP 转发
 </h3><blockquote>
 <p>投毒完成后，攻击者实际上变成A与B的路由器，因此M开不开启IP转发会对A与B的通信产生影响</p>
@@ -1278,11 +1282,9 @@ unicode: "f6d2"
 <img src="16.png" style="width: 60%;" />
 <h2 id="任务三netcat-中间人攻击">任务三：Netcat 中间人攻击
 </h2><blockquote>
-<p>实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信，将特定字符串 seedlabs 替换为 AAAAAAAA。</p>
+<p>实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信并篡改信息内容</p>
 </blockquote>
-<h3 id="建立连接">建立连接
-</h3><p>由于 Netcat 需要完成 TCP 三次握手，为避免 Python 脚本处理过慢导致握手超时，首先在攻击者 M 中开启内核转发 (ip_forward=1)。随后在 Host B 监听端口，并在 Host A 发起连接。</p>
-<p>攻击者开启IP转发</p>
+<p>由于 Netcat 需要完成 TCP 三次握手，为避免 Python 脚本处理过慢导致握手超时，首先在攻击者 M 中开启内核转发</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1291,74 +1293,54 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=1
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>建立连接：</p>
+</div><p>主机 B 终端开启 Netcat 监听：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nc -lp 9090
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主机 A 终端发起 Netcat 连接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nc 10.9.0.6 9090
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>测试：在 A 输入任意信息，确认 B 能收到，说明连接已建立。之后保持这两个窗口开启</p>
+<img src="17.png" style="width: 60%;" />
+<p>确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话</p>
+<blockquote>
+<p>经过测试发现，此环境下即使不先开启再关闭IP转发，而是保持关闭状态，脚本依然可以完成篡改</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># B
-</span></span><span class="line"><span class="cl">nc -lp 9090
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># A
-</span></span><span class="line"><span class="cl">nc 10.9.0.6 9090
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
+</span></span><span class="line"><span class="cl">./mitm_tcp.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="接管流量">接管流量
-</h3><p>流量接管与篡改：确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发 (ip_forward=0) 切断原生路由，并立即启动 Python 中间人脚本接管会话。</p>
-<p>攻击者：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=1
-</span></span><span class="line"><span class="cl"># 建立连接后
-</span></span><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
-</span></span><span class="line"><span class="cl">python3 mitm_tcp.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>发送：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">seedlabs
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>结果：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAAAAAAA
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="发出攻击">发出攻击
-</h3><p>验证攻击：在 Host A 终端发送字符串 seedlabs。</p>
-<p>观察结果：Host B 终端实际接收到的内容为 AAAAAAAA，攻击成功且连接未断开。</p>
-<h2 id="攻击效果">攻击效果
-</h2><ul>
-<li>窃听通信</li>
-<li>篡改数据</li>
-<li>会话劫持</li>
-<li>拒绝服务</li>
+</div><p>这时在A终端发送任意字符串，可以发现B终端实际接收到的内容全部变成了<code>A</code>，攻击成功且连接未断开。而由B发送给A的消息一切正常，因为我在脚本中只写了篡改A发送给B的消息</p>
+<img src="18.png" style="width: 60%;" />
+<h2 id="结论">结论
+</h2><p>攻击效果：</p>
+<ul>
+<li>通过 ARP 投毒实现链路劫持，使通信流量强制经过攻击者</li>
+<li>在 Telnet / Netcat 明文通信中成功篡改应用层数据</li>
+<li>在关闭转发时可造成通信中断，体现拒绝服务效果</li>
 </ul>
-<h2 id="防御方法">防御方法
-</h2><ul>
-<li>静态 ARP 绑定</li>
-<li>动态 ARP 检测（DAI）</li>
-<li>端口安全</li>
-<li>使用加密协议（HTTPS / SSH）</li>
+<p>防御方法:</p>
+<ul>
+<li>使用静态 ARP 或 DAI 防止缓存被篡改</li>
+<li>避免使用 Telnet / Netcat 等明文协议</li>
+<li>通过 HTTPS / SSH 等加密协议防止中间人读取或修改数据</li>
 </ul>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://zhuanlan.zhihu.com/p/29053435112"  target="_blank" rel="noopener"
@@ -1435,6 +1417,25 @@ unicode: "f6d2"
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/dns/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/dns.jpg" loading="lazy" data-key="" data-hash="/images/cover/dns.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS重绑定攻击实验</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">
@@ -1704,10 +1705,14 @@ unicode: "f6d2"
       
       
       
+      
+      
+      
+      
       共发表文章 
-      <span class="number-highlight">19</span> 
+      <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">63.86</span> 
+      <span class="number-highlight">67.85</span> 
       k 字
   </div>
   <div>
@@ -1751,6 +1756,10 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
         
         
         

@@ -7,7 +7,548 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Sat, 11 Apr 2026 14:03:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 15 Apr 2026 21:31:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Arch Linux &#43; KDE Plasma 基本设置与美化</title>
+        <link>https://th4uma.github.io/post/arch_after/</link>
+        <pubDate>Wed, 15 Apr 2026 21:31:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/arch_after/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/arch.jpg" alt="Featured image of post Arch Linux &#43; KDE Plasma 基本设置与美化" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+&lt;/h2&gt;&lt;p&gt;新装好的系统就像毛坯房一样，能用但不好用，所以最基本的配置和美化还是要有的&lt;/p&gt;
+&lt;h2 id=&#34;中文支持&#34;&gt;中文支持
+&lt;/h2&gt;&lt;h3 id=&#34;字体&#34;&gt;字体
+&lt;/h3&gt;&lt;p&gt;常用中文字体如下，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Google Noto Fonts 系列：&lt;code&gt;noto-fonts&lt;/code&gt;、&lt;code&gt;noto-fonts-cjk&lt;/code&gt;、&lt;code&gt;noto-fonts-emoji&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;思源黑体：&lt;code&gt;adobe-source-han-sans-otc-fonts&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;文泉驿：&lt;code&gt;wqy-microhei&lt;/code&gt;、&lt;code&gt;wqy-zenhei&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji adobe-source-han-sans-otc-fonts wqy-microhei wqy-zenhei
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;设置中文区域&#34;&gt;设置中文区域
+&lt;/h3&gt;&lt;p&gt;在当前用户目录创建 &lt;code&gt;.xprofile&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano ~/.xprofile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;写入内容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LANG&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zh_CN&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LANGUAGE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zh_CN&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;en_US&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LC_CTYPE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;en_US&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;保存退出&lt;/p&gt;
+&lt;h3 id=&#34;系统设置中文&#34;&gt;系统设置中文
+&lt;/h3&gt;&lt;p&gt;之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为当时还没有中文字体，在&lt;code&gt;/etc/locale.conf&lt;/code&gt;中全局设置中文locale会导致tty显示乱码，这是由于&lt;a class=&#34;link&#34; href=&#34;https://unix.stackexchange.com/questions/273061/273063#273063&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Linux内核的tty字形限制&lt;/a&gt;。要在tty下正确显示中文字符&lt;/p&gt;
+&lt;p&gt;点击开始菜单的&lt;code&gt;System settings&lt;/code&gt;，找到Region&amp;amp;Language选项，然后点进去点击添加，找到简体中文，最后重启应用设置&lt;/p&gt;
+&lt;img src=&#34;1.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;h3 id=&#34;输入法&#34;&gt;输入法
+&lt;/h3&gt;&lt;p&gt;安装 fcitx5 输入法及中文支持&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sudo&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pacman&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;S&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fcitx5&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;im&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fcitx5&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;chinese&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addons&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fcitx5&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;configtool&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;配置环境变量，编辑文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo vim /etc/environment
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;添加以下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GTK_IM_MODULE=fcitx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;QT_IM_MODULE=fcitx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;XMODIFIERS=@im=fcitx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SDL_IM_MODULE=fcitx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;完成后，还需要打开&lt;code&gt;设置-&amp;gt;键盘-&amp;gt;虚拟键盘&lt;/code&gt;，选择fctix5并保存&lt;/p&gt;
+&lt;img src=&#34;2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;重启系统，右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的输入法添加即可&lt;/p&gt;
+&lt;img src=&#34;3.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;h2 id=&#34;蓝牙&#34;&gt;蓝牙
+&lt;/h2&gt;&lt;p&gt;安装蓝牙并启动蓝牙服务&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S bluez bluez-utils
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; bluetooth.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl start bluetooth.service
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;安装音频支持与蓝牙图形管理工具&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S pipewire pipewire-pulse wireplumber bluedevil
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;bluedevil 只适用于 KDE，GNOME / i3 应该用 blueman&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;快照&#34;&gt;快照
+&lt;/h2&gt;&lt;p&gt;使用btrfs文件格式，最重要的功能就是快照，这样哪怕把系统搞崩了也可以随时恢复，非常方便&lt;/p&gt;
+&lt;p&gt;2.1 安装依赖#
+根据你使用的快照模式（rsync 或 Btrfs），需提前安装对应依赖：
+Btrfs 模式（仅适用于 Btrfs 文件系统）：
+额外依赖 btrfs-progs（Btrfs 工具集）：&lt;/p&gt;
+&lt;p&gt;sudo pacman -S rsync util-linux btrfs-progs
+2.2 安装 Timeshift#
+通过 AUR 助手（如 yay 或 paru）安装 Timeshift：&lt;/p&gt;
+&lt;h1 id=&#34;使用-yay-安装&#34;&gt;使用 yay 安装
+&lt;/h1&gt;&lt;p&gt;yay -S timeshift&lt;/p&gt;
+&lt;p&gt;timeshift &amp;ndash;version  # 查看 CLI 版本
+timeshift-launcher   # 启动图形界面（可选）
+3. 基础配置：首次使用向导#
+首次启动 Timeshift 时（无论是 GUI 还是 CLI），会引导你完成基础配置。以下分别介绍图形界面和命令行配置流程。&lt;/p&gt;
+&lt;p&gt;3.1 图形界面（GUI）配置#
+启动 Timeshift：从应用菜单搜索“Timeshift”或运行 timeshift-launcher，首次打开需输入密码授权。
+选择快照类型：
+Btrfs：若系统根分区（/）为 Btrfs，推荐选择此项（利用原生快照，速度快、省空间）。
+Rsync：适用于 ext4、XFS 等其他文件系统（基于文件复制，兼容性更广）。
+选择快照源与目标：
+源分区：默认选择根分区（/），无需修改。
+目标分区：选择存储快照的位置（建议使用独立分区或外部硬盘，避免与根分区共损）。
+配置快照计划：
+在“Schedule”标签页中，勾选需要自动创建的快照类型（如“Daily”“Weekly”），并设置保留数量（如“保留 5 个每日快照”）。
+排除目录（可选）：
+在“Filters”标签页中，添加无需备份的目录（如 /home 下的用户数据、/tmp 临时文件等）。Timeshift 默认排除 /home，因为它更适合用于系统状态备份，而非用户数据（用户数据建议用专用工具如 Deja Dup 备份）。
+保存配置：点击“OK”完成基础配置。&lt;/p&gt;
+&lt;h1 id=&#34;设置保留-3-个每日快照2-个每周快照&#34;&gt;设置保留 3 个每日快照、2 个每周快照
+&lt;/h1&gt;&lt;p&gt;sudo timeshift &amp;ndash;set-schedule daily 3 weekly 2
+5. 恢复系统：从快照还原#
+当系统因更新失败、配置错误或文件损坏无法启动时，可通过 Timeshift 快照快速恢复。恢复场景分为两种：从运行中的系统恢复（适用于非关键故障）和 从 Live CD 恢复（适用于系统无法启动）。&lt;/p&gt;
+&lt;p&gt;5.1 从运行中的系统恢复（GUI/CLI）#
+GUI 方式#
+打开 Timeshift，在左侧“Snapshots”列表中选择需恢复的快照（建议选择最近的稳定快照）。
+点击“Restore”按钮，确认目标分区（通常为根分区 /）。
+可选：在“Options”中勾选“Verify after restore”（恢复后验证文件完整性）。
+点击“Next”，等待恢复完成（过程中可能需要输入密码，恢复后需重启系统）。
+CLI 方式#
+基本命令格式：&lt;/p&gt;
+&lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lt;快照名称&amp;gt; &amp;ndash;target &amp;lt;目标分区&amp;gt;
+示例：恢复名称为 2024-05-20_10-30-00 的快照到根分区 /dev/sda2&lt;/p&gt;
+&lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lsquo;2024-05-20_10-30-00&amp;rsquo; &amp;ndash;target /dev/sda2
+注意：恢复过程会覆盖目标分区的文件，请确保快照包含你需要的系统状态。&lt;/p&gt;
+&lt;p&gt;5.2 从 Live CD/USB 恢复（系统无法启动时）#
+若系统无法启动，需通过 Arch Linux Live 环境恢复：&lt;/p&gt;
+&lt;p&gt;步骤 1：启动 Live 环境并挂载分区#
+使用 Arch Linux ISO 创建启动盘，启动后进入 Live 环境（选择“Arch Linux install medium”）。&lt;/p&gt;
+&lt;p&gt;识别根分区和快照存储分区（通过 lsblk 或 fdisk -l）：&lt;/p&gt;
+&lt;p&gt;lsblk  # 例如：根分区为 /dev/sda2，快照存储在 /dev/sdb1
+挂载根分区到 /mnt（若分区加密，需先通过 cryptsetup open 解锁）：
+8.3 合理控制快照数量#
+快照过多会占用大量磁盘空间，建议按以下原则设置保留数量：&lt;/p&gt;
+&lt;p&gt;每日快照：保留 3-5 个（覆盖一周内的日常变更）。
+每周快照：保留 2-4 个（覆盖一个月内的重大变更）。
+手动快照：按需保留（如“系统初始化完成”“软件配置完成”等里程碑快照）。
+8.4 分离系统快照与用户数据#
+Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数据（如 /home 下的文档、图片、配置）建议用专用工具备份：&lt;/p&gt;
+&lt;p&gt;9.3 Btrfs 快照恢复后数据丢失#
+原因：Btrfs 快照仅包含创建时的文件状态，若后续修改未被新快照捕获，恢复后会丢失。
+解决：启用自动快照计划，并在重大操作前手动创建快照。&lt;/p&gt;
+&lt;h2 id=&#34;背光&#34;&gt;背光
+&lt;/h2&gt;&lt;p&gt;突然发现我的界面非常暗，大概是windows的百分之八十亮度&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e8%83%8c%e5%85%89&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;背光 - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;常用软件&#34;&gt;常用软件
+&lt;/h2&gt;&lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
+&lt;/h2&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/hexiaolei/p/18114235&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;arch配置中文和输入法 - suiseiseki - 博客园&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://geek-blogs.com/blog/arch-linux-timeshift/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Arch Linux 系统备份与恢复利器：Timeshift 完全指南 — geek-blogs.com&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>DNS重绑定攻击实验</title>
+        <link>https://th4uma.github.io/post/dns/</link>
+        <pubDate>Tue, 14 Apr 2026 22:03:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/dns/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/dns.jpg" alt="Featured image of post DNS重绑定攻击实验" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
+&lt;/h2&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;节点类型&lt;/th&gt;
+          &lt;th&gt;IP 地址&lt;/th&gt;
+          &lt;th&gt;域名&lt;/th&gt;
+          &lt;th&gt;作用说明&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;靶机（IoT 恒温器）&lt;/td&gt;
+          &lt;td&gt;192.168.60.80&lt;/td&gt;
+          &lt;td&gt;无&lt;/td&gt;
+          &lt;td&gt;位于内网，被路由器防火墙保护的目标设备&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;本地 DNS 缓存服务器&lt;/td&gt;
+          &lt;td&gt;10.9.0.53&lt;/td&gt;
+          &lt;td&gt;无&lt;/td&gt;
+          &lt;td&gt;模拟受害者网络中的 DNS 解析与缓存&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;攻击者 Web 服务器&lt;/td&gt;
+          &lt;td&gt;10.9.0.180&lt;/td&gt;
+          &lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.attacker32.com&lt;/a&gt;&lt;/td&gt;
+          &lt;td&gt;提供恶意网页或脚本&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;攻击者 DNS 服务器&lt;/td&gt;
+          &lt;td&gt;10.9.0.153&lt;/td&gt;
+          &lt;td&gt;attacker32.com&lt;/td&gt;
+          &lt;td&gt;控制域名解析，实现 DNS 重绑定&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;实验原理&#34;&gt;实验原理
+&lt;/h2&gt;&lt;p&gt;IoT 设备部署在内网，外部无法直接访问，同时浏览器同源策略限制跨域请求。&lt;/p&gt;
+&lt;p&gt;DNS 重绑定的核心在于：
+浏览器只校验“域名是否一致”，而不关心该域名解析到的 IP 是否发生变化。&lt;/p&gt;
+&lt;p&gt;攻击流程本质是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;初始解析：域名 → 攻击者服务器&lt;/li&gt;
+&lt;li&gt;触发脚本执行（同源）&lt;/li&gt;
+&lt;li&gt;缓存过期后重新解析：域名 → 内网设备&lt;/li&gt;
+&lt;li&gt;浏览器继续信任该域名，从而向内网发起请求&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最终实现通过浏览器“跳板”访问内网设备。&lt;/p&gt;
+&lt;h2 id=&#34;修改firefox浏览器的dns缓存时间&#34;&gt;修改Firefox浏览器的DNS缓存时间
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需人为缩短该缓存时间&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在 Firefox 浏览器地址栏输入 &lt;code&gt;about:config&lt;/code&gt;并回车，接受风险提示，然后在搜索栏输入&lt;code&gt;network.dnsCacheExpiration&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;1.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;双击出现的两个结果&lt;code&gt;network.dnsCacheExpiration&lt;/code&gt;和&lt;code&gt;network.dnsCacheExpirationGracePeriod&lt;/code&gt;，将值更改为10秒，关闭浏览器使配置生效&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;这样可以更快触发二次解析&lt;/p&gt;
+&lt;h2 id=&#34;配置本地dns服务器&#34;&gt;配置本地DNS服务器
+&lt;/h2&gt;&lt;p&gt;将系统 DNS 指向实验环境中的 DNS 服务器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/resolvconf/resolv.conf.d/head
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;遇到问题：提示此文件不存在&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致文件目录不同&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;查看/etc/resolv.conf发现虽然文件存在但不可以编辑&lt;/p&gt;
+&lt;p&gt;可以看到这一行This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&amp;gt;&lt;/p&gt;
+&lt;p&gt;说明当前 DNS 由 systemd-resolved 管理&lt;/p&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;解决方法为修改 systemd-resolved 配置：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/systemd/resolved.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;添加这一行&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS=10.9.0.53
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;然后重启服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl restart systemd-resolved
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;resolvectl status&lt;/code&gt; 查看，发现 DNS 并未生效：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Link 2 (ens33)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DNS Servers: xxx.xxx.xxx.xxx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;那就是&lt;strong&gt;网卡在控制 DNS&lt;/strong&gt;&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;这是因为 systemd-resolved 的优先级机制中，网卡 DNS 高于 resolved.conf 配置，因此需要手动指定网卡 DNS：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo resolvectl dns ens33 10.9.0.53
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个命令是&lt;strong&gt;临时的&lt;/strong&gt;，重启就没了，好处是适合实验不影响环境&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;修改本地host文件&#34;&gt;修改本地Host文件
+&lt;/h2&gt;&lt;p&gt;将 IoT 域名映射到真实内网地址： 编辑 hosts 文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/hosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在文件末尾添加以下映射，保存并退出：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;192.168.60.80    www.seedIoT32.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;启动-docker-容器&#34;&gt;启动 &lt;strong&gt;Docker&lt;/strong&gt; 容器
+&lt;/h2&gt;&lt;p&gt;先在虚拟机里下载实验文件,如果没有 wget，也可以用浏览器下载再拖进去&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://seedsecuritylabs.org/Labs_20.04/Files/DNS_Rebinding/Labsetup.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;下载完在当前目录解压&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unzip Labsetup.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;这里一定要在 Linux 里解压，是因为 Windows 解压会把换行符从 LF 变成 CRLF，容器里的脚本在执行时就可能报 exec format error&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;解压后进入目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd Labsetup
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;启动实验环境&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose build
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在浏览器中分别访问&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.seedIoT32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.seedIoT32.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.attacker32.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;确认页面是否可以正常打开&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;出现问题：访问 &lt;code&gt;www.attacker32.com&lt;/code&gt; 显示 GoDaddy 停放页&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;通过命令验证：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dig www.attacker32.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;返回：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;www.attacker32.com → 198.18.1.137
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;同时验证攻击机服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http://10.9.0.180
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以正常访问，说明 Web 服务运行正常&lt;/p&gt;
+&lt;h2 id=&#34;验证同源策略&#34;&gt;验证同源策略
+&lt;/h2&gt;&lt;p&gt;依次访问并点击修改按钮：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.seedIoT32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.seedIoT32.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.seedIoT32.com/change&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.seedIoT32.com/change&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.attacker32.com/change&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.attacker32.com/change&lt;/a&gt;http://10.9.0.180&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;前两个可以成功修改温度，&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;第三个失败&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;原因在于浏览器同源策略阻止了跨域请求，可以在控制台看到 CORS 报错。&lt;/p&gt;
+&lt;h2 id=&#34;修改攻击脚本&#34;&gt;修改攻击脚本
+&lt;/h2&gt;&lt;p&gt;进入攻击者容器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker exec -it attacker-www-10.9.0.180 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;编辑 JS：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano /app/rebind_server/templates/js/change.js
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改为：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;let url_prefix = &amp;#39;http://www.attacker32.com&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启容器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker restart attacker-www-10.9.0.180
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;此时浏览器不再报同源错误，但请求仍然发往攻击者服务器，因此温度不会改变。&lt;/p&gt;
+&lt;h2 id=&#34;dns-重绑定攻击&#34;&gt;DNS 重绑定攻击
+&lt;/h2&gt;&lt;p&gt;进入攻击者 DNS 容器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it attacker-ns-10.9.0.153 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改配置：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano /etc/bind/zone_attacker32.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;调整：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将 TTL 设为较小值（0 或 10）&lt;/li&gt;
+&lt;li&gt;修改 A 记录：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;www    IN    A    192.168.60.80
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;刷新 DNS：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;rndc&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;reload&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;attacker32&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;com&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;rndc&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flush&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;攻击效果&#34;&gt;攻击效果
+&lt;/h2&gt;&lt;p&gt;等待 DNS 缓存过期后重新请求：&lt;/p&gt;
+&lt;p&gt;浏览器再次解析 &lt;a class=&#34;link&#34; href=&#34;https://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.attacker32.com&lt;/a&gt;，此时得到的是内网 IP。&lt;/p&gt;
+&lt;p&gt;由于域名未变，同源策略不会拦截，请求直接发送到内网 IoT 设备。&lt;/p&gt;
+&lt;p&gt;可以观察到温度被成功修改。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;结论&#34;&gt;结论
+&lt;/h2&gt;&lt;p&gt;DNS 重绑定利用了浏览器同源策略仅基于域名进行判断的特性，通过动态修改解析结果，使浏览器在不知情的情况下访问内网资源。&lt;/p&gt;
+&lt;p&gt;在本实验中，攻击者借助低 TTL 和 DNS 重新解析，将浏览器从访问外网服务器引导至内网设备，实现了对 IoT 设备的越权操作。&lt;/p&gt;
+&lt;p&gt;本质上，浏览器被利用为攻击者的代理，从而绕过了网络边界防护。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>ARP攻击原理学习</title>
         <link>https://th4uma.github.io/post/arp/</link>
         <pubDate>Sat, 11 Apr 2026 14:03:02 +0800</pubDate>
@@ -128,11 +669,9 @@
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone https://github.com/seed-labs/seed-labs.git
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd seed-labs/category-network/ARP_Attack/Labsetup
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;启动实验环境：&lt;/p&gt;
@@ -140,10 +679,12 @@
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker ps
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd seed-labs/category-network/ARP_Attack/Labsetup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose build
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
@@ -179,11 +720,19 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;判断是执行权限不足，命令前加sudo解决&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;strong&gt;出现这个报错：the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;出现这个警告：the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;是因为&lt;code&gt;docker-compose.yml&lt;/code&gt; 文件中的 &lt;code&gt;version:&lt;/code&gt; 字段在 Docker Compose v1.27.0+ 和 v2 中已经被弃用，不再需要指定，因此手动编辑删除即可&lt;/p&gt;
 &lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;记录三个主机：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker ps
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;记录三个主机：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Host A：10.9.0.5&lt;/li&gt;
 &lt;li&gt;Host B：10.9.0.6&lt;/li&gt;
@@ -259,7 +808,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./arp_request.py
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;查看攻击者MAC&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -594,6 +1143,9 @@
 &lt;img src=&#34;11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;容器 B 查看 ARP 缓存，可以发现显示的是容器A的IP地址和攻击者的MAC&lt;/p&gt;
 &lt;img src=&#34;12.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ARP 缓存是有状态和生命周期的，且会被正常 ARP 报文刷新，因此攻击者必须持续高频发送伪造报文与合法更新竞争，才能维持投毒效果&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h3 id=&#34;ip-转发&#34;&gt;IP 转发
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;投毒完成后，攻击者实际上变成A与B的路由器，因此M开不开启IP转发会对A与B的通信产生影响&lt;/p&gt;
@@ -897,11 +1449,9 @@
 &lt;img src=&#34;16.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h2 id=&#34;任务三netcat-中间人攻击&#34;&gt;任务三：Netcat 中间人攻击
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信，将特定字符串 seedlabs 替换为 AAAAAAAA。&lt;/p&gt;
+&lt;p&gt;实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信并篡改信息内容&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h3 id=&#34;建立连接&#34;&gt;建立连接
-&lt;/h3&gt;&lt;p&gt;由于 Netcat 需要完成 TCP 三次握手，为避免 Python 脚本处理过慢导致握手超时，首先在攻击者 M 中开启内核转发 (ip_forward=1)。随后在 Host B 监听端口，并在 Host A 发起连接。&lt;/p&gt;
-&lt;p&gt;攻击者开启IP转发&lt;/p&gt;
+&lt;p&gt;由于 Netcat 需要完成 TCP 三次握手，为避免 Python 脚本处理过慢导致握手超时，首先在攻击者 M 中开启内核转发&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -910,74 +1460,54 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=1
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;建立连接：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;主机 B 终端开启 Netcat 监听：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc -lp 9090
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;主机 A 终端发起 Netcat 连接：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 10.9.0.6 9090
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;测试：在 A 输入任意信息，确认 B 能收到，说明连接已建立。之后保持这两个窗口开启&lt;/p&gt;
+&lt;img src=&#34;17.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;经过测试发现，此环境下即使不先开启再关闭IP转发，而是保持关闭状态，脚本依然可以完成篡改&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# B
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc -lp 9090
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# A
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 10.9.0.6 9090
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./mitm_tcp.py
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;接管流量&#34;&gt;接管流量
-&lt;/h3&gt;&lt;p&gt;流量接管与篡改：确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发 (ip_forward=0) 切断原生路由，并立即启动 Python 中间人脚本接管会话。&lt;/p&gt;
-&lt;p&gt;攻击者：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=1
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 建立连接后
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=0
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 mitm_tcp.py
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;发送：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;seedlabs
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;AAAAAAAA
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;发出攻击&#34;&gt;发出攻击
-&lt;/h3&gt;&lt;p&gt;验证攻击：在 Host A 终端发送字符串 seedlabs。&lt;/p&gt;
-&lt;p&gt;观察结果：Host B 终端实际接收到的内容为 AAAAAAAA，攻击成功且连接未断开。&lt;/p&gt;
-&lt;h2 id=&#34;攻击效果&#34;&gt;攻击效果
-&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;窃听通信&lt;/li&gt;
-&lt;li&gt;篡改数据&lt;/li&gt;
-&lt;li&gt;会话劫持&lt;/li&gt;
-&lt;li&gt;拒绝服务&lt;/li&gt;
+&lt;/div&gt;&lt;p&gt;这时在A终端发送任意字符串，可以发现B终端实际接收到的内容全部变成了&lt;code&gt;A&lt;/code&gt;，攻击成功且连接未断开。而由B发送给A的消息一切正常，因为我在脚本中只写了篡改A发送给B的消息&lt;/p&gt;
+&lt;img src=&#34;18.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h2 id=&#34;结论&#34;&gt;结论
+&lt;/h2&gt;&lt;p&gt;攻击效果：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过 ARP 投毒实现链路劫持，使通信流量强制经过攻击者&lt;/li&gt;
+&lt;li&gt;在 Telnet / Netcat 明文通信中成功篡改应用层数据&lt;/li&gt;
+&lt;li&gt;在关闭转发时可造成通信中断，体现拒绝服务效果&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;防御方法&#34;&gt;防御方法
-&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;静态 ARP 绑定&lt;/li&gt;
-&lt;li&gt;动态 ARP 检测（DAI）&lt;/li&gt;
-&lt;li&gt;端口安全&lt;/li&gt;
-&lt;li&gt;使用加密协议（HTTPS / SSH）&lt;/li&gt;
+&lt;p&gt;防御方法:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用静态 ARP 或 DAI 防止缓存被篡改&lt;/li&gt;
+&lt;li&gt;避免使用 Telnet / Netcat 等明文协议&lt;/li&gt;
+&lt;li&gt;通过 HTTPS / SSH 等加密协议防止中间人读取或修改数据&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/29053435112&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -1989,7 +2519,16 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;连接好后用&lt;code&gt;ping&lt;/code&gt;命令测试网络&lt;/p&gt;
 &lt;img src=&#34;33.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h3 id=&#34;dns服务配置&#34;&gt;DNS服务配置
+&lt;p&gt;安装NetworkManager 图形化管理工具&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S network-manager-applet
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;dns服务配置&#34;&gt;DNS服务配置
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;NetworkManager 负责管理网络连接，但它的 DNS 处理方式相对基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求。&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2058,7 +2597,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;43.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;更新软件包索引并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装&lt;/p&gt;
+&lt;p&gt;更新软件包并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2091,113 +2630,8 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;yay -S google-chrome
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
-&lt;/h3&gt;&lt;h4 id=&#34;字体&#34;&gt;字体
-&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;Google Noto Fonts 系列 noto-fonts noto-fonts-cjk noto-fonts-emoji&lt;/li&gt;
-&lt;li&gt;思源黑体 adobe-source-han-sans-otc-fonts&lt;/li&gt;
-&lt;li&gt;文泉驿 wqy-microhei wqy-zenhei&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h4 id=&#34;输入法&#34;&gt;输入法
-&lt;/h4&gt;&lt;p&gt;安装 fcitx 输入法模块：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S fcitx5-im fcitx5-chinese-addons
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;配置输入法的环境变量，输入如下命令编辑 /etc/environment&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;sudo nano /etc/environment &lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;在文件中添加以下内容：&lt;/p&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;code&gt;1 2 3 4 &lt;/code&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;code&gt;GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx SDL_IM_MODULE=fcitx &lt;/code&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;　　修改完成后，保存退出。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;重启电脑后在 fcitx 设置即可选择中文输入法。你也可以根据自己的需求安装其他输入法，如搜狗输入法。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;蓝牙&#34;&gt;蓝牙
-&lt;/h3&gt;&lt;p&gt;安装蓝牙并启动蓝牙服务&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S bluez bluez-utils
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; bluetooth.service
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl start bluetooth.service
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;安装蓝牙音频&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S pulseaudio-bluetooth
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;蓝牙图形化管理工具安装&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S bluedevil
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;其他&#34;&gt;其他
-&lt;/h3&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;strong&gt;软件包&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;作用&lt;/strong&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pipewire pipewire-pulse wireplumber&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;系统音频服务&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;firefox&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;浏览器&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;network-manager-applet&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;NetworkManager 图形化托盘&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;timeshift&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;系统快照与备份工具&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id=&#34;显卡驱动&#34;&gt;显卡驱动
-&lt;/h2&gt;&lt;p&gt;如果是nvidia显卡，建议在进入桌面环境前安装好显卡驱动&lt;/p&gt;
+&lt;/div&gt;&lt;h2 id=&#34;显卡驱动&#34;&gt;显卡驱动
+&lt;/h2&gt;&lt;p&gt;如果是Nvidia显卡，建议在进入桌面环境前安装好显卡驱动&lt;/p&gt;
 &lt;h3 id=&#34;安装头文件&#34;&gt;安装头文件
 &lt;/h3&gt;&lt;p&gt;安装驱动之前需要更新系统来避免依赖冲突&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2209,9 +2643,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;注意：如果内核更新了，建议重启后再进行驱动安装，或者确保你安装了与当前内核版本匹配的头文件&lt;/p&gt;
+&lt;p&gt;注意：如果内核更新了，建议重启后再进行驱动安装，或者确保安装了与当前内核版本匹配的头文件&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;首先安装内核对应的头文件&lt;code&gt;linux-headers&lt;/code&gt; &lt;code&gt;linux-lts-headers&lt;/code&gt; &lt;code&gt;linux-zen-headers&lt;/code&gt;。只需要安装已有内核的头文件，不是必须全部安装&lt;/p&gt;
+&lt;p&gt;首先安装内核对应的头文件&lt;code&gt;linux-headers&lt;/code&gt; &lt;code&gt;linux-lts-headers&lt;/code&gt; &lt;code&gt;linux-zen-headers&lt;/code&gt;。只需要安装已有内核的对应头文件，不是必须全部安装&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2240,7 +2674,7 @@
     &gt;NVIDIA - ArchWiki&lt;/a&gt;，首先找到这个表格&lt;/p&gt;
 &lt;img src=&#34;46.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;在左侧的GPU family部分随便点击一个代号是NV开头的，来到&lt;a class=&#34;link&#34; href=&#34;https://nouveau.freedesktop.org/CodeNames.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;freedesktop&lt;/a&gt;界面，&lt;code&gt;Ctrl+f&lt;/code&gt;输入自己显卡的型号进行搜索，找到大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是&lt;code&gt;nvidia-open&lt;/code&gt;和&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;&lt;/p&gt;
+    &gt;freedesktop&lt;/a&gt;界面，&lt;code&gt;Ctrl+f&lt;/code&gt;输入自己显卡的型号进行搜索，找到属于的大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是&lt;code&gt;nvidia-open&lt;/code&gt;和&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;32.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;安装驱动&#34;&gt;安装驱动
 &lt;/h3&gt;&lt;p&gt;这里一共需要安装4个包：&lt;/p&gt;
@@ -2248,12 +2682,12 @@
 &lt;li&gt;基础驱动：由上一步确认，如果出现多个驱动的情况，根据自己内核选择对应的驱动。&lt;code&gt;dkms&lt;/code&gt;比较全面，可以适配更多内核，&lt;code&gt;open&lt;/code&gt;比较不稳定，不建议优先选择&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;nvidia-settings&lt;/code&gt;：图形化驱动配置工具&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;nvidia-utils&lt;/code&gt;：驱动运行时依赖&lt;/li&gt;
-&lt;li&gt;32位支持：&lt;/li&gt;
+&lt;li&gt;32位支持：&lt;code&gt;lib32-nvidia-utils&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
 &lt;p&gt;注意：如果基础驱动包含版本号，如&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;，那么&lt;code&gt;nvidia-settings&lt;/code&gt;和&lt;code&gt;nvidia-utils&lt;/code&gt;中间也必须加上版本号，如&lt;code&gt;nvidia-580xx-utils&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;dkms 和 utils 必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay&lt;/p&gt;
+&lt;p&gt;安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2288,6 +2722,14 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;关于桌面环境，主流的有两个， GNOME 和 KDE Plasma。GNOME 更简洁统一，不需要怎么折腾就可以使用，接近 macOS 的体验，KDE Plasma 定制自由度高，逻辑类似 Windows，但默认配置不是很好用，需要一定的自定义才能使用。我这里选择了KDE&lt;/p&gt;
 &lt;p&gt;安装 SDDM 显示管理器、KDE Plasma 桌面环境以及基础 KDE 组件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;plasma&lt;/code&gt;：KDE 桌面环境本体，提供桌面、任务栏、窗口管理等完整图形界面&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sddm&lt;/code&gt;：登录管理器，负责开机后的登录界面和用户选择&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;konsole&lt;/code&gt;：终端工具，用于执行命令行操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dolphin&lt;/code&gt;：文件管理器，用于浏览、复制、删除文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ark&lt;/code&gt;：压缩文件管理工具，支持解压和打包 zip、tar、7z 等格式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gwenview&lt;/code&gt;：图片查看器，用于浏览和简单编辑图片&lt;/li&gt;
+&lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1

@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境 我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim\n">
+<title>DNS重绑定攻击实验</title>
+
+<link rel='canonical' href='https://th4uma.github.io/post/dns/'>
+
+<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="DNS重绑定攻击实验">
+<meta property='og:description' content="实验环境 我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim\n">
+<meta property='og:url' content='https://th4uma.github.io/post/dns/'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-14T22:03:02&#43;08:00'/><meta property='article:modified_time' content='2026-04-14T22:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/dns.jpg' />
+<meta name="twitter:title" content="DNS重绑定攻击实验">
+<meta name="twitter:description" content="实验环境 我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/dns.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
+            <h2 class="site-description">Keep on Keeping on!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#实验环境">实验环境</a></li>
+    <li><a href="#实验原理">实验原理</a></li>
+    <li><a href="#修改firefox浏览器的dns缓存时间">修改Firefox浏览器的DNS缓存时间</a></li>
+    <li><a href="#配置本地dns服务器">配置本地DNS服务器</a></li>
+    <li><a href="#修改本地host文件">修改本地Host文件</a></li>
+    <li><a href="#启动-docker-容器">启动 <strong>Docker</strong> 容器</a></li>
+    <li><a href="#验证同源策略">验证同源策略</a></li>
+    <li><a href="#修改攻击脚本">修改攻击脚本</a></li>
+    <li><a href="#dns-重绑定攻击">DNS 重绑定攻击</a></li>
+    <li><a href="#攻击效果">攻击效果</a></li>
+    <li><a href="#结论">结论</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/dns/">
+                
+                    <img src="/images/cover/dns.jpg" loading="lazy" alt="Featured image of post DNS重绑定攻击实验" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
+                计算机网络
+            </a>
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/dns/">DNS重绑定攻击实验</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-04-14</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="实验环境">实验环境
+</h2><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+    >ARP攻击原理学习</a></p>
+<p>核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>节点类型</th>
+          <th>IP 地址</th>
+          <th>域名</th>
+          <th>作用说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>靶机（IoT 恒温器）</td>
+          <td>192.168.60.80</td>
+          <td>无</td>
+          <td>位于内网，被路由器防火墙保护的目标设备</td>
+      </tr>
+      <tr>
+          <td>本地 DNS 缓存服务器</td>
+          <td>10.9.0.53</td>
+          <td>无</td>
+          <td>模拟受害者网络中的 DNS 解析与缓存</td>
+      </tr>
+      <tr>
+          <td>攻击者 Web 服务器</td>
+          <td>10.9.0.180</td>
+          <td><a class="link" href="https://www.attacker32.com"  target="_blank" rel="noopener"
+    >www.attacker32.com</a></td>
+          <td>提供恶意网页或脚本</td>
+      </tr>
+      <tr>
+          <td>攻击者 DNS 服务器</td>
+          <td>10.9.0.153</td>
+          <td>attacker32.com</td>
+          <td>控制域名解析，实现 DNS 重绑定</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="实验原理">实验原理
+</h2><p>IoT 设备部署在内网，外部无法直接访问，同时浏览器同源策略限制跨域请求。</p>
+<p>DNS 重绑定的核心在于：
+浏览器只校验“域名是否一致”，而不关心该域名解析到的 IP 是否发生变化。</p>
+<p>攻击流程本质是：</p>
+<ul>
+<li>初始解析：域名 → 攻击者服务器</li>
+<li>触发脚本执行（同源）</li>
+<li>缓存过期后重新解析：域名 → 内网设备</li>
+<li>浏览器继续信任该域名，从而向内网发起请求</li>
+</ul>
+<p>最终实现通过浏览器“跳板”访问内网设备。</p>
+<h2 id="修改firefox浏览器的dns缓存时间">修改Firefox浏览器的DNS缓存时间
+</h2><blockquote>
+<p>Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需人为缩短该缓存时间</p>
+</blockquote>
+<p>在 Firefox 浏览器地址栏输入 <code>about:config</code>并回车，接受风险提示，然后在搜索栏输入<code>network.dnsCacheExpiration</code></p>
+<img src="1.png" style="width: 60%;" />
+<p>双击出现的两个结果<code>network.dnsCacheExpiration</code>和<code>network.dnsCacheExpirationGracePeriod</code>，将值更改为10秒，关闭浏览器使配置生效</p>
+<img src="2.png" style="width: 60%;" />
+<p>这样可以更快触发二次解析</p>
+<h2 id="配置本地dns服务器">配置本地DNS服务器
+</h2><p>将系统 DNS 指向实验环境中的 DNS 服务器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/resolvconf/resolv.conf.d/head
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>遇到问题：提示此文件不存在</p>
+<img src="3.png" style="width: 60%;" />
+</blockquote>
+<p>查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致文件目录不同</p>
+<img src="4.png" style="width: 100%;" />
+<p>查看/etc/resolv.conf发现虽然文件存在但不可以编辑</p>
+<p>可以看到这一行This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&gt;</p>
+<p>说明当前 DNS 由 systemd-resolved 管理</p>
+<img src="5.png" style="width: 100%;" />
+<p>解决方法为修改 systemd-resolved 配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/systemd/resolved.conf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>添加这一行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">DNS=10.9.0.53
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="6.png" style="width: 100%;" />
+<p>然后重启服务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl restart systemd-resolved
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用 <code>resolvectl status</code> 查看，发现 DNS 并未生效：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Link 2 (ens33)
+</span></span><span class="line"><span class="cl">    DNS Servers: xxx.xxx.xxx.xxx
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>那就是<strong>网卡在控制 DNS</strong></p>
+<img src="7.png" style="width: 100%;" />
+<p>这是因为 systemd-resolved 的优先级机制中，网卡 DNS 高于 resolved.conf 配置，因此需要手动指定网卡 DNS：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo resolvectl dns ens33 10.9.0.53
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个命令是<strong>临时的</strong>，重启就没了，好处是适合实验不影响环境</p>
+<img src="8.png" style="width: 100%;" />
+<h2 id="修改本地host文件">修改本地Host文件
+</h2><p>将 IoT 域名映射到真实内网地址： 编辑 hosts 文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/hosts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在文件末尾添加以下映射，保存并退出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">192.168.60.80    www.seedIoT32.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动-docker-容器">启动 <strong>Docker</strong> 容器
+</h2><p>先在虚拟机里下载实验文件,如果没有 wget，也可以用浏览器下载再拖进去</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">wget https://seedsecuritylabs.org/Labs_20.04/Files/DNS_Rebinding/Labsetup.zip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下载完在当前目录解压</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">unzip Labsetup.zip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>这里一定要在 Linux 里解压，是因为 Windows 解压会把换行符从 LF 变成 CRLF，容器里的脚本在执行时就可能报 exec format error</p>
+</blockquote>
+<p>解压后进入目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd Labsetup
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动实验环境</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker compose build
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在浏览器中分别访问</p>
+<ul>
+<li><a class="link" href="http://www.seedIoT32.com"  target="_blank" rel="noopener"
+    >www.seedIoT32.com</a></li>
+<li><a class="link" href="http://www.attacker32.com"  target="_blank" rel="noopener"
+    >www.attacker32.com</a></li>
+</ul>
+<p>确认页面是否可以正常打开</p>
+<blockquote>
+<p>出现问题：访问 <code>www.attacker32.com</code> 显示 GoDaddy 停放页</p>
+<img src="9.png" style="width: 100%;" />
+</blockquote>
+<p>通过命令验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dig www.attacker32.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>返回：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">www.attacker32.com → 198.18.1.137
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时验证攻击机服务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http://10.9.0.180
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以正常访问，说明 Web 服务运行正常</p>
+<h2 id="验证同源策略">验证同源策略
+</h2><p>依次访问并点击修改按钮：</p>
+<ul>
+<li><a class="link" href="http://www.seedIoT32.com"  target="_blank" rel="noopener"
+    >www.seedIoT32.com</a></li>
+<li><a class="link" href="http://www.seedIoT32.com/change"  target="_blank" rel="noopener"
+    >www.seedIoT32.com/change</a></li>
+<li><a class="link" href="http://www.attacker32.com/change"  target="_blank" rel="noopener"
+    >www.attacker32.com/change</a>http://10.9.0.180</li>
+</ul>
+<p>前两个可以成功修改温度，</p>
+<img src="10.png" style="width: 100%;" />
+<p>第三个失败</p>
+<img src="10.png" style="width: 100%;" />
+<p>原因在于浏览器同源策略阻止了跨域请求，可以在控制台看到 CORS 报错。</p>
+<h2 id="修改攻击脚本">修改攻击脚本
+</h2><p>进入攻击者容器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it attacker-www-10.9.0.180 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编辑 JS：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /app/rebind_server/templates/js/change.js
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">let url_prefix = &#39;http://www.attacker32.com&#39;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重启容器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker restart attacker-www-10.9.0.180
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时浏览器不再报同源错误，但请求仍然发往攻击者服务器，因此温度不会改变。</p>
+<h2 id="dns-重绑定攻击">DNS 重绑定攻击
+</h2><p>进入攻击者 DNS 容器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it attacker-ns-10.9.0.153 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /etc/bind/zone_attacker32.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>调整：</p>
+<ul>
+<li>将 TTL 设为较小值（0 或 10）</li>
+<li>修改 A 记录：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">www    IN    A    192.168.60.80
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>刷新 DNS：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">reload</span> <span class="n">attacker32</span><span class="o">.</span><span class="n">com</span>
+</span></span><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">flush</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="攻击效果">攻击效果
+</h2><p>等待 DNS 缓存过期后重新请求：</p>
+<p>浏览器再次解析 <a class="link" href="https://www.attacker32.com"  target="_blank" rel="noopener"
+    >www.attacker32.com</a>，此时得到的是内网 IP。</p>
+<p>由于域名未变，同源策略不会拦截，请求直接发送到内网 IoT 设备。</p>
+<p>可以观察到温度被成功修改。</p>
+<hr>
+<h2 id="结论">结论
+</h2><p>DNS 重绑定利用了浏览器同源策略仅基于域名进行判断的特性，通过动态修改解析结果，使浏览器在不知情的情况下访问内网资源。</p>
+<p>在本实验中，攻击者借助低 TTL 和 DNS 重新解析，将浏览器从访问外网服务器引导至内网设备，实现了对 IoT 设备的越权操作。</p>
+<p>本质上，浏览器被利用为攻击者的代理，从而绕过了网络边界防护。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/arp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/arp.jpg" loading="lazy" data-key="" data-hash="/images/cover/arp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ARP攻击原理学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/streaming/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/st1.jpg" loading="lazy" data-key="" data-hash="/images/cover/st1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Sunshine&#43;Moonlight远程串流</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/op_add/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/op1.jpg" loading="lazy" data-key="" data-hash="/images/cover/op1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">OpenWrt插件推荐与配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/pve_op/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/op.jpg" loading="lazy" data-key="" data-hash="/images/cover/op.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/aio/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/aio.jpg" loading="lazy" data-key="" data-hash="/images/cover/aio.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">J4125 小主机 All in One 搭建</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Thaumazein
+    </section>
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">21</span> 
+      篇 ，总计 
+      <span class="number-highlight">67.85</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-06-24'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+    <section class="powerby">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
+    </section>
+    
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
+
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        position: relative;
+        min-height: 100%;
+    }  
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+<script src="/js/renderer.js"></script>
+
+
+<script>
+  if (typeof RENDERER !== 'undefined') {
+    RENDERER.init();
+  }
+</script>
+
+<style>
+    .highlight {
+         
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://th4uma.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+ 
+  initCodeMoreBox();
+</script>
+
+
+<style>
+@font-face {
+  font-family: 'songti';
+  src: url('/font/songti.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu-R';
+  src: url('/font/Ubuntu-R.ttf') format('opentype');
+}
+
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
+
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
+  }
+
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
+  }
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
+</style>
+
+
+    </body>
+</html>

@@ -325,14 +325,6 @@ unicode: "f6d2"
         <li><a href="#dns服务配置">DNS服务配置</a></li>
         <li><a href="#添加软件源">添加软件源</a></li>
         <li><a href="#安装-yay">安装 yay</a></li>
-        <li><a href="#中文支持">中文支持</a>
-          <ol>
-            <li><a href="#字体">字体</a></li>
-            <li><a href="#输入法">输入法</a></li>
-          </ol>
-        </li>
-        <li><a href="#蓝牙">蓝牙</a></li>
-        <li><a href="#其他">其他</a></li>
       </ol>
     </li>
     <li><a href="#显卡驱动">显卡驱动</a>
@@ -1419,7 +1411,16 @@ unicode: "f6d2"
 </div>
 </div><p>连接好后用<code>ping</code>命令测试网络</p>
 <img src="33.jpg" style="width: 100%;" />
-<h3 id="dns服务配置">DNS服务配置
+<p>安装NetworkManager 图形化管理工具</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S network-manager-applet
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="dns服务配置">DNS服务配置
 </h3><blockquote>
 <p>NetworkManager 负责管理网络连接，但它的 DNS 处理方式相对基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求。</p>
 </blockquote>
@@ -1488,7 +1489,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="43.jpg" style="width: 70%;" />
-<p>更新软件包索引并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装</p>
+<p>更新软件包并导入仓库签名密钥。keyring 的作用是建立对该仓库软件包的信任，否则 pacman 会因签名验证失败而拒绝安装</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1521,113 +1522,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S google-chrome
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="中文支持">中文支持
-</h3><h4 id="字体">字体
-</h4><ul>
-<li>Google Noto Fonts 系列 noto-fonts noto-fonts-cjk noto-fonts-emoji</li>
-<li>思源黑体 adobe-source-han-sans-otc-fonts</li>
-<li>文泉驿 wqy-microhei wqy-zenhei</li>
-</ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="输入法">输入法
-</h4><p>安装 fcitx 输入法模块：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S fcitx5-im fcitx5-chinese-addons
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>配置输入法的环境变量，输入如下命令编辑 /etc/environment</p>
-<p><code>sudo nano /etc/environment </code></p>
-<p>在文件中添加以下内容：</p>
-<div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th><code>1 2 3 4 </code></th>
-          <th><code>GTK_IM_MODULE=fcitx QT_IM_MODULE=fcitx XMODIFIERS=@im=fcitx SDL_IM_MODULE=fcitx </code></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td></td>
-          <td></td>
-      </tr>
-  </tbody>
-</table></div>
-<p>　　修改完成后，保存退出。</p>
-<blockquote>
-<p>重启电脑后在 fcitx 设置即可选择中文输入法。你也可以根据自己的需求安装其他输入法，如搜狗输入法。</p>
-</blockquote>
-<h3 id="蓝牙">蓝牙
-</h3><p>安装蓝牙并启动蓝牙服务</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bluez bluez-utils
-</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> bluetooth.service
-</span></span><span class="line"><span class="cl">sudo systemctl start bluetooth.service
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安装蓝牙音频</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S pulseaudio-bluetooth
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>蓝牙图形化管理工具安装</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S bluedevil
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="其他">其他
-</h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th><strong>软件包</strong></th>
-          <th><strong>作用</strong></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>pipewire pipewire-pulse wireplumber</code></td>
-          <td>系统音频服务</td>
-      </tr>
-      <tr>
-          <td><code>firefox</code></td>
-          <td>浏览器</td>
-      </tr>
-      <tr>
-          <td><code>network-manager-applet</code></td>
-          <td>NetworkManager 图形化托盘</td>
-      </tr>
-      <tr>
-          <td><code>timeshift</code></td>
-          <td>系统快照与备份工具</td>
-      </tr>
-  </tbody>
-</table></div>
-<h2 id="显卡驱动">显卡驱动
-</h2><p>如果是nvidia显卡，建议在进入桌面环境前安装好显卡驱动</p>
+</div><h2 id="显卡驱动">显卡驱动
+</h2><p>如果是Nvidia显卡，建议在进入桌面环境前安装好显卡驱动</p>
 <h3 id="安装头文件">安装头文件
 </h3><p>安装驱动之前需要更新系统来避免依赖冲突</p>
 <div class="highlight"><div class="chroma">
@@ -1639,9 +1535,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>注意：如果内核更新了，建议重启后再进行驱动安装，或者确保你安装了与当前内核版本匹配的头文件</p>
+<p>注意：如果内核更新了，建议重启后再进行驱动安装，或者确保安装了与当前内核版本匹配的头文件</p>
 </blockquote>
-<p>首先安装内核对应的头文件<code>linux-headers</code> <code>linux-lts-headers</code> <code>linux-zen-headers</code>。只需要安装已有内核的头文件，不是必须全部安装</p>
+<p>首先安装内核对应的头文件<code>linux-headers</code> <code>linux-lts-headers</code> <code>linux-zen-headers</code>。只需要安装已有内核的对应头文件，不是必须全部安装</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1670,7 +1566,7 @@ unicode: "f6d2"
     >NVIDIA - ArchWiki</a>，首先找到这个表格</p>
 <img src="46.png" style="width: 70%;" />
 <p>在左侧的GPU family部分随便点击一个代号是NV开头的，来到<a class="link" href="https://nouveau.freedesktop.org/CodeNames.html"  target="_blank" rel="noopener"
-    >freedesktop</a>界面，<code>Ctrl+f</code>输入自己显卡的型号进行搜索，找到大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是<code>nvidia-open</code>和<code>nvidia-580xx-dkms</code></p>
+    >freedesktop</a>界面，<code>Ctrl+f</code>输入自己显卡的型号进行搜索，找到属于的大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是<code>nvidia-open</code>和<code>nvidia-580xx-dkms</code></p>
 <img src="32.png" style="width: 70%;" />
 <h3 id="安装驱动">安装驱动
 </h3><p>这里一共需要安装4个包：</p>
@@ -1678,12 +1574,12 @@ unicode: "f6d2"
 <li>基础驱动：由上一步确认，如果出现多个驱动的情况，根据自己内核选择对应的驱动。<code>dkms</code>比较全面，可以适配更多内核，<code>open</code>比较不稳定，不建议优先选择</li>
 <li><code>nvidia-settings</code>：图形化驱动配置工具</li>
 <li><code>nvidia-utils</code>：驱动运行时依赖</li>
-<li>32位支持：</li>
+<li>32位支持：<code>lib32-nvidia-utils</code></li>
 </ul>
 <blockquote>
 <p>注意：如果基础驱动包含版本号，如<code>nvidia-580xx-dkms</code>，那么<code>nvidia-settings</code>和<code>nvidia-utils</code>中间也必须加上版本号，如<code>nvidia-580xx-utils</code></p>
 </blockquote>
-<p>dkms 和 utils 必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay</p>
+<p>安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1718,6 +1614,14 @@ unicode: "f6d2"
 </div>
 </div><p>关于桌面环境，主流的有两个， GNOME 和 KDE Plasma。GNOME 更简洁统一，不需要怎么折腾就可以使用，接近 macOS 的体验，KDE Plasma 定制自由度高，逻辑类似 Windows，但默认配置不是很好用，需要一定的自定义才能使用。我这里选择了KDE</p>
 <p>安装 SDDM 显示管理器、KDE Plasma 桌面环境以及基础 KDE 组件</p>
+<ul>
+<li><code>plasma</code>：KDE 桌面环境本体，提供桌面、任务栏、窗口管理等完整图形界面</li>
+<li><code>sddm</code>：登录管理器，负责开机后的登录界面和用户选择</li>
+<li><code>konsole</code>：终端工具，用于执行命令行操作</li>
+<li><code>dolphin</code>：文件管理器，用于浏览、复制、删除文件</li>
+<li><code>ark</code>：压缩文件管理工具，支持解压和打包 zip、tar、7z 等格式</li>
+<li><code>gwenview</code>：图片查看器，用于浏览和简单编辑图片</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1916,6 +1820,34 @@ unicode: "f6d2"
 
     
 
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/arch_after/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/arch.jpg" loading="lazy" data-key="" data-hash="/images/cover/arch.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Arch Linux &#43; KDE Plasma 基本设置与美化</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
      
     
         
@@ -2104,10 +2036,14 @@ unicode: "f6d2"
       
       
       
+      
+      
+      
+      
       共发表文章 
-      <span class="number-highlight">19</span> 
+      <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">63.86</span> 
+      <span class="number-highlight">67.85</span> 
       k 字
   </div>
   <div>
@@ -2151,6 +2087,10 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
         
         
         
