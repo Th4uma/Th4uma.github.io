@@ -176,25 +176,21 @@
 &lt;/h4&gt;&lt;blockquote&gt;
 &lt;p&gt;本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift中直接选择快照恢复即可
+&lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可
 我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但有一个鼠标光标可以正常移动&lt;/p&gt;
-&lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lt;快照名称&amp;gt; &amp;ndash;target &amp;lt;目标分区&amp;gt;
-示例：恢复名称为 2024-05-20_10-30-00 的快照到根分区 /dev/sda2&lt;/p&gt;
-&lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lsquo;2024-05-20_10-30-00&amp;rsquo; &amp;ndash;target /dev/sda2
-注意：恢复过程会覆盖目标分区的文件，请确保快照包含你需要的系统状态。&lt;/p&gt;
-&lt;p&gt;5.2 从 Live CD/USB 恢复（系统无法启动时）#
-若系统无法启动，需通过 Arch Linux Live 环境恢复：&lt;/p&gt;
-&lt;p&gt;步骤 1：启动 Live 环境并挂载分区#
-使用 Arch Linux ISO 创建启动盘，启动后进入 Live 环境（选择“Arch Linux install medium”）。&lt;/p&gt;
-&lt;p&gt;识别根分区和快照存储分区（通过 lsblk 或 fdisk -l）：&lt;/p&gt;
-&lt;p&gt;lsblk  # 例如：根分区为 /dev/sda2，快照存储在 /dev/sdb1
-挂载根分区到 /mnt（若分区加密，需先通过 cryptsetup open 解锁）：
-8
-8.4 分离系统快照与用户数据#
+&lt;p&gt;首先进入Live USB环境，首先查看磁盘信息&lt;/p&gt;
+&lt;p&gt;挂载需要恢复的盘符，也就是根目录所在的盘&lt;/p&gt;
+&lt;p&gt;进入chroot&lt;/p&gt;
+&lt;p&gt;列出快照目录&lt;/p&gt;
+&lt;p&gt;进行恢复，执行命令后首先输入目标快照的序号然后确认信息，最后输入y进行恢复&lt;/p&gt;
+&lt;p&gt;sudo timeshift &amp;ndash;restore&lt;/p&gt;
+&lt;p&gt;重启后可以看到系统已经恢复正常&lt;/p&gt;
+&lt;p&gt;8.4 分离系统快照与用户数据#
 Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数据（如 /home 下的文档、图片、配置）建议用专用工具备份：&lt;/p&gt;
 &lt;p&gt;9.3 Btrfs 快照恢复后数据丢失#
 原因：Btrfs 快照仅包含创建时的文件状态，若后续修改未被新快照捕获，恢复后会丢失。
 解决：启用自动快照计划，并在重大操作前手动创建快照。&lt;/p&gt;
+&lt;p&gt;最后发现原因是sddm换主题导致&lt;/p&gt;
 &lt;h3 id=&#34;zsh&#34;&gt;zsh
 &lt;/h3&gt;&lt;p&gt;zsh 基本兼容 bash，但相比 bash，又有诸多优点：&lt;/p&gt;
 &lt;ol&gt;
@@ -205,6 +201,8 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 &lt;li&gt;丰富多彩的主题&lt;/li&gt;
 &lt;li&gt;可以集成各种类型的插件&lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;首先隐藏工具栏&lt;/p&gt;
+&lt;p&gt;新建配置方案&lt;/p&gt;
 &lt;h3 id=&#34;常用软件&#34;&gt;常用软件
 &lt;/h3&gt;&lt;p&gt;linuxqq&lt;/p&gt;
 &lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
@@ -250,7 +248,11 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 &lt;p&gt;登录屏幕：KDE-story&lt;/p&gt;
 &lt;p&gt;图标：tela-greydark&lt;/p&gt;
 &lt;p&gt;窗口装饰：layan&lt;/p&gt;
-&lt;h3 id=&#34;边栏&#34;&gt;边栏
+&lt;p&gt;全局主题：nordic&lt;/p&gt;
+&lt;h3 id=&#34;窗口管理&#34;&gt;窗口管理
+&lt;/h3&gt;&lt;p&gt;桌面特效美化窗口，可以设置透明度，动画等&lt;/p&gt;
+&lt;h3 id=&#34;终端&#34;&gt;终端
+&lt;/h3&gt;&lt;h3 id=&#34;边栏&#34;&gt;边栏
 &lt;/h3&gt;&lt;p&gt;桌面布局之前，需要了解一些基本的概念：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;KDE 桌面中无论是菜单栏还是顶栏，本质上都是&lt;strong&gt;面板&lt;/strong&gt;&lt;/li&gt;
@@ -294,6 +296,8 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
     &gt;arch配置中文和输入法 - suiseiseki - 博客园&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://geek-blogs.com/blog/arch-linux-timeshift/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Arch Linux 系统备份与恢复利器：Timeshift 完全指南 — geek-blogs.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://mill413.github.io/posts/archlinux%e7%be%8e%e5%8c%96%e8%ae%b0%e5%bd%95/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Archlinux+KDE美化记录 | 彩虹岛&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>
