@@ -173,15 +173,11 @@
 &lt;p&gt;在“Filters”标签页中，添加无需备份的目录（如 /home 下的用户数据、/tmp 临时文件等）。Timeshift 默认排除 /home，因为它更适合用于系统状态备份，而非用户数据（用户数据建议用专用工具如 Deja Dup 备份）。
 保存配置：点击“OK”完成基础配置。&lt;/p&gt;
 &lt;h4 id=&#34;系统恢复&#34;&gt;系统恢复
-&lt;/h4&gt;&lt;p&gt;当系统因更新失败、配置错误或文件损坏无法启动时，可通过 Timeshift 快照快速恢复。恢复场景分为两种：从运行中的系统恢复（适用于非关键故障）和 从 Live CD 恢复（适用于系统无法启动）。&lt;/p&gt;
-&lt;p&gt;从运行中的系统恢复（GUI/CLI）#
-GUI 方式#
-打开 Timeshift，在左侧“Snapshots”列表中选择需恢复的快照（建议选择最近的稳定快照）。
-点击“Restore”按钮，确认目标分区（通常为根分区 /）。
-可选：在“Options”中勾选“Verify after restore”（恢复后验证文件完整性）。
-点击“Next”，等待恢复完成（过程中可能需要输入密码，恢复后需。
-CLI 方式#
-基本命令格式：&lt;/p&gt;
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift中直接选择快照恢复即可
+我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但有一个鼠标光标可以正常移动&lt;/p&gt;
 &lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lt;快照名称&amp;gt; &amp;ndash;target &amp;lt;目标分区&amp;gt;
 示例：恢复名称为 2024-05-20_10-30-00 的快照到根分区 /dev/sda2&lt;/p&gt;
 &lt;p&gt;sudo timeshift &amp;ndash;restore &amp;ndash;snapshot &amp;lsquo;2024-05-20_10-30-00&amp;rsquo; &amp;ndash;target /dev/sda2
