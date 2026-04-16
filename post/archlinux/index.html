@@ -651,7 +651,7 @@ unicode: "f6d2"
 <p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。</p>
 <p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区</p>
 <p><strong>交换分区 <code>/swap</code></strong>：</p>
-<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，分区不是必须</p>
+<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案</p>
 <p><strong>根分区 <code>/</code></strong>：</p>
 <p>根分区用于存放操作系统及其所有文件。如果不单独划分 <code>/home</code>，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整</p>
 <p><strong>btrfs子卷</strong>：</p>
@@ -1214,28 +1214,17 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S grub efibootmgr os-prober
 </span></span></code></pre></td></tr></table>
 </div>
-</div><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>名称</th>
-          <th>作用</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>grub</code></td>
-          <td>引导程序</td>
-      </tr>
-      <tr>
-          <td><code>efibootmgr</code></td>
-          <td>管理UEFI启动项</td>
-      </tr>
-      <tr>
-          <td><code>os-prober</code></td>
-          <td>探测硬盘上存在的其它系统启动项，比如Windows Boot Manager</td>
-      </tr>
-  </tbody>
-</table></div>
+</div><ul>
+<li>
+<p><code>grub</code>：引导程序</p>
+</li>
+<li>
+<p><code>efibootmgr</code>：管理UEFI启动项</p>
+</li>
+<li>
+<p><code>os-prober</code>：探测硬盘上存在的其它系统启动项，比如Windows Boot Manager</p>
+</li>
+</ul>
 <p>调用 GRUB 的安装工具，把引导文件写到磁盘，指定目标平台64位 UEFI 固件，指定EFI分区的挂载点并设置启动项名字</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1451,11 +1440,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ls -l /etc/resolv.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>当 <code>/etc/resolv.conf</code> 指向 systemd-resolved 的 stub 文件时，说明 DNS 解析已由 systemd-resolved 统一接管</p>
+</div><p>如果输出类似下图，说明 DNS 解析已由 systemd-resolved 统一接管</p>
 <img src="42.jpg" style="width: 100%;" />
 <h3 id="添加软件源">添加软件源
 </h3><blockquote>
-<p>pacman 默认只使用官方仓库，如果需要使用社区软件，需要手动添加第三方源</p>
+<p>pacman 默认只使用官方仓库，如果需要使用第三方仓库就要手动添加</p>
 </blockquote>
 <p>编辑<code>pacman.conf</code>文件</p>
 <div class="highlight"><div class="chroma">
@@ -1477,7 +1466,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>删除这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序</p>
+</div><p>取消这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1501,7 +1490,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="安装-yay">安装 yay
-</h3><p>yay是AUR工具，可以自动构建和安装社区软件</p>
+</h3><p>yay 是一个常用的 AUR 辅助工具，用于自动构建并安装社区仓库中的软件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1550,7 +1539,7 @@ unicode: "f6d2"
 </h3><blockquote>
 <p>Optimus 是一种双显卡切换架构，常见于笔记本电脑中，用来同时集成核显和独显。日常轻负载使用核显降低功耗，运行游戏或图形计算时切换到独显提升性能</p>
 </blockquote>
-<p>进行检查</p>
+<p>检查</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1564,7 +1553,7 @@ unicode: "f6d2"
 <h3 id="确定驱动包">确定驱动包
 </h3><p>由于驱动包更新较快，这里不建议照抄任何教程。进入<a class="link" href="https://wiki.archlinux.org/title/NVIDIA"  target="_blank" rel="noopener"
     >NVIDIA - ArchWiki</a>，首先找到这个表格</p>
-<img src="46.png" style="width: 70%;" />
+<img src="46.png" style="width: 100%;" />
 <p>在左侧的GPU family部分随便点击一个代号是NV开头的，来到<a class="link" href="https://nouveau.freedesktop.org/CodeNames.html"  target="_blank" rel="noopener"
     >freedesktop</a>界面，<code>Ctrl+f</code>输入自己显卡的型号进行搜索，找到属于的大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是<code>nvidia-open</code>和<code>nvidia-580xx-dkms</code></p>
 <img src="32.png" style="width: 70%;" />
@@ -1574,18 +1563,19 @@ unicode: "f6d2"
 <li>基础驱动：由上一步确认，如果出现多个驱动的情况，根据自己内核选择对应的驱动。<code>dkms</code>比较全面，可以适配更多内核，<code>open</code>比较不稳定，不建议优先选择</li>
 <li><code>nvidia-settings</code>：图形化驱动配置工具</li>
 <li><code>nvidia-utils</code>：驱动运行时依赖</li>
-<li>32位支持：<code>lib32-nvidia-utils</code></li>
+<li><code>lib32-nvidia-utils</code>：32位支持</li>
+<li><code>nvidia-prime</code>：用于在Optimus环境下切换独显与核显，提供 <code>prime-run</code> 命令，使程序可以按需调用 NVIDIA 独显运行，而不是默认使用核显</li>
 </ul>
 <blockquote>
-<p>注意：如果基础驱动包含版本号，如<code>nvidia-580xx-dkms</code>，那么<code>nvidia-settings</code>和<code>nvidia-utils</code>中间也必须加上版本号，如<code>nvidia-580xx-utils</code></p>
+<p>注意：如果基础驱动包含版本号，如<code>nvidia-580xx-dkms</code>，那么<code>nvidia-settings</code>和<code>nvidia-utils</code>中间也必须加上版本号，如<code>nvidia-580xx-utils</code>，版本号以ArchWiki为准</p>
 </blockquote>
-<p>安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay</p>
+<p>安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，也就是说假如第一次安装使用的是AUR，之后更新也需要继续使用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils lib32-nvidia-580xx-utils nvidia-prime
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>完成后<code>reboot</code>重启，然后检查是否安装成功</p>
@@ -1598,7 +1588,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>若输出类似以下内容，说明驱动安装成功</p>
-<img src="47.jpg" style="width: 70%;" />
+<img src="47.jpg" style="width: 100%;" />
 <h2 id="安装gui">安装GUI
 </h2><blockquote>
 <p>明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。如果想要图形化的桌面环境，就需要设置显示服务器、显示管理器与桌面环境</p>
@@ -1621,13 +1611,14 @@ unicode: "f6d2"
 <li><code>dolphin</code>：文件管理器，用于浏览、复制、删除文件</li>
 <li><code>ark</code>：压缩文件管理工具，支持解压和打包 zip、tar、7z 等格式</li>
 <li><code>gwenview</code>：图片查看器，用于浏览和简单编辑图片</li>
+<li><code>kate</code>：文本编辑器，适合编写代码或修改配置文件，支持语法高亮和插件扩展</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S plasma sddm konsole dolphin ark gwenview
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacman -S plasma sddm konsole dolphin kate ark gwenview
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>设置 SDDM 开机自启</p>
@@ -1643,7 +1634,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重启后进入桌面环境，Arch Linux的基础安装就顺利完成了</p>
-<img src="48.jpg" style="width: 70%;" />
+<img src="48.jpg" style="width: 100%;" />
 <h2 id="linux常用命令">Linux常用命令
 </h2><div class="table-wrapper"><table>
   <thead>
@@ -2043,7 +2034,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">68.19</span> 
+      <span class="number-highlight">68.33</span> 
       k 字
   </div>
   <div>

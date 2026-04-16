@@ -387,7 +387,7 @@ unicode: "f6d2"
 <h2 id="基本配置">基本配置
 </h2><h3 id="中文支持">中文支持
 </h3><h4 id="字体">字体
-</h4><p>常用中文字体如下，这一步是为了避免中文显示为方框或乱码</p>
+</h4><p>下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码</p>
 <ul>
 <li>Google Noto Fonts 系列：<code>noto-fonts</code>、<code>noto-fonts-cjk</code>、<code>noto-fonts-emoji</code></li>
 <li>思源黑体：<code>adobe-source-han-sans-otc-fonts</code></li>
@@ -426,10 +426,9 @@ unicode: "f6d2"
 </div>
 </div><p>保存退出</p>
 <h4 id="系统设置中文">系统设置中文
-</h4><p>之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为当时还没有中文字体，在<code>/etc/locale.conf</code>中全局设置中文locale会导致tty显示乱码，这是由于<a class="link" href="https://unix.stackexchange.com/questions/273061/273063#273063"  target="_blank" rel="noopener"
-    >Linux内核的tty字形限制</a>。要在tty下正确显示中文字符</p>
-<p>点击开始菜单的<code>System settings</code>，找到Region&amp;Language选项，然后点进去点击添加，找到简体中文，最后重启应用设置</p>
-<img src="1.jpg" style="width: 70%;" />
+</h4><p>之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为在<code>/etc/locale.conf</code>中全局设置中文locale会导致tty显示乱码，这是由于Linux内核的tty字形限制</p>
+<p>如果需要在桌面环境中启用中文显示，可以通过图形界面进行设置。点击开始菜单的<code>System settings</code>，找到<code>Region&amp;Language</code>选项，进入后点击<code>add more</code>，找到简体中文并添加，最后重启来应用设置</p>
+<img src="1.png" style="width: 80%;" />
 <h4 id="输入法">输入法
 </h4><p>安装 fcitx5 输入法及中文支持</p>
 <div class="highlight"><div class="chroma">
@@ -449,7 +448,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo vim /etc/environment
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>添加以下内容：</p>
+</div><p>在文件中添加以下内容</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -464,10 +463,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">SDL_IM_MODULE=fcitx
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>完成后，还需要打开<code>设置-&gt;键盘-&gt;虚拟键盘</code>，选择fctix5并保存</p>
-<img src="2.jpg" style="width: 70%;" />
-<p>重启系统，右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的输入法添加即可</p>
-<img src="3.jpg" style="width: 70%;" />
+</div><p>保存并重启来应用配置，然后打开<code>设置&gt;键盘&gt;虚拟键盘</code>，选择fctix5并保存</p>
+<img src="2.png" style="width: 80%;" />
+<p>右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的中文输入法添加即可</p>
+<img src="3.png" style="width: 80%;" />
 <h3 id="蓝牙">蓝牙
 </h3><p>安装蓝牙并启动蓝牙服务</p>
 <div class="highlight"><div class="chroma">
@@ -495,9 +494,9 @@ unicode: "f6d2"
 <p>bluedevil 只适用于 KDE，GNOME / i3 应该用 blueman</p>
 </blockquote>
 <h3 id="快照">快照
-</h3><p>使用btrfs文件格式，最重要的功能就是快照，这样哪怕把系统搞崩了也可以随时恢复，非常方便</p>
+</h3><p>根目录使用btrfs文件格式，最重要的功能就是快照，这样哪怕把系统搞崩了也可以随时恢复，非常方便</p>
 <h4 id="安装与配置">安装与配置
-</h4><p>Btrfs 模式安装依赖</p>
+</h4><p>Btrfs安装依赖</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -524,7 +523,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift --version
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码</p>
+</div><img src="4.png" style="width: 80%;" />
+<p>输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -533,7 +533,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift-launcher
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，优点是利用原生快照，速度快、省空间，而Rsync：适用于 ext4、XFS 等其他文件系统，基于文件复制，兼容性更广快照位置默认就是系统分区，无需修改。</p>
+</div><p>之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改。</p>
 <p>配置快照计划：.3 合理控制快照数量#
 快照过多会占用大量磁盘空间，建议按以下原则设置保留数量：</p>
 <p>每日快照：保留 3-5 个（覆盖一周内的日常变更）。
@@ -954,7 +954,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/</p>
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">68.19</span> 
+      <span class="number-highlight">68.33</span> 
       k 字
   </div>
   <div>

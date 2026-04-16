@@ -18,7 +18,7 @@
 &lt;h2 id=&#34;基本配置&#34;&gt;基本配置
 &lt;/h2&gt;&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
 &lt;/h3&gt;&lt;h4 id=&#34;字体&#34;&gt;字体
-&lt;/h4&gt;&lt;p&gt;常用中文字体如下，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Google Noto Fonts 系列：&lt;code&gt;noto-fonts&lt;/code&gt;、&lt;code&gt;noto-fonts-cjk&lt;/code&gt;、&lt;code&gt;noto-fonts-emoji&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;思源黑体：&lt;code&gt;adobe-source-han-sans-otc-fonts&lt;/code&gt;&lt;/li&gt;
@@ -57,10 +57,9 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;保存退出&lt;/p&gt;
 &lt;h4 id=&#34;系统设置中文&#34;&gt;系统设置中文
-&lt;/h4&gt;&lt;p&gt;之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为当时还没有中文字体，在&lt;code&gt;/etc/locale.conf&lt;/code&gt;中全局设置中文locale会导致tty显示乱码，这是由于&lt;a class=&#34;link&#34; href=&#34;https://unix.stackexchange.com/questions/273061/273063#273063&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Linux内核的tty字形限制&lt;/a&gt;。要在tty下正确显示中文字符&lt;/p&gt;
-&lt;p&gt;点击开始菜单的&lt;code&gt;System settings&lt;/code&gt;，找到Region&amp;amp;Language选项，然后点进去点击添加，找到简体中文，最后重启应用设置&lt;/p&gt;
-&lt;img src=&#34;1.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;/h4&gt;&lt;p&gt;之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为在&lt;code&gt;/etc/locale.conf&lt;/code&gt;中全局设置中文locale会导致tty显示乱码，这是由于Linux内核的tty字形限制&lt;/p&gt;
+&lt;p&gt;如果需要在桌面环境中启用中文显示，可以通过图形界面进行设置。点击开始菜单的&lt;code&gt;System settings&lt;/code&gt;，找到&lt;code&gt;Region&amp;amp;Language&lt;/code&gt;选项，进入后点击&lt;code&gt;add more&lt;/code&gt;，找到简体中文并添加，最后重启来应用设置&lt;/p&gt;
+&lt;img src=&#34;1.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h4 id=&#34;输入法&#34;&gt;输入法
 &lt;/h4&gt;&lt;p&gt;安装 fcitx5 输入法及中文支持&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -80,7 +79,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo vim /etc/environment
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;添加以下内容：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在文件中添加以下内容&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -95,10 +94,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SDL_IM_MODULE=fcitx
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;完成后，还需要打开&lt;code&gt;设置-&amp;gt;键盘-&amp;gt;虚拟键盘&lt;/code&gt;，选择fctix5并保存&lt;/p&gt;
-&lt;img src=&#34;2.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;重启系统，右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的输入法添加即可&lt;/p&gt;
-&lt;img src=&#34;3.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;/div&gt;&lt;p&gt;保存并重启来应用配置，然后打开&lt;code&gt;设置&amp;gt;键盘&amp;gt;虚拟键盘&lt;/code&gt;，选择fctix5并保存&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的中文输入法添加即可&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;蓝牙&#34;&gt;蓝牙
 &lt;/h3&gt;&lt;p&gt;安装蓝牙并启动蓝牙服务&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -126,9 +125,9 @@
 &lt;p&gt;bluedevil 只适用于 KDE，GNOME / i3 应该用 blueman&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;快照&#34;&gt;快照
-&lt;/h3&gt;&lt;p&gt;使用btrfs文件格式，最重要的功能就是快照，这样哪怕把系统搞崩了也可以随时恢复，非常方便&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;根目录使用btrfs文件格式，最重要的功能就是快照，这样哪怕把系统搞崩了也可以随时恢复，非常方便&lt;/p&gt;
 &lt;h4 id=&#34;安装与配置&#34;&gt;安装与配置
-&lt;/h4&gt;&lt;p&gt;Btrfs 模式安装依赖&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;Btrfs安装依赖&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -155,7 +154,8 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift --version
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -164,7 +164,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift-launcher
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，优点是利用原生快照，速度快、省空间，而Rsync：适用于 ext4、XFS 等其他文件系统，基于文件复制，兼容性更广快照位置默认就是系统分区，无需修改。&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改。&lt;/p&gt;
 &lt;p&gt;配置快照计划：.3 合理控制快照数量#
 快照过多会占用大量磁盘空间，建议按以下原则设置保留数量：&lt;/p&gt;
 &lt;p&gt;每日快照：保留 3-5 个（覆盖一周内的日常变更）。
@@ -1861,7 +1861,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;p&gt;这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建&lt;code&gt;EFI 系统分区&lt;/code&gt;，通常挂载到 &lt;code&gt;/boot&lt;/code&gt;，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。&lt;/p&gt;
 &lt;p&gt;如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;交换分区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
-&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。交换文件也可以作为替代方案，分区不是必须&lt;/p&gt;
+&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;根分区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;根分区用于存放操作系统及其所有文件。如果不单独划分 &lt;code&gt;/home&lt;/code&gt;，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;btrfs子卷&lt;/strong&gt;：&lt;/p&gt;
@@ -2424,28 +2424,17 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S grub efibootmgr os-prober
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;名称&lt;/th&gt;
-          &lt;th&gt;作用&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;grub&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;引导程序&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;efibootmgr&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;管理UEFI启动项&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;os-prober&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;探测硬盘上存在的其它系统启动项，比如Windows Boot Manager&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;grub&lt;/code&gt;：引导程序&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;efibootmgr&lt;/code&gt;：管理UEFI启动项&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;os-prober&lt;/code&gt;：探测硬盘上存在的其它系统启动项，比如Windows Boot Manager&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;调用 GRUB 的安装工具，把引导文件写到磁盘，指定目标平台64位 UEFI 固件，指定EFI分区的挂载点并设置启动项名字&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -2661,11 +2650,11 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /etc/resolv.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;当 &lt;code&gt;/etc/resolv.conf&lt;/code&gt; 指向 systemd-resolved 的 stub 文件时，说明 DNS 解析已由 systemd-resolved 统一接管&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;如果输出类似下图，说明 DNS 解析已由 systemd-resolved 统一接管&lt;/p&gt;
 &lt;img src=&#34;42.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;添加软件源&#34;&gt;添加软件源
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;pacman 默认只使用官方仓库，如果需要使用社区软件，需要手动添加第三方源&lt;/p&gt;
+&lt;p&gt;pacman 默认只使用官方仓库，如果需要使用第三方仓库就要手动添加&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;编辑&lt;code&gt;pacman.conf&lt;/code&gt;文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2687,7 +2676,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;删除这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;取消这两行前面的注释，启用 multilib 仓库用于兼容 32 位程序&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2711,7 +2700,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;安装-yay&#34;&gt;安装 yay
-&lt;/h3&gt;&lt;p&gt;yay是AUR工具，可以自动构建和安装社区软件&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;yay 是一个常用的 AUR 辅助工具，用于自动构建并安装社区仓库中的软件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2760,7 +2749,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;Optimus 是一种双显卡切换架构，常见于笔记本电脑中，用来同时集成核显和独显。日常轻负载使用核显降低功耗，运行游戏或图形计算时切换到独显提升性能&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;进行检查&lt;/p&gt;
+&lt;p&gt;检查&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2774,7 +2763,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;h3 id=&#34;确定驱动包&#34;&gt;确定驱动包
 &lt;/h3&gt;&lt;p&gt;由于驱动包更新较快，这里不建议照抄任何教程。进入&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinux.org/title/NVIDIA&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;NVIDIA - ArchWiki&lt;/a&gt;，首先找到这个表格&lt;/p&gt;
-&lt;img src=&#34;46.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;46.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;在左侧的GPU family部分随便点击一个代号是NV开头的，来到&lt;a class=&#34;link&#34; href=&#34;https://nouveau.freedesktop.org/CodeNames.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;freedesktop&lt;/a&gt;界面，&lt;code&gt;Ctrl+f&lt;/code&gt;输入自己显卡的型号进行搜索，找到属于的大类，然后返回上个界面对照表格找到对应的驱动。比如我的1650Ti对应的是&lt;code&gt;nvidia-open&lt;/code&gt;和&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;32.png&#34; style=&#34;width: 70%;&#34; /&gt;
@@ -2784,18 +2773,19 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;li&gt;基础驱动：由上一步确认，如果出现多个驱动的情况，根据自己内核选择对应的驱动。&lt;code&gt;dkms&lt;/code&gt;比较全面，可以适配更多内核，&lt;code&gt;open&lt;/code&gt;比较不稳定，不建议优先选择&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;nvidia-settings&lt;/code&gt;：图形化驱动配置工具&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;nvidia-utils&lt;/code&gt;：驱动运行时依赖&lt;/li&gt;
-&lt;li&gt;32位支持：&lt;code&gt;lib32-nvidia-utils&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lib32-nvidia-utils&lt;/code&gt;：32位支持&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nvidia-prime&lt;/code&gt;：用于在Optimus环境下切换独显与核显，提供 &lt;code&gt;prime-run&lt;/code&gt; 命令，使程序可以按需调用 NVIDIA 独显运行，而不是默认使用核显&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注意：如果基础驱动包含版本号，如&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;，那么&lt;code&gt;nvidia-settings&lt;/code&gt;和&lt;code&gt;nvidia-utils&lt;/code&gt;中间也必须加上版本号，如&lt;code&gt;nvidia-580xx-utils&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;注意：如果基础驱动包含版本号，如&lt;code&gt;nvidia-580xx-dkms&lt;/code&gt;，那么&lt;code&gt;nvidia-settings&lt;/code&gt;和&lt;code&gt;nvidia-utils&lt;/code&gt;中间也必须加上版本号，如&lt;code&gt;nvidia-580xx-utils&lt;/code&gt;，版本号以ArchWiki为准&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，这里推荐yay安装，之后更新也需要一直使用yay&lt;/p&gt;
+&lt;p&gt;安装的驱动必须版本一致，不能混用官方仓库与 AUR 版本，也就是说假如第一次安装使用的是AUR，之后更新也需要继续使用&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;yay -S nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;yay -S nvidia-580xx-dkms nvidia-580xx-settings nvidia-580xx-utils lib32-nvidia-580xx-utils nvidia-prime
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;完成后&lt;code&gt;reboot&lt;/code&gt;重启，然后检查是否安装成功&lt;/p&gt;
@@ -2808,7 +2798,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;若输出类似以下内容，说明驱动安装成功&lt;/p&gt;
-&lt;img src=&#34;47.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;47.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;安装gui&#34;&gt;安装GUI
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;明明安装好了系统，可还是需要命令行操作？其实是因为Arch Linux的系统与桌面是分开的，桌面环境需要单独安装。如果想要图形化的桌面环境，就需要设置显示服务器、显示管理器与桌面环境&lt;/p&gt;
@@ -2831,13 +2821,14 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;li&gt;&lt;code&gt;dolphin&lt;/code&gt;：文件管理器，用于浏览、复制、删除文件&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;ark&lt;/code&gt;：压缩文件管理工具，支持解压和打包 zip、tar、7z 等格式&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;gwenview&lt;/code&gt;：图片查看器，用于浏览和简单编辑图片&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;kate&lt;/code&gt;：文本编辑器，适合编写代码或修改配置文件，支持语法高亮和插件扩展&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S plasma sddm konsole dolphin ark gwenview
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pacman -S plasma sddm konsole dolphin kate ark gwenview
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;设置 SDDM 开机自启&lt;/p&gt;
@@ -2853,7 +2844,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重启后进入桌面环境，Arch Linux的基础安装就顺利完成了&lt;/p&gt;
-&lt;img src=&#34;48.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;48.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;linux常用命令&#34;&gt;Linux常用命令
 &lt;/h2&gt;&lt;table&gt;
   &lt;thead&gt;
