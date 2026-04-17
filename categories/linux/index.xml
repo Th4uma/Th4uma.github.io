@@ -15,8 +15,19 @@
         <guid>https://th4uma.github.io/post/arch_after/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/arch.jpg" alt="Featured image of post Arch Linux &#43; KDE Plasma 基本设置与美化" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;新装好的系统就像毛坯房一样，能用但不好用，所以最基本的配置和美化还是要有的&lt;/p&gt;
-&lt;h2 id=&#34;基本配置&#34;&gt;基本配置
-&lt;/h2&gt;&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
+&lt;p&gt;Arch Linux 采用滚动更新机制，没有固定的大版本，而是持续推送更新。这种方式更加灵活，但也更容易导致系统崩溃，也就是俗称的滚挂，解决方法是常更新，比如每天开机后更新一次。系统使用 Pacman 作为包管理器，滚动更新的命令是&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -Syu
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;-S（--sync）&lt;/code&gt;：同步软件包数据库并安装/升级软件包&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-y（--refresh）&lt;/code&gt;：刷新本地软件包数据库&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;-u（--sysupgrade）&lt;/code&gt;：升级所有已安装的软件包到最新版本&lt;/p&gt;
+&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
 &lt;/h3&gt;&lt;h4 id=&#34;字体&#34;&gt;字体
 &lt;/h4&gt;&lt;p&gt;下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
 &lt;ul&gt;
@@ -57,7 +68,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;保存退出&lt;/p&gt;
 &lt;h4 id=&#34;系统设置中文&#34;&gt;系统设置中文
-&lt;/h4&gt;&lt;p&gt;之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为在&lt;code&gt;/etc/locale.conf&lt;/code&gt;中全局设置中文locale会导致tty显示乱码，这是由于Linux内核的tty字形限制&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;之前安装过程中曾经修改&lt;code&gt;locale.conf&lt;/code&gt;文件，设置成了全局英文，这是因为如果在&lt;code&gt;/etc/locale.conf&lt;/code&gt;中设置全局中文，就会由于Linux内核的tty字形限制导致tty显示乱码&lt;/p&gt;
 &lt;p&gt;如果需要在桌面环境中启用中文显示，可以通过图形界面进行设置。点击开始菜单的&lt;code&gt;System settings&lt;/code&gt;，找到&lt;code&gt;Region&amp;amp;Language&lt;/code&gt;选项，进入后点击&lt;code&gt;add more&lt;/code&gt;，找到简体中文并添加，最后重启来应用设置&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h4 id=&#34;输入法&#34;&gt;输入法
@@ -164,33 +175,97 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift-launcher
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改。&lt;/p&gt;
-&lt;p&gt;配置快照计划：.3 合理控制快照数量#
-快照过多会占用大量磁盘空间，建议按以下原则设置保留数量：&lt;/p&gt;
-&lt;p&gt;每日快照：保留 3-5 个（覆盖一周内的日常变更）。
-每周快照：保留 2-4 个（覆盖一个月内的重大变更）。
-手动快照：按需保留（如“系统初始化完成”“软件配置完成”等里程碑快照）。&lt;/p&gt;
-&lt;p&gt;在“Filters”标签页中，添加无需备份的目录（如 /home 下的用户数据、/tmp 临时文件等）。Timeshift 默认排除 /home，因为它更适合用于系统状态备份，而非用户数据（用户数据建议用专用工具如 Deja Dup 备份）。
-保存配置：点击“OK”完成基础配置。&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 48%;&#34; /&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 48%;&#34; /&gt;
+&lt;p&gt;之后是设置快照数量。快照过多会占用大量磁盘空间，建议按照下面的数量设置：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;每日快照：3-5 个&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;每周快照：2-4 个&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;每月快照：1-2 个&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;用户主目录需要排除不需要备份的盘符如&lt;code&gt;/home&lt;/code&gt;。这是因为快照功能是针对系统，如果包含个人数据可能会导致丢失&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h4 id=&#34;系统恢复&#34;&gt;系统恢复
 &lt;/h4&gt;&lt;blockquote&gt;
 &lt;p&gt;本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可
-我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但有一个鼠标光标可以正常移动&lt;/p&gt;
-&lt;p&gt;首先进入Live USB环境，首先查看磁盘信息&lt;/p&gt;
-&lt;p&gt;挂载需要恢复的盘符，也就是根目录所在的盘&lt;/p&gt;
-&lt;p&gt;进入chroot&lt;/p&gt;
-&lt;p&gt;列出快照目录&lt;/p&gt;
-&lt;p&gt;进行恢复，执行命令后首先输入目标快照的序号然后确认信息，最后输入y进行恢复&lt;/p&gt;
-&lt;p&gt;sudo timeshift &amp;ndash;restore&lt;/p&gt;
-&lt;p&gt;重启后可以看到系统已经恢复正常&lt;/p&gt;
-&lt;p&gt;8.4 分离系统快照与用户数据#
-Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数据（如 /home 下的文档、图片、配置）建议用专用工具备份：&lt;/p&gt;
-&lt;p&gt;9.3 Btrfs 快照恢复后数据丢失#
-原因：Btrfs 快照仅包含创建时的文件状态，若后续修改未被新快照捕获，恢复后会丢失。
-解决：启用自动快照计划，并在重大操作前手动创建快照。&lt;/p&gt;
-&lt;p&gt;最后发现原因是sddm换主题导致&lt;/p&gt;
+&lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可&lt;/p&gt;
+&lt;p&gt;我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但鼠标光标可以正常移动&lt;/p&gt;
+&lt;img src=&#34;11.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;进入Live USB环境，首先查看磁盘信息&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lsblk
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;挂载需要恢复的盘符，也就是根目录所在的盘&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -o subvol=@ /dev/nvme1n1p3 /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;进入chroot&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;arch-chroot /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;列出快照目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timesift --list
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;8.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入y进行恢复&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift --restore
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;9.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;退出chroot，解除挂载&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;exit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount -R /mnt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;reboot
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启后可以看到系统已经恢复正常&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;最后我发现卡死是sddm换主题导致，我的环境不适配左侧是登录栏的那一系列主题，因此在设置后，在登录界面会卡死黑屏，从而执行不了任何操作&lt;/p&gt;
+&lt;p&gt;更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者语言问题导致的卡死&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h3 id=&#34;zsh&#34;&gt;zsh
 &lt;/h3&gt;&lt;p&gt;zsh 基本兼容 bash，但相比 bash，又有诸多优点：&lt;/p&gt;
 &lt;ol&gt;
@@ -205,12 +280,16 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 &lt;p&gt;新建配置方案&lt;/p&gt;
 &lt;h3 id=&#34;常用软件&#34;&gt;常用软件
 &lt;/h3&gt;&lt;p&gt;linuxqq&lt;/p&gt;
+&lt;p&gt;typora&lt;/p&gt;
+&lt;p&gt;flclash&lt;/p&gt;
 &lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
 &lt;/h2&gt;&lt;h3 id=&#34;分辨率&#34;&gt;分辨率
 &lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/zh-hans/Xrandr&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Xrandr - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&#34;背光&#34;&gt;背光
-&lt;/h3&gt;&lt;p&gt;突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;我选择使用 brightnessctl 工具来调整亮度&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -239,56 +318,64 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;直接设置数值&lt;/p&gt;
-&lt;p&gt;brightnessctl set 100%&lt;/p&gt;
-&lt;p&gt;本以为还需要修改映射才能设置成功，但重启以后发现亮度正常，控制面板调整亮度也不会出现突然变暗的情况，说明映射自动设置成功了，完美结束&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;brightnessctl set 100%
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;本以为还需要修改映射才能设置成功，但重启以后发现亮度正常，控制面板调整亮度也不会出现突然变暗的情况，说明映射自动设置成功了，完美结束&lt;/p&gt;
 &lt;h3 id=&#34;主题&#34;&gt;主题
-&lt;/h3&gt;&lt;p&gt;点击 `获取新部件&amp;hellip;然后选择自己喜欢的安装并应用即可&lt;/p&gt;
-&lt;p&gt;我下载了&lt;/p&gt;
-&lt;p&gt;欢迎屏幕：simple tux&lt;/p&gt;
-&lt;p&gt;登录屏幕：KDE-story&lt;/p&gt;
-&lt;p&gt;图标：tela-greydark&lt;/p&gt;
-&lt;p&gt;窗口装饰：layan&lt;/p&gt;
-&lt;p&gt;全局主题：nordic&lt;/p&gt;
-&lt;h3 id=&#34;窗口管理&#34;&gt;窗口管理
-&lt;/h3&gt;&lt;p&gt;桌面特效美化窗口，可以设置透明度，动画等&lt;/p&gt;
-&lt;h3 id=&#34;终端&#34;&gt;终端
-&lt;/h3&gt;&lt;h3 id=&#34;边栏&#34;&gt;边栏
-&lt;/h3&gt;&lt;p&gt;桌面布局之前，需要了解一些基本的概念：&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;在系统设置的&lt;code&gt;颜色和主题&lt;/code&gt;中点击 &lt;code&gt;获取新部件&lt;/code&gt;然后选择自己喜欢的安装并应用即可，我的配置是：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;KDE 桌面中无论是菜单栏还是顶栏，本质上都是&lt;strong&gt;面板&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;面板上的元素（如托盘图标、数字时钟、网速显示、开始菜单图标）等都是&lt;strong&gt;小组件&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;小组件可以放置在面板里，也可以独立存在&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;欢迎屏幕：Simple tux&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;登录屏幕：Breeze微风&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;图标：Tela grey dark&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;窗口装饰：Nordic&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;全局主题：Nordic&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;更改桌面布局，本质上就是&lt;strong&gt;调整面板和小组件的位置以及样式&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;终端&#34;&gt;终端
+&lt;/h3&gt;&lt;p&gt;首先进入设置，将工具栏隐藏&lt;/p&gt;
+&lt;p&gt;然后点击配置，新建颜色配置，这里主要修改透明度&lt;/p&gt;
+&lt;h3 id=&#34;桌面布局&#34;&gt;桌面布局
+&lt;/h3&gt;&lt;p&gt;更改桌面布局，本质上就是调整面板和小组件的位置以及样式&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;KDE 桌面中无论是菜单栏还是顶栏，本质上都是面板&lt;/li&gt;
+&lt;li&gt;面板上的元素，如时钟，托盘图标都是小组件&lt;/li&gt;
+&lt;li&gt;小组件可以放置在面板里，也可以直接放在桌面上&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;右击任务栏，点击显示面板配置，这里有添加面板的选项，可以根据自己情况添加边栏，我这里就是添加了一个顶栏&lt;/p&gt;
-&lt;p&gt;然后可以在这里任意设置&lt;/p&gt;
-&lt;p&gt;点击添加或管理小部件，可以拖到边栏和桌面任意位置添加&lt;/p&gt;
-&lt;p&gt;输入法样式git clone &lt;a class=&#34;link&#34; href=&#34;https://github.com/tonyfettes/fcitx5-nord.git&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/tonyfettes/fcitx5-nord.git&lt;/a&gt;
-mkdir -p ~/.local/share/fcitx5/themes/
-cd fcitx5-nord
-cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
-&lt;p&gt;yay -S plasma-applets-weather-widget-2 qt6-5compat qt6-declarative # 必须安装&lt;/p&gt;
-&lt;h3 id=&#34;以空会话启动&#34;&gt;以空会话启动
-&lt;/h3&gt;&lt;p&gt;默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话（如浏览器没有关掉，那么开机之后浏览器还在）。&lt;/p&gt;
-&lt;p&gt;如果你不喜欢这样，请按照以下步骤设置：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;打开 &lt;code&gt;系统设置&lt;/code&gt; &amp;gt; 点击侧栏 &lt;code&gt;开机与关机&lt;/code&gt; &amp;gt; &lt;code&gt;桌面会话&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;将 &lt;code&gt;登入时&lt;/code&gt; 的选项改为 &lt;code&gt;以空会话启动&lt;/code&gt;：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;img src=&#34;https://arch.icekylin.online/assets/empty.DhNNXXzX.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;empty&#34;
-	
-	
-&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;点击 &lt;code&gt;应用&lt;/code&gt; 保存设置&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;然后可以在这里进行设置&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;p&gt;点击添加或管理小部件，将组件拖到边栏和桌面任意位置添加&lt;/p&gt;
+&lt;img src=&#34;13.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;其他设置&#34;&gt;其他设置
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;以空会话启动：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话，可以打开 &lt;code&gt;系统设置&amp;gt;开机与关机&amp;gt;桌面会话&lt;/code&gt;，将 &lt;code&gt;登入时&lt;/code&gt; 的选项改为 &lt;code&gt;以空会话启动&lt;/code&gt;，然后应用&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;窗口管理：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;设置&amp;gt;窗口管理&amp;gt;桌面特效&lt;/code&gt;，可以设置透明度，动画等&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;电源管理：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;进入&lt;code&gt;设置&amp;gt;电源管理&lt;/code&gt;，修改屏幕变暗的时间和自动睡眠时间&lt;/p&gt;
+&lt;h2 id=&#34;附windows经常卡死解决办法&#34;&gt;附：Windows经常卡死解决办法
+&lt;/h2&gt;&lt;p&gt;安装好双系统后，我在使用Windows时经常是什么都没干，系统就卡死了。刚开始鼠标和CapsLk键还有用，但尝试用快捷键调出任务管理器后，就彻底卡死，只能强制关机。刚刚安装好的时候频率不高，大概一天一次，但配置完GUI后频率变成半小时一次。我忍无可忍，只好动手修复&lt;/p&gt;
+&lt;p&gt;首先在&lt;code&gt;控制面板&amp;gt;系统和安全&lt;/code&gt;中打开事件查看器，可以看到出现了一些报错，显示&lt;code&gt;创建 TLS 客户端 凭据时出现严重错误。内部错误状态为 10013。 &lt;/code&gt;时间也和卡死的时间点吻合&lt;/p&gt;
+&lt;img src=&#34;14.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;查看&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/617486665&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;教程&lt;/a&gt;，在&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&amp;gt;Internet选项&amp;gt;高级&lt;/code&gt;里取消勾选SSL协议和TLS协议的旧版本，再查看日志就没有报错了&lt;/p&gt;
+&lt;img src=&#34;15.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;然后我更新了一下显卡驱动，问题解决&lt;/p&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://arch.icekylin.online/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;archlinux 简明指南&lt;/a&gt;&lt;/p&gt;
@@ -298,6 +385,8 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/&lt;/p&gt;
     &gt;Arch Linux 系统备份与恢复利器：Timeshift 完全指南 — geek-blogs.com&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://mill413.github.io/posts/archlinux%e7%be%8e%e5%8c%96%e8%ae%b0%e5%bd%95/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Archlinux+KDE美化记录 | 彩虹岛&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/chen2ha/p/18568057&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;typora 0.11.18 最后的免费版安装方法（含 windows 和 archlinxu）&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>

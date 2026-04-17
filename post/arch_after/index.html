@@ -272,8 +272,7 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#基本配置">基本配置</a>
+    <li><a href="#前言">前言</a>
       <ol>
         <li><a href="#中文支持">中文支持</a>
           <ol>
@@ -299,12 +298,12 @@ unicode: "f6d2"
         <li><a href="#分辨率">分辨率</a></li>
         <li><a href="#背光">背光</a></li>
         <li><a href="#主题">主题</a></li>
-        <li><a href="#窗口管理">窗口管理</a></li>
         <li><a href="#终端">终端</a></li>
-        <li><a href="#边栏">边栏</a></li>
-        <li><a href="#以空会话启动">以空会话启动</a></li>
+        <li><a href="#桌面布局">桌面布局</a></li>
+        <li><a href="#其他设置">其他设置</a></li>
       </ol>
     </li>
+    <li><a href="#附windows经常卡死解决办法">附：Windows经常卡死解决办法</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
 </nav>
@@ -386,8 +385,19 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>新装好的系统就像毛坯房一样，能用但不好用，所以最基本的配置和美化还是要有的</p>
-<h2 id="基本配置">基本配置
-</h2><h3 id="中文支持">中文支持
+<p>Arch Linux 采用滚动更新机制，没有固定的大版本，而是持续推送更新。这种方式更加灵活，但也更容易导致系统崩溃，也就是俗称的滚挂，解决方法是常更新，比如每天开机后更新一次。系统使用 Pacman 作为包管理器，滚动更新的命令是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -Syu
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>-S（--sync）</code>：同步软件包数据库并安装/升级软件包</p>
+<p><code>-y（--refresh）</code>：刷新本地软件包数据库</p>
+<p><code>-u（--sysupgrade）</code>：升级所有已安装的软件包到最新版本</p>
+<h3 id="中文支持">中文支持
 </h3><h4 id="字体">字体
 </h4><p>下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码</p>
 <ul>
@@ -428,7 +438,7 @@ unicode: "f6d2"
 </div>
 </div><p>保存退出</p>
 <h4 id="系统设置中文">系统设置中文
-</h4><p>之前安装过程中曾经修改locale.conf文件，设置成了全局英文，这是因为在<code>/etc/locale.conf</code>中全局设置中文locale会导致tty显示乱码，这是由于Linux内核的tty字形限制</p>
+</h4><p>之前安装过程中曾经修改<code>locale.conf</code>文件，设置成了全局英文，这是因为如果在<code>/etc/locale.conf</code>中设置全局中文，就会由于Linux内核的tty字形限制导致tty显示乱码</p>
 <p>如果需要在桌面环境中启用中文显示，可以通过图形界面进行设置。点击开始菜单的<code>System settings</code>，找到<code>Region&amp;Language</code>选项，进入后点击<code>add more</code>，找到简体中文并添加，最后重启来应用设置</p>
 <img src="1.png" style="width: 80%;" />
 <h4 id="输入法">输入法
@@ -535,33 +545,97 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift-launcher
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>之后是选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改。</p>
-<p>配置快照计划：.3 合理控制快照数量#
-快照过多会占用大量磁盘空间，建议按以下原则设置保留数量：</p>
-<p>每日快照：保留 3-5 个（覆盖一周内的日常变更）。
-每周快照：保留 2-4 个（覆盖一个月内的重大变更）。
-手动快照：按需保留（如“系统初始化完成”“软件配置完成”等里程碑快照）。</p>
-<p>在“Filters”标签页中，添加无需备份的目录（如 /home 下的用户数据、/tmp 临时文件等）。Timeshift 默认排除 /home，因为它更适合用于系统状态备份，而非用户数据（用户数据建议用专用工具如 Deja Dup 备份）。
-保存配置：点击“OK”完成基础配置。</p>
+</div><p>选择快照类型，由于之前的系统根分区设置了btrfs格式，所以这里选择btrfs，而Rsync适用于 ext4、XFS 等其他文件系统。快照位置默认就是系统分区，无需修改</p>
+<img src="10.png" style="width: 48%;" />
+<img src="5.png" style="width: 48%;" />
+<p>之后是设置快照数量。快照过多会占用大量磁盘空间，建议按照下面的数量设置：</p>
+<ul>
+<li>
+<p>每日快照：3-5 个</p>
+</li>
+<li>
+<p>每周快照：2-4 个</p>
+</li>
+<li>
+<p>每月快照：1-2 个</p>
+</li>
+</ul>
+<p>手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前</p>
+<img src="6.png" style="width: 60%;" />
+<p>用户主目录需要排除不需要备份的盘符如<code>/home</code>。这是因为快照功能是针对系统，如果包含个人数据可能会导致丢失</p>
+<img src="7.png" style="width: 60%;" />
 <h4 id="系统恢复">系统恢复
 </h4><blockquote>
 <p>本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照</p>
 </blockquote>
-<p>如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可
-我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但有一个鼠标光标可以正常移动</p>
-<p>首先进入Live USB环境，首先查看磁盘信息</p>
-<p>挂载需要恢复的盘符，也就是根目录所在的盘</p>
-<p>进入chroot</p>
-<p>列出快照目录</p>
-<p>进行恢复，执行命令后首先输入目标快照的序号然后确认信息，最后输入y进行恢复</p>
-<p>sudo timeshift &ndash;restore</p>
-<p>重启后可以看到系统已经恢复正常</p>
-<p>8.4 分离系统快照与用户数据#
-Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数据（如 /home 下的文档、图片、配置）建议用专用工具备份：</p>
-<p>9.3 Btrfs 快照恢复后数据丢失#
-原因：Btrfs 快照仅包含创建时的文件状态，若后续修改未被新快照捕获，恢复后会丢失。
-解决：启用自动快照计划，并在重大操作前手动创建快照。</p>
-<p>最后发现原因是sddm换主题导致</p>
+<p>如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可</p>
+<p>我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但鼠标光标可以正常移动</p>
+<img src="11.jpg" style="width: 80%;" />
+<p>进入Live USB环境，首先查看磁盘信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lsblk
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>挂载需要恢复的盘符，也就是根目录所在的盘</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mount -o subvol=@ /dev/nvme1n1p3 /mnt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入chroot</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch-chroot /mnt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>列出快照目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timesift --list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="8.jpg" style="width: 70%;" />
+<p>进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入y进行恢复</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift --restore
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="9.jpg" style="width: 80%;" />
+<p>退出chroot，解除挂载</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit
+</span></span><span class="line"><span class="cl">umount -R /mnt
+</span></span><span class="line"><span class="cl">reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重启后可以看到系统已经恢复正常</p>
+<blockquote>
+<p>最后我发现卡死是sddm换主题导致，我的环境不适配左侧是登录栏的那一系列主题，因此在设置后，在登录界面会卡死黑屏，从而执行不了任何操作</p>
+<p>更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者语言问题导致的卡死</p>
+</blockquote>
 <h3 id="zsh">zsh
 </h3><p>zsh 基本兼容 bash，但相比 bash，又有诸多优点：</p>
 <ol>
@@ -576,12 +650,16 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 <p>新建配置方案</p>
 <h3 id="常用软件">常用软件
 </h3><p>linuxqq</p>
+<p>typora</p>
+<p>flclash</p>
 <h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
 </h3><p><a class="link" href="https://wiki.archlinuxcn.org/zh-hans/Xrandr"  target="_blank" rel="noopener"
     >Xrandr - Arch Linux 中文维基</a></p>
 <h3 id="背光">背光
-</h3><p>突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题</p>
+</h3><blockquote>
+<p>突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题</p>
+</blockquote>
 <p>我选择使用 brightnessctl 工具来调整亮度</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -610,56 +688,64 @@ Timeshift 专注于系统状态备份（如 /etc、/usr、/boot），用户数�
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>直接设置数值</p>
-<p>brightnessctl set 100%</p>
-<p>本以为还需要修改映射才能设置成功，但重启以后发现亮度正常，控制面板调整亮度也不会出现突然变暗的情况，说明映射自动设置成功了，完美结束</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">brightnessctl set 100%
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>本以为还需要修改映射才能设置成功，但重启以后发现亮度正常，控制面板调整亮度也不会出现突然变暗的情况，说明映射自动设置成功了，完美结束</p>
 <h3 id="主题">主题
-</h3><p>点击 `获取新部件&hellip;然后选择自己喜欢的安装并应用即可</p>
-<p>我下载了</p>
-<p>欢迎屏幕：simple tux</p>
-<p>登录屏幕：KDE-story</p>
-<p>图标：tela-greydark</p>
-<p>窗口装饰：layan</p>
-<p>全局主题：nordic</p>
-<h3 id="窗口管理">窗口管理
-</h3><p>桌面特效美化窗口，可以设置透明度，动画等</p>
-<h3 id="终端">终端
-</h3><h3 id="边栏">边栏
-</h3><p>桌面布局之前，需要了解一些基本的概念：</p>
+</h3><p>在系统设置的<code>颜色和主题</code>中点击 <code>获取新部件</code>然后选择自己喜欢的安装并应用即可，我的配置是：</p>
 <ul>
-<li>KDE 桌面中无论是菜单栏还是顶栏，本质上都是<strong>面板</strong></li>
-<li>面板上的元素（如托盘图标、数字时钟、网速显示、开始菜单图标）等都是<strong>小组件</strong></li>
-<li>小组件可以放置在面板里，也可以独立存在</li>
+<li>
+<p>欢迎屏幕：Simple tux</p>
+</li>
+<li>
+<p>登录屏幕：Breeze微风</p>
+</li>
+<li>
+<p>图标：Tela grey dark</p>
+</li>
+<li>
+<p>窗口装饰：Nordic</p>
+</li>
+<li>
+<p>全局主题：Nordic</p>
+</li>
 </ul>
-<p>更改桌面布局，本质上就是<strong>调整面板和小组件的位置以及样式</strong>。</p>
+<h3 id="终端">终端
+</h3><p>首先进入设置，将工具栏隐藏</p>
+<p>然后点击配置，新建颜色配置，这里主要修改透明度</p>
+<h3 id="桌面布局">桌面布局
+</h3><p>更改桌面布局，本质上就是调整面板和小组件的位置以及样式</p>
+<ul>
+<li>KDE 桌面中无论是菜单栏还是顶栏，本质上都是面板</li>
+<li>面板上的元素，如时钟，托盘图标都是小组件</li>
+<li>小组件可以放置在面板里，也可以直接放在桌面上</li>
+</ul>
 <p>右击任务栏，点击显示面板配置，这里有添加面板的选项，可以根据自己情况添加边栏，我这里就是添加了一个顶栏</p>
-<p>然后可以在这里任意设置</p>
-<p>点击添加或管理小部件，可以拖到边栏和桌面任意位置添加</p>
-<p>输入法样式git clone <a class="link" href="https://github.com/tonyfettes/fcitx5-nord.git"  target="_blank" rel="noopener"
-    >https://github.com/tonyfettes/fcitx5-nord.git</a>
-mkdir -p ~/.local/share/fcitx5/themes/
-cd fcitx5-nord
-cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/</p>
-<p>yay -S plasma-applets-weather-widget-2 qt6-5compat qt6-declarative # 必须安装</p>
-<h3 id="以空会话启动">以空会话启动
-</h3><p>默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话（如浏览器没有关掉，那么开机之后浏览器还在）。</p>
-<p>如果你不喜欢这样，请按照以下步骤设置：</p>
-<ol>
-<li>打开 <code>系统设置</code> &gt; 点击侧栏 <code>开机与关机</code> &gt; <code>桌面会话</code></li>
-<li>将 <code>登入时</code> 的选项改为 <code>以空会话启动</code>：</li>
-</ol>
-<p><img src="https://arch.icekylin.online/assets/empty.DhNNXXzX.png"
-	
-	
-	
-	loading="lazy"
-	
-		alt="empty"
-	
-	
-></p>
-<ol>
-<li>点击 <code>应用</code> 保存设置</li>
-</ol>
+<p>然后可以在这里进行设置</p>
+<img src="12.png" style="width: 40%;" />
+<p>点击添加或管理小部件，将组件拖到边栏和桌面任意位置添加</p>
+<img src="13.png" style="width: 60%;" />
+<h3 id="其他设置">其他设置
+</h3><p><strong>以空会话启动：</strong></p>
+<p>默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话，可以打开 <code>系统设置&gt;开机与关机&gt;桌面会话</code>，将 <code>登入时</code> 的选项改为 <code>以空会话启动</code>，然后应用</p>
+<p><strong>窗口管理：</strong></p>
+<p>进入<code>设置&gt;窗口管理&gt;桌面特效</code>，可以设置透明度，动画等</p>
+<p><strong>电源管理：</strong></p>
+<p>进入<code>设置&gt;电源管理</code>，修改屏幕变暗的时间和自动睡眠时间</p>
+<h2 id="附windows经常卡死解决办法">附：Windows经常卡死解决办法
+</h2><p>安装好双系统后，我在使用Windows时经常是什么都没干，系统就卡死了。刚开始鼠标和CapsLk键还有用，但尝试用快捷键调出任务管理器后，就彻底卡死，只能强制关机。刚刚安装好的时候频率不高，大概一天一次，但配置完GUI后频率变成半小时一次。我忍无可忍，只好动手修复</p>
+<p>首先在<code>控制面板&gt;系统和安全</code>中打开事件查看器，可以看到出现了一些报错，显示<code>创建 TLS 客户端 凭据时出现严重错误。内部错误状态为 10013。 </code>时间也和卡死的时间点吻合</p>
+<img src="14.png" style="width: 100%;" />
+<p>查看<a class="link" href="https://zhuanlan.zhihu.com/p/617486665"  target="_blank" rel="noopener"
+    >教程</a>，在<code>控制面板&gt;网络和 Internet&gt;网络和共享中心&gt;Internet选项&gt;高级</code>里取消勾选SSL协议和TLS协议的旧版本，再查看日志就没有报错了</p>
+<img src="15.png" style="width: 50%;" />
+<p>然后我更新了一下显卡驱动，问题解决</p>
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://arch.icekylin.online/"  target="_blank" rel="noopener"
     >archlinux 简明指南</a></p>
@@ -669,6 +755,8 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/</p>
     >Arch Linux 系统备份与恢复利器：Timeshift 完全指南 — geek-blogs.com</a></p>
 <p><a class="link" href="https://mill413.github.io/posts/archlinux%e7%be%8e%e5%8c%96%e8%ae%b0%e5%bd%95/"  target="_blank" rel="noopener"
     >Archlinux+KDE美化记录 | 彩虹岛</a></p>
+<p><a class="link" href="https://www.cnblogs.com/chen2ha/p/18568057"  target="_blank" rel="noopener"
+    >typora 0.11.18 最后的免费版安装方法（含 windows 和 archlinxu）</a></p>
 
 </section>
 
@@ -956,7 +1044,7 @@ cp -r Nord-Dark/ Nord-Light/ ~/.local/share/fcitx5/themes/</p>
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">68.16</span> 
+      <span class="number-highlight">68.57</span> 
       k 字
   </div>
   <div>
