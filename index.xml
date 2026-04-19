@@ -27,7 +27,8 @@
 &lt;/div&gt;&lt;p&gt;&lt;code&gt;-S（--sync）&lt;/code&gt;：同步软件包数据库并安装/升级软件包&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;-y（--refresh）&lt;/code&gt;：刷新本地软件包数据库&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;-u（--sysupgrade）&lt;/code&gt;：升级所有已安装的软件包到最新版本&lt;/p&gt;
-&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
+&lt;h2 id=&#34;基本配置&#34;&gt;基本配置
+&lt;/h2&gt;&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
 &lt;/h3&gt;&lt;h4 id=&#34;字体&#34;&gt;字体
 &lt;/h4&gt;&lt;p&gt;下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
 &lt;ul&gt;
@@ -105,7 +106,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SDL_IM_MODULE=fcitx
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;保存并重启来应用配置，然后打开&lt;code&gt;设置&amp;gt;键盘&amp;gt;虚拟键盘&lt;/code&gt;，选择fctix5并保存&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;保存并重启来应用配置，然后打开&lt;code&gt;设置&amp;gt;键盘&amp;gt;虚拟键盘&lt;/code&gt;，选择fcitx5并保存&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的中文输入法添加即可&lt;/p&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 80%;&#34; /&gt;
@@ -165,7 +166,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift --version
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -192,7 +193,7 @@
 &lt;/ul&gt;
 &lt;p&gt;手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前&lt;/p&gt;
 &lt;img src=&#34;6.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;用户主目录需要排除不需要备份的盘符如&lt;code&gt;/home&lt;/code&gt;。这是因为快照功能是针对系统，如果包含个人数据可能会导致丢失&lt;/p&gt;
+&lt;p&gt;用户主目录需要排除不需要备份的目录如&lt;code&gt;/home&lt;/code&gt;。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖&lt;/p&gt;
 &lt;img src=&#34;7.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h4 id=&#34;系统恢复&#34;&gt;系统恢复
 &lt;/h4&gt;&lt;blockquote&gt;
@@ -234,11 +235,11 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timesift --list
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift --list
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;8.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入y进行恢复&lt;/p&gt;
+&lt;p&gt;进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入&lt;code&gt;y&lt;/code&gt;进行恢复&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -264,28 +265,189 @@
 &lt;/div&gt;&lt;p&gt;重启后可以看到系统已经恢复正常&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;最后我发现卡死是sddm换主题导致，我的环境不适配左侧是登录栏的那一系列主题，因此在设置后，在登录界面会卡死黑屏，从而执行不了任何操作&lt;/p&gt;
-&lt;p&gt;更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者语言问题导致的卡死&lt;/p&gt;
+&lt;p&gt;更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者依赖缺失导致的卡死&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h3 id=&#34;zsh&#34;&gt;zsh
-&lt;/h3&gt;&lt;p&gt;zsh 基本兼容 bash，但相比 bash，又有诸多优点：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;更强大的 &lt;code&gt;tab&lt;/code&gt; 补全&lt;/li&gt;
-&lt;li&gt;更智能的切换目录&lt;/li&gt;
-&lt;li&gt;大小写字母自动更正&lt;/li&gt;
-&lt;li&gt;更强大的 &lt;code&gt;alias&lt;/code&gt; 命令&lt;/li&gt;
-&lt;li&gt;丰富多彩的主题&lt;/li&gt;
-&lt;li&gt;可以集成各种类型的插件&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;首先隐藏工具栏&lt;/p&gt;
-&lt;p&gt;新建配置方案&lt;/p&gt;
-&lt;h3 id=&#34;常用软件&#34;&gt;常用软件
-&lt;/h3&gt;&lt;p&gt;linuxqq&lt;/p&gt;
+&lt;h3 id=&#34;zsh&#34;&gt;Zsh
+&lt;/h3&gt;&lt;p&gt;zsh 基本兼容 bash，但功能更丰富，比如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;tab 补全更强&lt;/li&gt;
+&lt;li&gt;目录跳转更智能&lt;/li&gt;
+&lt;li&gt;支持大小写自动修正&lt;/li&gt;
+&lt;li&gt;主题系统丰富&lt;/li&gt;
+&lt;li&gt;插件生态完整&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;安装-zsh&#34;&gt;安装 Zsh
+&lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S zsh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;将zsh设置为默认 shell&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chsh -s /bin/zsh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;首次启动 zsh 时会生成配置文件，在这个界面输入 &lt;code&gt;0&lt;/code&gt; 就会在当前用户主目录下创建一个空 &lt;code&gt;.zshrc&lt;/code&gt; 文件。 这是zsh 的配置文件&lt;/p&gt;
+&lt;img src=&#34;16.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;安装 oh-my-zsh&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sh -c &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id=&#34;安装插件&#34;&gt;安装插件
+&lt;/h4&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;pacman&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;S&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;completions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;git&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clone&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;https&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;//&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;github&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;com&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;users&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;autosuggestions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;oh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;my&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;custom&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;plugins&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;autosuggestions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;git&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;clone&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;https&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;//&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;github&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;com&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;users&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;syntax&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;highlighting&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;oh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;my&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;custom&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;plugins&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zsh&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;syntax&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;highlighting&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;zsh-autosuggestions：根据历史命令给出灰色补全建议&lt;/li&gt;
+&lt;li&gt;zsh-completions：增强补全能力&lt;/li&gt;
+&lt;li&gt;zsh-syntax-highlighting：命令语法高亮，正确绿色，错误红色&lt;/li&gt;
+&lt;li&gt;z：内置文件夹快捷跳转插件&lt;/li&gt;
+&lt;li&gt;extract：内置插件，使用 &lt;code&gt;x&lt;/code&gt; 命令即可解压任意压缩文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安装powerlevel10k主题&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;~/.oh-my-zsh/custom/themes/powerlevel10k
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id=&#34;修改配置&#34;&gt;修改配置
+&lt;/h4&gt;&lt;p&gt;编辑配置文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim ~/.zshrc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;修改主题：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ZSH_THEME=&amp;#34;powerlevel10k/powerlevel10k&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;启用插件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;plugins=(git z zsh-autosuggestions zsh-syntax-highlighting extract)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;zsh-completions 需要初始化补全系统，在文件中添加&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;autoload&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Uz&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;compinit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;compinit&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重启终端后根据引导配置好powerlevel10k，zsh就配置完成了&lt;/p&gt;
+&lt;h4 id=&#34;常用软件&#34;&gt;常用软件
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;linuxqq&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
 &lt;p&gt;typora&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
 &lt;p&gt;flclash&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
 &lt;/h2&gt;&lt;h3 id=&#34;分辨率&#34;&gt;分辨率
-&lt;/h3&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/zh-hans/Xrandr&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Xrandr - Arch Linux 中文维基&lt;/a&gt;&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;先生成 modeline&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cvt 2560 1440 144
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到类似的输出，记住最后面的 Modeline&lt;/p&gt;
+&lt;img src=&#34;19.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;将它加入 xrandr，注意此处新模式的名字不能与现有模式的一样&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xrandr --newmode &amp;#34;2560_1440_144_first&amp;#34; 808.75 2560 2792 3072 3584 1440 1443 1448 1568 -hsync +vsync
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后查当前屏幕输出口名称，常见是 &lt;code&gt;eDP-1&lt;/code&gt;（笔记本）或 &lt;code&gt;DP-1 / HDMI-1&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xrandr
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;20.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;把新模式挂上去&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xrandr --addmode eDP-1 2560_1440_144_first
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;进行切换&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;xrandr --output DP-1 --mode 2560_1440_144_first
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;一般情况下这一步成功后设置便完成了，但我这里出现了报错，查看 xrandr &amp;ndash;verbose 的输出后发现模式确实被成功注册，但无法实际应用这个分辨率&lt;img src=&#34;21.png&#34; style=&#34;width: 100%;&#34; /&gt;&lt;/p&gt;
+&lt;img src=&#34;23.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;尝试降低分辨率到120hz，依旧报错&lt;/p&gt;
+&lt;img src=&#34;22.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;最后查看系统识别的屏幕分辨率，发现是1k，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究&lt;/p&gt;
+&lt;img src=&#34;24.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;背光&#34;&gt;背光
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题&lt;/p&gt;
@@ -348,7 +510,9 @@
 &lt;/ul&gt;
 &lt;h3 id=&#34;终端&#34;&gt;终端
 &lt;/h3&gt;&lt;p&gt;首先进入设置，将工具栏隐藏&lt;/p&gt;
-&lt;p&gt;然后点击配置，新建颜色配置，这里主要修改透明度&lt;/p&gt;
+&lt;img src=&#34;17.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;然后点击管理配置方案配置，新建颜色配置，可以在这里对颜色进行设置&lt;/p&gt;
+&lt;img src=&#34;18.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;桌面布局&#34;&gt;桌面布局
 &lt;/h3&gt;&lt;p&gt;更改桌面布局，本质上就是调整面板和小组件的位置以及样式&lt;/p&gt;
 &lt;ul&gt;
@@ -358,12 +522,12 @@
 &lt;/ul&gt;
 &lt;p&gt;右击任务栏，点击显示面板配置，这里有添加面板的选项，可以根据自己情况添加边栏，我这里就是添加了一个顶栏&lt;/p&gt;
 &lt;p&gt;然后可以在这里进行设置&lt;/p&gt;
-&lt;img src=&#34;12.png&#34; style=&#34;width: 40%;&#34; /&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 45%;&#34; /&gt;
 &lt;p&gt;点击添加或管理小部件，将组件拖到边栏和桌面任意位置添加&lt;/p&gt;
 &lt;img src=&#34;13.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h3 id=&#34;其他设置&#34;&gt;其他设置
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;以空会话启动：&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话，可以打开 &lt;code&gt;系统设置&amp;gt;开机与关机&amp;gt;桌面会话&lt;/code&gt;，将 &lt;code&gt;登入时&lt;/code&gt; 的选项改为 &lt;code&gt;以空会话启动&lt;/code&gt;，然后应用&lt;/p&gt;
+&lt;p&gt;默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的会话，可以打开 &lt;code&gt;系统设置&amp;gt;开机与关机&amp;gt;桌面会话&lt;/code&gt;，将 &lt;code&gt;登入时&lt;/code&gt; 的选项改为 &lt;code&gt;以空会话启动&lt;/code&gt;，然后应用&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;窗口管理：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;进入&lt;code&gt;设置&amp;gt;窗口管理&amp;gt;桌面特效&lt;/code&gt;，可以设置透明度，动画等&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;电源管理：&lt;/strong&gt;&lt;/p&gt;
@@ -387,6 +551,10 @@
     &gt;Archlinux+KDE美化记录 | 彩虹岛&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.cnblogs.com/chen2ha/p/18568057&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;typora 0.11.18 最后的免费版安装方法（含 windows 和 archlinxu）&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.haoyep.com/posts/zsh-config-oh-my-zsh/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;zsh 安装与配置，使用 oh-my-zsh 美化终端 | Leehow的小站&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://juejin.cn/post/7302415204927160374&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Archlinux下2K带鱼屏设置分辨率的方法背景 本人使用的笔记本电脑安装了Archlinux之后，通过HDMI接口外 - 掘金&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
         <item>

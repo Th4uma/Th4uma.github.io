@@ -272,7 +272,8 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#前言">前言</a>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#基本配置">基本配置</a>
       <ol>
         <li><a href="#中文支持">中文支持</a>
           <ol>
@@ -289,8 +290,14 @@ unicode: "f6d2"
             <li><a href="#系统恢复">系统恢复</a></li>
           </ol>
         </li>
-        <li><a href="#zsh">zsh</a></li>
-        <li><a href="#常用软件">常用软件</a></li>
+        <li><a href="#zsh">Zsh</a>
+          <ol>
+            <li><a href="#安装-zsh">安装 Zsh</a></li>
+            <li><a href="#安装插件">安装插件</a></li>
+            <li><a href="#修改配置">修改配置</a></li>
+            <li><a href="#常用软件">常用软件</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
     <li><a href="#kde美化">KDE美化</a>
@@ -397,7 +404,8 @@ unicode: "f6d2"
 </div><p><code>-S（--sync）</code>：同步软件包数据库并安装/升级软件包</p>
 <p><code>-y（--refresh）</code>：刷新本地软件包数据库</p>
 <p><code>-u（--sysupgrade）</code>：升级所有已安装的软件包到最新版本</p>
-<h3 id="中文支持">中文支持
+<h2 id="基本配置">基本配置
+</h2><h3 id="中文支持">中文支持
 </h3><h4 id="字体">字体
 </h4><p>下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码</p>
 <ul>
@@ -475,7 +483,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">SDL_IM_MODULE=fcitx
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>保存并重启来应用配置，然后打开<code>设置&gt;键盘&gt;虚拟键盘</code>，选择fctix5并保存</p>
+</div><p>保存并重启来应用配置，然后打开<code>设置&gt;键盘&gt;虚拟键盘</code>，选择fcitx5并保存</p>
 <img src="2.png" style="width: 80%;" />
 <p>右击任务栏右侧的键盘图标，点击输入法设置，然后点击右下角添加输入法，选择需要的中文输入法添加即可</p>
 <img src="3.png" style="width: 80%;" />
@@ -535,7 +543,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift --version
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="4.png" style="width: 80%;" />
+</div><img src="4.png" style="width: 70%;" />
 <p>输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -562,7 +570,7 @@ unicode: "f6d2"
 </ul>
 <p>手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前</p>
 <img src="6.png" style="width: 60%;" />
-<p>用户主目录需要排除不需要备份的盘符如<code>/home</code>。这是因为快照功能是针对系统，如果包含个人数据可能会导致丢失</p>
+<p>用户主目录需要排除不需要备份的目录如<code>/home</code>。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖</p>
 <img src="7.png" style="width: 60%;" />
 <h4 id="系统恢复">系统恢复
 </h4><blockquote>
@@ -604,11 +612,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timesift --list
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift --list
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="8.jpg" style="width: 70%;" />
-<p>进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入y进行恢复</p>
+<p>进行恢复，执行命令后首先输入目标快照的序号，然后确认信息，最后输入<code>y</code>进行恢复</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -634,28 +642,189 @@ unicode: "f6d2"
 </div><p>重启后可以看到系统已经恢复正常</p>
 <blockquote>
 <p>最后我发现卡死是sddm换主题导致，我的环境不适配左侧是登录栏的那一系列主题，因此在设置后，在登录界面会卡死黑屏，从而执行不了任何操作</p>
-<p>更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者语言问题导致的卡死</p>
+<p>更换其他主题，我观察到每个主题在登录界面出现之前，都会经过这个黑屏界面，判断应该是显卡驱动或者依赖缺失导致的卡死</p>
 </blockquote>
-<h3 id="zsh">zsh
-</h3><p>zsh 基本兼容 bash，但相比 bash，又有诸多优点：</p>
-<ol>
-<li>更强大的 <code>tab</code> 补全</li>
-<li>更智能的切换目录</li>
-<li>大小写字母自动更正</li>
-<li>更强大的 <code>alias</code> 命令</li>
-<li>丰富多彩的主题</li>
-<li>可以集成各种类型的插件</li>
-</ol>
-<p>首先隐藏工具栏</p>
-<p>新建配置方案</p>
-<h3 id="常用软件">常用软件
-</h3><p>linuxqq</p>
+<h3 id="zsh">Zsh
+</h3><p>zsh 基本兼容 bash，但功能更丰富，比如：</p>
+<ul>
+<li>tab 补全更强</li>
+<li>目录跳转更智能</li>
+<li>支持大小写自动修正</li>
+<li>主题系统丰富</li>
+<li>插件生态完整</li>
+</ul>
+<h4 id="安装-zsh">安装 Zsh
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo pacman -S zsh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将zsh设置为默认 shell</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chsh -s /bin/zsh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首次启动 zsh 时会生成配置文件，在这个界面输入 <code>0</code> 就会在当前用户主目录下创建一个空 <code>.zshrc</code> 文件。 这是zsh 的配置文件</p>
+<img src="16.png" style="width: 80%;" />
+<p>安装 oh-my-zsh</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">sh -c <span class="s2">&#34;</span><span class="k">$(</span>curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="k">)</span><span class="s2">&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="安装插件">安装插件
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">pacman</span><span class="w"> </span><span class="o">-</span><span class="n">S</span><span class="w"> </span><span class="n">zsh</span><span class="o">-</span><span class="n">completions</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">users</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">autosuggestions</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">/</span><span class="n">custom</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">autosuggestions</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">git</span><span class="w"> </span><span class="n">clone</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">users</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">syntax</span><span class="o">-</span><span class="n">highlighting</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">/</span><span class="n">custom</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">syntax</span><span class="o">-</span><span class="n">highlighting</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>zsh-autosuggestions：根据历史命令给出灰色补全建议</li>
+<li>zsh-completions：增强补全能力</li>
+<li>zsh-syntax-highlighting：命令语法高亮，正确绿色，错误红色</li>
+<li>z：内置文件夹快捷跳转插件</li>
+<li>extract：内置插件，使用 <code>x</code> 命令即可解压任意压缩文件</li>
+</ul>
+<p>安装powerlevel10k主题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+</span></span><span class="line"><span class="cl">~/.oh-my-zsh/custom/themes/powerlevel10k
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="修改配置">修改配置
+</h4><p>编辑配置文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim ~/.zshrc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>修改主题：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ZSH_THEME=&#34;powerlevel10k/powerlevel10k&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启用插件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plugins=(git z zsh-autosuggestions zsh-syntax-highlighting extract)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>zsh-completions 需要初始化补全系统，在文件中添加</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">autoload</span> <span class="o">-</span><span class="n">Uz</span> <span class="n">compinit</span>
+</span></span><span class="line"><span class="cl"><span class="n">compinit</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重启终端后根据引导配置好powerlevel10k，zsh就配置完成了</p>
+<h4 id="常用软件">常用软件
+</h4><ul>
+<li>
+<p>linuxqq</p>
+</li>
+<li>
 <p>typora</p>
+</li>
+<li>
 <p>flclash</p>
+</li>
+</ul>
 <h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
-</h3><p><a class="link" href="https://wiki.archlinuxcn.org/zh-hans/Xrandr"  target="_blank" rel="noopener"
-    >Xrandr - Arch Linux 中文维基</a></p>
+</h3><p>先生成 modeline</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cvt 2560 1440 144
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到类似的输出，记住最后面的 Modeline</p>
+<img src="19.png" style="width: 100%;" />
+<p>将它加入 xrandr，注意此处新模式的名字不能与现有模式的一样</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xrandr --newmode &#34;2560_1440_144_first&#34; 808.75 2560 2792 3072 3584 1440 1443 1448 1568 -hsync +vsync
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后查当前屏幕输出口名称，常见是 <code>eDP-1</code>（笔记本）或 <code>DP-1 / HDMI-1</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xrandr
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="20.png" style="width: 100%;" />
+<p>把新模式挂上去</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xrandr --addmode eDP-1 2560_1440_144_first
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进行切换</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">xrandr --output DP-1 --mode 2560_1440_144_first
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一般情况下这一步成功后设置便完成了，但我这里出现了报错，查看 xrandr &ndash;verbose 的输出后发现模式确实被成功注册，但无法实际应用这个分辨率<img src="21.png" style="width: 100%;" /></p>
+<img src="23.png" style="width: 100%;" />
+<p>尝试降低分辨率到120hz，依旧报错</p>
+<img src="22.png" style="width: 100%;" />
+<p>最后查看系统识别的屏幕分辨率，发现是1k，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究</p>
+<img src="24.png" style="width: 100%;" />
 <h3 id="背光">背光
 </h3><blockquote>
 <p>突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题</p>
@@ -718,7 +887,9 @@ unicode: "f6d2"
 </ul>
 <h3 id="终端">终端
 </h3><p>首先进入设置，将工具栏隐藏</p>
-<p>然后点击配置，新建颜色配置，这里主要修改透明度</p>
+<img src="17.png" style="width: 50%;" />
+<p>然后点击管理配置方案配置，新建颜色配置，可以在这里对颜色进行设置</p>
+<img src="18.png" style="width: 70%;" />
 <h3 id="桌面布局">桌面布局
 </h3><p>更改桌面布局，本质上就是调整面板和小组件的位置以及样式</p>
 <ul>
@@ -728,12 +899,12 @@ unicode: "f6d2"
 </ul>
 <p>右击任务栏，点击显示面板配置，这里有添加面板的选项，可以根据自己情况添加边栏，我这里就是添加了一个顶栏</p>
 <p>然后可以在这里进行设置</p>
-<img src="12.png" style="width: 40%;" />
+<img src="12.png" style="width: 45%;" />
 <p>点击添加或管理小部件，将组件拖到边栏和桌面任意位置添加</p>
 <img src="13.png" style="width: 60%;" />
 <h3 id="其他设置">其他设置
 </h3><p><strong>以空会话启动：</strong></p>
-<p>默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的对话，可以打开 <code>系统设置&gt;开机与关机&gt;桌面会话</code>，将 <code>登入时</code> 的选项改为 <code>以空会话启动</code>，然后应用</p>
+<p>默认情况下，KDE 桌面环境中关机之后再开机会恢复先前保存的会话，可以打开 <code>系统设置&gt;开机与关机&gt;桌面会话</code>，将 <code>登入时</code> 的选项改为 <code>以空会话启动</code>，然后应用</p>
 <p><strong>窗口管理：</strong></p>
 <p>进入<code>设置&gt;窗口管理&gt;桌面特效</code>，可以设置透明度，动画等</p>
 <p><strong>电源管理：</strong></p>
@@ -757,6 +928,10 @@ unicode: "f6d2"
     >Archlinux+KDE美化记录 | 彩虹岛</a></p>
 <p><a class="link" href="https://www.cnblogs.com/chen2ha/p/18568057"  target="_blank" rel="noopener"
     >typora 0.11.18 最后的免费版安装方法（含 windows 和 archlinxu）</a></p>
+<p><a class="link" href="https://www.haoyep.com/posts/zsh-config-oh-my-zsh/"  target="_blank" rel="noopener"
+    >zsh 安装与配置，使用 oh-my-zsh 美化终端 | Leehow的小站</a></p>
+<p><a class="link" href="https://juejin.cn/post/7302415204927160374"  target="_blank" rel="noopener"
+    >Archlinux下2K带鱼屏设置分辨率的方法背景 本人使用的笔记本电脑安装了Archlinux之后，通过HDMI接口外 - 掘金</a></p>
 
 </section>
 
@@ -1044,7 +1219,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">68.57</span> 
+      <span class="number-highlight">69.31</span> 
       k 字
   </div>
   <div>
