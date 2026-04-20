@@ -166,7 +166,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;timeshift --version
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -191,16 +191,18 @@
 &lt;p&gt;每月快照：1-2 个&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在重大操作前应该手动创建快照，保留重要的节点，如修改系统核心功能前&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;img src=&#34;6.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;用户主目录需要排除不需要备份的目录如&lt;code&gt;/home&lt;/code&gt;。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖&lt;/p&gt;
+&lt;p&gt;用户主目录默认排除不需要备份的目录如&lt;code&gt;/home&lt;/code&gt;。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖&lt;/p&gt;
 &lt;img src=&#34;7.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h4 id=&#34;系统恢复&#34;&gt;系统恢复
 &lt;/h4&gt;&lt;blockquote&gt;
 &lt;p&gt;本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可&lt;/p&gt;
-&lt;p&gt;我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但鼠标光标可以正常移动&lt;/p&gt;
+&lt;p&gt;我这次遇到的问题是开机卡在进入gui前。表现为启动时显示的一堆日志一切正常，然后黑屏，左上角有一个光标，只有鼠标光标可以正常移动&lt;/p&gt;
 &lt;img src=&#34;11.jpg&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;进入Live USB环境，首先查看磁盘信息&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -294,7 +296,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chsh -s /bin/zsh
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;首次启动 zsh 时会生成配置文件，在这个界面输入 &lt;code&gt;0&lt;/code&gt; 就会在当前用户主目录下创建一个空 &lt;code&gt;.zshrc&lt;/code&gt; 文件。 这是zsh 的配置文件&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;首次启动 zsh 时会生成配置文件，在这个界面输入 &lt;code&gt;0&lt;/code&gt; 就会在当前用户主目录下创建一个空 &lt;code&gt;.zshrc&lt;/code&gt; 文件，这是zsh 的配置文件&lt;/p&gt;
 &lt;img src=&#34;16.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;p&gt;安装 oh-my-zsh&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -380,18 +382,6 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重启终端后根据引导配置好powerlevel10k，zsh就配置完成了&lt;/p&gt;
-&lt;h4 id=&#34;常用软件&#34;&gt;常用软件
-&lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;linuxqq&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;typora&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;flclash&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 &lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
 &lt;/h2&gt;&lt;h3 id=&#34;分辨率&#34;&gt;分辨率
 &lt;/h3&gt;&lt;p&gt;先生成 modeline&lt;/p&gt;
@@ -540,6 +530,10 @@
     &gt;教程&lt;/a&gt;，在&lt;code&gt;控制面板&amp;gt;网络和 Internet&amp;gt;网络和共享中心&amp;gt;Internet选项&amp;gt;高级&lt;/code&gt;里取消勾选SSL协议和TLS协议的旧版本，再查看日志就没有报错了&lt;/p&gt;
 &lt;img src=&#34;15.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;然后我更新了一下显卡驱动，问题解决&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;后续：没过几天又出现了卡死的情况，这次报错是安全启动的问题。考虑到之前曾在bios中关闭了安全启动，我又重新进行检查。电脑运行时偶尔还会突然风扇猛转，CPU占用百分百，这也许是电源管理异常？这个问题留待之后解决&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;img src=&#34;25.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://arch.icekylin.online/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;archlinux 简明指南&lt;/a&gt;&lt;/p&gt;
@@ -6579,7 +6573,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;在&lt;code&gt;Unknown Service&amp;gt;Unknown Characteristic&lt;/code&gt;中上传task2的flag&lt;/p&gt;
 &lt;img src=&#34;esp25.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;img src=&#34;esp26.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
-&lt;p&gt;读取获得字符串&lt;code&gt;54-48-55-43-54-46-7B-57-72-49-74-45- 5F-34-5F-67-41-37-54-7D-00&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;读取获得字符串&lt;code&gt;54-48-55-43-54-46-7B-57-72-49-74-45- 5F-34-5F-67-41-37-54-7D-00&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;esp27.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;转ascii获得flag&lt;/p&gt;
 &lt;img src=&#34;esp27.png&#34; style=&#34;width: 60%;&#34; /&gt;
@@ -9475,7 +9469,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;subtitle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;m&#34;&gt;404&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Not Found&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c&#34;&gt;#简介&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;code&gt;pagination: pagerSize: 5&lt;/code&gt;:每页文章数&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;pagination: pagerSize: 5&lt;/code&gt;:每页文章数&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1

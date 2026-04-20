@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/arch_after/'>
 
-<link rel="stylesheet" href="/scss/style.min.d22036d6184d552f391082a3351fac05082014cfcb6d5b996cf1dadf64fb01df.css"><meta property='og:title' content="Arch Linux + KDE Plasma 基本设置与美化">
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="Arch Linux + KDE Plasma 基本设置与美化">
 <meta property='og:description' content="又是经典的安装后配置环节">
 <meta property='og:url' content='https://th4uma.github.io/post/arch_after/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -295,7 +295,6 @@ unicode: "f6d2"
             <li><a href="#安装-zsh">安装 Zsh</a></li>
             <li><a href="#安装插件">安装插件</a></li>
             <li><a href="#修改配置">修改配置</a></li>
-            <li><a href="#常用软件">常用软件</a></li>
           </ol>
         </li>
       </ol>
@@ -543,7 +542,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">timeshift --version
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="4.png" style="width: 70%;" />
+</div><img src="4.png" style="width: 60%;" />
 <p>输入命令启动图形界面，或者从应用菜单搜索Timeshift启动，这里需要输入密码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -568,16 +567,18 @@ unicode: "f6d2"
 <p>每月快照：1-2 个</p>
 </li>
 </ul>
-<p>手动快照：在重大操作前手动创建快照，保留重要的节点，如修改系统核心功能前</p>
+<blockquote>
+<p>在重大操作前应该手动创建快照，保留重要的节点，如修改系统核心功能前</p>
+</blockquote>
 <img src="6.png" style="width: 60%;" />
-<p>用户主目录需要排除不需要备份的目录如<code>/home</code>。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖</p>
+<p>用户主目录默认排除不需要备份的目录如<code>/home</code>。这是因为快照功能是针对系统，如果包含个人数据可能会导致更改被覆盖</p>
 <img src="7.png" style="width: 60%;" />
 <h4 id="系统恢复">系统恢复
 </h4><blockquote>
 <p>本来以为之后折腾环境的时候才能用到恢复，没想到第一天就碰上了，还好之前保存了快照</p>
 </blockquote>
 <p>如果出现小问题，还可以进入系统与图形界面，那么在timeshift的GUI中直接选择快照恢复即可</p>
-<p>我这次遇到的问题是启动的时候卡在进入gui前，表现启动的时候一堆日志正常，然后黑屏，左上角有一个光标，但鼠标光标可以正常移动</p>
+<p>我这次遇到的问题是开机卡在进入gui前。表现为启动时显示的一堆日志一切正常，然后黑屏，左上角有一个光标，只有鼠标光标可以正常移动</p>
 <img src="11.jpg" style="width: 80%;" />
 <p>进入Live USB环境，首先查看磁盘信息</p>
 <div class="highlight"><div class="chroma">
@@ -671,7 +672,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chsh -s /bin/zsh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>首次启动 zsh 时会生成配置文件，在这个界面输入 <code>0</code> 就会在当前用户主目录下创建一个空 <code>.zshrc</code> 文件。 这是zsh 的配置文件</p>
+</div><p>首次启动 zsh 时会生成配置文件，在这个界面输入 <code>0</code> 就会在当前用户主目录下创建一个空 <code>.zshrc</code> 文件，这是zsh 的配置文件</p>
 <img src="16.png" style="width: 80%;" />
 <p>安装 oh-my-zsh</p>
 <div class="highlight"><div class="chroma">
@@ -757,18 +758,6 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重启终端后根据引导配置好powerlevel10k，zsh就配置完成了</p>
-<h4 id="常用软件">常用软件
-</h4><ul>
-<li>
-<p>linuxqq</p>
-</li>
-<li>
-<p>typora</p>
-</li>
-<li>
-<p>flclash</p>
-</li>
-</ul>
 <h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
 </h3><p>先生成 modeline</p>
@@ -917,6 +906,10 @@ unicode: "f6d2"
     >教程</a>，在<code>控制面板&gt;网络和 Internet&gt;网络和共享中心&gt;Internet选项&gt;高级</code>里取消勾选SSL协议和TLS协议的旧版本，再查看日志就没有报错了</p>
 <img src="15.png" style="width: 50%;" />
 <p>然后我更新了一下显卡驱动，问题解决</p>
+<blockquote>
+<p>后续：没过几天又出现了卡死的情况，这次报错是安全启动的问题。考虑到之前曾在bios中关闭了安全启动，我又重新进行检查。电脑运行时偶尔还会突然风扇猛转，CPU占用百分百，这也许是电源管理异常？这个问题留待之后解决</p>
+</blockquote>
+<img src="25.png" style="width: 100%;" />
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://arch.icekylin.online/"  target="_blank" rel="noopener"
     >archlinux 简明指南</a></p>
@@ -1219,7 +1212,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">69.31</span> 
+      <span class="number-highlight">69.41</span> 
       k 字
   </div>
   <div>
