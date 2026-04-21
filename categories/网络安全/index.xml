@@ -49,8 +49,8 @@
       &lt;tr&gt;
           &lt;td&gt;攻击者 DNS 服务器&lt;/td&gt;
           &lt;td&gt;10.9.0.153&lt;/td&gt;
-          &lt;td&gt;attacker32.com&lt;/td&gt;
-          &lt;td&gt;控制域名解析，实现 DNS 重绑定&lt;/td&gt;
+          &lt;td&gt;无&lt;/td&gt;
+          &lt;td&gt;解析，实现 DNS 重绑定&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
@@ -58,14 +58,11 @@
 &lt;/h2&gt;&lt;p&gt;IoT 设备部署在内网，外部无法直接访问，同时浏览器同源策略限制跨域请求。&lt;/p&gt;
 &lt;p&gt;DNS 重绑定的核心在于：
 浏览器只校验“域名是否一致”，而不关心该域名解析到的 IP 是否发生变化。&lt;/p&gt;
-&lt;p&gt;攻击流程本质是：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;初始解析：域名 → 攻击者服务器&lt;/li&gt;
-&lt;li&gt;触发脚本执行（同源）&lt;/li&gt;
-&lt;li&gt;缓存过期后重新解析：域名 → 内网设备&lt;/li&gt;
-&lt;li&gt;浏览器继续信任该域名，从而向内网发起请求&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;最终实现通过浏览器“跳板”访问内网设备。&lt;/p&gt;
+&lt;p&gt;攻击过程表现为：&lt;/p&gt;
+&lt;p&gt;初始阶段，域名解析到攻击者服务器，浏览器加载恶意脚本。&lt;/p&gt;
+&lt;p&gt;缓存过期后，域名重新解析为内网设备地址。&lt;/p&gt;
+&lt;p&gt;浏览器仍认为属于同一来源，从而向内网设备发送请求。&lt;/p&gt;
+&lt;p&gt;最终实现通过浏览器间接访问内网服务。&lt;/p&gt;
 &lt;h2 id=&#34;修改firefox浏览器的dns缓存时间&#34;&gt;修改Firefox浏览器的DNS缓存时间
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需人为缩短该缓存时间&lt;/p&gt;
@@ -76,78 +73,59 @@
 &lt;img src=&#34;2.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;这样可以更快触发二次解析&lt;/p&gt;
 &lt;h2 id=&#34;配置本地dns服务器&#34;&gt;配置本地DNS服务器
-&lt;/h2&gt;&lt;p&gt;将系统 DNS 指向实验环境中的 DNS 服务器&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/resolvconf/resolv.conf.d/head
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;blockquote&gt;
-&lt;p&gt;遇到问题：提示此文件不存在&lt;/p&gt;
-&lt;img src=&#34;3.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Ubuntu 24.04 使用 systemd-resolved 管理 DNS，&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 为自动生成文件，无法直接编辑。因此为保证实验过程中 DNS 完全可控，采用接管 &lt;code&gt;resolv.conf&lt;/code&gt;的方式&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致文件目录不同&lt;/p&gt;
-&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;查看/etc/resolv.conf发现虽然文件存在但不可以编辑&lt;/p&gt;
-&lt;p&gt;可以看到这一行This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&amp;gt;&lt;/p&gt;
-&lt;p&gt;说明当前 DNS 由 systemd-resolved 管理&lt;/p&gt;
-&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;解决方法为修改 systemd-resolved 配置：&lt;/p&gt;
+&lt;p&gt;备份原配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/systemd/resolved.conf
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo mv /etc/resolv.conf /etc/resolv.conf.bak
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;添加这一行&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;创建新的静态配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS=10.9.0.53
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/resolv.conf
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;然后重启服务：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;写入&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl restart systemd-resolved
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nameserver 10.9.0.53
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;resolvectl status&lt;/code&gt; 查看，发现 DNS 并未生效：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;这样系统所有 DNS 请求将直接发送至实验 DNS 服务器，避免缓存与优先级干扰&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;实验完成后，执行以下命令即可恢复系统原状，完全不影响正常的网络使用&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Link 2 (ens33)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DNS Servers: xxx.xxx.xxx.xxx
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 删除临时静态文件，恢复系统软链接
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo rm /etc/resolv.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 强制刷新系统缓存
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo resolvectl flush-caches
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;那就是&lt;strong&gt;网卡在控制 DNS&lt;/strong&gt;&lt;/p&gt;
-&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;这是因为 systemd-resolved 的优先级机制中，网卡 DNS 高于 resolved.conf 配置，因此需要手动指定网卡 DNS：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo resolvectl dns ens33 10.9.0.53
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这个命令是&lt;strong&gt;临时的&lt;/strong&gt;，重启就没了，好处是适合实验不影响环境&lt;/p&gt;
-&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;修改本地host文件&#34;&gt;修改本地Host文件
+&lt;/div&gt;&lt;h2 id=&#34;修改本地host文件&#34;&gt;修改本地Host文件
 &lt;/h2&gt;&lt;p&gt;将 IoT 域名映射到真实内网地址： 编辑 hosts 文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -167,7 +145,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;启动-docker-容器&#34;&gt;启动 &lt;strong&gt;Docker&lt;/strong&gt; 容器
-&lt;/h2&gt;&lt;p&gt;先在虚拟机里下载实验文件,如果没有 wget，也可以用浏览器下载再拖进去&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;先在虚拟机里下载实验文件，如果没有 wget，也可以用浏览器下载再拖进去&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -216,38 +194,7 @@
     &gt;www.attacker32.com&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;确认页面是否可以正常打开&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;出现问题：访问 &lt;code&gt;www.attacker32.com&lt;/code&gt; 显示 GoDaddy 停放页&lt;/p&gt;
 &lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;通过命令验证：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dig www.attacker32.com
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;返回：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;www.attacker32.com → 198.18.1.137
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;同时验证攻击机服务：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http://10.9.0.180
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;可以正常访问，说明 Web 服务运行正常&lt;/p&gt;
 &lt;h2 id=&#34;验证同源策略&#34;&gt;验证同源策略
 &lt;/h2&gt;&lt;p&gt;依次访问并点击修改按钮：&lt;/p&gt;
 &lt;ul&gt;
@@ -256,13 +203,14 @@
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.seedIoT32.com/change&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;www.seedIoT32.com/change&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;http://www.attacker32.com/change&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;www.attacker32.com/change&lt;/a&gt;http://10.9.0.180&lt;/li&gt;
+    &gt;www.attacker32.com/change&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;前两个可以成功修改温度，&lt;/p&gt;
 &lt;img src=&#34;10.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;第三个失败&lt;/p&gt;
-&lt;img src=&#34;10.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;原因在于浏览器同源策略阻止了跨域请求，可以在控制台看到 CORS 报错。&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;修改攻击脚本&#34;&gt;修改攻击脚本
 &lt;/h2&gt;&lt;p&gt;进入攻击者容器：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -350,11 +298,140 @@
     &gt;www.attacker32.com&lt;/a&gt;，此时得到的是内网 IP。&lt;/p&gt;
 &lt;p&gt;由于域名未变，同源策略不会拦截，请求直接发送到内网 IoT 设备。&lt;/p&gt;
 &lt;p&gt;可以观察到温度被成功修改。&lt;/p&gt;
-&lt;hr&gt;
 &lt;h2 id=&#34;结论&#34;&gt;结论
 &lt;/h2&gt;&lt;p&gt;DNS 重绑定利用了浏览器同源策略仅基于域名进行判断的特性，通过动态修改解析结果，使浏览器在不知情的情况下访问内网资源。&lt;/p&gt;
 &lt;p&gt;在本实验中，攻击者借助低 TTL 和 DNS 重新解析，将浏览器从访问外网服务器引导至内网设备，实现了对 IoT 设备的越权操作。&lt;/p&gt;
 &lt;p&gt;本质上，浏览器被利用为攻击者的代理，从而绕过了网络边界防护。&lt;/p&gt;
+&lt;h2 id=&#34;踩坑记录&#34;&gt;踩坑记录
+&lt;/h2&gt;&lt;h3 id=&#34;resolvconf-路径不存在&#34;&gt;resolvconf 路径不存在
+&lt;/h3&gt;&lt;p&gt;将系统 DNS 指向实验环境中的 DNS 服务器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/resolvconf/resolv.conf.d/head
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;提示此文件不存在&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致文件目录不同&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;etcresolvconf-无法修改&#34;&gt;/etc/resolv.conf 无法修改
+&lt;/h3&gt;&lt;p&gt;查看&lt;code&gt;/etc/resolv.conf&lt;/code&gt;发现虽然文件存在但不可以编辑&lt;/p&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;可以看到这一行&lt;code&gt;This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;说明当前 DNS 由 systemd-resolved 管理，&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 是软链接&lt;/p&gt;
+&lt;h3 id=&#34;修改-resolvedconf-不生效&#34;&gt;修改 resolved.conf 不生效
+&lt;/h3&gt;&lt;p&gt;我修改了 systemd-resolved 配置：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/systemd/resolved.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;添加这一行&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS=10.9.0.53
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;然后重启服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl restart systemd-resolved
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;使用 &lt;code&gt;resolvectl status&lt;/code&gt; 查看，发现 DNS 并未生效：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Link 2 (ens33)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    DNS Servers:192.168.116.2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是因为 systemd-resolved 的优先级机制中，网卡 DNS 高于 resolved.conf 配置，也就是说网卡（ens33）直接覆盖了刚刚写的 DNS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;resolvectl-dns-是临时方案&#34;&gt;resolvectl dns 是临时方案
+&lt;/h3&gt;&lt;p&gt;手动指定网卡 DNS：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo resolvectl dns ens33 10.9.0.53
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个命令是&lt;strong&gt;临时的&lt;/strong&gt;，重启就没了，好处是适合实验，不影响环境&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;attacker-域名解析到-godaddy&#34;&gt;attacker 域名解析到 GoDaddy
+&lt;/h3&gt;&lt;p&gt;在浏览器中访问&lt;a class=&#34;link&#34; href=&#34;http://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;www.attacker32.com&lt;/a&gt;，发现显示 GoDaddy 停放页&lt;/p&gt;
+&lt;img src=&#34;13.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;通过命令验证：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dig www.attacker32.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;返回：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;www.attacker32.com → 198.18.1.65
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;14.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;同时验证攻击机服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;http://10.9.0.180
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以正常访问，说明 Web 服务运行正常&lt;/p&gt;
+&lt;img src=&#34;15.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;清理 systemd-resolved 缓存&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo resolvectl flush-caches
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;直接查询实验 DNS，返回正确结果 &lt;code&gt;10.9.0.180&lt;/code&gt;，说明容器服务正常&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dig @10.9.0.53 www.attacker32.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;16.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;最后通过接管 &lt;code&gt;resolv.conf&lt;/code&gt;使域名可以正常访问&lt;/p&gt;
 </description>
         </item>
         <item>

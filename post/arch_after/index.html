@@ -297,6 +297,7 @@ unicode: "f6d2"
             <li><a href="#修改配置">修改配置</a></li>
           </ol>
         </li>
+        <li><a href="#git">Git</a></li>
       </ol>
     </li>
     <li><a href="#kde美化">KDE美化</a>
@@ -758,7 +759,50 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重启终端后根据引导配置好powerlevel10k，zsh就配置完成了</p>
-<h2 id="kde美化">KDE美化
+<h3 id="git">Git
+</h3><p>Linux默认换行符是<code>LF</code>，而Windows是<code>CRLF</code>。如果两个系统混用并提交同一个仓库的话，每次切换系统提交，都会看到类似这样的大量文件更改，这就是换行符的转换</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[main 0a6ca1c] update
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">327 files changed, 25891 insertions(+), 25895 deletions(-)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为了解决这个问题，建议将 Git 配置为在提交时将 CRLF 转换为 LF，但在检出时不执行自动转换。这样既避免了换行符导致的程序报错，又可以不每次切换系统都显示文件全部更新</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git config --global core.autocrlf input
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>core.autocrlf true</code> 会在提交时把 <code>CRLF</code> 转为 <code>LF</code>，在检出时再转换回 <code>CRLF</code>，适合跨平台使用</p>
+</li>
+<li>
+<p><code>core.autocrlf false</code> 会保持文件原有的换行符，不做转换，适合操作系统一致的场景</p>
+</li>
+<li>
+<p><code>core.autocrlf input</code> 只会在提交时转换 <code>CRLF</code> 为 <code>LF</code>，检出时不做任何转换，适合只使用 <code>LF</code> 换行符的环境</p>
+</li>
+</ul>
+<p>验证一下，如果输出<code>input</code>说明设置成功</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git config --get core.autocrlf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
 </h3><p>先生成 modeline</p>
 <div class="highlight"><div class="chroma">
@@ -1212,7 +1256,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">21</span> 
       篇 ，总计 
-      <span class="number-highlight">69.41</span> 
+      <span class="number-highlight">70.08</span> 
       k 字
   </div>
   <div>
