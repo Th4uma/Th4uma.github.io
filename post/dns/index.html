@@ -273,11 +273,10 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#实验环境">实验环境</a></li>
-    <li><a href="#实验原理">实验原理</a></li>
     <li><a href="#修改firefox浏览器的dns缓存时间">修改Firefox浏览器的DNS缓存时间</a></li>
     <li><a href="#配置本地dns服务器">配置本地DNS服务器</a></li>
     <li><a href="#修改本地host文件">修改本地Host文件</a></li>
-    <li><a href="#启动-docker-容器">启动 <strong>Docker</strong> 容器</a></li>
+    <li><a href="#启动-docker-容器">启动 Docker 容器</a></li>
     <li><a href="#验证同源策略">验证同源策略</a></li>
     <li><a href="#修改攻击脚本">修改攻击脚本</a></li>
     <li><a href="#dns-重绑定攻击">DNS 重绑定攻击</a></li>
@@ -290,6 +289,7 @@ unicode: "f6d2"
         <li><a href="#修改-resolvedconf-不生效">修改 resolved.conf 不生效</a></li>
         <li><a href="#resolvectl-dns-是临时方案">resolvectl dns 是临时方案</a></li>
         <li><a href="#attacker-域名解析到-godaddy">attacker 域名解析到 GoDaddy</a></li>
+        <li><a href="#攻击者域名未重绑定iot设备">攻击者域名未重绑定iot设备</a></li>
       </ol>
     </li>
   </ol>
@@ -387,7 +387,8 @@ unicode: "f6d2"
       <tr>
           <td>靶机（IoT 恒温器）</td>
           <td>192.168.60.80</td>
-          <td>无</td>
+          <td><a class="link" href="https://www.seedIoT32.com"  target="_blank" rel="noopener"
+    >www.seedIoT32.com</a></td>
           <td>位于内网，被路由器防火墙保护的目标设备</td>
       </tr>
       <tr>
@@ -411,27 +412,18 @@ unicode: "f6d2"
       </tr>
   </tbody>
 </table></div>
-<h2 id="实验原理">实验原理
-</h2><p>IoT 设备部署在内网，外部无法直接访问，同时浏览器同源策略限制跨域请求。</p>
-<p>DNS 重绑定的核心在于：
-浏览器只校验“域名是否一致”，而不关心该域名解析到的 IP 是否发生变化。</p>
-<p>攻击过程表现为：</p>
-<p>初始阶段，域名解析到攻击者服务器，浏览器加载恶意脚本。</p>
-<p>缓存过期后，域名重新解析为内网设备地址。</p>
-<p>浏览器仍认为属于同一来源，从而向内网设备发送请求。</p>
-<p>最终实现通过浏览器间接访问内网服务。</p>
 <h2 id="修改firefox浏览器的dns缓存时间">修改Firefox浏览器的DNS缓存时间
 </h2><blockquote>
-<p>Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需人为缩短该缓存时间</p>
+<p>Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需要人为缩短缓存时间</p>
 </blockquote>
 <p>在 Firefox 浏览器地址栏输入 <code>about:config</code>并回车，接受风险提示，然后在搜索栏输入<code>network.dnsCacheExpiration</code></p>
 <img src="1.png" style="width: 60%;" />
-<p>双击出现的两个结果<code>network.dnsCacheExpiration</code>和<code>network.dnsCacheExpirationGracePeriod</code>，将值更改为10秒，关闭浏览器使配置生效</p>
-<img src="2.png" style="width: 60%;" />
+<p>双击出现的两个结果<code>network.dnsCacheExpiration</code>和<code>network.dnsCacheExpirationGracePeriod</code>，将值更改为10秒，重启浏览器使配置生效</p>
+<img src="2.png" style="width: 100%;" />
 <p>这样可以更快触发二次解析</p>
 <h2 id="配置本地dns服务器">配置本地DNS服务器
 </h2><blockquote>
-<p>Ubuntu 24.04 使用 systemd-resolved 管理 DNS，<code>/etc/resolv.conf</code> 为自动生成文件，无法直接编辑。因此为保证实验过程中 DNS 完全可控，采用接管 <code>resolv.conf</code>的方式</p>
+<p>Ubuntu 24.04 使用 systemd-resolved 管理 DNS，<code>/etc/resolv.conf</code> 是自动生成的文件，不应该直接编辑。为了保证实验过程中 DNS 可控，采用替换<code>resolv.conf</code>的方式</p>
 </blockquote>
 <p>备份原配置</p>
 <div class="highlight"><div class="chroma">
@@ -451,7 +443,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/resolv.conf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>写入</p>
+</div><p>写入下面一行，这样系统所有 DNS 请求将直接发送到实验 DNS 服务器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -460,10 +452,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nameserver 10.9.0.53
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这样系统所有 DNS 请求将直接发送至实验 DNS 服务器，避免缓存与优先级干扰</p>
-<blockquote>
-<p>实验完成后，执行以下命令即可恢复系统原状，完全不影响正常的网络使用</p>
-</blockquote>
+</div><p>实验完成后，执行以下命令即可恢复，不会影响正常的网络使用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -483,7 +472,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="修改本地host文件">修改本地Host文件
-</h2><p>将 IoT 域名映射到真实内网地址： 编辑 hosts 文件</p>
+</h2><blockquote>
+<p>将 IoT 域名手动解析到内网地址</p>
+</blockquote>
+<p>编辑 hosts 文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -492,7 +484,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/hosts
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在文件末尾添加以下映射，保存并退出：</p>
+</div><p>在文件末尾添加以下映射，保存并退出</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -501,7 +493,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">192.168.60.80    www.seedIoT32.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="启动-docker-容器">启动 <strong>Docker</strong> 容器
+</div><img src="6.png" style="width: 80%;" />
+<h2 id="启动-docker-容器">启动 Docker 容器
 </h2><p>先在虚拟机里下载实验文件，如果没有 wget，也可以用浏览器下载再拖进去</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -566,10 +559,16 @@ unicode: "f6d2"
 <img src="10.png" style="width: 100%;" />
 <p>第三个失败</p>
 <img src="11.png" style="width: 100%;" />
-<p>原因在于浏览器同源策略阻止了跨域请求，可以在控制台看到 CORS 报错。</p>
+<blockquote>
+<p>前两个属于同源请求，能够成功修改温度。第三个 URL 由于与目标站点的域名不同，触发了浏览器的同源策略限制</p>
+</blockquote>
+<p>按 F12 可以在控制台看到请求被拦截的 CORS 报错</p>
 <img src="12.png" style="width: 100%;" />
 <h2 id="修改攻击脚本">修改攻击脚本
-</h2><p>进入攻击者容器：</p>
+</h2><blockquote>
+<p>修改攻击者的前端脚本，使其向自身域名发送请求，从而在前端骗过 SOP 检验</p>
+</blockquote>
+<p>进入攻击者容器：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -578,7 +577,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it attacker-www-10.9.0.180 /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>编辑 JS：</p>
+</div><p>修改 JS 脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -587,7 +586,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /app/rebind_server/templates/js/change.js
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>修改为：</p>
+</div><p>将文件第一行从靶机域名修改为自身域名，保存并退出</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -596,27 +595,33 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">let url_prefix = &#39;http://www.attacker32.com&#39;
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重启容器：</p>
+</div><p>重启容器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker restart attacker-www-10.9.0.180
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit
+</span></span><span class="line"><span class="cl">sudo docker restart attacker-www-10.9.0.180
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>此时浏览器不再报同源错误，但请求仍然发往攻击者服务器，因此温度不会改变。</p>
+</div><p>刷新攻击页面。此时同源策略已放行，F12 控制台不再报错，但温度仍未改变。因为请求实际发给了攻击者的外网 Web 服务器，而不是真正的 IoT 靶机，返回状态码<code>405 METHOD NOT ALLOWED</code></p>
+<img src="17.png" style="width: 100%;" />
 <h2 id="dns-重绑定攻击">DNS 重绑定攻击
-</h2><p>进入攻击者 DNS 容器：</p>
+</h2><blockquote>
+<p>篡改攻击者的 DNS A 记录，将域名解析结果从 Web 服务器切换为内网 IoT 设备</p>
+</blockquote>
+<p>进入攻击者 DNS 容器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it attacker-ns-10.9.0.153 /bin/bash
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it attacker-ns-10.9.0.153 /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>修改配置：</p>
+</div><p>编辑区域配置文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -625,10 +630,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /etc/bind/zone_attacker32.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>调整：</p>
+</div><p>修改：</p>
 <ul>
-<li>将 TTL 设为较小值（0 或 10）</li>
-<li>修改 A 记录：</li>
+<li>将 TTL 设为较小值</li>
+<li>找到 www 对应的记录，将 IP 篡改为 IoT 靶机 IP，保存退出</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -638,27 +643,50 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">www    IN    A    192.168.60.80
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>刷新 DNS：</p>
+</div><img src="18.png" style="width: 90%;" />
+<p>重新加载 DNS 配置，清空缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">reload</span> <span class="n">attacker32</span><span class="o">.</span><span class="n">com</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新进入攻击者 DNS 容器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">reload</span> <span class="n">attacker32</span><span class="o">.</span><span class="n">com</span>
-</span></span><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">flush</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exit
+</span></span><span class="line"><span class="cl">docker exec -it local-dns-server-10.9.0.53 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>清空缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">rndc flush
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="攻击效果">攻击效果
-</h2><p>等待 DNS 缓存过期后重新请求：</p>
-<p>浏览器再次解析 <a class="link" href="https://www.attacker32.com"  target="_blank" rel="noopener"
-    >www.attacker32.com</a>，此时得到的是内网 IP。</p>
-<p>由于域名未变，同源策略不会拦截，请求直接发送到内网 IoT 设备。</p>
-<p>可以观察到温度被成功修改。</p>
+</h2><p>返回受害者浏览器。由于步骤一设置了 10s 的缓存过期时间，当倒计时脚本重新发起请求时，浏览器重新发起了 DNS 查询，获取到了篡改后的 IoT 设备 IP</p>
+<p>由于浏览器只核对请求的域名是否一致，也就是 <a class="link" href="https://www.attacker32.com"  target="_blank" rel="noopener"
+    >www.attacker32.com</a>，因此 SOP 予以放行。最终，请求成功穿透防火墙打入内网靶机，将温度修改至 88 度</p>
+<img src="19.png" style="width: 100%;" />
 <h2 id="结论">结论
-</h2><p>DNS 重绑定利用了浏览器同源策略仅基于域名进行判断的特性，通过动态修改解析结果，使浏览器在不知情的情况下访问内网资源。</p>
-<p>在本实验中，攻击者借助低 TTL 和 DNS 重新解析，将浏览器从访问外网服务器引导至内网设备，实现了对 IoT 设备的越权操作。</p>
-<p>本质上，浏览器被利用为攻击者的代理，从而绕过了网络边界防护。</p>
+</h2><p><strong>实验原理</strong>：</p>
+<p>IoT 设备部署在内网，外部无法直接访问，同时浏览器同源策略限制跨域请求。DNS 重绑定的核心在于浏览器只校验域名是否一致，而不关心该域名解析到的 IP 是否发生变化。</p>
+<p>在本实验中，攻击者借助低 TTL 和 DNS 重新解析，将浏览器从访问外网服务器引导至内网设备，实现了对 IoT 设备的越权操作。本质上浏览器被利用为攻击者的代理，从而绕过了网络边界防护</p>
+<p><strong>攻击过程</strong>：</p>
+<p>受害者缩短浏览器 DNS 缓存时间，使解析更快更新，而攻击者知道内网IoT设备的IP地址</p>
+<p>受害者访问了攻击者的恶意域名，浏览器加载页面并执行其中的脚本。攻击脚本尝试访问IoT设备但因为跨域被同源策略拦截</p>
+<p>攻击者将脚本的请求域名改成当前页面的域名，请求在同源策略下被允许，但此时域名仍然解析到攻击者服务器，请求实际到达的是攻击者端</p>
+<p>攻击者修改DNS服务器中的配置，缩短TTL并将域名指向 IoT 设备。这样当浏览器缓存过期再次解析时，得到的已经是内网 IP。脚本继续向同一个域名发请求，但实际目标已经变成 IoT 设备，从而完成对内网设备的攻击</p>
 <h2 id="踩坑记录">踩坑记录
 </h2><h3 id="resolvconf-路径不存在">resolvconf 路径不存在
 </h3><p>将系统 DNS 指向实验环境中的 DNS 服务器</p>
@@ -671,16 +699,15 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>提示此文件不存在</p>
-<img src="3.png" style="width: 60%;" />
-<p>查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致文件目录不同</p>
+<img src="3.png" style="width: 55%;" />
+<p>查看resolvconf文件夹，发现连这个文件夹都不存在，判断是ubuntu版本不同导致目录结构不同</p>
 <img src="4.png" style="width: 100%;" />
 <h3 id="etcresolvconf-无法修改">/etc/resolv.conf 无法修改
 </h3><p>查看<code>/etc/resolv.conf</code>发现虽然文件存在但不可以编辑</p>
 <img src="5.png" style="width: 100%;" />
-<p>可以看到这一行<code>This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&gt;</code></p>
-<p>说明当前 DNS 由 systemd-resolved 管理，<code>/etc/resolv.conf</code> 是软链接</p>
+<p>可以看到这一行<code>This is /run/systemd/resolve/stub-resolv.conf managed by man:systemd-resolved&gt;</code>，说明当前 DNS 由<code>systemd-resolved</code>管理</p>
 <h3 id="修改-resolvedconf-不生效">修改 resolved.conf 不生效
-</h3><p>我修改了 systemd-resolved 配置：</p>
+</h3><p>我修改了<code>systemd-resolved</code>配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -698,8 +725,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">DNS=10.9.0.53
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="6.png" style="width: 100%;" />
-<p>然后重启服务：</p>
+</div><p>然后重启服务</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -708,7 +734,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl restart systemd-resolved
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>使用 <code>resolvectl status</code> 查看，发现 DNS 并未生效：</p>
+</div><p>使用 <code>resolvectl status</code> 查看，发现 DNS 并未生效</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -721,10 +747,10 @@ unicode: "f6d2"
 </div>
 </div><img src="7.png" style="width: 100%;" />
 <blockquote>
-<p>这是因为 systemd-resolved 的优先级机制中，网卡 DNS 高于 resolved.conf 配置，也就是说网卡（ens33）直接覆盖了刚刚写的 DNS</p>
+<p>这是因为 systemd-resolved 的优先级机制中，网卡 DNS 配置优先级高于 resolved.conf 配置，也就是说网卡（ens33）直接覆盖了刚刚写的 DNS</p>
 </blockquote>
 <h3 id="resolvectl-dns-是临时方案">resolvectl dns 是临时方案
-</h3><p>手动指定网卡 DNS：</p>
+</h3><p>手动指定网卡 DNS</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -748,7 +774,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dig www.attacker32.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>返回：</p>
+</div><p>返回下面的IP，说明解析到了错误的地址</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -757,8 +783,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">www.attacker32.com → 198.18.1.65
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="14.png" style="width: 100%;" />
-<p>同时验证攻击机服务：</p>
+</div><img src="14.png" style="width: 90%;" />
+<p>同时验证攻击机服务</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -788,7 +814,24 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="16.png" style="width: 100%;" />
-<p>最后通过接管 <code>resolv.conf</code>使域名可以正常访问</p>
+<p>尝试清除浏览器缓存，关闭安全浏览和doh都无效，访问域名会提示不安全一秒左右，然后跳转到错误的页面。最后通过替换<code>resolv.conf</code>使域名可以正常访问</p>
+<h3 id="攻击者域名未重绑定iot设备">攻击者域名未重绑定iot设备
+</h3><p>重新加载 DNS 配置，清空缓存这一步我输入了下面的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">reload</span> <span class="n">attacker32</span><span class="o">.</span><span class="n">com</span>
+</span></span><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">flush</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但回到浏览器发现依旧报错405</p>
+<p>最后尝试先执行第一个命令，然后exit退出并重新进入容器，再执行第二个命令，问题解决</p>
+<blockquote>
+<p>这是因为在连续输入命令时，BIND 服务的配置重载尚未完成，就执行了缓存清空，导致本地 DNS 仍然抓取并缓存了旧的解析记录</p>
+</blockquote>
 
 </section>
 
@@ -857,6 +900,25 @@ unicode: "f6d2"
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/icmp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/icmp.jpg" loading="lazy" data-key="" data-hash="/images/cover/icmp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ICMP重定向与中间人攻击</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">
@@ -929,25 +991,6 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/aio/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/aio.jpg" loading="lazy" data-key="" data-hash="/images/cover/aio.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">J4125 小主机 All in One 搭建</h2>
         </div>
     </a>
 </article>
@@ -1149,10 +1192,14 @@ unicode: "f6d2"
       
       
       
+      
+      
+      
+      
       共发表文章 
-      <span class="number-highlight">21</span> 
+      <span class="number-highlight">23</span> 
       篇 ，总计 
-      <span class="number-highlight">70.08</span> 
+      <span class="number-highlight">73.63</span> 
       k 字
   </div>
   <div>
@@ -1196,6 +1243,10 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
         
         
         

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影\r解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n">
-<title>L3HCTF 2025 misc wp</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="改进一下老古董课程实验">
+<title>Linux 内核编译及添加系统调用</title>
 
-<link rel='canonical' href='https://th4uma.github.io/post/l3ctf25/'>
+<link rel='canonical' href='https://th4uma.github.io/post/linux_kernel/'>
 
-<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="L3HCTF 2025 misc wp">
-<meta property='og:description' content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影\r解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n">
-<meta property='og:url' content='https://th4uma.github.io/post/l3ctf25/'>
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="Linux 内核编译及添加系统调用">
+<meta property='og:description' content="改进一下老古董课程实验">
+<meta property='og:url' content='https://th4uma.github.io/post/linux_kernel/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='article:modified_time' content='2025-07-21T02:03:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/l300.jpg' />
-<meta name="twitter:title" content="L3HCTF 2025 misc wp">
-<meta name="twitter:description" content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影\r解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/l300.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-04-22T21:45:02&#43;08:00'/><meta property='article:modified_time' content='2026-04-22T21:45:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/lk.jpg' />
+<meta name="twitter:title" content="Linux 内核编译及添加系统调用">
+<meta name="twitter:description" content="改进一下老古董课程实验"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/lk.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -272,10 +272,29 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#量子双生影">量子双生影</a></li>
-    <li><a href="#why-not-read-it-out">Why not read it out?</a></li>
-    <li><a href="#paperback">PaperBack</a></li>
-    <li><a href="#please-sign-in">Please Sign In</a></li>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#环境">环境</a></li>
+    <li><a href="#内核编译过程">内核编译过程</a>
+      <ol>
+        <li><a href="#获取源码">获取源码</a></li>
+        <li><a href="#配置内核">配置内核</a></li>
+        <li><a href="#编译">编译</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#启动新内核">启动新内核</a></li>
+      </ol>
+    </li>
+    <li><a href="#系统调用这件事到底在干嘛">系统调用这件事到底在干嘛</a></li>
+    <li><a href="#添加一个自己的系统调用">添加一个自己的系统调用</a>
+      <ol>
+        <li><a href="#定义系统调用函数">定义系统调用函数</a></li>
+        <li><a href="#注册系统调用号">注册系统调用号</a></li>
+        <li><a href="#声明函数">声明函数</a></li>
+        <li><a href="#重新编译内核">重新编译内核</a></li>
+      </ol>
+    </li>
+    <li><a href="#用户态测试">用户态测试</a></li>
+    <li><a href="#一些实际踩坑">一些实际踩坑</a></li>
+    <li><a href="#和-openeuler-的差别">和 openEuler 的差别</a></li>
   </ol>
 </nav>
         </div>
@@ -291,9 +310,9 @@ unicode: "f6d2"
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/post/l3ctf25/">
+            <a href="/post/linux_kernel/">
                 
-                    <img src="/images/cover/l300.jpg" loading="lazy" alt="Featured image of post L3HCTF 2025 misc wp" />
+                    <img src="/images/cover/lk.jpg" loading="lazy" alt="Featured image of post Linux 内核编译及添加系统调用" />
                 
             </a>
         </div>
@@ -303,16 +322,8 @@ unicode: "f6d2"
     
     <header class="article-category">
         
-            <a href="/categories/ctf/" >
-                CTF
-            </a>
-        
-            <a href="/categories/misc/" >
-                MISC
-            </a>
-        
-            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
-                网络安全
+            <a href="/categories/linux/" >
+                Linux
             </a>
         
     </header>
@@ -320,9 +331,13 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/l3ctf25/">L3HCTF 2025 misc wp</a>
+            <a href="/post/linux_kernel/">Linux 内核编译及添加系统调用</a>
         </h2>
     
+        
+        <h3 class="article-subtitle">
+            改进一下老古董课程实验
+        </h3>
         
     </div>
 
@@ -342,7 +357,7 @@ unicode: "f6d2"
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">2025-07-21</time>
+                <time class="article-time--published">2026-04-22</time>
             </div>
         
 
@@ -358,77 +373,69 @@ unicode: "f6d2"
     <section class="article-content">
     
     
-    <p>也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目</p>
-<h2 id="量子双生影">量子双生影
-</h2><p>解压出webp文件，是ai处理过的二维码，写脚本转换成黑白</p>
-<img src="l31.png" style="width: 60%;" />
-<img src="l32.png" style="width: 60%;" />
+    <h2 id="前言">前言
+</h2><p>这学期上了一门挺感兴趣的操作系统课，课程实践内容就是标题。但问题来了，教程里面给的是华为云和openEuler发行版的教程，这让我很不理解。毋庸置疑这项任务是非常有学习价值的，但这种冷门发行版很多操作都和主流发行版不同，与其说是学习，不如说是照本宣科完成一项死板的任务。而之后真正需要用到的时候，又要重新学习一遍其他发行版的流程，无形中增加了学习成本。不过毕竟大学的教育就是这样，不合理的教学已经司空见惯了</p>
+<p>还好这次实验的核心其实和发行版关系不大，重点在于内核编译流程和系统调用的添加方式，只要保证方法正确、编译工具完整，换环境不会影响结果。因此为了不让自己失去动力，从而随便糊弄过去，错失了宝贵的课堂学习机会，我就直接在 Ubuntu 上做了一遍</p>
+<h2 id="环境">环境
+</h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
+<ul>
+<li>CPU：4 核</li>
+<li>内存：8GB</li>
+<li>硬盘：50GB</li>
+<li>网络：NAT模式</li>
+</ul>
+<p><img src="http://localhost:1313/post/arp/1.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="img"
+	
+	
+></p>
+<blockquote>
+<p>实验开始前首先创建一个快照，这样哪怕系统崩了也可以随时恢复</p>
+</blockquote>
+<p>安装工具，构建开发环境</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rgb_to_black_white</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s2">&#34;bw_output.png&#34;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">pixels</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">            <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pixels</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">            <span class="n">brightness</span> <span class="o">=</span> <span class="mf">0.299</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="mf">0.587</span> <span class="o">*</span> <span class="n">g</span> <span class="o">+</span> <span class="mf">0.114</span> <span class="o">*</span> <span class="n">b</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">brightness</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">                <span class="n">pixels</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">                <span class="n">pixels</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">img</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;已生成黑白图：</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">rgb_to_black_white</span><span class="p">(</span><span class="s2">&#34;stream2.webp&#34;</span><span class="p">,</span> <span class="s2">&#34;bw_output.png&#34;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc dwarves zstd
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="l34.png" style="width: 60%;" />
-<img src="l33.png" style="width: 60%;" />
-<p>扫第二个二维码</p>
-<p><code>flag is not here, but I can give you the key: &quot;quantum&quot;</code></p>
-<p>观察发现第一个二维码好像两个二维码重叠起来了，结合提示，将两个二维码进行xor运算</p>
-<img src="l35.bmp" style="width: 60%;" />
-<p><code>L3HCTF{Quantum_ADS_XOR}</code></p>
-<h2 id="why-not-read-it-out">Why not read it out?
-</h2><p>解压后的readme文件分析头尾是jpg，同时发现文件尾部还藏了数据<code>==wdllmdlJFIOdUSgoDduFDa</code></p>
-<img src="l36.png" style="width: 100%;" />
-<p><code>h1nt: IGN Review</code></p>
-<p>是图形编码，随波逐流没有查到，结合题目，也许是表音文字</p>
-<img src="l37.jpg" style="width: 100%;" />
-<blockquote>
-<p>比赛时死活没搜到，可能是没有裁剪图片的原因&hellip;</p>
-</blockquote>
-<p>搜索发现是tunic这个游戏</p>
-<img src="l38.png" style="width: 50%;" />
-<p>搜索ign对这个游戏的评价<a class="link" href="https://www.ign.com/articles/tunic-review-xbox-pc-steam"  target="_blank" rel="noopener"
-    >Tunic Review - IGN</a>，发现最开始两段话的标点符号和图片可以对应上</p>
-<img src="l312.png" style="width: 70%;" />
-<p>破解部分实在不会，看大佬wp得知是把元音辅音位置对调了，破解出来是这样</p>
+</div><p>以防后续步骤更新内核导致无法引导，备份现有的引导文件并保存内核版本信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo tar czvf /root/boot.origin.tgz /boot/
+</span></span><span class="line"><span class="cl">uname -r &gt; ~/uname_r.log
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="内核编译过程">内核编译过程
+</h2><h3 id="获取源码">获取源码
+</h3><p>从Linux内核官方归档网站下载源码。我下载的是稳定的长期支持版 <code>5.15.148</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.148.tar.xz
+</span></span><span class="line"><span class="cl">tar -xvf linux-5.15.148.tar.xz
+</span></span><span class="line"><span class="cl">cd linux-5.15.148
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="配置内核">配置内核
+</h3><p>为了确保新内核配置与当前Ubuntu系统兼容，最稳妥的做法是拷贝当前系统的配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -438,141 +445,294 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">the content of flag is: come on little brave fox
-</span></span><span class="line"><span class="cl">replace letter o with number zero, letter l with number one
-</span></span><span class="line"><span class="cl">replace letter a with symbol at
-</span></span><span class="line"><span class="cl">make every letter e uppercase
-</span></span><span class="line"><span class="cl">use underline to link each word
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 拷贝当前运行内核的配置文件
+</span></span><span class="line"><span class="cl">$ cp /boot/config-$(uname -r) .config
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 更新配置（遇到新配置项直接按回车选择默认值）
+</span></span><span class="line"><span class="cl">$ make olddefconfig
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>L3HCTF{c0mE_0n_1itt1E_br@vE_f0x}</code></p>
-<h2 id="paperback">PaperBack
-</h2><blockquote>
-<p>Someone thought paper could replace a CD. Turns out… they weren’t entirely wrong. Can you read between the dots? Btw, I really like OllyDbg.</p>
-</blockquote>
-<p>根据提示搜索，发现这个工具</p>
-<img src="l39.png" style="width: 100%;" />
-<p>open bitmap打开题目的flag.bmp，输出一个ws文件，打开发现有很多空格</p>
-<p>搜索发现是white space语言，<a class="link" href="https://vii5ard.github.io/whitespace/"  target="_blank" rel="noopener"
-    >Whitelips the Esoteric Language IDE</a>解码获得flag</p>
-<img src="l310.png" style="width: 100%;" />
-<p><code>L3HCTF{welcome_to_l3hctf2025}</code></p>
-<h2 id="please-sign-in">Please Sign In
-</h2><p>这道题要求我们构造一张图像，使其和给定的embedding.json足够接近</p>
+</div><p>也可以手动改：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">requests</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torchvision.models</span> <span class="kn">import</span> <span class="n">shufflenet_v2_x1_0</span><span class="p">,</span> <span class="n">ShuffleNet_V2_X1_0_Weights</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">torchvision.utils</span> <span class="kn">import</span> <span class="n">save_image</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 配置 ===</span>
-</span></span><span class="line"><span class="cl"><span class="n">EMBEDDING_PATH</span> <span class="o">=</span> <span class="s2">&#34;embedding.json&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">OUTPUT_IMAGE</span> <span class="o">=</span> <span class="s2">&#34;solved.png&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">TARGET_URLS</span> <span class="o">=</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://1.95.8.146:50001/signin/&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://1.95.34.119:50001/signin/&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://43.138.2.216:50001/signin/&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 模型和预处理 ===</span>
-</span></span><span class="line"><span class="cl"><span class="n">device</span> <span class="o">=</span> <span class="s2">&#34;cuda&#34;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&#34;cpu&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">weights</span> <span class="o">=</span> <span class="n">ShuffleNet_V2_X1_0_Weights</span><span class="o">.</span><span class="n">IMAGENET1K_V1</span>
-</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">shufflenet_v2_x1_0</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 加载目标 embedding ===</span>
-</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">EMBEDDING_PATH</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 初始化随机图像（优化变量）===</span>
-</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">([</span><span class="n">img</span><span class="p">],</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 优化图像 ===</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">pred</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="n">img</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">clamp_</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 保持像素合法</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">200</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">5e-6</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[Step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">] MSE loss = </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">5e-6</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">break</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 保存图像 ===</span>
-</span></span><span class="line"><span class="cl"><span class="n">save_image</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">OUTPUT_IMAGE</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;攻击图像已保存: </span><span class="si">{</span><span class="n">OUTPUT_IMAGE</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># === 提交图像到远程服务 ===</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">TARGET_URLS</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">OUTPUT_IMAGE</span><span class="p">,</span> <span class="s2">&#34;rb&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;file&#34;</span><span class="p">:</span> <span class="n">f</span><span class="p">},</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">] 返回: </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;[</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">] 错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make menuconfig
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="l311.png" style="width: 100%;" />
-<p><code>L3HCTF{f4c3_r3c0gn1t10n_15_n0t_s0_s3cur3_4ft3r_4ll}</code></p>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 查看可编译项（差异：x86架构查看的是bzImage）
+</span></span><span class="line"><span class="cl">$ make help | grep bzImage
+</span></span><span class="line"><span class="cl">  bzImage      - Compressed kernel image (arch/x86/boot/bzImage)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 执行编译（差异：x86架构编译bzImage和modules即可，不需要dtbs）
+</span></span><span class="line"><span class="cl"># -j 后面的数字根据你的虚拟机CPU核心数调整，例如4核即为 -j4
+</span></span><span class="line"><span class="cl">$ make -j$(nproc) bzImage modules
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="编译">编译
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里 <code>-j</code> 后面跟 CPU 核数，加快编译速度。</p>
+<p>注意：内核编译时间较长，视机器性能通常需要20分钟至数小时不等</p>
+<h3 id="安装">安装
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo make modules_install
+</span></span><span class="line"><span class="cl">sudo make install
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行完之后会自动把内核拷到 <code>/boot</code>，并更新 grub。</p>
+<hr>
+<h3 id="启动新内核">启动新内核
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重启后用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uname -r
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果版本变了，说明整个流程是通的。</p>
+<hr>
+<h2 id="系统调用这件事到底在干嘛">系统调用这件事到底在干嘛
+</h2><p>用户程序是不能直接操作内核的，中间必须走系统调用这一层。</p>
+<p>可以简单理解为：
+用户态 → syscall → 内核态 → 执行功能</p>
+<p>系统调用就是内核暴露出来的一组“入口函数”。</p>
+<hr>
+<h2 id="添加一个自己的系统调用">添加一个自己的系统调用
+</h2><p>这一块才是核心。</p>
+<p>目标很简单：
+写一个 syscall，在内核里 <code>printk</code> 打一行自己的学号。</p>
+<hr>
+<h3 id="定义系统调用函数">定义系统调用函数
+</h3><p>在内核源码里找一个合适的位置，比如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kernel/sys.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>加一个函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SYSCALL_DEFINE0(mycall)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    printk(&#34;my syscall: 202xxxxxx\n&#34;);
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里有几个点：</p>
+<ul>
+<li><code>SYSCALL_DEFINE0</code> 表示无参数</li>
+<li><code>printk</code> 相当于内核里的 printf</li>
+<li>输出会进内核日志，不是在终端直接显示</li>
+</ul>
+<hr>
+<h3 id="注册系统调用号">注册系统调用号
+</h3><p>不同架构位置不一样，Ubuntu x86_64 在：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch/x86/entry/syscalls/syscall_64.tbl
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>加一行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">333    common    mycall    sys_mycall
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>333 这个号不要冲突，随便找个没用的。</p>
+<hr>
+<h3 id="声明函数">声明函数
+</h3><p>在：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">include/linux/syscalls.h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>加声明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">asmlinkage long sys_mycall(void);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h3 id="重新编译内核">重新编译内核
+</h3><p>和前面一样，再来一遍：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc)
+</span></span><span class="line"><span class="cl">sudo make modules_install
+</span></span><span class="line"><span class="cl">sudo make install
+</span></span><span class="line"><span class="cl">sudo reboot
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="用户态测试">用户态测试
+</h2><p>写个简单 C 程序：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">syscall</span><span class="p">(</span><span class="mi">333</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>编译运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc test.c -o test
+</span></span><span class="line"><span class="cl">./test
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不会有输出是正常的，因为打印在内核日志里。</p>
+<p>查看：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dmesg | grep my
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>能看到刚才 <code>printk</code> 的内容，就说明调用成功了。</p>
+<hr>
+<h2 id="一些实际踩坑">一些实际踩坑
+</h2><p>内核版本和头文件不匹配会直接编译炸掉，这种问题很常见。</p>
+<p>系统调用号重复会导致行为异常，有时候甚至直接起不来。</p>
+<p><code>printk</code> 默认日志级别可能看不到，需要用 <code>dmesg</code> 过滤。</p>
+<p>还有一点，内核一旦写错，轻则 panic，重则系统起不来，所以全程建议在虚拟机里搞。</p>
+<hr>
+<h2 id="和-openeuler-的差别">和 openEuler 的差别
+</h2><p>课程给的是 openEuler + arm64，这套流程在结构上是一样的，但细节差别不少：</p>
+<ul>
+<li>syscall 表的位置不一样</li>
+<li>编译配置路径不同</li>
+<li>某些驱动和模块名称不一样</li>
+</ul>
+<p>本质还是同一套内核，只是发行版和架构带来的差异。</p>
+<p>用 Ubuntu 做的好处是资料密集，基本不会卡死在环境上。</p>
+<p>遇到问题基本都能搜到，不至于卡死在平台差异上。</p>
+<p>目标其实就两件事：
+一是把内核完整编译一遍并成功启动
+二是自己往内核里加一个系统调用，然后从用户态调起来</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><strong>对比项</strong></th>
+          <th><strong>原始实验 (openEuler / ARM64)</strong></th>
+          <th><strong>本实验 (Ubuntu / x86-64)</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>包管理器</strong></td>
+          <td><code>yum</code> (基于RPM体系)</td>
+          <td><code>apt</code> (基于Debian体系)</td>
+      </tr>
+      <tr>
+          <td><strong>架构特定目录</strong></td>
+          <td><code>arch/arm64/</code></td>
+          <td><code>arch/x86/</code></td>
+      </tr>
+      <tr>
+          <td><strong>内核镜像目标</strong></td>
+          <td><code>Image</code></td>
+          <td><code>bzImage</code></td>
+      </tr>
+      <tr>
+          <td><strong>设备树 (Device Tree)</strong></td>
+          <td>需要编译 <code>dtbs</code></td>
+          <td>x86平台不需要编译 <code>dtbs</code></td>
+      </tr>
+      <tr>
+          <td><strong>系统调用表位置</strong></td>
+          <td><code>include/uapi/asm-generic/unistd.h</code></td>
+          <td><code>arch/x86/entry/syscalls/syscall_64.tbl</code></td>
+      </tr>
+      <tr>
+          <td><strong>系统调用实现方式</strong></td>
+          <td>依赖ARM64特定的调用约定和寄存器</td>
+          <td>依赖x86_64特定的调用约定和 <code>SYSCALL_DEFINE</code> 宏</td>
+      </tr>
+  </tbody>
+</table></div>
 
 </section>
 
@@ -644,18 +804,18 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
-    <a href="/post/espthuctf/">
+    <a href="/post/arch_after/">
         
         
             <div class="article-image">
                 
-                    <img src="/images/cover/esp0.jpg" loading="lazy" data-key="" data-hash="/images/cover/esp0.jpg"/>
+                    <img src="/images/cover/arch.jpg" loading="lazy" data-key="" data-hash="/images/cover/arch.jpg"/>
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">ESP32 IoT CTF 清华校赛版wp</h2>
+            <h2 class="article-title">Arch Linux &#43; KDE Plasma 基本设置与美化</h2>
         </div>
     </a>
 </article>
@@ -663,56 +823,18 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
-    <a href="/post/icmp/">
+    <a href="/post/archlinux/">
         
         
             <div class="article-image">
                 
-                    <img src="/images/cover/icmp.jpg" loading="lazy" data-key="" data-hash="/images/cover/icmp.jpg"/>
+                    <img src="/images/cover/linux.jpg" loading="lazy" data-key="" data-hash="/images/cover/linux.jpg"/>
                 
             </div>
         
 
         <div class="article-details">
-            <h2 class="article-title">ICMP重定向与中间人攻击</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/dns/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/dns.jpg" loading="lazy" data-key="" data-hash="/images/cover/dns.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">DNS重绑定攻击实验</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/arp/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/arp.jpg" loading="lazy" data-key="" data-hash="/images/cover/arp.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">ARP攻击原理学习</h2>
+            <h2 class="article-title">Arch Linux &#43; Windows双系统安装与配置</h2>
         </div>
     </a>
 </article>
