@@ -15,7 +15,7 @@
         <guid>https://th4uma.github.io/post/linux_kernel/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/lk.jpg" alt="Featured image of post Linux 内核编译及添加系统调用" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;这学期上了一门挺感兴趣的操作系统课，课程实践内容就是标题。但问题来了，教程里面给的是华为云和openEuler发行版的教程，这让我很不理解。毋庸置疑这项任务是非常有学习价值的，但这种冷门发行版很多操作都和主流发行版不同，与其说是学习，不如说是照本宣科完成一项死板的任务。而之后真正需要用到的时候，又要重新学习一遍其他发行版的流程，无形中增加了学习成本。不过毕竟大学的教育就是这样，不合理的教学已经司空见惯了&lt;/p&gt;
-&lt;p&gt;还好这次实验的核心其实和发行版关系不大，重点在于内核编译流程和系统调用的添加方式，只要保证方法正确、编译工具完整，换环境不会影响结果。因此为了不让自己失去动力，从而随便糊弄过去，错失了宝贵的课堂学习机会，我就直接在 Ubuntu 上做了一遍&lt;/p&gt;
+&lt;p&gt;好在这次实验的核心其实和发行版关系不大，重点在于内核编译流程和系统调用的原理，只要保证方法正确，换环境不会影响结果。为了不让自己失去动力，从而随便糊弄过去，错失了宝贵的课堂学习机会，我就直接在 Ubuntu 上做了一遍&lt;/p&gt;
 &lt;h2 id=&#34;环境&#34;&gt;环境
 &lt;/h2&gt;&lt;p&gt;我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机&lt;/p&gt;
 &lt;ul&gt;
@@ -24,7 +24,7 @@
 &lt;li&gt;硬盘：50GB&lt;/li&gt;
 &lt;li&gt;网络：NAT模式&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;http://localhost:1313/post/arp/1.png&#34;
+&lt;p&gt;&lt;img src=&#34;https://th4uma.github.io/post/arp/1.png&#34;
 	
 	
 	
@@ -44,64 +44,71 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt update
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt update
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc dwarves zstd
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;以防后续步骤更新内核导致无法引导，备份现有的引导文件并保存内核版本信息&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;为了防止后续步骤更新内核失败导致无法引导，备份&lt;code&gt;/boot&lt;/code&gt;目录并保存内核版本信息&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo tar czvf /root/boot.origin.tgz /boot/
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo tar czvf /root/boot.origin.tgz /boot/
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uname -r &amp;gt; ~/uname_r.log
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;内核编译过程&#34;&gt;内核编译过程
+&lt;/div&gt;&lt;h2 id=&#34;内核编译&#34;&gt;内核编译
 &lt;/h2&gt;&lt;h3 id=&#34;获取源码&#34;&gt;获取源码
-&lt;/h3&gt;&lt;p&gt;从Linux内核官方归档网站下载源码。我下载的是稳定的长期支持版 &lt;code&gt;5.15.148&lt;/code&gt;&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;从Linux内核官方归档网站下载源码。我下载的是 &lt;code&gt;5.15.148&lt;/code&gt;版本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.148.tar.xz
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -xvf linux-5.15.148.tar.xz
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd linux-5.15.148
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;解压源码&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tar -xvf linux-5.15.148.tar.xz
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;配置内核&#34;&gt;配置内核
-&lt;/h3&gt;&lt;p&gt;为了确保新内核配置与当前Ubuntu系统兼容，最稳妥的做法是拷贝当前系统的配置&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;为了确保新内核的配置与现在的系统兼容，最好的方法是拷贝现在内核的配置&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;拷贝当前系统的配置文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 拷贝当前运行内核的配置文件
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ cp /boot/config-$(uname -r) .config
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 更新配置（遇到新配置项直接按回车选择默认值）
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ make olddefconfig
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd linux-5.15.148
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp /boot/config-$(uname -r) .config
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;也可以手动改：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;生成新内核的配置文件，保留当前内核的配置，新增配置全部默认设置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make menuconfig
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make olddefconfig
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/div&gt;&lt;h3 id=&#34;修改证书&#34;&gt;修改证书
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;在Ubuntu中，上一步拷贝来的配置文件默认开启了&lt;strong&gt;内核签名校验&lt;/strong&gt;，配置中引用了 Ubuntu 的证书文件路径，但源码里没有这些 &lt;code&gt;.pem&lt;/code&gt; 文件。如果不修改，编译很可能报错&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;为了避免编译失败，需要使用 scripts/config 脚本修改 .config&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -112,28 +119,64 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 查看可编译项（差异：x86架构查看的是bzImage）
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ make help | grep bzImage
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  bzImage      - Compressed kernel image (arch/x86/boot/bzImage)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# 执行编译（差异：x86架构编译bzImage和modules即可，不需要dtbs）
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;# -j 后面的数字根据你的虚拟机CPU核心数调整，例如4核即为 -j4
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ make -j$(nproc) bzImage modules
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 关闭验证系统受信任的密钥列表&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scripts/config --disable SYSTEM_TRUSTED_KEYS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 禁用吊销密钥列表检查&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scripts/config --disable SYSTEM_REVOCATION_KEYS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 将密钥路径强制设置为空&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scripts/config --set-str CONFIG_SYSTEM_TRUSTED_KEYS &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scripts/config --set-str CONFIG_SYSTEM_REVOCATION_KEYS &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;编译&#34;&gt;编译
-&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/div&gt;&lt;p&gt;确认修改，这里如果看到如图的输出，说明修改成功&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make -j$(nproc)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;CONFIG_SYSTEM_TRUSTED_KEYS&amp;#34;&lt;/span&gt; .config
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这里 &lt;code&gt;-j&lt;/code&gt; 后面跟 CPU 核数，加快编译速度。&lt;/p&gt;
-&lt;p&gt;注意：内核编译时间较长，视机器性能通常需要20分钟至数小时不等&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;编译&#34;&gt;编译
+&lt;/h3&gt;&lt;p&gt;查看可编译项&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make &lt;span class=&#34;nb&#34;&gt;help&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep bzImage
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到&lt;code&gt;bzImage      - Compressed kernel image (arch/x86/boot/bzImage)&lt;/code&gt;，这就是编译生成的内核镜像&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;执行编译，这里 &lt;code&gt;$(nproc)&lt;/code&gt; 是自动获取的 CPU 核数，这样可以同时运行多个编译任务，加快编译速度&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;执行命令进行编译前务必确认剩余存储大于20G，否则很可能由于存储不足导致编译失败，可以执行 &lt;code&gt;df -h&lt;/code&gt; 查看 &lt;code&gt;/&lt;/code&gt; 分区&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make -j$(nproc) bzImage modules
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;bzImage&lt;/code&gt;：内核名，计算机将大量&lt;code&gt;.c&lt;/code&gt;源文件编译成二进制&lt;code&gt;.o&lt;/code&gt;文件，最后输出一个压缩镜像文件 &lt;code&gt;bzImage&lt;/code&gt;，位于 &lt;code&gt;arch/x86/boot/bzImage&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;modules&lt;/code&gt;：驱动插件，如果将所有驱动都编译进内核会很臃肿，所以需要这个独立的插件。它编译为 &lt;code&gt;.ko&lt;/code&gt; 文件(Kernel Object)，平时存储在硬盘，只有插入对应硬件时，内核才会加载对应的驱动到内存&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;内核编译时间比较长，一般需要几十分钟甚至几小时&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;一段时间后可以看到编译完成&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h3 id=&#34;安装&#34;&gt;安装
-&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/h3&gt;&lt;p&gt;编译完成后，执行下面的命令，依次安装模块和内核镜像&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ubuntu的 &lt;code&gt;make install&lt;/code&gt; 会自动调用 &lt;code&gt;update-grub&lt;/code&gt;，执行完之后会自动把内核复制到 &lt;code&gt;/boot&lt;/code&gt;，并更新 grub 引导，不需要手动配置&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -143,10 +186,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo make install
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;执行完之后会自动把内核拷到 &lt;code&gt;/boot&lt;/code&gt;，并更新 grub。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h3 id=&#34;启动新内核&#34;&gt;启动新内核
-&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;完成后重启系统&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
@@ -154,7 +196,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo reboot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;重启后用：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在GRUB引导菜单选择新内核启动，登录系统后验证版本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -163,30 +205,116 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uname -r
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;如果版本变了，说明整个流程是通的。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;系统调用这件事到底在干嘛&#34;&gt;系统调用这件事到底在干嘛
-&lt;/h2&gt;&lt;p&gt;用户程序是不能直接操作内核的，中间必须走系统调用这一层。&lt;/p&gt;
-&lt;p&gt;可以简单理解为：
-用户态 → syscall → 内核态 → 执行功能&lt;/p&gt;
-&lt;p&gt;系统调用就是内核暴露出来的一组“入口函数”。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;添加一个自己的系统调用&#34;&gt;添加一个自己的系统调用
-&lt;/h2&gt;&lt;p&gt;这一块才是核心。&lt;/p&gt;
-&lt;p&gt;目标很简单：
-写一个 syscall，在内核里 &lt;code&gt;printk&lt;/code&gt; 打一行自己的学号。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h3 id=&#34;定义系统调用函数&#34;&gt;定义系统调用函数
-&lt;/h3&gt;&lt;p&gt;在内核源码里找一个合适的位置，比如：&lt;/p&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;遇到问题：重启后没有进入GRUB菜单，无法选择启动项，还是进入了原来的内核&lt;/strong&gt;&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;检查GRUB配置文件&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kernel/sys.c
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo nano /etc/default/grub
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;加一个函数：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;可以看到GRUB菜单是隐藏的&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;设置开机时显示10秒GRUB菜单：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;GRUB_TIMEOUT_STYLE=menu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;GRUB_TIMEOUT=10&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;更新配置使其生效&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo update-grub
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;输出中有这一行&lt;code&gt;Found linux image: /boot/vmlinuz-5.15.148&lt;/code&gt;，说明内核确实安装成功了，只是刚刚默认进入了原来的内核&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;再次重启，在 GRUB 界面选择&lt;code&gt;Advanced options for Ubuntu&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;进入后，可以看到刚刚编译的内核&lt;code&gt;Ubuntu, with Linux 5.15.148&lt;/code&gt;，选中并回车，进入系统后重新输入命令进行验证&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里的输出是源码的版本号&lt;code&gt;5.15.148&lt;/code&gt;，说明内核编译成功&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h2 id=&#34;添加-linux-的系统调用&#34;&gt;添加 Linux 的系统调用
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;用户程序的权限不足，无法直接访问内核，系统调用就是用户程序以syscall作为接口，通过调用表的方式来间接调用内核执行功能&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;之后的操作均在linux源码所在目录中执行，进行前首先制作快照并进入源码目录&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd linux-5.15.148
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;分配系统调用号&#34;&gt;分配系统调用号
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;这一步是为系统调用在调用表中分配一个唯一编号，相当于一个指针&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;编辑 x86_64 的系统调用表文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano arch/x86/entry/syscalls/syscall_64.tbl
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;文件中有这一行&lt;code&gt;don&#39;t use numbers 387 through 423, add new calls after the last&#39;common&#39; entry&lt;/code&gt;。在文件中找到common调用的末尾，可以看到截止到448号。我使用未被占用的&lt;code&gt;450&lt;/code&gt;作为新的系统调用号&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;450     common  my_syscall              sys_my_syscall
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;11.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;声明系统调用&#34;&gt;声明系统调用
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;这一步相当于在头文件启用函数的调用&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;编辑系统调用头文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano include/linux/syscalls.h
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在文件末尾 &lt;code&gt;#endif&lt;/code&gt; 之前，添加系统调用函数声明&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;asmlinkage long sys_my_syscall(void);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;12.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;h3 id=&#34;实现系统调用&#34;&gt;实现系统调用
+&lt;/h3&gt;&lt;p&gt;在 &lt;code&gt;sys.c&lt;/code&gt; 文件末尾添加系统调用的代码&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;sys.c&lt;/code&gt; 是内核存放系统调用的文件，在末尾添加可以避免影响现有代码&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano kernel/sys.c
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;代码如下&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -196,63 +324,21 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SYSCALL_DEFINE0(mycall)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SYSCALL_DEFINE0(my_syscall)
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;{
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    printk(&amp;#34;my syscall: 202xxxxxx\n&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    printk(KERN_INFO &amp;#34;Student ID: XXXXXXX\n&amp;#34;);
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return 0;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这里有几个点：&lt;/p&gt;
-&lt;ul&gt;
+&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;SYSCALL_DEFINE0&lt;/code&gt; 表示无参数&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;printk&lt;/code&gt; 相当于内核里的 printf&lt;/li&gt;
-&lt;li&gt;输出会进内核日志，不是在终端直接显示&lt;/li&gt;
+&lt;li&gt;输出在内核日志中，并不会在终端直接显示&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr&gt;
-&lt;h3 id=&#34;注册系统调用号&#34;&gt;注册系统调用号
-&lt;/h3&gt;&lt;p&gt;不同架构位置不一样，Ubuntu x86_64 在：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;arch/x86/entry/syscalls/syscall_64.tbl
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;加一行：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;333    common    mycall    sys_mycall
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;333 这个号不要冲突，随便找个没用的。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h3 id=&#34;声明函数&#34;&gt;声明函数
-&lt;/h3&gt;&lt;p&gt;在：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/linux/syscalls.h
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;加声明：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;asmlinkage long sys_mycall(void);
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;hr&gt;
+&lt;img src=&#34;13.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;重新编译内核&#34;&gt;重新编译内核
-&lt;/h3&gt;&lt;p&gt;和前面一样，再来一遍：&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;只是修改源码并不能在当前内核直接生效，重新编译安装才是真正将前面的修改添加进内核&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -261,15 +347,25 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make -j$(nproc)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make -j$(nproc) bzImage modules
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo make modules_install
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo make install
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo reboot
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id=&#34;用户态测试&#34;&gt;用户态测试
-&lt;/h2&gt;&lt;p&gt;写个简单 C 程序：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;重启后进入刚刚编译好的内核，GRUB中可以看到有两个相同版本号的内核，其中一个有&lt;code&gt;.old&lt;/code&gt;后缀，这个就是修改源码前第一次编译的内核，应该选择没有后缀的内核进入&lt;/p&gt;
+&lt;img src=&#34;15.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;进行测试&#34;&gt;进行测试
+&lt;/h2&gt;&lt;p&gt;创建一个测试程序 &lt;code&gt;syscall_t.c&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano syscall_t.c
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;代码如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -285,7 +381,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/syscall.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;syscall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;333&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;syscall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;450&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
@@ -297,54 +393,48 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc test.c -o test
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./test
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc syscall_t.c -o syscall_t
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./syscall_t
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;不会有输出是正常的，因为打印在内核日志里。&lt;/p&gt;
-&lt;p&gt;查看：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;查看内核日志&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dmesg | grep my
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dmesg | grep Student
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;能看到刚才 &lt;code&gt;printk&lt;/code&gt; 的内容，就说明调用成功了。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;一些实际踩坑&#34;&gt;一些实际踩坑
-&lt;/h2&gt;&lt;p&gt;内核版本和头文件不匹配会直接编译炸掉，这种问题很常见。&lt;/p&gt;
-&lt;p&gt;系统调用号重复会导致行为异常，有时候甚至直接起不来。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;printk&lt;/code&gt; 默认日志级别可能看不到，需要用 &lt;code&gt;dmesg&lt;/code&gt; 过滤。&lt;/p&gt;
-&lt;p&gt;还有一点，内核一旦写错，轻则 panic，重则系统起不来，所以全程建议在虚拟机里搞。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;和-openeuler-的差别&#34;&gt;和 openEuler 的差别
-&lt;/h2&gt;&lt;p&gt;课程给的是 openEuler + arm64，这套流程在结构上是一样的，但细节差别不少：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;syscall 表的位置不一样&lt;/li&gt;
-&lt;li&gt;编译配置路径不同&lt;/li&gt;
-&lt;li&gt;某些驱动和模块名称不一样&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;本质还是同一套内核，只是发行版和架构带来的差异。&lt;/p&gt;
-&lt;p&gt;用 Ubuntu 做的好处是资料密集，基本不会卡死在环境上。&lt;/p&gt;
-&lt;p&gt;遇到问题基本都能搜到，不至于卡死在平台差异上。&lt;/p&gt;
-&lt;p&gt;目标其实就两件事：
-一是把内核完整编译一遍并成功启动
-二是自己往内核里加一个系统调用，然后从用户态调起来&lt;/p&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;grep后面应该写想要搜索的日志或输出中的关键词，而不是程序名。这一步需要加sudo，是因为普通用户默认不可访问内核日志&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;看到刚才 &lt;code&gt;printk&lt;/code&gt; 的内容，就说明调用成功&lt;/p&gt;
+&lt;img src=&#34;14.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;现象：进入这个内核以后，图形界面一直特别卡，操作延迟在一秒左右，查看系统监视器，发现CPU的四个核心轮流占用百分百，某一个核心运行的时候其他的几乎不工作&lt;/p&gt;
+&lt;img src=&#34;16.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;可能原因：&lt;/p&gt;
+&lt;p&gt;图形加速缺失：内核没有加载虚拟机相关的显卡驱动，桌面环境退化成软件渲染，所有图形计算都使用 CPU。而图形渲染线程是单线程或弱并行，这导致了 CPU 的满载&lt;/p&gt;
+&lt;p&gt;调度迁移：Linux 调度器会在不同 CPU 核之间迁移这个线程，表现为多个核心轮流100%占用，而不是同时满载&lt;/p&gt;
+&lt;p&gt;本质是缺少图形驱动导致的性能问题，而不是内核编译错误&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;实验成功后，在源码目录执行 &lt;code&gt;make clean&lt;/code&gt; 清除编译文件&lt;/p&gt;
+&lt;h2 id=&#34;附ubuntu-和-openeuler-的差异&#34;&gt;附：Ubuntu 和 openEuler 的差异
+&lt;/h2&gt;&lt;p&gt;我采用 Ubuntu 发行版，与课程中的 openEuler 内核编译逻辑相同，但具体的路径和构建目标不同。选择 Ubuntu 是因为它的社区文档更完善，而且对我之后的学习更有帮助&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
           &lt;th&gt;&lt;strong&gt;对比项&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;原始实验 (openEuler / ARM64)&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;本实验 (Ubuntu / x86-64)&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;openEuler (ARM64)&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;Ubuntu (x86_64)&lt;/strong&gt;&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;包管理器&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;yum&lt;/code&gt; (基于RPM体系)&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;apt&lt;/code&gt; (基于Debian体系)&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;yum&lt;/code&gt; / &lt;code&gt;dnf&lt;/code&gt; (RPM体系)&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;apt&lt;/code&gt; (Debian体系)&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;架构特定目录&lt;/strong&gt;&lt;/td&gt;
@@ -357,7 +447,7 @@
           &lt;td&gt;&lt;code&gt;bzImage&lt;/code&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;设备树 (Device Tree)&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;设备树 (DTB)&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
           &lt;td&gt;x86平台不需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
       &lt;/tr&gt;
@@ -367,183 +457,12 @@
           &lt;td&gt;&lt;code&gt;arch/x86/entry/syscalls/syscall_64.tbl&lt;/code&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;系统调用实现方式&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;调用约定&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;依赖ARM64特定的调用约定和寄存器&lt;/td&gt;
-          &lt;td&gt;依赖x86_64特定的调用约定和 &lt;code&gt;SYSCALL_DEFINE&lt;/code&gt; 宏&lt;/td&gt;
+          &lt;td&gt;依赖 x86_64 调用约定与 &lt;code&gt;SYSCALL_DEFINE&lt;/code&gt; 宏&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
-</description>
-        </item>
-        <item>
-        <title>ICMP重定向与中间人攻击</title>
-        <link>https://th4uma.github.io/post/icmp/</link>
-        <pubDate>Wed, 22 Apr 2026 16:54:02 +0800</pubDate>
-        
-        <guid>https://th4uma.github.io/post/icmp/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/icmp.jpg" alt="Featured image of post ICMP重定向与中间人攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
-&lt;/h2&gt;&lt;p&gt;以下为gpt写的框架&lt;/p&gt;
-&lt;p&gt;本实验在 Ubuntu 环境下，通过 Docker 复现 ICMP Redirect 攻击过程，并在此基础上完成中间人攻击，实现对 TCP 负载的拦截与篡改。&lt;/p&gt;
-&lt;p&gt;核心思路并不复杂：利用 ICMP 重定向修改受害者的路由缓存，将流量引导至攻击者控制的节点，再在该节点上对通信数据进行处理。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;实验环境-1&#34;&gt;实验环境
-&lt;/h2&gt;&lt;p&gt;实验基于本地 Ubuntu 搭建，使用 Docker 进行网络拓扑隔离。相比课程默认环境，这种方式更容易控制变量，出现异常可以直接销毁重建。&lt;/p&gt;
-&lt;p&gt;启动实验前，对容器环境进行清理，避免历史网络配置干扰：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker stop $(docker ps -a -q) 2&amp;gt;/dev/null
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker rm $(docker ps -a -q) 2&amp;gt;/dev/null
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;进入实验目录并启动拓扑：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd seed-labs-master/category-network/ICMP_Redirect/Labsetup
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker-compose up -d
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;容器全部启动后，网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;icmp-重定向机制&#34;&gt;ICMP 重定向机制
-&lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于在局域网内优化路径选择。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存。&lt;/p&gt;
-&lt;p&gt;该机制依赖信任模型，缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受。这为伪造重定向提供了空间。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;icmp-重定向攻击&#34;&gt;ICMP 重定向攻击
-&lt;/h2&gt;&lt;p&gt;攻击目标是修改受害者的路由缓存，使其将发往目标主机的流量转发至恶意路由器。&lt;/p&gt;
-&lt;p&gt;在受害者节点持续产生流量：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it victim-10.9.0.5 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ping 192.168.60.5
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;保持通信状态是触发内核接受重定向的前提。&lt;/p&gt;
-&lt;p&gt;攻击者节点发送伪造的 ICMP Redirect 报文：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it attacker-10.9.0.105 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd /volumes
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 icmp_redirect.py
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;该脚本伪造来自网关的 Type 5 报文，并指定新的下一跳地址为恶意路由器。&lt;/p&gt;
-&lt;p&gt;攻击成功后，在受害者节点查看路由缓存：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip route show
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;若出现如下条目：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;192.168.60.5 via 10.9.0.111 dev eth0 cache &amp;lt;redirected&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;说明路由已被修改，目标流量开始经过攻击者控制的节点。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;中间人攻击mitm&#34;&gt;中间人攻击（MITM）
-&lt;/h2&gt;&lt;p&gt;在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。&lt;/p&gt;
-&lt;p&gt;实验中直接在恶意路由器上对数据进行拦截和修改。&lt;/p&gt;
-&lt;p&gt;在目标主机上开启监听：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it host-192.168.60.5 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc -lp 9090
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;受害者发起连接：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 192.168.60.5 9090
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;通信建立后，在恶意路由器上关闭内核转发：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it malicious-router-10.9.0.111 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl net.ipv4.ip_forward=0
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;关闭转发的目的是避免数据包直接由内核转发，从而使用户态脚本能够接管数据路径。&lt;/p&gt;
-&lt;p&gt;随后运行中间人脚本：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd /volumes
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 mitm_nc.py
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;脚本通过嗅探并重构 TCP 数据，实现对通信内容的修改。&lt;/p&gt;
-&lt;p&gt;在受害者端发送特定字符串，例如：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;seedlabs
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;目标主机接收到的内容被替换为：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;AAAAAAAA
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;说明数据已在传输过程中被修改，中间人攻击成立。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;实验中的关键点&#34;&gt;实验中的关键点
-&lt;/h2&gt;&lt;p&gt;ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。&lt;/p&gt;
-&lt;p&gt;路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击。&lt;/p&gt;
-&lt;p&gt;中间人阶段如果不关闭内核转发，数据包会绕过用户态脚本，导致无法修改内容。&lt;/p&gt;
-&lt;p&gt;MAC 地址配置错误容易导致网络异常甚至形成循环转发，需要保证脚本中的目标地址准确。&lt;/p&gt;
-&lt;hr&gt;
-&lt;blockquote&gt;
-&lt;p&gt;知识小结&lt;/p&gt;
-&lt;p&gt;ICMP 重定向本质是对主机路由缓存的动态修改机制，在缺乏认证的情况下可以被伪造利用。&lt;/p&gt;
-&lt;p&gt;攻击的核心不在于重定向本身，而在于借此进入通信路径，实现对流量的控制。&lt;/p&gt;
-&lt;p&gt;中间人攻击依赖对数据路径的完全接管，单纯的流量转发无法达到篡改效果，需要在内核转发与用户态处理之间做切换。&lt;/p&gt;
-&lt;p&gt;从实现上看，攻击链条可以拆分为路径劫持与数据处理两个阶段，两者缺一不可。&lt;/p&gt;
-&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -569,7 +488,7 @@
 &lt;h2 id=&#34;基本配置&#34;&gt;基本配置
 &lt;/h2&gt;&lt;h3 id=&#34;中文支持&#34;&gt;中文支持
 &lt;/h3&gt;&lt;h4 id=&#34;字体&#34;&gt;字体
-&lt;/h4&gt;&lt;p&gt;下载如下常用中文字体，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;下载常用的中文字体，这一步是为了避免中文显示为方框或乱码&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Google Noto Fonts 系列：&lt;code&gt;noto-fonts&lt;/code&gt;、&lt;code&gt;noto-fonts-cjk&lt;/code&gt;、&lt;code&gt;noto-fonts-emoji&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;思源黑体：&lt;code&gt;adobe-source-han-sans-otc-fonts&lt;/code&gt;&lt;/li&gt;
@@ -1454,8 +1373,8 @@
 &lt;p&gt;&lt;strong&gt;攻击过程&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;受害者缩短浏览器 DNS 缓存时间，使解析更快更新，而攻击者知道内网IoT设备的IP地址&lt;/p&gt;
 &lt;p&gt;受害者访问了攻击者的恶意域名，浏览器加载页面并执行其中的脚本。攻击脚本尝试访问IoT设备但因为跨域被同源策略拦截&lt;/p&gt;
-&lt;p&gt;攻击者将脚本的请求域名改成当前页面的域名，请求在同源策略下被允许，但此时域名仍然解析到攻击者服务器，请求实际到达的是攻击者端&lt;/p&gt;
-&lt;p&gt;攻击者修改DNS服务器中的配置，缩短TTL并将域名指向 IoT 设备。这样当浏览器缓存过期再次解析时，得到的已经是内网 IP。脚本继续向同一个域名发请求，但实际目标已经变成 IoT 设备，从而完成对内网设备的攻击&lt;/p&gt;
+&lt;p&gt;攻击者将脚本的请求域名改成当前页面的域名，请求在同源策略下被允许，但此时域名仍然解析到攻击者服务器，请求实际是发给攻击者端&lt;/p&gt;
+&lt;p&gt;攻击者修改DNS服务器中的配置，缩短TTL并将域名指向 IoT 设备。这样当浏览器缓存过期再次解析时，得到的是内网 IP。脚本继续向同一个域名发请求，但目标已经变成 IoT 设备，从而完成对内网设备的攻击&lt;/p&gt;
 &lt;h2 id=&#34;踩坑记录&#34;&gt;踩坑记录
 &lt;/h2&gt;&lt;h3 id=&#34;resolvconf-路径不存在&#34;&gt;resolvconf 路径不存在
 &lt;/h3&gt;&lt;p&gt;将系统 DNS 指向实验环境中的 DNS 服务器&lt;/p&gt;

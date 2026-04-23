@@ -274,27 +274,25 @@ unicode: "f6d2"
   <ol>
     <li><a href="#前言">前言</a></li>
     <li><a href="#环境">环境</a></li>
-    <li><a href="#内核编译过程">内核编译过程</a>
+    <li><a href="#内核编译">内核编译</a>
       <ol>
         <li><a href="#获取源码">获取源码</a></li>
         <li><a href="#配置内核">配置内核</a></li>
+        <li><a href="#修改证书">修改证书</a></li>
         <li><a href="#编译">编译</a></li>
         <li><a href="#安装">安装</a></li>
-        <li><a href="#启动新内核">启动新内核</a></li>
       </ol>
     </li>
-    <li><a href="#系统调用这件事到底在干嘛">系统调用这件事到底在干嘛</a></li>
-    <li><a href="#添加一个自己的系统调用">添加一个自己的系统调用</a>
+    <li><a href="#添加-linux-的系统调用">添加 Linux 的系统调用</a>
       <ol>
-        <li><a href="#定义系统调用函数">定义系统调用函数</a></li>
-        <li><a href="#注册系统调用号">注册系统调用号</a></li>
-        <li><a href="#声明函数">声明函数</a></li>
+        <li><a href="#分配系统调用号">分配系统调用号</a></li>
+        <li><a href="#声明系统调用">声明系统调用</a></li>
+        <li><a href="#实现系统调用">实现系统调用</a></li>
         <li><a href="#重新编译内核">重新编译内核</a></li>
       </ol>
     </li>
-    <li><a href="#用户态测试">用户态测试</a></li>
-    <li><a href="#一些实际踩坑">一些实际踩坑</a></li>
-    <li><a href="#和-openeuler-的差别">和 openEuler 的差别</a></li>
+    <li><a href="#进行测试">进行测试</a></li>
+    <li><a href="#附ubuntu-和-openeuler-的差异">附：Ubuntu 和 openEuler 的差异</a></li>
   </ol>
 </nav>
         </div>
@@ -375,7 +373,7 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>这学期上了一门挺感兴趣的操作系统课，课程实践内容就是标题。但问题来了，教程里面给的是华为云和openEuler发行版的教程，这让我很不理解。毋庸置疑这项任务是非常有学习价值的，但这种冷门发行版很多操作都和主流发行版不同，与其说是学习，不如说是照本宣科完成一项死板的任务。而之后真正需要用到的时候，又要重新学习一遍其他发行版的流程，无形中增加了学习成本。不过毕竟大学的教育就是这样，不合理的教学已经司空见惯了</p>
-<p>还好这次实验的核心其实和发行版关系不大，重点在于内核编译流程和系统调用的添加方式，只要保证方法正确、编译工具完整，换环境不会影响结果。因此为了不让自己失去动力，从而随便糊弄过去，错失了宝贵的课堂学习机会，我就直接在 Ubuntu 上做了一遍</p>
+<p>好在这次实验的核心其实和发行版关系不大，重点在于内核编译流程和系统调用的原理，只要保证方法正确，换环境不会影响结果。为了不让自己失去动力，从而随便糊弄过去，错失了宝贵的课堂学习机会，我就直接在 Ubuntu 上做了一遍</p>
 <h2 id="环境">环境
 </h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
 <ul>
@@ -384,7 +382,7 @@ unicode: "f6d2"
 <li>硬盘：50GB</li>
 <li>网络：NAT模式</li>
 </ul>
-<p><img src="http://localhost:1313/post/arp/1.png"
+<p><img src="/post/arp/1.png"
 	
 	
 	
@@ -404,64 +402,71 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt update
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt update
 </span></span><span class="line"><span class="cl">sudo apt install -y build-essential libncurses-dev bison flex libssl-dev libelf-dev bc dwarves zstd
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>以防后续步骤更新内核导致无法引导，备份现有的引导文件并保存内核版本信息</p>
+</div><p>为了防止后续步骤更新内核失败导致无法引导，备份<code>/boot</code>目录并保存内核版本信息</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo tar czvf /root/boot.origin.tgz /boot/
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo tar czvf /root/boot.origin.tgz /boot/
 </span></span><span class="line"><span class="cl">uname -r &gt; ~/uname_r.log
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="内核编译过程">内核编译过程
+</div><h2 id="内核编译">内核编译
 </h2><h3 id="获取源码">获取源码
-</h3><p>从Linux内核官方归档网站下载源码。我下载的是稳定的长期支持版 <code>5.15.148</code></p>
+</h3><p>从Linux内核官方归档网站下载源码。我下载的是 <code>5.15.148</code>版本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.148.tar.xz
-</span></span><span class="line"><span class="cl">tar -xvf linux-5.15.148.tar.xz
-</span></span><span class="line"><span class="cl">cd linux-5.15.148
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>解压源码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tar -xvf linux-5.15.148.tar.xz
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="配置内核">配置内核
-</h3><p>为了确保新内核配置与当前Ubuntu系统兼容，最稳妥的做法是拷贝当前系统的配置</p>
+</h3><blockquote>
+<p>为了确保新内核的配置与现在的系统兼容，最好的方法是拷贝现在内核的配置</p>
+</blockquote>
+<p>拷贝当前系统的配置文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 拷贝当前运行内核的配置文件
-</span></span><span class="line"><span class="cl">$ cp /boot/config-$(uname -r) .config
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 更新配置（遇到新配置项直接按回车选择默认值）
-</span></span><span class="line"><span class="cl">$ make olddefconfig
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd linux-5.15.148
+</span></span><span class="line"><span class="cl">cp /boot/config-$(uname -r) .config
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>也可以手动改：</p>
+</div><p>生成新内核的配置文件，保留当前内核的配置，新增配置全部默认设置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make menuconfig
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make olddefconfig
 </span></span></code></pre></td></tr></table>
 </div>
-</div><div class="highlight"><div class="chroma">
+</div><h3 id="修改证书">修改证书
+</h3><blockquote>
+<p>在Ubuntu中，上一步拷贝来的配置文件默认开启了<strong>内核签名校验</strong>，配置中引用了 Ubuntu 的证书文件路径，但源码里没有这些 <code>.pem</code> 文件。如果不修改，编译很可能报错</p>
+</blockquote>
+<p>为了避免编译失败，需要使用 scripts/config 脚本修改 .config</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -472,28 +477,64 @@ unicode: "f6d2"
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 查看可编译项（差异：x86架构查看的是bzImage）
-</span></span><span class="line"><span class="cl">$ make help | grep bzImage
-</span></span><span class="line"><span class="cl">  bzImage      - Compressed kernel image (arch/x86/boot/bzImage)
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 执行编译（差异：x86架构编译bzImage和modules即可，不需要dtbs）
-</span></span><span class="line"><span class="cl"># -j 后面的数字根据你的虚拟机CPU核心数调整，例如4核即为 -j4
-</span></span><span class="line"><span class="cl">$ make -j$(nproc) bzImage modules
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 关闭验证系统受信任的密钥列表</span>
+</span></span><span class="line"><span class="cl">scripts/config --disable SYSTEM_TRUSTED_KEYS
+</span></span><span class="line"><span class="cl"><span class="c1"># 禁用吊销密钥列表检查</span>
+</span></span><span class="line"><span class="cl">scripts/config --disable SYSTEM_REVOCATION_KEYS
+</span></span><span class="line"><span class="cl"><span class="c1"># 将密钥路径强制设置为空</span>
+</span></span><span class="line"><span class="cl">scripts/config --set-str CONFIG_SYSTEM_TRUSTED_KEYS <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">scripts/config --set-str CONFIG_SYSTEM_REVOCATION_KEYS <span class="s2">&#34;&#34;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="编译">编译
-</h3><div class="highlight"><div class="chroma">
+</div><p>确认修改，这里如果看到如图的输出，说明修改成功</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc)
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep <span class="s2">&#34;CONFIG_SYSTEM_TRUSTED_KEYS&#34;</span> .config
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里 <code>-j</code> 后面跟 CPU 核数，加快编译速度。</p>
-<p>注意：内核编译时间较长，视机器性能通常需要20分钟至数小时不等</p>
+</div><img src="1.png" style="width: 100%;" />
+<h3 id="编译">编译
+</h3><p>查看可编译项</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make <span class="nb">help</span> <span class="p">|</span> grep bzImage
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到<code>bzImage      - Compressed kernel image (arch/x86/boot/bzImage)</code>，这就是编译生成的内核镜像</p>
+<img src="2.png" style="width: 100%;" />
+<p>执行编译，这里 <code>$(nproc)</code> 是自动获取的 CPU 核数，这样可以同时运行多个编译任务，加快编译速度</p>
+<blockquote>
+<p>执行命令进行编译前务必确认剩余存储大于20G，否则很可能由于存储不足导致编译失败，可以执行 <code>df -h</code> 查看 <code>/</code> 分区</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc) bzImage modules
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>bzImage</code>：内核名，计算机将大量<code>.c</code>源文件编译成二进制<code>.o</code>文件，最后输出一个压缩镜像文件 <code>bzImage</code>，位于 <code>arch/x86/boot/bzImage</code></li>
+<li><code>modules</code>：驱动插件，如果将所有驱动都编译进内核会很臃肿，所以需要这个独立的插件。它编译为 <code>.ko</code> 文件(Kernel Object)，平时存储在硬盘，只有插入对应硬件时，内核才会加载对应的驱动到内存</li>
+</ul>
+<blockquote>
+<p>内核编译时间比较长，一般需要几十分钟甚至几小时</p>
+</blockquote>
+<p>一段时间后可以看到编译完成</p>
+<img src="3.png" style="width: 80%;" />
 <h3 id="安装">安装
-</h3><div class="highlight"><div class="chroma">
+</h3><p>编译完成后，执行下面的命令，依次安装模块和内核镜像</p>
+<blockquote>
+<p>Ubuntu的 <code>make install</code> 会自动调用 <code>update-grub</code>，执行完之后会自动把内核复制到 <code>/boot</code>，并更新 grub 引导，不需要手动配置</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -503,10 +544,9 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo make install
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>执行完之后会自动把内核拷到 <code>/boot</code>，并更新 grub。</p>
-<hr>
-<h3 id="启动新内核">启动新内核
-</h3><div class="highlight"><div class="chroma">
+</div><img src="5.png" style="width: 100%;" />
+<p>完成后重启系统</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
@@ -514,7 +554,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo reboot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重启后用：</p>
+</div><p>在GRUB引导菜单选择新内核启动，登录系统后验证版本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -523,30 +563,116 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uname -r
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>如果版本变了，说明整个流程是通的。</p>
-<hr>
-<h2 id="系统调用这件事到底在干嘛">系统调用这件事到底在干嘛
-</h2><p>用户程序是不能直接操作内核的，中间必须走系统调用这一层。</p>
-<p>可以简单理解为：
-用户态 → syscall → 内核态 → 执行功能</p>
-<p>系统调用就是内核暴露出来的一组“入口函数”。</p>
-<hr>
-<h2 id="添加一个自己的系统调用">添加一个自己的系统调用
-</h2><p>这一块才是核心。</p>
-<p>目标很简单：
-写一个 syscall，在内核里 <code>printk</code> 打一行自己的学号。</p>
-<hr>
-<h3 id="定义系统调用函数">定义系统调用函数
-</h3><p>在内核源码里找一个合适的位置，比如：</p>
+</div><blockquote>
+<p><strong>遇到问题：重启后没有进入GRUB菜单，无法选择启动项，还是进入了原来的内核</strong></p>
+<img src="6.png" style="width: 80%;" />
+<p>检查GRUB配置文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kernel/sys.c
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/default/grub
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>加一个函数：</p>
+</div><p>可以看到GRUB菜单是隐藏的</p>
+<img src="7.png" style="width: 100%;" />
+<p>设置开机时显示10秒GRUB菜单：</p>
+<ul>
+<li><code>GRUB_TIMEOUT_STYLE=menu</code></li>
+<li><code>GRUB_TIMEOUT=10</code></li>
+</ul>
+<p>更新配置使其生效</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo update-grub
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输出中有这一行<code>Found linux image: /boot/vmlinuz-5.15.148</code>，说明内核确实安装成功了，只是刚刚默认进入了原来的内核</p>
+<img src="8.png" style="width: 100%;" />
+<p>再次重启，在 GRUB 界面选择<code>Advanced options for Ubuntu</code></p>
+<img src="9.png" style="width: 90%;" />
+<p>进入后，可以看到刚刚编译的内核<code>Ubuntu, with Linux 5.15.148</code>，选中并回车，进入系统后重新输入命令进行验证</p>
+<img src="10.png" style="width: 90%;" />
+</blockquote>
+<p>这里的输出是源码的版本号<code>5.15.148</code>，说明内核编译成功</p>
+<img src="4.png" style="width: 80%;" />
+<h2 id="添加-linux-的系统调用">添加 Linux 的系统调用
+</h2><blockquote>
+<p>用户程序的权限不足，无法直接访问内核，系统调用就是用户程序以syscall作为接口，通过调用表的方式来间接调用内核执行功能</p>
+</blockquote>
+<p>之后的操作均在linux源码所在目录中执行，进行前首先制作快照并进入源码目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd linux-5.15.148
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="分配系统调用号">分配系统调用号
+</h3><blockquote>
+<p>这一步是为系统调用在调用表中分配一个唯一编号，相当于一个指针</p>
+</blockquote>
+<p>编辑 x86_64 的系统调用表文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano arch/x86/entry/syscalls/syscall_64.tbl
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>文件中有这一行<code>don't use numbers 387 through 423, add new calls after the last'common' entry</code>。在文件中找到common调用的末尾，可以看到截止到448号。我使用未被占用的<code>450</code>作为新的系统调用号</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">450     common  my_syscall              sys_my_syscall
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="11.png" style="width: 100%;" />
+<h3 id="声明系统调用">声明系统调用
+</h3><blockquote>
+<p>这一步相当于在头文件启用函数的调用</p>
+</blockquote>
+<p>编辑系统调用头文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano include/linux/syscalls.h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在文件末尾 <code>#endif</code> 之前，添加系统调用函数声明</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">asmlinkage long sys_my_syscall(void);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="12.png" style="width: 70%;" />
+<h3 id="实现系统调用">实现系统调用
+</h3><p>在 <code>sys.c</code> 文件末尾添加系统调用的代码</p>
+<blockquote>
+<p><code>sys.c</code> 是内核存放系统调用的文件，在末尾添加可以避免影响现有代码</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano kernel/sys.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>代码如下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -556,63 +682,21 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SYSCALL_DEFINE0(mycall)
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">SYSCALL_DEFINE0(my_syscall)
 </span></span><span class="line"><span class="cl">{
-</span></span><span class="line"><span class="cl">    printk(&#34;my syscall: 202xxxxxx\n&#34;);
+</span></span><span class="line"><span class="cl">    printk(KERN_INFO &#34;Student ID: XXXXXXX\n&#34;);
 </span></span><span class="line"><span class="cl">    return 0;
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里有几个点：</p>
-<ul>
+</div><ul>
 <li><code>SYSCALL_DEFINE0</code> 表示无参数</li>
 <li><code>printk</code> 相当于内核里的 printf</li>
-<li>输出会进内核日志，不是在终端直接显示</li>
+<li>输出在内核日志中，并不会在终端直接显示</li>
 </ul>
-<hr>
-<h3 id="注册系统调用号">注册系统调用号
-</h3><p>不同架构位置不一样，Ubuntu x86_64 在：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">arch/x86/entry/syscalls/syscall_64.tbl
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>加一行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">333    common    mycall    sys_mycall
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>333 这个号不要冲突，随便找个没用的。</p>
-<hr>
-<h3 id="声明函数">声明函数
-</h3><p>在：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">include/linux/syscalls.h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>加声明：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">asmlinkage long sys_mycall(void);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
+<img src="13.png" style="width: 70%;" />
 <h3 id="重新编译内核">重新编译内核
-</h3><p>和前面一样，再来一遍：</p>
+</h3><p>只是修改源码并不能在当前内核直接生效，重新编译安装才是真正将前面的修改添加进内核</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -621,15 +705,25 @@ unicode: "f6d2"
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc)
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make -j$(nproc) bzImage modules
 </span></span><span class="line"><span class="cl">sudo make modules_install
 </span></span><span class="line"><span class="cl">sudo make install
 </span></span><span class="line"><span class="cl">sudo reboot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><hr>
-<h2 id="用户态测试">用户态测试
-</h2><p>写个简单 C 程序：</p>
+</div><p>重启后进入刚刚编译好的内核，GRUB中可以看到有两个相同版本号的内核，其中一个有<code>.old</code>后缀，这个就是修改源码前第一次编译的内核，应该选择没有后缀的内核进入</p>
+<img src="15.png" style="width: 90%;" />
+<h2 id="进行测试">进行测试
+</h2><p>创建一个测试程序 <code>syscall_t.c</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano syscall_t.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -645,7 +739,7 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;sys/syscall.h&gt;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">syscall</span><span class="p">(</span><span class="mi">333</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">syscall</span><span class="p">(</span><span class="mi">450</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
@@ -657,54 +751,48 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc test.c -o test
-</span></span><span class="line"><span class="cl">./test
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc syscall_t.c -o syscall_t
+</span></span><span class="line"><span class="cl">./syscall_t
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>不会有输出是正常的，因为打印在内核日志里。</p>
-<p>查看：</p>
+</div><p>查看内核日志</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dmesg | grep my
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dmesg | grep Student
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>能看到刚才 <code>printk</code> 的内容，就说明调用成功了。</p>
-<hr>
-<h2 id="一些实际踩坑">一些实际踩坑
-</h2><p>内核版本和头文件不匹配会直接编译炸掉，这种问题很常见。</p>
-<p>系统调用号重复会导致行为异常，有时候甚至直接起不来。</p>
-<p><code>printk</code> 默认日志级别可能看不到，需要用 <code>dmesg</code> 过滤。</p>
-<p>还有一点，内核一旦写错，轻则 panic，重则系统起不来，所以全程建议在虚拟机里搞。</p>
-<hr>
-<h2 id="和-openeuler-的差别">和 openEuler 的差别
-</h2><p>课程给的是 openEuler + arm64，这套流程在结构上是一样的，但细节差别不少：</p>
-<ul>
-<li>syscall 表的位置不一样</li>
-<li>编译配置路径不同</li>
-<li>某些驱动和模块名称不一样</li>
-</ul>
-<p>本质还是同一套内核，只是发行版和架构带来的差异。</p>
-<p>用 Ubuntu 做的好处是资料密集，基本不会卡死在环境上。</p>
-<p>遇到问题基本都能搜到，不至于卡死在平台差异上。</p>
-<p>目标其实就两件事：
-一是把内核完整编译一遍并成功启动
-二是自己往内核里加一个系统调用，然后从用户态调起来</p>
+</div><blockquote>
+<p>grep后面应该写想要搜索的日志或输出中的关键词，而不是程序名。这一步需要加sudo，是因为普通用户默认不可访问内核日志</p>
+</blockquote>
+<p>看到刚才 <code>printk</code> 的内容，就说明调用成功</p>
+<img src="14.png" style="width: 100%;" />
+<blockquote>
+<p>现象：进入这个内核以后，图形界面一直特别卡，操作延迟在一秒左右，查看系统监视器，发现CPU的四个核心轮流占用百分百，某一个核心运行的时候其他的几乎不工作</p>
+<img src="16.png" style="width: 90%;" />
+<p>可能原因：</p>
+<p>图形加速缺失：内核没有加载虚拟机相关的显卡驱动，桌面环境退化成软件渲染，所有图形计算都使用 CPU。而图形渲染线程是单线程或弱并行，这导致了 CPU 的满载</p>
+<p>调度迁移：Linux 调度器会在不同 CPU 核之间迁移这个线程，表现为多个核心轮流100%占用，而不是同时满载</p>
+<p>本质是缺少图形驱动导致的性能问题，而不是内核编译错误</p>
+</blockquote>
+<p>实验成功后，在源码目录执行 <code>make clean</code> 清除编译文件</p>
+<h2 id="附ubuntu-和-openeuler-的差异">附：Ubuntu 和 openEuler 的差异
+</h2><p>我采用 Ubuntu 发行版，与课程中的 openEuler 内核编译逻辑相同，但具体的路径和构建目标不同。选择 Ubuntu 是因为它的社区文档更完善，而且对我之后的学习更有帮助</p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
           <th><strong>对比项</strong></th>
-          <th><strong>原始实验 (openEuler / ARM64)</strong></th>
-          <th><strong>本实验 (Ubuntu / x86-64)</strong></th>
+          <th><strong>openEuler (ARM64)</strong></th>
+          <th><strong>Ubuntu (x86_64)</strong></th>
       </tr>
   </thead>
   <tbody>
       <tr>
           <td><strong>包管理器</strong></td>
-          <td><code>yum</code> (基于RPM体系)</td>
-          <td><code>apt</code> (基于Debian体系)</td>
+          <td><code>yum</code> / <code>dnf</code> (RPM体系)</td>
+          <td><code>apt</code> (Debian体系)</td>
       </tr>
       <tr>
           <td><strong>架构特定目录</strong></td>
@@ -717,7 +805,7 @@ unicode: "f6d2"
           <td><code>bzImage</code></td>
       </tr>
       <tr>
-          <td><strong>设备树 (Device Tree)</strong></td>
+          <td><strong>设备树 (DTB)</strong></td>
           <td>需要编译 <code>dtbs</code></td>
           <td>x86平台不需要编译 <code>dtbs</code></td>
       </tr>
@@ -727,9 +815,9 @@ unicode: "f6d2"
           <td><code>arch/x86/entry/syscalls/syscall_64.tbl</code></td>
       </tr>
       <tr>
-          <td><strong>系统调用实现方式</strong></td>
+          <td><strong>调用约定</strong></td>
           <td>依赖ARM64特定的调用约定和寄存器</td>
-          <td>依赖x86_64特定的调用约定和 <code>SYSCALL_DEFINE</code> 宏</td>
+          <td>依赖 x86_64 调用约定与 <code>SYSCALL_DEFINE</code> 宏</td>
       </tr>
   </tbody>
 </table></div>
@@ -1038,12 +1126,10 @@ unicode: "f6d2"
       
       
       
-      
-      
       共发表文章 
-      <span class="number-highlight">23</span> 
+      <span class="number-highlight">22</span> 
       篇 ，总计 
-      <span class="number-highlight">73.63</span> 
+      <span class="number-highlight">73.33</span> 
       k 字
   </div>
   <div>
@@ -1087,8 +1173,6 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
-        
-        
         
         
         
