@@ -585,7 +585,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p>注意：当前环境下shell不能识别中文，因此WiFi的名称和密码只能由英文字母、数字和常见符号组成，若包含空格需要用双引号包裹。如果不符合命名规范，修改SSID后等待信息刷新，重新连接即可</p>
+<p>注意：shell不能识别中文，因此WiFi的名称和密码只能由字母数字和常见符号组成，名称中包含空格需要用双引号包裹。如果不符合命名规范，修改SSID后等待信息刷新，重新连接即可</p>
 </blockquote>
 <p>连接后输入 <code>exit</code> 退出iwctl，测试是否成功联网，ping一下任意可直连的网址</p>
 <div class="highlight"><div class="chroma">
@@ -618,7 +618,7 @@ unicode: "f6d2"
 </div>
 </div><img src="14.jpg" style="width: 70%;" />
 <blockquote>
-<p><code>timedatectl</code> 的 NTP 同步依赖于网络。如果 <code>ping</code> 不通，这个服务即便显示 <code>active</code>，时间也可能无法同步成功。建议检查一下<code>System clock synchronized: yes</code> 这一行</p>
+<p><code>timedatectl</code> 的 NTP 同步依赖于网络。如果 <code>ping</code> 不通，这个服务即使显示 <code>active</code>，时间也可能无法同步成功。建议检查一下<code>System clock synchronized: yes</code></p>
 </blockquote>
 <h2 id="磁盘分区与挂载">磁盘分区与挂载
 </h2><p>这部分是整个安装过程中最麻烦最复杂的部分，一定要细心配置</p>
@@ -644,12 +644,11 @@ unicode: "f6d2"
 <p>我即将分区的盘是<code>/dev/nvme1n1</code>，这里只会显示已分区的空间，所以看不到空闲空间</p>
 <h3 id="分区方案">分区方案
 </h3><blockquote>
-<p>安装 Linux 时，需要将磁盘划分为不同分区，以分别存放系统启动文件、运行时数据以及用户文件。常见的基础结构包括启动分区、交换空间和根分区</p>
+<p>安装 Linux 时，需要将磁盘划分为不同分区，用来存放系统启动文件和用户文件等。常见的分区方法包含启动分区、交换分区、根分区</p>
 </blockquote>
-<p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定、性能优越的文件系统，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
+<p>首先确定根分区的格式，常见的格式有<code>btrfs</code>和<code>ext4</code>。<code>btrfs</code> 是一个现代化的文件系统，支持快照和自修复等高级功能，适合喜欢折腾的人。而 <code>ext4</code> 是一个稳定且性能优越的文件系统，适合追求稳定的人。我这里选用的是<code>btrfs</code>。</p>
 <p><strong>启动分区 <code>/boot</code></strong>：</p>
-<p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。</p>
-<p>如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区</p>
+<p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区</p>
 <p><strong>交换分区 <code>/swap</code></strong>：</p>
 <p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案</p>
 <p><strong>根分区 <code>/</code></strong>：</p>
@@ -814,7 +813,7 @@ unicode: "f6d2"
 <h3 id="挂载">挂载
 </h3><blockquote>
 <p>在Live USB安装环境中，内存系统已经有了一个自己的根目录 <code>/</code>。如果直接把硬盘分区挂载到 <code>/</code>，会覆盖掉安装环境正在运行的文件，导致系统崩溃。</p>
-<p>因此，安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，<code>/mnt</code> 就是挂载新系统的根分区的挂载点。这个目录的存在是为了在安装过程中的操作提供挂载目录。因此挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
+<p>因此安装环境提供了一个名为 <code>/mnt</code> 的空目录作为临时挂载点，用于在安装过程中挂载新系统的分区。所以挂载时的目录前都会有<code>/mnt</code>，而当安装完成进入新系统的时候，这个目录就会消失</p>
 </blockquote>
 <p><strong>注意：挂载分区一定要遵循顺序，先挂载根分区到 <code>/mnt</code>，再挂载其他分区。否则可能遇到安装完成后无法启动系统的问题</strong></p>
 <p>挂载根目录</p>
@@ -880,7 +879,7 @@ unicode: "f6d2"
 </div><h2 id="系统安装">系统安装
 </h2><h3 id="禁用reflector">禁用Reflector
 </h3><blockquote>
-<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然即时下载速度快，但都在国外，由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿</p>
+<p>Reflector是一个自动更新镜像源的工具。禁用是因为它会自动运行并覆盖手动设置好的高速服务器。它筛选出的服务器虽然下载速度快，但都在国外，由于大陆的网络环境，连接经常不稳定，导致安装过程出现报错或卡顿</p>
 </blockquote>
 <p>禁用服务</p>
 <div class="highlight"><div class="chroma">
@@ -1411,7 +1410,7 @@ unicode: "f6d2"
 </div>
 </div><h3 id="dns服务配置">DNS服务配置
 </h3><blockquote>
-<p>NetworkManager 负责管理网络连接，但它的 DNS 处理方式相对基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求。</p>
+<p>NetworkManager 负责管理网络连接，但它的 DNS 处理方式比较基础，在复杂的网络环境下，容易出现 DNS 配置被覆盖或解析不稳定的问题。为了解决这个问题，可以使用 systemd-resolved 接管 DNS 解析服务。它会在本地提供统一的 DNS 入口，并负责缓存与转发解析请求</p>
 </blockquote>
 <p>启用服务</p>
 <div class="highlight"><div class="chroma">
@@ -2055,7 +2054,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">22</span> 
       篇 ，总计 
-      <span class="number-highlight">73.33</span> 
+      <span class="number-highlight">73.64</span> 
       k 字
   </div>
   <div>

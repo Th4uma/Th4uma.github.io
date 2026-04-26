@@ -528,9 +528,9 @@ unicode: "f6d2"
 <p>内核编译时间比较长，一般需要几十分钟甚至几小时</p>
 </blockquote>
 <p>一段时间后可以看到编译完成</p>
-<img src="3.png" style="width: 80%;" />
+<img src="3.png" style="width: 70%;" />
 <h3 id="安装">安装
-</h3><p>编译完成后，执行下面的命令，依次安装模块和内核镜像</p>
+</h3><p>编译完成后执行下面的命令，安装模块和内核镜像</p>
 <blockquote>
 <p>Ubuntu的 <code>make install</code> 会自动调用 <code>update-grub</code>，执行完之后会自动把内核复制到 <code>/boot</code>，并更新 grub 引导，不需要手动配置</p>
 </blockquote>
@@ -544,7 +544,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo make install
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="5.png" style="width: 100%;" />
+</div><img src="5.png" style="width: 90%;" />
 <p>完成后重启系统</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -565,7 +565,7 @@ unicode: "f6d2"
 </div>
 </div><blockquote>
 <p><strong>遇到问题：重启后没有进入GRUB菜单，无法选择启动项，还是进入了原来的内核</strong></p>
-<img src="6.png" style="width: 80%;" />
+<img src="6.png" style="width: 70%;" />
 <p>检查GRUB配置文件</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -576,7 +576,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到GRUB菜单是隐藏的</p>
-<img src="7.png" style="width: 100%;" />
+<img src="7.png" style="width: 90%;" />
 <p>设置开机时显示10秒GRUB菜单：</p>
 <ul>
 <li><code>GRUB_TIMEOUT_STYLE=menu</code></li>
@@ -592,19 +592,19 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输出中有这一行<code>Found linux image: /boot/vmlinuz-5.15.148</code>，说明内核确实安装成功了，只是刚刚默认进入了原来的内核</p>
-<img src="8.png" style="width: 100%;" />
+<img src="8.png" style="width: 90%;" />
 <p>再次重启，在 GRUB 界面选择<code>Advanced options for Ubuntu</code></p>
 <img src="9.png" style="width: 90%;" />
 <p>进入后，可以看到刚刚编译的内核<code>Ubuntu, with Linux 5.15.148</code>，选中并回车，进入系统后重新输入命令进行验证</p>
 <img src="10.png" style="width: 90%;" />
 </blockquote>
 <p>这里的输出是源码的版本号<code>5.15.148</code>，说明内核编译成功</p>
-<img src="4.png" style="width: 80%;" />
+<img src="4.png" style="width: 70%;" />
 <h2 id="添加-linux-的系统调用">添加 Linux 的系统调用
 </h2><blockquote>
 <p>用户程序的权限不足，无法直接访问内核，系统调用就是用户程序以syscall作为接口，通过调用表的方式来间接调用内核执行功能</p>
 </blockquote>
-<p>之后的操作均在linux源码所在目录中执行，进行前首先制作快照并进入源码目录</p>
+<p>之后的操作均在linux源码所在目录中执行，进入源码目录</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -635,7 +635,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">450     common  my_syscall              sys_my_syscall
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="11.png" style="width: 100%;" />
+</div><img src="11.png" style="width: 90%;" />
 <h3 id="声明系统调用">声明系统调用
 </h3><blockquote>
 <p>这一步相当于在头文件启用函数的调用</p>
@@ -711,7 +711,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo reboot
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重启后进入刚刚编译好的内核，GRUB中可以看到有两个相同版本号的内核，其中一个有<code>.old</code>后缀，这个就是修改源码前第一次编译的内核，应该选择没有后缀的内核进入</p>
+</div><p>重启后进入刚刚编译好的内核，GRUB中可以看到有两个相同版本号的内核，其中一个有<code>.old</code>后缀，这个就是修改源码前第一次编译的内核，选择没有后缀的内核进入</p>
 <img src="15.png" style="width: 90%;" />
 <h2 id="进行测试">进行测试
 </h2><p>创建一个测试程序 <code>syscall_t.c</code></p>
@@ -761,25 +761,23 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dmesg | grep Student
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo dmesg | grep Student
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>grep后面应该写想要搜索的日志或输出中的关键词，而不是程序名。这一步需要加sudo，是因为普通用户默认不可访问内核日志</p>
 </blockquote>
 <p>看到刚才 <code>printk</code> 的内容，就说明调用成功</p>
-<img src="14.png" style="width: 100%;" />
+<img src="14.png" style="width: 90%;" />
 <blockquote>
 <p>现象：进入这个内核以后，图形界面一直特别卡，操作延迟在一秒左右，查看系统监视器，发现CPU的四个核心轮流占用百分百，某一个核心运行的时候其他的几乎不工作</p>
-<img src="16.png" style="width: 90%;" />
-<p>可能原因：</p>
-<p>图形加速缺失：内核没有加载虚拟机相关的显卡驱动，桌面环境退化成软件渲染，所有图形计算都使用 CPU。而图形渲染线程是单线程或弱并行，这导致了 CPU 的满载</p>
-<p>调度迁移：Linux 调度器会在不同 CPU 核之间迁移这个线程，表现为多个核心轮流100%占用，而不是同时满载</p>
-<p>本质是缺少图形驱动导致的性能问题，而不是内核编译错误</p>
+<img src="16.png" style="width: 80%;" />
+<p>可能原因：内核没有加载显卡驱动，桌面环境的所有图形计算都使用 CPU。而图形渲染是单线程，从而导致 CPU 满载。Linux 调度器会在不同 CPU 核之间迁移这个线程，也就是多个核心轮流100%占用</p>
+<p>这是缺少图形驱动导致的性能问题，不是内核编译错误</p>
 </blockquote>
 <p>实验成功后，在源码目录执行 <code>make clean</code> 清除编译文件</p>
 <h2 id="附ubuntu-和-openeuler-的差异">附：Ubuntu 和 openEuler 的差异
-</h2><p>我采用 Ubuntu 发行版，与课程中的 openEuler 内核编译逻辑相同，但具体的路径和构建目标不同。选择 Ubuntu 是因为它的社区文档更完善，而且对我之后的学习更有帮助</p>
+</h2><p>我使用的Ubuntu和课程中的 openEuler 内核编译逻辑相同，但具体的路径和构建目标不同。选择 Ubuntu 是因为社区文档更完善，而且对我之后的学习更有帮助</p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -791,8 +789,8 @@ unicode: "f6d2"
   <tbody>
       <tr>
           <td><strong>包管理器</strong></td>
-          <td><code>yum</code> / <code>dnf</code> (RPM体系)</td>
-          <td><code>apt</code> (Debian体系)</td>
+          <td><code>yum</code> / <code>dnf</code> (RPM系)</td>
+          <td><code>apt</code> (Debian系)</td>
       </tr>
       <tr>
           <td><strong>架构特定目录</strong></td>
@@ -1129,7 +1127,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">22</span> 
       篇 ，总计 
-      <span class="number-highlight">73.33</span> 
+      <span class="number-highlight">73.64</span> 
       k 字
   </div>
   <div>

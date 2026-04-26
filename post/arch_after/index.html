@@ -298,6 +298,7 @@ unicode: "f6d2"
           </ol>
         </li>
         <li><a href="#git">Git</a></li>
+        <li><a href="#科学上网">科学上网</a></li>
       </ol>
     </li>
     <li><a href="#kde美化">KDE美化</a>
@@ -392,7 +393,7 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>新装好的系统就像毛坯房一样，能用但不好用，所以最基本的配置和美化还是要有的</p>
-<p>Arch Linux 采用滚动更新机制，没有固定的大版本，而是持续推送更新。这种方式更加灵活，但也更容易导致系统崩溃，也就是俗称的滚挂，解决方法是常更新，比如每天开机后更新一次。系统使用 Pacman 作为包管理器，滚动更新的命令是</p>
+<p>Arch Linux 采用滚动更新，也就是没有固定的大版本，持续推送更新。好处是比较灵活，但更容易滚挂，解决方法是常更新，比如每天开机后更新一次。系统使用 Pacman 作为包管理器，滚动更新的命令是</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -802,7 +803,77 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git config --get core.autocrlf
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="kde美化">KDE美化
+</div><h3 id="科学上网">科学上网
+</h3><blockquote>
+<p>我使用的是FlClash和Chrome，最开始流量完全不走代理，因此先进行测试</p>
+</blockquote>
+<p>这个命令测试代理是否正常，我这里报错说明流量根本没走代理</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">curl -x http://127.0.0.1:7890 https://www.google.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="28.png" style="width: 100%;" />
+<p>查看端口信息，可以看到 7890 端口处于监听状态，说明代理是启动的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ss -lntp | grep 7890
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="27.png" style="width: 60%;" />
+<p>查看详细连接过程</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">curl -v -x http://127.0.0.1:7890 https://www.google.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="26.png" style="width: 100%;" />
+<p>在 FlClash 中将 global 模式下的 <code>DIRECT</code> 改为代理节点再测试，这次连接正常，但浏览器依旧无法访问</p>
+<img src="30.png" style="width: 25%;" />
+<img src="29.png" style="width: 100%;" />
+<p>使用浏览器强制代理，还是没有效果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">google-chrome-stable --proxy-server=&#34;http://127.0.0.1:7890&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>curl返回正常说明代理没有问题，浏览器强制指定代理之后还是打不开，说明并不是系统代理没有对浏览器生效，而是浏览器本身的问题</p>
+<p>浏览器和curl的区别在于：curl通过指定的代理连接，而Chrome默认开启的QUIC是UDP连接，不一定走HTTP代理，而是直连服务器，从而绕过代理</p>
+</blockquote>
+<p>尝试启动浏览器时禁用 QUIC，访问成功，因此是QUIC导致的问题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">google-chrome-stable --proxy-server=&#34;http://127.0.0.1:7890&#34; --disable-quic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在浏览器中关闭QUIC，在地址栏输入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chrome://flags
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后搜索quic，在结果中将<code>Experimental QUIC protocol</code> 设置为 <code>Disabled</code>，重启浏览器生效</p>
+<img src="31.png" style="width: 90%;" />
+<h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
 </h3><p>先生成 modeline</p>
 <div class="highlight"><div class="chroma">
@@ -1277,7 +1348,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">22</span> 
       篇 ，总计 
-      <span class="number-highlight">73.33</span> 
+      <span class="number-highlight">73.64</span> 
       k 字
   </div>
   <div>
