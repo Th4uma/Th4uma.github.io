@@ -273,7 +273,7 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#前言">前言</a></li>
-    <li><a href="#数据范围">数据范围</a></li>
+    <li><a href="#shu数据范围">shu数据范围</a></li>
     <li><a href="#数组">数组</a>
       <ol>
         <li><a href="#基础知识">基础知识</a>
@@ -366,8 +366,20 @@ unicode: "f6d2"
     </li>
     <li><a href="#树">树</a>
       <ol>
-        <li><a href="#基础知识-4">基础知识</a></li>
-        <li><a href="#题目练习-4">题目练习</a></li>
+        <li><a href="#基础知识-4">基础知识</a>
+          <ol>
+            <li><a href="#二叉树">二叉树</a></li>
+            <li><a href="#dfs">DFS</a></li>
+          </ol>
+        </li>
+        <li><a href="#题目练习-4">题目练习</a>
+          <ol>
+            <li><a href="#p4913-深基16例3二叉树深度">P4913 【深基16.例3】二叉树深度</a></li>
+            <li><a href="#p4715-深基16例1淘汰赛">P4715 【深基16.例1】淘汰赛</a></li>
+            <li><a href="#p1305-新二叉树">P1305 新二叉树</a></li>
+            <li><a href="#p1030-noip-2001-普及组-求先序排列">P1030 [NOIP 2001 普及组] 求先序排列</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
     <li><a href="#图">图</a>
@@ -387,6 +399,7 @@ unicode: "f6d2"
         <li><a href="#d3">d3</a></li>
         <li><a href="#d4">d4</a></li>
         <li><a href="#d5">d5</a></li>
+        <li><a href="#d6">d6</a></li>
       </ol>
     </li>
   </ol>
@@ -469,7 +482,7 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>高中打NOIP时，这部分是让我最头疼的地方，怎么也学不会。看着老师在上面写代码，我只能感到深深的迷茫，后来才发现原来是因为跳过了数据结构的基础直接开始编程。现在就来完成一下三年前留下的遗憾</p>
-<h2 id="数据范围">数据范围
+<h2 id="shu数据范围">shu数据范围
 </h2><ul>
 <li>int：约 ±2×10^9</li>
 <li>long long：约 ±9×10^18</li>
@@ -3300,8 +3313,293 @@ unicode: "f6d2"
 </div>
 </div><h2 id="树">树
 </h2><h3 id="基础知识-4">基础知识
-</h3><h3 id="题目练习-4">题目练习
-</h3><h2 id="图">图
+</h3><p>树也就是一个扩展结构，第一个节点是根节点，根节点以下是子节点，最末端没有子节点的是叶节点</p>
+<h4 id="二叉树">二叉树
+</h4><p>二叉树也就是每个节点最多有两个子节点的树，这两个子节点分别是左节点和右节点。二叉树的遍历方法分为前序、中序、后序</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">　　　　　　　　 C
+</span></span><span class="line"><span class="cl">　　　　　　   /  \
+</span></span><span class="line"><span class="cl">　　　　　　  /　　\
+</span></span><span class="line"><span class="cl">　　　　　　 B　　  G
+</span></span><span class="line"><span class="cl">　　　　　　/ \　　/
+</span></span><span class="line"><span class="cl">　　　　   A   D  H
+</span></span><span class="line"><span class="cl">　　　　　　  / \
+</span></span><span class="line"><span class="cl">　　　　　　 E   F
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>前序遍历</strong>：CBADEFGH 按照根，左子树，右子树的顺序访问节点，第一个节点一定是根节点</p>
+<p><strong>中序遍历</strong>：ABEDFCHG 按照左子树，根，右子树的顺序访问节点</p>
+<p><strong>后序遍历</strong>：AEFDBHGC 按照左子树，右子树，根的顺序访问节点，最后一个节点一定是根节点</p>
+<h4 id="dfs">DFS
+</h4><p>dfs就是深度优先搜素，比如某个地点有多条路可以走到，先走完其中一条，然后返回岔路口走另一条，直到遍历完所有路径</p>
+<p>代码中a是节点的索引，d是深度，每次遍历会导致深度增加，同时开始遍历a的左右子节点，没有子节点就停止遍历</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span><span class="kt">int</span> <span class="n">d</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">&gt;</span><span class="n">ans</span><span class="p">)</span> <span class="n">ans</span><span class="o">=</span><span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="题目练习-4">题目练习
+</h3><h4 id="p4913-深基16例3二叉树深度">P4913 【深基16.例3】二叉树深度
+</h4><p>二叉树模板题目，我看着题解做的，主要是为了了解标准写法。之前的队列直接上手做，结果边界处理出了好多问题，最后才发现是因为写法太不标准，这次不能重蹈覆辙。写完这道题才知道原来二叉树的遍历就是用dfs实现的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">ans</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">node</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">l</span><span class="p">,</span><span class="n">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="n">node</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">node</span> <span class="n">m</span><span class="p">[</span><span class="mi">1000001</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span><span class="kt">int</span> <span class="n">d</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">&gt;</span><span class="n">ans</span><span class="p">)</span> <span class="n">ans</span><span class="o">=</span><span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">r</span><span class="p">,</span><span class="n">d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">l</span><span class="p">,</span><span class="o">&amp;</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">r</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">ans</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="p4715-深基16例1淘汰赛">P4715 【深基16.例1】淘汰赛
+</h4><p>我将比赛的过程通过递归模拟了一下，这个写法个人感觉不太好，因为m数组在调用自己的同时写入自己，而且没有清除不需要的数据。虽然对这题来说完全没影响，但还是觉得应该有更好的写法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">ans</span><span class="p">,</span><span class="n">ni</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">node</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">bh</span><span class="p">,</span><span class="n">sz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="n">node</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">node</span> <span class="n">m</span><span class="p">[</span><span class="mi">1000001</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="n">node</span> <span class="n">m</span><span class="p">[</span><span class="mi">1000001</span><span class="p">],</span><span class="kt">int</span> <span class="n">fw</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">fw</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">fw</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">sz</span><span class="o">&lt;</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">sz</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sz</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">sz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">bh</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">bh</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sz</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">sz</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">bh</span><span class="o">=</span><span class="n">m</span><span class="p">[</span><span class="n">c</span><span class="p">].</span><span class="n">bh</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">+=</span><span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fw</span><span class="o">/=</span><span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">fw</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">ni</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">ni</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="n">n</span><span class="o">*=</span><span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">sz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">m</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">bh</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">sz</span><span class="o">&gt;</span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">sz</span><span class="p">)</span> <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">].</span><span class="n">bh</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">bh</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="p1305-新二叉树">P1305 新二叉树
+</h4><p>这里唯一难点就是处理字母到数字的映射，方法是字母减去a的ascll码再加一，这样a就是1,b就是2,以此类推，然后在结构体里面增加一个变量专门存储字母</p>
+<p><code> m[s[0]-'a'+1].data=s[0];</code></p>
+<p>需要注意这一题不需要记录深度信息，但需要记录根节点的索引，我是看了题解才发现这个问题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">ans</span><span class="p">,</span><span class="n">st</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">node</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">l</span><span class="p">,</span><span class="n">r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="n">node</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">node</span> <span class="n">m</span><span class="p">[</span><span class="mi">1000001</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%c&#34;</span><span class="p">,</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">r</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%s&#34;</span><span class="p">,</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="n">st</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">data</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">l</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">r</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="sc">&#39;*&#39;</span><span class="p">)</span> <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">l</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="sc">&#39;*&#39;</span><span class="p">)</span> <span class="n">m</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="sc">&#39;a&#39;</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="n">r</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">st</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="p1030-noip-2001-普及组-求先序排列">P1030 [NOIP 2001 普及组] 求先序排列
+</h4><p>根据中序和后续排列求前序的题型，思路是首先通过后序找到根节点，然后中序中根节点左右的部分，就分别是左子树和右子树，然后分别对左右子树用相同的方法进行递归</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
+</div>
+</div><h2 id="图">图
 </h2><h3 id="基础知识-5">基础知识
 </h3><h3 id="题目练习-5">题目练习
 </h3><h4 id="bfs">BFS
@@ -3317,6 +3615,8 @@ unicode: "f6d2"
 </h3><p>今天学队列，理解不难，但真正用到逻辑的时候有点想不明白，在边界上经常犯错。今天用大模型比昨天多，因为好几次被逻辑问题卡住半小时，可能还没有彻底掌握吧，明天应该还要继续学一天</p>
 <h3 id="d5">d5
 </h3><p>之前确实低估队列了，这部分的逻辑是我的弱项，每道题几乎都卡半小时以上，然后焦头烂额的找大模型给我指点来解决问题。但了解原理并记住模板后，之后的题目就是套路了。明天准备开始学树</p>
+<h3 id="d6">d6
+</h3><p>昨天休息了一天，今天继续。树并没有想象中那么难，递归听起来吓人，实际debug比之前的队列还简单，也许是因为之前ctf做过涉及树的题目，或者是树只做了几个入门题目的缘故。现在才知道树的遍历就是dfs,看来高中没学会纯纯吃了没有理论基础的亏。今天有点偷懒了效率不高，只做了三道入门题目，准备明天死磕中等难度的题目</p>
 
 </section>
 
@@ -3580,7 +3880,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">23</span> 
       篇 ，总计 
-      <span class="number-highlight">81.71</span> 
+      <span class="number-highlight">82.92</span> 
       k 字
   </div>
   <div>
