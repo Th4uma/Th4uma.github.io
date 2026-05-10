@@ -385,6 +385,7 @@ unicode: "f6d2"
             <li><a href="#p1229-遍历问题">P1229 遍历问题</a></li>
             <li><a href="#p3884-jloi2009-二叉树问题">P3884 [JLOI2009] 二叉树问题</a></li>
             <li><a href="#p5076-深基16例7普通二叉树简化版">P5076 【深基16.例7】普通二叉树（简化版）</a></li>
+            <li><a href="#p1395-会议">P1395 会议</a></li>
           </ol>
         </li>
       </ol>
@@ -4709,6 +4710,55 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h4 id="p1395-会议">P1395 会议
+</h4><p>又是一道树的重心题目</p>
+<blockquote>
+<p>这次在读入树的部分出了问题。一直以来我的想法是先输入的节点为父，后输入为子，或者值更小的为父，更大的为子，但实际上输入只代表两个节点之间有边连接</p>
+<details>
+<summary><i>点击查看错误代码</i></summary>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">&lt;</span><span class="n">b</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">b</span><span class="p">].</span><span class="n">f</span><span class="o">=</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">                <span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">r</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="n">gen</span><span class="o">=</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">f</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">b</span><span class="p">].</span><span class="n">l</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">                <span class="n">m</span><span class="p">[</span><span class="n">b</span><span class="p">].</span><span class="n">l</span><span class="o">=</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span><span class="k">else</span> <span class="n">m</span><span class="p">[</span><span class="n">b</span><span class="p">].</span><span class="n">r</span><span class="o">=</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="n">gen</span><span class="o">=</span><span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
+</div>
 </div><h2 id="图">图
 </h2><h3 id="基础知识-5">基础知识
 </h3><h3 id="题目练习-5">题目练习
@@ -4993,10 +5043,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">23</span> 
+      <span class="number-highlight">24</span> 
       篇 ，总计 
-      <span class="number-highlight">86.92</span> 
+      <span class="number-highlight">88.42</span> 
       k 字
   </div>
   <div>
@@ -5040,6 +5092,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         

