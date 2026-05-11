@@ -573,7 +573,7 @@ unicode: "f6d2"
 </ul>
 <img src="3.png" style="width: 100%;" />
 <h2 id="任务一arp-缓存投毒">任务一：ARP 缓存投毒
-</h2><p>ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但该协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证其真实性。
+</h2><p>ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但这个协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证真实性。
 这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径。</p>
 <h3 id="task-1aarp-request-进行缓存投毒">Task 1.A：ARP Request 进行缓存投毒
 </h3><blockquote>
@@ -981,7 +981,7 @@ unicode: "f6d2"
 </blockquote>
 <h3 id="ip-转发">IP 转发
 </h3><blockquote>
-<p>投毒完成后，攻击者实际上变成A与B的路由器，因此M开不开启IP转发会对A与B的通信产生影响</p>
+<p>投毒完成后，攻击者已经成为链路中的中间节点，如果不开启 IP 转发，相当于数据被截获但不再继续转发，从而表现为网络中断，包被 M 直接丢弃了</p>
 </blockquote>
 <p>原来的终端不动，重新打开一个终端，进入容器M，关闭IP转发</p>
 <div class="highlight"><div class="chroma">
@@ -994,9 +994,6 @@ unicode: "f6d2"
 </div>
 </div><p>主机A ping主机B，发现大量丢包</p>
 <img src="13.png" style="width: 80%;" />
-<blockquote>
-<p>此时攻击者已经成为链路中的中间节点，如果不开启 IP 转发，相当于数据被截获但不再继续转发，从而表现为网络中断，包被 M 直接丢弃了</p>
-</blockquote>
 <p>攻击者开启IP转发</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1253,10 +1250,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>关闭内核转发并运行脚本</p>
-<blockquote>
-<p>如果不关闭，系统会抢在你的脚本之前把包发走，篡改就失效了</p>
-</blockquote>
+</div><p>关闭内核转发并运行脚本，这是为了防止系统抢在你的脚本之前把包发走，篡改就失效了</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1313,9 +1307,9 @@ unicode: "f6d2"
 </div>
 </div><p>测试：在 A 输入任意信息，确认 B 能收到，说明连接已建立。之后保持这两个窗口开启</p>
 <img src="17.png" style="width: 60%;" />
-<p>确认 TCP 连接稳定后，在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话</p>
+<p>在攻击者 M 中关闭内核转发来切断原生路由，并立即启动中间人脚本接管会话</p>
 <blockquote>
-<p>经过测试发现，此环境下即使不先开启再关闭IP转发，而是保持关闭状态，脚本依然可以完成篡改</p>
+<p>经过测试发现，此环境下即使不先开启再关闭IP转发，而是全程保持关闭状态，脚本依然可以完成篡改</p>
 </blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1718,7 +1712,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">24</span> 
       篇 ，总计 
-      <span class="number-highlight">88.42</span> 
+      <span class="number-highlight">88.77</span> 
       k 字
   </div>
   <div>

