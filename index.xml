@@ -54,41 +54,47 @@
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
-          &lt;th&gt;节点&lt;/th&gt;
-          &lt;th&gt;IP 地址&lt;/th&gt;
-          &lt;th&gt;作用说明&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;节点&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;IP 地址&lt;/strong&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;strong&gt;作用说明&lt;/strong&gt;&lt;/th&gt;
       &lt;/tr&gt;
   &lt;/thead&gt;
   &lt;tbody&gt;
       &lt;tr&gt;
-          &lt;td&gt;受害者主机&lt;/td&gt;
-          &lt;td&gt;10.9.0.5&lt;/td&gt;
-          &lt;td&gt;发起正常网络访问的目标主机，路由表被攻击者篡改&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;受害者主机&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;攻击目标。初始路由指向 &lt;code&gt;.11&lt;/code&gt;&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;真实路由器&lt;/td&gt;
-          &lt;td&gt;10.9.0.1&lt;/td&gt;
-          &lt;td&gt;正常网络转发节点，作为初始网关&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;真实路由器&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.11&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;连接两个网段的实际节点。它同时拥有 &lt;code&gt;10.9.0.11&lt;/code&gt; 和 &lt;code&gt;192.168.60.11&lt;/code&gt; 两个 IP&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;恶意路由器&lt;/td&gt;
-          &lt;td&gt;10.9.0.111&lt;/td&gt;
-          &lt;td&gt;被 ICMP Redirect 指定的流量目的地，同时执行 MITM 攻击&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;恶意路由器&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.111&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;攻击者诱导流量去往的中间人节点&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;攻击者主机&lt;/td&gt;
-          &lt;td&gt;10.9.0.105&lt;/td&gt;
-          &lt;td&gt;伪造 ICMP Redirect 报文，并执行流量监听与篡改&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;攻击者主机&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.105&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;发送伪造 ICMP 重定向报文的节点&lt;/td&gt;
       &lt;/tr&gt;
       &lt;tr&gt;
-          &lt;td&gt;目标主机&lt;/td&gt;
-          &lt;td&gt;192.168.60.5&lt;/td&gt;
-          &lt;td&gt;受害者进行通信的主机&lt;/td&gt;
+          &lt;td&gt;&lt;strong&gt;目标主机&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;192.168.60.5&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;位于另一个网段的通信目标&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Docker 网关&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Docker 虚拟网络的默认出口。在实验中通常不参与业务路由转发&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;icmp-重定向攻击&#34;&gt;ICMP 重定向攻击
 &lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
+&lt;p&gt;ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;攻击目标是修改受害者的路由缓存，让这个路由发往目标主机的流量途经恶意路由器&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;受害者&#34;&gt;受害者
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -146,7 +152,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;victim_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.5&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;router_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;router_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.11&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;attacker_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.111&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;target_ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;192.168.60.5&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -175,7 +181,7 @@
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;原本受害者访问目标主机时的路径为&lt;code&gt;受害者&amp;gt;网关&amp;gt;目标主机&lt;/code&gt;，攻击成功后会变成&lt;code&gt;受害者&amp;gt;攻击者&amp;gt;目标主机&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;攻击成功后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存&lt;/p&gt;
+&lt;p&gt;攻击完成后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -200,14 +206,143 @@
 &lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;第一行说明默认网关是10.9.0.1&lt;/li&gt;
 &lt;li&gt;第二行说明10.9.0.x 网段就在本地，不需要经过网关，可以直接发送&lt;/li&gt;
-&lt;li&gt;第三行说明访问 192.168.60.x 网段时不走默认网关，而是发给 10.9.0.11&lt;/li&gt;
+&lt;li&gt;第三行说明访问 192.168.60.x 网段时走静态路由10.9.0.11&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;说明路由已被修改，目标流量开始经过攻击者控制的节点。&lt;/p&gt;
 &lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;h2 id=&#34;中间人攻击mitm&#34;&gt;中间人攻击（MITM）
-&lt;/h2&gt;&lt;p&gt;在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。&lt;/p&gt;
-&lt;p&gt;实验中直接在恶意路由器上对数据进行拦截和修改。&lt;/p&gt;
-&lt;p&gt;在目标主机上开启监听：&lt;/p&gt;
+&lt;p&gt;如果攻击成功，第三行应该显示的是10.9.0.111。攻击失败了，这是由于Docker中复杂的网络环境，以及现代Linux已经完全解决了这个漏洞，攻击会被拦截。因此手动添加路由进行模拟即可&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip route add 192.168.60.5 via 10.9.0.111
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;附排查过程&#34;&gt;附：排查过程
+&lt;/h3&gt;&lt;h4 id=&#34;容器&#34;&gt;容器
+&lt;/h4&gt;&lt;p&gt;查看容器信息，并没有问题&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker ps -a
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker exec malicious-router-10.9.0.111 ip addr show eth0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;在发包的时候进行抓包，可以看到0a09006f中6f对应111，这里也没有问题&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tcpdump -i eth0 icmp -XX
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;修改脚本中的攻击者ip为10.9.0.100，删除路由缓存后重新进行攻击，发现路由缓存没有变化，说明这条错误路由是写死在配置里的&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip route flush cache
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;查看&lt;code&gt;docker-compose.yml&lt;/code&gt;，发现这一行，这说明受害者的默认路由被指向10.9.0.11，也就是刚刚输出的地址&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;victim:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   command: bash -c &amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                      ip route add 192.168.60.0/24 via 10.9.0.11 &amp;amp;&amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                      tail -f /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这一行说明真正的路由器其实是10.9.0.11，而不是10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Router:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        networks:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            net-10.9.0.0:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ipv4_address: 10.9.0.11
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            net-192.168.60.0:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                ipv4_address: 192.168.60.11
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id=&#34;发包&#34;&gt;发包
+&lt;/h4&gt;&lt;p&gt;再次进行抓包，看到&lt;code&gt;10.9.0.5 &amp;gt; 192.168.60.5: ICMP echo request, id 0, seq 0, length 8&lt;/code&gt;。这句话表示攻击报文中嵌套的原始数据包片段，声明受害者10.9.0.5正在向目标192.168.60.5发送一个8字节的Ping请求，内核通过核对这段嵌套信息与自身发出的真实流量是否一致，来决定是否接受路由重定向。这里说明发出的包是正常的&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tcpdump -i eth0 -nn -vvv icmp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;删除受害者的静态路由，ping直接断掉，尝试发包依旧没有用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip route del 192.168.60.0/24 via 10.9.0.11
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;验证攻击包到底有没有真的作用在受害者的网卡上，受害者执行下面的命令，输出&lt;code&gt;13:40:45.647101 IP 10.9.0.11 &amp;gt; 10.9.0.5: ICMP redirect 192.168.60.5 to host 10.9.0.111, length 36&lt;/code&gt;说明一切正常&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tcpdump -i eth0 icmp -nn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;查看受害者内核计数器，&lt;code&gt;ICMP messages failed&lt;/code&gt;为0，&lt;code&gt;ICMP redirects received&lt;/code&gt;数量很多，说明大概率是内核拒绝了请求&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h4 id=&#34;内核&#34;&gt;内核
+&lt;/h4&gt;&lt;p&gt;Linux 内核还有一个反向路径过滤的防御机制，内核收到 &lt;code&gt;.1&lt;/code&gt; 发来的重定向包，但它会检查如果向这个地址发包，路径是否是收到包的网口，如果不符合或者路由不通就不更改，在受害者容器内进行关闭&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -w net.ipv4.conf.all.accept_redirects=1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -w net.ipv4.conf.all.secure_redirects=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -w net.ipv4.conf.all.rp_filter=0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;还是失败了，又把最开始的&lt;code&gt;.11&lt;/code&gt;添加回去，依旧不行&lt;/p&gt;
+&lt;p&gt;内核会校验包中的ICMP 序列号和受害者流量是否一样。正常情况下应该写一个新的脚本，持续监听受害者的 ICMP 包，提取 &lt;code&gt;id&lt;/code&gt; 和 &lt;code&gt;seq&lt;/code&gt;并发出重定向，但尝试&lt;code&gt;tcpdump -i eth0 icmp&lt;/code&gt;发现根本监听不到。这是由于 Docker 网桥的单播隔离特性，攻击者无法在不进行 ARP 欺骗的情况下监听到受害者的单播 ICMP 流量。说明实验确实无法正常完成&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;之前tcpdump能抓到是因为抓的是攻击者发给受害者的包，这次受害者并不是发给攻击者，所以抓不到了&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;中间人攻击&#34;&gt;中间人攻击
+&lt;/h2&gt;&lt;p&gt;攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改。&lt;/p&gt;
+&lt;p&gt;在目标主机上开启监听&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1

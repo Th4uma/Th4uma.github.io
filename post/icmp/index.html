@@ -278,9 +278,16 @@ unicode: "f6d2"
         <li><a href="#受害者">受害者</a></li>
         <li><a href="#攻击者">攻击者</a></li>
         <li><a href="#验证">验证</a></li>
+        <li><a href="#附排查过程">附：排查过程</a>
+          <ol>
+            <li><a href="#容器">容器</a></li>
+            <li><a href="#发包">发包</a></li>
+            <li><a href="#内核">内核</a></li>
+          </ol>
+        </li>
       </ol>
     </li>
-    <li><a href="#中间人攻击mitm">中间人攻击（MITM）</a></li>
+    <li><a href="#中间人攻击">中间人攻击</a></li>
     <li><a href="#实验中的关键点">实验中的关键点</a></li>
   </ol>
 </nav>
@@ -401,41 +408,47 @@ unicode: "f6d2"
 <div class="table-wrapper"><table>
   <thead>
       <tr>
-          <th>节点</th>
-          <th>IP 地址</th>
-          <th>作用说明</th>
+          <th><strong>节点</strong></th>
+          <th><strong>IP 地址</strong></th>
+          <th><strong>作用说明</strong></th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>受害者主机</td>
-          <td>10.9.0.5</td>
-          <td>发起正常网络访问的目标主机，路由表被攻击者篡改</td>
+          <td><strong>受害者主机</strong></td>
+          <td><code>10.9.0.5</code></td>
+          <td>攻击目标。初始路由指向 <code>.11</code></td>
       </tr>
       <tr>
-          <td>真实路由器</td>
-          <td>10.9.0.1</td>
-          <td>正常网络转发节点，作为初始网关</td>
+          <td><strong>真实路由器</strong></td>
+          <td><code>10.9.0.11</code></td>
+          <td>连接两个网段的实际节点。它同时拥有 <code>10.9.0.11</code> 和 <code>192.168.60.11</code> 两个 IP</td>
       </tr>
       <tr>
-          <td>恶意路由器</td>
-          <td>10.9.0.111</td>
-          <td>被 ICMP Redirect 指定的流量目的地，同时执行 MITM 攻击</td>
+          <td><strong>恶意路由器</strong></td>
+          <td><code>10.9.0.111</code></td>
+          <td>攻击者诱导流量去往的中间人节点</td>
       </tr>
       <tr>
-          <td>攻击者主机</td>
-          <td>10.9.0.105</td>
-          <td>伪造 ICMP Redirect 报文，并执行流量监听与篡改</td>
+          <td><strong>攻击者主机</strong></td>
+          <td><code>10.9.0.105</code></td>
+          <td>发送伪造 ICMP 重定向报文的节点</td>
       </tr>
       <tr>
-          <td>目标主机</td>
-          <td>192.168.60.5</td>
-          <td>受害者进行通信的主机</td>
+          <td><strong>目标主机</strong></td>
+          <td><code>192.168.60.5</code></td>
+          <td>位于另一个网段的通信目标</td>
+      </tr>
+      <tr>
+          <td><strong>Docker 网关</strong></td>
+          <td><code>10.9.0.1</code></td>
+          <td>Docker 虚拟网络的默认出口。在实验中通常不参与业务路由转发</td>
       </tr>
   </tbody>
 </table></div>
 <h2 id="icmp-重定向攻击">ICMP 重定向攻击
 </h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
+<p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击</p>
 <p><strong>攻击目标是修改受害者的路由缓存，让这个路由发往目标主机的流量途经恶意路由器</strong></p>
 <h3 id="受害者">受害者
 </h3><blockquote>
@@ -493,7 +506,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">victim_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">router_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">router_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.11&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">attacker_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.111&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">target_ip</span> <span class="o">=</span> <span class="s2">&#34;192.168.60.5&#34;</span>
 </span></span><span class="line"><span class="cl">
@@ -522,7 +535,7 @@ unicode: "f6d2"
 </h3><blockquote>
 <p>原本受害者访问目标主机时的路径为<code>受害者&gt;网关&gt;目标主机</code>，攻击成功后会变成<code>受害者&gt;攻击者&gt;目标主机</code></p>
 </blockquote>
-<p>攻击成功后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存</p>
+<p>攻击完成后，停止受害者机器上的 ping 命令，在受害者容器查看路由缓存</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -547,14 +560,143 @@ unicode: "f6d2"
 </div><ul>
 <li>第一行说明默认网关是10.9.0.1</li>
 <li>第二行说明10.9.0.x 网段就在本地，不需要经过网关，可以直接发送</li>
-<li>第三行说明访问 192.168.60.x 网段时不走默认网关，而是发给 10.9.0.11</li>
+<li>第三行说明访问 192.168.60.x 网段时走静态路由10.9.0.11</li>
 </ul>
-<p>说明路由已被修改，目标流量开始经过攻击者控制的节点。</p>
 <img src="4.png" style="width: 100%;" />
-<h2 id="中间人攻击mitm">中间人攻击（MITM）
-</h2><p>在路由被重定向后，攻击者已经处于通信路径中间，但默认情况下数据仍然是透明转发的，需要进一步介入数据处理流程。</p>
-<p>实验中直接在恶意路由器上对数据进行拦截和修改。</p>
-<p>在目标主机上开启监听：</p>
+<p>如果攻击成功，第三行应该显示的是10.9.0.111。攻击失败了，这是由于Docker中复杂的网络环境，以及现代Linux已经完全解决了这个漏洞，攻击会被拦截。因此手动添加路由进行模拟即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route add 192.168.60.5 via 10.9.0.111
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="附排查过程">附：排查过程
+</h3><h4 id="容器">容器
+</h4><p>查看容器信息，并没有问题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker ps -a
+</span></span><span class="line"><span class="cl">sudo docker exec malicious-router-10.9.0.111 ip addr show eth0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="5.png" style="width: 100%;" />
+<p>在发包的时候进行抓包，可以看到0a09006f中6f对应111，这里也没有问题</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 icmp -XX
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="6.png" style="width: 100%;" />
+<p>修改脚本中的攻击者ip为10.9.0.100，删除路由缓存后重新进行攻击，发现路由缓存没有变化，说明这条错误路由是写死在配置里的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route flush cache
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看<code>docker-compose.yml</code>，发现这一行，这说明受害者的默认路由被指向10.9.0.11，也就是刚刚输出的地址</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">victim:
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">   command: bash -c &#34;
+</span></span><span class="line"><span class="cl">                      ip route add 192.168.60.0/24 via 10.9.0.11 &amp;&amp;
+</span></span><span class="line"><span class="cl">                      tail -f /dev/null
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这一行说明真正的路由器其实是10.9.0.11，而不是10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Router:
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">        networks:
+</span></span><span class="line"><span class="cl">            net-10.9.0.0:
+</span></span><span class="line"><span class="cl">                ipv4_address: 10.9.0.11
+</span></span><span class="line"><span class="cl">            net-192.168.60.0:
+</span></span><span class="line"><span class="cl">                ipv4_address: 192.168.60.11
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="发包">发包
+</h4><p>再次进行抓包，看到<code>10.9.0.5 &gt; 192.168.60.5: ICMP echo request, id 0, seq 0, length 8</code>。这句话表示攻击报文中嵌套的原始数据包片段，声明受害者10.9.0.5正在向目标192.168.60.5发送一个8字节的Ping请求，内核通过核对这段嵌套信息与自身发出的真实流量是否一致，来决定是否接受路由重定向。这里说明发出的包是正常的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 -nn -vvv icmp
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="7.png" style="width: 100%;" />
+<p>删除受害者的静态路由，ping直接断掉，尝试发包依旧没有用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route del 192.168.60.0/24 via 10.9.0.11
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="8.png" style="width: 100%;" />
+<p>验证攻击包到底有没有真的作用在受害者的网卡上，受害者执行下面的命令，输出<code>13:40:45.647101 IP 10.9.0.11 &gt; 10.9.0.5: ICMP redirect 192.168.60.5 to host 10.9.0.111, length 36</code>说明一切正常</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 icmp -nn
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看受害者内核计数器，<code>ICMP messages failed</code>为0，<code>ICMP redirects received</code>数量很多，说明大概率是内核拒绝了请求</p>
+<img src="9.png" style="width: 100%;" />
+<h4 id="内核">内核
+</h4><p>Linux 内核还有一个反向路径过滤的防御机制，内核收到 <code>.1</code> 发来的重定向包，但它会检查如果向这个地址发包，路径是否是收到包的网口，如果不符合或者路由不通就不更改，在受害者容器内进行关闭</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl -w net.ipv4.conf.all.accept_redirects=1
+</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.conf.all.secure_redirects=0
+</span></span><span class="line"><span class="cl">sysctl -w net.ipv4.conf.all.rp_filter=0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>还是失败了，又把最开始的<code>.11</code>添加回去，依旧不行</p>
+<p>内核会校验包中的ICMP 序列号和受害者流量是否一样。正常情况下应该写一个新的脚本，持续监听受害者的 ICMP 包，提取 <code>id</code> 和 <code>seq</code>并发出重定向，但尝试<code>tcpdump -i eth0 icmp</code>发现根本监听不到。这是由于 Docker 网桥的单播隔离特性，攻击者无法在不进行 ARP 欺骗的情况下监听到受害者的单播 ICMP 流量。说明实验确实无法正常完成</p>
+<blockquote>
+<p>之前tcpdump能抓到是因为抓的是攻击者发给受害者的包，这次受害者并不是发给攻击者，所以抓不到了</p>
+</blockquote>
+<h2 id="中间人攻击">中间人攻击
+</h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改。</p>
+<p>在目标主机上开启监听</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1008,7 +1150,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">24</span> 
       篇 ，总计 
-      <span class="number-highlight">88.77</span> 
+      <span class="number-highlight">89.90</span> 
       k 字
   </div>
   <div>
