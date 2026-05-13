@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="反复横跳">
+<title>基于RISC-V架构的操作系统学习</title>
+
+<link rel='canonical' href='https://th4uma.github.io/post/risc-v/'>
+
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="基于RISC-V架构的操作系统学习">
+<meta property='og:description' content="反复横跳">
+<meta property='og:url' content='https://th4uma.github.io/post/risc-v/'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-13T19:17:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-13T19:17:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/risc.jpg' />
+<meta name="twitter:title" content="基于RISC-V架构的操作系统学习">
+<meta name="twitter:description" content="反复横跳"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/risc.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
+            <h2 class="site-description">Keep on Keeping on!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#前言">前言</a></li>
+    <li><a href="#环境">环境</a>
+      <ol>
+        <li><a href="#交叉编译工具链">交叉编译工具链</a></li>
+        <li><a href="#安装-qemu">安装 QEMU</a></li>
+        <li><a href="#进入系统">进入系统</a></li>
+      </ol>
+    </li>
+    <li><a href="#1-安装-dockerubuntu">1. 安装 Docker（Ubuntu）</a></li>
+    <li><a href="#2-加入权限避免一直-sudo">2. 加入权限（避免一直 sudo）</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#系统调用与中断">系统调用与中断</a></li>
+    <li><a href="#一先进入容器">一、先进入容器</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#1-创建-helloc">1. 创建 hello.c</a></li>
+    <li><a href="#2-编译用户程序">2. 编译用户程序</a></li>
+    <li><a href="#3-用-qemu-用户态运行">3. 用 QEMU 用户态运行</a></li>
+    <li><a href="#4-查看系统调用重点">4. 查看系统调用（重点）</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#1-清理构建很重要">1. 清理构建（很重要）</a></li>
+    <li><a href="#2-启动-os">2. 启动 OS</a></li>
+    <li><a href="#3-在-os-shell-里运行-hello">3. 在 OS shell 里运行 hello</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#linux--qemu-用户态">Linux + QEMU 用户态</a></li>
+    <li><a href="#你自己的-os">你自己的 OS</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#1-启动调试版-qemu">1. 启动调试版 QEMU</a></li>
+    <li><a href="#2-新开终端进入容器">2. 新开终端进入容器</a></li>
+    <li><a href="#3-常用-gdb-命令">3. 常用 GDB 命令</a></li>
+    <li><a href="#调试">调试</a></li>
+    <li><a href="#-第一部分系统调用实现全流程">🛠️ 第一部分：系统调用实现全流程</a>
+      <ol>
+        <li><a href="#1-静态注册建立编号映射">1. 静态注册：建立编号映射</a></li>
+        <li><a href="#2-内核实现跨越特权级的数据处理">2. 内核实现：跨越特权级的数据处理</a></li>
+        <li><a href="#3-编译集成配置-makefile">3. 编译集成：配置 Makefile</a></li>
+        <li><a href="#4-用户态调用触发陷阱">4. 用户态调用：触发陷阱</a></li>
+      </ol>
+    </li>
+    <li><a href="#-第二部分全维度排错指南-debug-ledger">🔍 第二部分：全维度排错指南 (Debug Ledger)</a>
+      <ol>
+        <li><a href="#1-预编译级头文件与标准库陷阱">1. 预编译级：头文件与标准库陷阱</a></li>
+        <li><a href="#2-编译级隐式声明错误">2. 编译级：隐式声明错误</a></li>
+        <li><a href="#3-链接级符号丢失与-makefile-权限">3. 链接级：符号丢失与 Makefile 权限</a></li>
+        <li><a href="#4-运行级指针解引用与类型转换">4. 运行级：指针解引用与类型转换</a></li>
+      </ol>
+    </li>
+    <li><a href="#-总结建议">💡 总结建议</a></li>
+    <li><a href="#-第一部分系统调用实现标准操作流程">🛠️ 第一部分：系统调用实现·标准操作流程</a>
+      <ol>
+        <li><a href="#1-静态注册层-entrysyscalltbl">1. 静态注册层 (<code>entry/syscall.tbl</code>)</a></li>
+        <li><a href="#2-内核实现层-srcsys_echoc">2. 内核实现层 (<code>src/sys_echo.c</code>)</a></li>
+        <li><a href="#3-用户接口层-userincludesyscallh">3. 用户接口层 (<code>user/include/syscall.h</code>)</a></li>
+        <li><a href="#4-测试构建层-usersrctest_echoc--makefile">4. 测试构建层 (<code>user/src/test_echo.c</code> &amp; <code>Makefile</code>)</a></li>
+      </ol>
+    </li>
+    <li><a href="#-第二部分深度排错指南-troubleshooting-ledger">🔍 第二部分：深度排错指南 (Troubleshooting Ledger)</a>
+      <ol>
+        <li><a href="#1-编译链接级环境与声明错误">1. 编译链接级：环境与声明错误</a></li>
+        <li><a href="#2-构建级镜像同步与权限错误">2. 构建级：镜像同步与权限错误</a></li>
+        <li><a href="#3-加载运行级execvp-failure-关键坑点">3. 加载运行级：<code>execvp failure</code> (关键坑点)</a></li>
+        <li><a href="#4-内核逻辑级指针解引用错误">4. 内核逻辑级：指针解引用错误</a></li>
+      </ol>
+    </li>
+    <li><a href="#-终极复盘心得">💡 终极复盘心得</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/risc-v/">
+                
+                    <img src="/images/cover/risc.jpg" loading="lazy" alt="Featured image of post 基于RISC-V架构的操作系统学习" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" >
+                操作系统
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/risc-v/">基于RISC-V架构的操作系统学习</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            反复横跳
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-05-13</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="前言">前言
+</h2><blockquote>
+<blockquote>
+<blockquote>
+<p>这次还是课程实验。第二次吐槽，这么有意思的事情居然被框在平台的题目评测上，认真写的欲望一下子就降低了，不过选题依旧有价值，还是自己好好研究一下吧</p>
+</blockquote>
+<p>以上是我曾经说出来的话。但当我经历明明实验完成了，评测程序一遍遍不通过，搞得我只好再来一次这种事，最终在配环境和运行这两个最简单的地方卡了整整两天，一共重来了6次。现在我只会说去你的应试教育</p>
+</blockquote>
+<p>对，上面的话是我在两小时前说出来的，但现在已经结束了配环境，开始第一个正式实验了。确实很有意思啊，我又反悔，决定进行记录了</p>
+</blockquote>
+<h2 id="环境">环境
+</h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
+<ul>
+<li>CPU：4 核</li>
+<li>内存：8GB</li>
+<li>硬盘：50GB</li>
+<li>网络：NAT模式</li>
+</ul>
+<p><img src="/post/arp/1.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="img"
+	
+	
+></p>
+<blockquote>
+<p>在 Ubuntu 上编译一堆 C + 汇编 → 变成 RISC-V 的内核 → 用 QEMU 模拟一台 RISC-V 机器 → 把你的内核跑起来</p>
+</blockquote>
+<p>安装依赖</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
+</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">cmake</span> <span class="n">ninja</span><span class="o">-</span><span class="n">build</span> \
+</span></span><span class="line"><span class="cl">    <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">libglib2</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpixman</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">dev</span> \
+</span></span><span class="line"><span class="cl">    <span class="n">gcc</span><span class="o">-</span><span class="n">riscv64</span><span class="o">-</span><span class="n">unknown</span><span class="o">-</span><span class="n">elf</span> <span class="n">gdb</span><span class="o">-</span><span class="n">multiarch</span>
+</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">mtools</span> <span class="n">dosfstools</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="交叉编译工具链">交叉编译工具链
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install gcc-riscv64-unknown-elf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">riscv64-unknown-elf-gcc -v
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装-qemu">安装 QEMU
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install qemu-system-misc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>测试：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">qemu-system-riscv64 --version
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="进入系统">进入系统
+</h3><p>操作系统运行在 QEMU 虚拟平台上，通过 make 构建生成内核与用户程序镜像。QEMU 模拟 RISC-V 硬件环境，执行 bootloader 后进入内核，最终加载用户程序执行。</p>
+<p>系统结构分为 user、kernel 和虚拟硬件三层，其中 user 程序通过系统调用访问内核服务。</p>
+<p>克隆好代码，进入代码文件夹，对源码进行编译</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x run-qemu.sh
+</span></span><span class="line"><span class="cl">./run-qemu.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="1-安装-dockerubuntu">1. 安装 Docker（Ubuntu）
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">sudo apt install -y docker.io
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动服务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl start docker
+</span></span><span class="line"><span class="cl">sudo systemctl enable docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>验证：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker --version
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="2-加入权限避免一直-sudo">2. 加入权限（避免一直 sudo）
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo usermod -aG docker $USER
+</span></span><span class="line"><span class="cl">newgrp docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="二导入实验镜像关键步骤">二、导入实验镜像（关键步骤）
+</h1><p>你老师给的是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kairos-lab-os-c-eh@v0.2.1.tar
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>假设你已经下载好：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">unzip kairos-lab-os-c-eh@v0.2.1.zip
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>导入镜像：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">docker</span> <span class="nb">load</span> <span class="o">-</span><span class="n">i</span> <span class="n">kairos</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">os</span><span class="o">-</span><span class="n">c</span><span class="o">-</span><span class="n">eh</span><span class="err">@</span><span class="n">v0</span><span class="o">.</span><span class="mf">2.1</span><span class="o">.</span><span class="n">tar</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看镜像：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker images
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="三启动实验容器核心环境">三、启动实验容器（核心环境）
+</h1><p>先建目录（用于代码映射）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mkdir -p ~/oslab
+</span></span><span class="line"><span class="cl">cd ~/oslab
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启动容器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker run -it --privileged --net=host \
+</span></span><span class="line"><span class="cl">-v ~/oslab:/root/oslab \
+</span></span><span class="line"><span class="cl">kairos-lab-os-c-eh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入后你会看到类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">root@localhost:/#
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="四检查工具链是否正常">四、检查工具链是否正常
+</h1><p>在容器里执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">riscv64-unknown-elf-gcc -v
+</span></span><span class="line"><span class="cl">qemu-system-riscv64 --version
+</span></span><span class="line"><span class="cl">eh --help
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>只要这三个正常，说明环境OK。</p>
+<hr>
+<h1 id="五拉取头歌实验代码你后面所有操作都在这里">五、拉取头歌实验代码（你后面所有操作都在这里）
+</h1><p>进入映射目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /root/oslab
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>复制你头歌给的链接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://git.educoder.net/xxxxx/xxxxx.git
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>克隆：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">git clone https://git.educoder.net/xxxxx/xxxxx.git
+</span></span><span class="line"><span class="cl">cd xxxxx
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="系统调用与中断">系统调用与中断
+</h2><h2 id="一先进入容器">一、先进入容器
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker run -it --privileged --net host \
+</span></span><span class="line"><span class="cl">-v ~/oslab:/root/oslab kairos-lab-os-c-eh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入后：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /root/oslab/你的项目目录
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="二体验-qemu-用户态模拟">二、体验 QEMU 用户态模拟
+</h1><p>这个最简单。</p>
+<hr>
+<h2 id="1-创建-helloc">1. 创建 hello.c
+</h2><p>进入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd user/src
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>创建：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vim hello.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>写入实验给的代码。</p>
+<hr>
+<h2 id="2-编译用户程序">2. 编译用户程序
+</h2><p>回到项目根目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">cd /root/oslab/项目目录
+</span></span><span class="line"><span class="cl">make user
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513160410032.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513160410032"
+	
+	
+></p>
+<hr>
+<h2 id="3-用-qemu-用户态运行">3. 用 QEMU 用户态运行
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">qemu-riscv64 build/user_prog/hello
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里调用的是：</p>
+<p>QEMU 的“用户态模拟”。</p>
+<p>本质是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">x86 Linux
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">QEMU翻译RISC-V指令
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">直接运行hello程序
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你应该看到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1) Open test.txt
+</span></span><span class="line"><span class="cl">2) Write Done
+</span></span><span class="line"><span class="cl">3) Open test.txt
+</span></span><span class="line"><span class="cl">4) Read content: Hello World!
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="4-查看系统调用重点">4. 查看系统调用（重点）
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">qemu-riscv64 -strace build/user_prog/hello
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你会看到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">openat(...)
+</span></span><span class="line"><span class="cl">write(...)
+</span></span><span class="line"><span class="cl">read(...)
+</span></span><span class="line"><span class="cl">close(...)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个非常重要。</p>
+<p>因为：</p>
+<blockquote>
+<p>后面你自己的 OS 必须表现得和 Linux 类似</p>
+</blockquote>
+<p>所以这个日志是“参考答案”。</p>
+<p>![屏幕截图 2026-05-13 160634](d:\Users\Thaumazein\Pictures\Screenshots\屏幕截图 2026-05-13 160634.png)</p>
+<hr>
+<h1 id="三运行你自己的操作系统">三、运行你自己的操作系统
+</h1><hr>
+<h2 id="1-清理构建很重要">1. 清理构建（很重要）
+</h2><p>实验文档已经强调了。</p>
+<p>每次切换：</p>
+<ul>
+<li>debug</li>
+<li>CPU数量</li>
+<li>配置参数</li>
+</ul>
+<p>之前都要：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="2-启动-os">2. 启动 OS
+</h2><blockquote>
+<p>遇到问题脚本没执行权限。</p>
+<p>直接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x run-qemu.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后再运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./run-qemu.sh debug=on
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果后面 <code>run-gdb.sh</code> 也报一样的问题，同样：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x run-gdb.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Linux 里从 Windows 复制、解压、git 拉下来的脚本，经常会丢失 executable 权限。</p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513160811391.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513160811391"
+	
+	
+></p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x run-qemu.sh
+</span></span><span class="line"><span class="cl">./run-qemu.sh debug=on
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里调用的是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">qemu-system-riscv64
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是“系统级模拟”。</p>
+<p>它不是运行单个程序，而是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">模拟整台RISC-V电脑
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>包括：</p>
+<ul>
+<li>CPU</li>
+<li>内存</li>
+<li>磁盘</li>
+<li>SBI</li>
+<li>virtio设备</li>
+</ul>
+<hr>
+<h2 id="3-在-os-shell-里运行-hello">3. 在 OS shell 里运行 hello
+</h2><p>进入 shell 后：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./hello
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你会看到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[DEBUG][SYSCALL...]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这些是你自己的 OS 输出的 syscall 日志。</p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513160925553.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513160925553"
+	
+	
+></p>
+<hr>
+<h1 id="四最关键的实验思想一定理解">四、最关键的实验思想（一定理解）
+</h1><p>你现在有两份日志：</p>
+<hr>
+<h2 id="linux--qemu-用户态">Linux + QEMU 用户态
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">openat
+</span></span><span class="line"><span class="cl">write
+</span></span><span class="line"><span class="cl">read
+</span></span><span class="line"><span class="cl">close
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="你自己的-os">你自己的 OS
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">syscall openat
+</span></span><span class="line"><span class="cl">syscall write
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<p>然后你对比：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Linux行为
+</span></span><span class="line"><span class="cl">vs
+</span></span><span class="line"><span class="cl">自己OS行为
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果不一致：</p>
+<ul>
+<li>syscall 参数错了</li>
+<li>返回值错了</li>
+<li>文件系统错了</li>
+<li>内存错了</li>
+</ul>
+<hr>
+<h1 id="五过滤-syscall-日志实验重点">五、过滤 syscall 日志（实验重点）
+</h1><p>编辑：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">src/kernel/syscall.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">debug(...)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>改成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">debug_if(strncmp(p-&gt;name, &#34;hello&#34;, 5) == 0,
+</span></span><span class="line"><span class="cl">    &#34;PID %d syscall %s = %ld from %#lx&#34;,
+</span></span><span class="line"><span class="cl">    p-&gt;pid,
+</span></span><span class="line"><span class="cl">    syscall_name(num),
+</span></span><span class="line"><span class="cl">    ret,
+</span></span><span class="line"><span class="cl">    epc);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>作用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">只打印 hello 进程 syscall
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>否则整个系统日志会爆炸。</p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513161211690.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513161211690"
+	
+	
+></p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513161344662.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513161344662"
+	
+	
+></p>
+<h1 id="六gdb-调试后面实验会频繁用">六、GDB 调试（后面实验会频繁用）
+</h1><hr>
+<h2 id="1-启动调试版-qemu">1. 启动调试版 QEMU
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x run-gdb.sh
+</span></span><span class="line"><span class="cl">./run-gdb.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>系统会停住等待 GDB。</p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513161518531.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513161518531"
+	
+	
+></p>
+<h2 id="2-新开终端进入容器">2. 新开终端进入容器
+</h2><p>启动：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gdb-multiarch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>连接：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">target remote localhost:26000
+</span></span><span class="line"><span class="cl">file build/kernel
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513162531984.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513162531984"
+	
+	
+></p>
+<hr>
+<blockquote>
+<p>提示找不到文件，原因是gdb没有进入容器而是在宿主机，进入容器的实验目录即可</p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513161956601.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513161956601"
+	
+	
+></p>
+<p><img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260513162406949.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260513162406949"
+	
+	
+></p>
+</blockquote>
+<h2 id="3-常用-gdb-命令">3. 常用 GDB 命令
+</h2><p>断点：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">b syscall
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>继续：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>单步：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">n
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看寄存器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">info registers
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看调用栈：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>遇到问题：评测不通过，命令改成eh &ndash;lab-id 2 -t解决</p>
+</blockquote>
+<h2 id="调试">调试
+</h2><p>先别急着改代码，先按实验流程看“它到底报什么错”。</p>
+<p>运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./run-qemu.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>把最后的报错贴出来。</p>
+<p>这个 lab 的思路不是乱找，而是：</p>
+<ul>
+<li>看错误</li>
+<li>顺着启动链找</li>
+<li>定位 init0 为什么没起来</li>
+</ul>
+<p>实验提示已经把范围缩很小了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">src/kernel/proc.c::user0_init
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明问题大概率在：</p>
+<ul>
+<li>init0 名字</li>
+<li>exec 加载</li>
+<li>文件镜像</li>
+<li>第一个用户进程创建</li>
+</ul>
+<p>这几个地方之一。</p>
+<p>先把 QEMU 输出给我。</p>
+<p>这个实验本质是在让你理解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">操作系统启动后，第一个用户进程是谁？
+</span></span><span class="line"><span class="cl">它是怎么被加载的？
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你现在看到的报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">😅 Emmmm, I think you&#39;re in the wrong place...
+</span></span><span class="line"><span class="cl">😅 Please fix: start &#39;init0&#39; instead of me...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">panic: init exiting
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>不是随机报错。</p>
+<p>这是有人故意把系统“第一个启动的用户程序”改错了。</p>
+<p>你现在一步一步看。</p>
+<p>系统启动过程其实是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">QEMU
+</span></span><span class="line"><span class="cl">→ 启动 kernel
+</span></span><span class="line"><span class="cl">→ kernel 初始化内存/页表/文件系统
+</span></span><span class="line"><span class="cl">→ 创建第一个用户进程
+</span></span><span class="line"><span class="cl">→ exec(某个程序)
+</span></span><span class="line"><span class="cl">→ 进入 shell
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里最关键的是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">“某个程序”到底是谁？
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>实验就是在这里动了手脚。</p>
+<p>你已经找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">void</span> <span class="nf">__user0_init</span><span class="p">(</span><span class="kt">proc_t</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">USER0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nf">exec</span><span class="p">(</span><span class="n">USER0</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="n">USER0</span> <span class="s">&#34; load&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重点来了。</p>
+<p>这里并不是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">exec</span><span class="p">(</span><span class="s">&#34;init0&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">exec</span><span class="p">(</span><span class="n">USER0</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">真正决定启动谁的是 USER0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以继续追。</p>
+<p>你用了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -R <span class="s2">&#34;define USER0&#34;</span> .
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;masquerade&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这就是真正 bug。</p>
+<p>正常应该是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;init0&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>但实验故意改成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="s">&#34;masquerade&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>于是启动过程变成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">kernel
+</span></span><span class="line"><span class="cl">→ exec(&#34;masquerade&#34;)
+</span></span><span class="line"><span class="cl">→ 文件系统里找 masquerade
+</span></span><span class="line"><span class="cl">→ 找不到 / 或运行错误
+</span></span><span class="line"><span class="cl">→ 打印提示
+</span></span><span class="line"><span class="cl">→ panic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为什么会打印：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Please fix: start &#39;init0&#39; instead of me
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因为这个“masquerade”程序本身就是故意放进去的假程序。</p>
+<p>它被启动后：</p>
+<ul>
+<li>不进入 shell</li>
+<li>不正常工作</li>
+<li>只打印一句提示</li>
+<li>然后退出</li>
+</ul>
+<p>而：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">init0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>才是真正系统初始化程序。</p>
+<p>Linux 里其实也有类似概念：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">PID 1 = init/systemd
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果它退出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">kernel panic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你这里看到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">panic: init exiting
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>就是同类逻辑。</p>
+<p>因为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">第一个用户进程不能退出
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>否则系统没人管理了。</p>
+<p>所以修复步骤：</p>
+<p>打开：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim include/param.h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;masquerade&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>改成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;init0&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>保存。</p>
+<p>然后重新编译：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
+</span></span><span class="line"><span class="cl">./run-qemu.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里必须 <code>make clean</code>。</p>
+<p>因为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">头文件变了
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>很多 <code>.o</code> 文件缓存可能不会完全重新生成。</p>
+<p>之后系统会：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">exec(&#34;init0&#34;)
+</span></span><span class="line"><span class="cl">→ 加载真正初始化程序
+</span></span><span class="line"><span class="cl">→ 创建 shell
+</span></span><span class="line"><span class="cl">→ 正常启动
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你可以把这个实验理解成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">“操作系统启动链分析”
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重点不是改那一行。</p>
+<p>而是理解：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">kernel 怎么进入用户态
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以及：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">第一个用户进程为什么重要
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为了让你对这次 RISC-V 系统调用实验有最深层的掌握，我将整个过程拆解为“底层逻辑与操作流程”<strong>以及</strong>“多维排错指南”。</p>
+<hr>
+<h2 id="-第一部分系统调用实现全流程">🛠️ 第一部分：系统调用实现全流程
+</h2><p>实现一个系统调用的核心在于：<strong>建立用户态与内核态的通信桥梁。</strong></p>
+<h3 id="1-静态注册建立编号映射">1. 静态注册：建立编号映射
+</h3><p>内核需要一个索引来识别用户到底想打哪个“电话”。</p>
+<ul>
+<li><strong>文件路径</strong>：<code>entry/syscall.tbl</code></li>
+<li><strong>操作</strong>：添加一行 <code>666 echo sys_echo</code>。</li>
+<li><strong>底层原理</strong>：构建脚本（如 <code>syscall_gen.sh</code>）会读取此表，生成一个函数指针数组。当 <code>a7</code> 寄存器为 666 时，内核会自动索引到 <code>sys_echo</code> 这个函数符号。</li>
+</ul>
+<h3 id="2-内核实现跨越特权级的数据处理">2. 内核实现：跨越特权级的数据处理
+</h3><p>这是实验的核心代码，必须处理<strong>地址空间隔离</strong>问题。</p>
+<ul>
+<li><strong>文件路径</strong>：<code>src/sys_echo.c</code></li>
+<li><strong>核心逻辑</strong>：</li>
+</ul>
+<p>C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;common.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;mm/vm.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;kernel/syscall.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;printf.h&#34; // 必须包含内核版 printf 声明
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">uint64_t sys_echo() {
+</span></span><span class="line"><span class="cl">    uint64_t user_ptr; // 用户空间的虚拟地址（只是一个数值）
+</span></span><span class="line"><span class="cl">    int len;
+</span></span><span class="line"><span class="cl">    char buf[128];     // 内核空间的临时缓冲区
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    // [Step A] 提取参数
+</span></span><span class="line"><span class="cl">    // 系统调用参数存在 trapframe-&gt;a0, a1 中。内核通过 argaddr 获取这些值。
+</span></span><span class="line"><span class="cl">    if (argaddr(0, &amp;user_ptr) &lt; 0 || argint(1, &amp;len) &lt; 0) {
+</span></span><span class="line"><span class="cl">        return -1; // 参数解析失败返回 -1
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    // [Step B] 安全防御 (Bound Check)
+</span></span><span class="line"><span class="cl">    // 永远不要信任用户传来的长度，防止溢出内核栈。
+</span></span><span class="line"><span class="cl">    if (len &lt; 0 || len &gt; 127) len = 127;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    // [Step C] 数据拷贝 (The Bridge)
+</span></span><span class="line"><span class="cl">    // 内核不能直接解引用 user_ptr，因为内核页表和用户页表不同。
+</span></span><span class="line"><span class="cl">    // copy_from_user 会查找用户页表，将数据安全地复制到内核 buf。
+</span></span><span class="line"><span class="cl">    if (copy_from_user(buf, user_ptr, len) &lt; 0) {
+</span></span><span class="line"><span class="cl">        return -1;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    buf[len] = &#39;\0&#39;; // 强制封口，确保字符串安全
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    // [Step D] 执行内核任务
+</span></span><span class="line"><span class="cl">    printf(&#34;%s\n&#34;, buf);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    return 0; // 返回值会存入用户态的 a0 寄存器
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="3-编译集成配置-makefile">3. 编译集成：配置 Makefile
+</h3><ul>
+<li><strong>文件路径</strong>：<code>src/Makefile</code></li>
+<li><strong>操作</strong>：添加 <code>obj-y += sys_echo.o</code>。</li>
+<li><strong>底层原理</strong>：Kbuild 系统会递归扫描该变量，将 <code>sys_echo.c</code> 编译并链接进 <code>built-in.o</code>，最终合并入内核镜像。</li>
+</ul>
+<h3 id="4-用户态调用触发陷阱">4. 用户态调用：触发陷阱
+</h3><ul>
+<li><strong>文件路径</strong>：<code>user/src/test_echo.c</code></li>
+<li><strong>操作</strong>：</li>
+</ul>
+<p>C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;syscall.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;string.h&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">int main() {
+</span></span><span class="line"><span class="cl">    char *msg = &#34;Hello Navi&#34;;
+</span></span><span class="line"><span class="cl">    // 汇编底层：li a7, 666; ecall
+</span></span><span class="line"><span class="cl">    syscall(666, msg, strlen(msg));
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="-第二部分全维度排错指南-debug-ledger">🔍 第二部分：全维度排错指南 (Debug Ledger)
+</h2><p>根据你的实验记录，我们将报错分为四个等级：</p>
+<h3 id="1-预编译级头文件与标准库陷阱">1. 预编译级：头文件与标准库陷阱
+</h3><ul>
+<li><strong>典型报错</strong>：<code>fatal error: stdio.h: No such file or directory</code></li>
+<li><strong>错误逻辑</strong>：在内核里使用 <code>#include &lt;stdio.h&gt;</code>。</li>
+<li><strong>深度解析</strong>：内核是<strong>裸机程序 (Bare-metal)</strong>，不运行在任何操作系统之上，所以没有标准库。</li>
+<li><strong>对策</strong>：删除所有标准库头文件。内核打印只能用框架提供的 <code>printf.h</code>。</li>
+</ul>
+<h3 id="2-编译级隐式声明错误">2. 编译级：隐式声明错误
+</h3><ul>
+<li><strong>典型报错</strong>：<code>error: implicit declaration of function 'printf' [-Werror=implicit-function-declaration]</code></li>
+<li><strong>错误逻辑</strong>：没包含 <code>printf.h</code> 就直接用了 <code>printf</code>。</li>
+<li><strong>深度解析</strong>：由于开启了 <code>-Werror</code>，编译器要求所有函数必须先声明后使用。</li>
+<li><strong>对策</strong>：包含正确的内核头文件。如果框架里的 <code>common.h</code> 没写好，就手动包含 <code>#include &quot;printf.h&quot;</code>。</li>
+</ul>
+<h3 id="3-链接级符号丢失与-makefile-权限">3. 链接级：符号丢失与 Makefile 权限
+</h3><ul>
+<li><strong>典型报错</strong>：<code>undefined reference to 'sys_echo'</code> 或 <code>E212: Can't open file for writing</code></li>
+<li><strong>错误逻辑</strong>：Makefile 没改对，或者改了没保存。</li>
+<li><strong>深度解析</strong>：链接器（ld）在生成最终镜像时，发现 <code>syscall_table</code> 里有一个叫 <code>sys_echo</code> 的坑位，但找不到对应的机器码实现。</li>
+<li><strong>对策</strong>：
+<ol>
+<li>检查 <code>src/Makefile</code> 里的文件名是否拼写正确（是 <code>.o</code> 不是 <code>.c</code>）。</li>
+<li>解决权限问题：使用 <code>chmod 666 src/Makefile</code> 赋予写权限，或在保存时使用 <code>:w!</code>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="4-运行级指针解引用与类型转换">4. 运行级：指针解引用与类型转换
+</h3><ul>
+<li><strong>典型报错</strong>：<code>passing argument 2 of 'copy_from_user' makes integer from pointer without a cast</code></li>
+<li><strong>错误逻辑</strong>：直接把 <code>char *</code> 传给 <code>copy_from_user</code>。</li>
+<li><strong>深度解析</strong>：在内核代码里，用户空间的地址只是一个符号，内核无法直接跳转到那个地址取值（硬件特权级限制）。<code>copy_from_user</code> 期望的是一个 <code>uint64_t</code> 类型的地址数值。</li>
+<li><strong>对策</strong>：使用 <code>uint64_t addr; argaddr(0, &amp;addr);</code> 拿到的 <code>addr</code> 才是正确的。</li>
+</ul>
+<hr>
+<h2 id="-总结建议">💡 总结建议
+</h2><p>这次实验你遇到的最大阻碍是<strong>内核开发的隔离感</strong>。记住：内核里没有“魔法”，所有用户态看起来理所应当的 <code>printf</code> 或指针访问，在内核里都要通过<strong>显式包含头文件</strong>和软件页表翻译（copy_from_user）来实现。</p>
+<p>现在，你可以放心运行 <code>./run-qemu.sh</code>，在 Shell 里输入 <code>test_echo</code> 见证你的第一个系统调用了。</p>
+<p>没有找到test——echo是因为写错文件夹</p>
+<p>太棒了，看到 <code>test_echo</code> 成功出现在 <code>ls</code> 列表中且编译通过，说明你的整个工具链（交叉编译器、CMake、磁盘镜像打包）已经完全跑通了。</p>
+<p>针对刚才“命令输入错误”导致 <code>execvp failure</code> 的这一关键环节，我已将其整理入最终版的排错与操作指南中。</p>
+<hr>
+<h2 id="-第一部分系统调用实现标准操作流程">🛠️ 第一部分：系统调用实现·标准操作流程
+</h2><p>实现一个系统调用是内核开发中典型的“纵向贯穿”任务，涉及以下四个关键层级：</p>
+<h3 id="1-静态注册层-entrysyscalltbl">1. 静态注册层 (<code>entry/syscall.tbl</code>)
+</h3><ul>
+<li><strong>动作</strong>：添加 <code>666 echo sys_echo</code>。</li>
+<li><strong>目的</strong>：分配系统调用号，并将号与内核函数符号关联。</li>
+</ul>
+<h3 id="2-内核实现层-srcsys_echoc">2. 内核实现层 (<code>src/sys_echo.c</code>)
+</h3><ul>
+<li><strong>动作</strong>：使用 <code>argaddr</code> 和 <code>argint</code> 获取寄存器参数，用 <code>copy_from_user</code> 拷贝内存，最后用 <code>printf</code> 打印。</li>
+<li><strong>注意</strong>：必须包含 <code>#include &quot;printf.h&quot;</code> 以满足内核环境下的函数声明需求。</li>
+</ul>
+<h3 id="3-用户接口层-userincludesyscallh">3. 用户接口层 (<code>user/include/syscall.h</code>)
+</h3><ul>
+<li><strong>动作</strong>：确保定义了对应的号（如果框架未自动同步）。</li>
+<li><strong>目的</strong>：让用户态程序知道 <code>666</code> 代表的是哪个功能。</li>
+</ul>
+<h3 id="4-测试构建层-usersrctest_echoc--makefile">4. 测试构建层 (<code>user/src/test_echo.c</code> &amp; <code>Makefile</code>)
+</h3><ul>
+<li><strong>动作</strong>：在 <code>user/Makefile</code>（或 CMakeLists）中添加 <code>test_echo</code> 目标，并编写调用 <code>syscall(666, ...)</code> 的测试代码。</li>
+</ul>
+<hr>
+<h2 id="-第二部分深度排错指南-troubleshooting-ledger">🔍 第二部分：深度排错指南 (Troubleshooting Ledger)
+</h2><p>我们将你踩过的坑按发生阶段重新归类，这能帮你建立起一套职业的内核调试思维。</p>
+<h3 id="1-编译链接级环境与声明错误">1. 编译链接级：环境与声明错误
+</h3><ul>
+<li><strong>报错</strong>：<code>implicit declaration of function 'printf'</code> 或 <code>undefined reference to 'printf'</code>。</li>
+<li><strong>根因</strong>：内核不包含标准 C 库。</li>
+<li><strong>对策</strong>：禁止包含 <code>&lt;stdio.h&gt;</code>；必须包含内核专属头文件（如 <code>&quot;printf.h&quot;</code>）。</li>
+</ul>
+<h3 id="2-构建级镜像同步与权限错误">2. 构建级：镜像同步与权限错误
+</h3><ul>
+<li><strong>报错</strong>：<code>ls</code> 找不到文件，或 <code>E212: Can't open file for writing</code>。</li>
+<li><strong>根因</strong>：Makefile 没改对、未保存或没有权限。</li>
+<li><strong>对策</strong>：
+<ul>
+<li>使用 <code>chmod</code> 或 <code>sudo</code> 解决权限。</li>
+<li><strong>核心准则</strong>：修改代码后，必须在根目录执行 <code>make clean &amp;&amp; make</code> 以强制重新生成磁盘镜像 <code>fs.img</code>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-加载运行级execvp-failure-关键坑点">3. 加载运行级：<code>execvp failure</code> (关键坑点)
+</h3><ul>
+<li><strong>现象</strong>：尝试运行程序时，Shell 报错 <code>execvp failure</code>。</li>
+<li><strong>根因 A（文件类型错）</strong>：输入了源码文件名（如 <code>./test_echo.c</code>）。内核无法将文本文件识别为 ELF 格式。</li>
+<li><strong>根因 B（路径不支持）</strong>：有些简易 Shell 不支持相对路径 <code>./</code>。</li>
+<li><strong>根因 C（格式损坏）</strong>：由于未 <code>make clean</code>，导致旧的二进制残留或链接脚本失效。</li>
+<li><strong>对策</strong>：
+<ul>
+<li><strong>检查输入</strong>：只输入程序名 <code>test_echo</code>，不要带 <code>.c</code>。</li>
+<li><strong>验证格式</strong>：确保它是经由 <code>riscv64-unknown-elf-gcc</code> 编译出的 ELF 文件。</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-内核逻辑级指针解引用错误">4. 内核逻辑级：指针解引用错误
+</h3><ul>
+<li><strong>报错</strong>：<code>passing argument 2 ... makes integer from pointer</code> 或内核 Panic。</li>
+<li><strong>根因</strong>：试图在内核里直接使用用户态传来的指针。</li>
+<li><strong>对策</strong>：参数必须用 <code>uint64_t</code> 接收地址值，并强制通过 <code>copy_from_user</code> 转换。</li>
+</ul>
+<hr>
+<h2 id="-终极复盘心得">💡 终极复盘心得
+</h2><blockquote>
+<p><strong>“在内核的世界里，文件名和文件是两回事，地址和指针是两回事。”</strong></p>
+</blockquote>
+<p>这次实验最深刻的教训在于：<strong>内核是非常死板的。</strong> 你输入 <code>test_echo.c</code> 时，内核忠实地去读文件头的 4 个字节，发现不是 <code>0x7f 0x45 0x4c 0x46</code> (ELF 的魔数)，于是果断报出 <code>execvp failure</code>。</p>
+<p>现在，去掉后缀，再次输入 <code>test_echo</code>，迎接你的成功输出吧！</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Thaumazein
+    </section>
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">25</span> 
+      篇 ，总计 
+      <span class="number-highlight">94.86</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-06-24'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+    <section class="powerby">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
+    </section>
+    
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
+
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        position: relative;
+        min-height: 100%;
+    }  
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+<script src="/js/renderer.js"></script>
+
+
+<script>
+  if (typeof RENDERER !== 'undefined') {
+    RENDERER.init();
+  }
+</script>
+
+<style>
+    .highlight {
+         
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://th4uma.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+ 
+  initCodeMoreBox();
+</script>
+
+
+<style>
+@font-face {
+  font-family: 'songti';
+  src: url('/font/songti.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu-R';
+  src: url('/font/Ubuntu-R.ttf') format('opentype');
+}
+
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
+
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
+  }
+
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
+  }
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
+</style>
+
+
+    </body>
+</html>

