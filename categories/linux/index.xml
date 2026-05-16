@@ -1170,7 +1170,8 @@
 &lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;禁用快速启动和安全启动&#34;&gt;禁用快速启动和安全启动
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区，可能导致NTFS分区处于未完全关闭状态，从而在Linux中挂载时报错甚至损坏数据，因此需要禁用快速启动。默认安装的Arch Linux未配置Secure Boot，因此需要关闭，或者自行额外配置&lt;/p&gt;
+&lt;p&gt;Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区，可能导致NTFS分区处于未完全关闭状态，从而在Linux中挂载时报错甚至损坏数据，因此需要禁用快速启动&lt;/p&gt;
+&lt;p&gt;默认安装的Arch Linux没有配置安全启动，因此需要同时关闭Windows的这个模式。如果需要用到，那么可以在安装后进行额外配置&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入&lt;code&gt;控制面板&amp;gt;系统和安全&amp;gt;电源选项&amp;gt;选择电源按钮的功能&lt;/code&gt;，点击&lt;code&gt;更改当前不可用的设置&lt;/code&gt;，然后取消勾选&lt;code&gt;启用快速启动&lt;/code&gt;，并将休眠关闭&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -1360,7 +1361,7 @@
 &lt;p&gt;&lt;strong&gt;启动分区 &lt;code&gt;/boot&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建&lt;code&gt;EFI 系统分区&lt;/code&gt;，通常挂载到 &lt;code&gt;/boot&lt;/code&gt;，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;交换分区 &lt;code&gt;/swap&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
-&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案&lt;/p&gt;
+&lt;p&gt;交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，可能几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;根分区 &lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
 &lt;p&gt;根分区用于存放操作系统及其所有文件。如果不单独划分 &lt;code&gt;/home&lt;/code&gt;，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;btrfs子卷&lt;/strong&gt;：&lt;/p&gt;

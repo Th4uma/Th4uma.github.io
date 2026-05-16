@@ -460,7 +460,8 @@ unicode: "f6d2"
 </div><img src="5.png" style="width: 100%;" />
 <h3 id="禁用快速启动和安全启动">禁用快速启动和安全启动
 </h3><blockquote>
-<p>Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区，可能导致NTFS分区处于未完全关闭状态，从而在Linux中挂载时报错甚至损坏数据，因此需要禁用快速启动。默认安装的Arch Linux未配置Secure Boot，因此需要关闭，或者自行额外配置</p>
+<p>Windows的快速启动本质是将关机改为休眠。如果双系统中的其一进入休眠状态，这时启动另一个系统，那么休眠系统中挂载的磁盘不能被挂载在另一个系统上，这样会导致文件系统错误。而如果 Windows 和 Linux 使用同一个 EFI 系统分区，可能导致NTFS分区处于未完全关闭状态，从而在Linux中挂载时报错甚至损坏数据，因此需要禁用快速启动</p>
+<p>默认安装的Arch Linux没有配置安全启动，因此需要同时关闭Windows的这个模式。如果需要用到，那么可以在安装后进行额外配置</p>
 </blockquote>
 <p>进入<code>控制面板&gt;系统和安全&gt;电源选项&gt;选择电源按钮的功能</code>，点击<code>更改当前不可用的设置</code>，然后取消勾选<code>启用快速启动</code>，并将休眠关闭</p>
 <img src="2.png" style="width: 100%;" />
@@ -650,7 +651,7 @@ unicode: "f6d2"
 <p><strong>启动分区 <code>/boot</code></strong>：</p>
 <p>这是存放启动程序和内核文件的分区。在 UEFI 模式下，必须创建<code>EFI 系统分区</code>，通常挂载到 <code>/boot</code>，建议分配1G。在 BIOS 模式下，可以直接将启动文件存放在根分区中，通常不需要单独分区。如果是双系统安装，可以使用 Windows 的 EFI 分区，但 Windows 的 EFI 分区通常很小（100MB），可能不够用，并且 Windows 更新可能会修改 EFI 引导项，导致默认启动项被覆盖。因此更好的方法是为 Linux 创建单独的 EFI 分区</p>
 <p><strong>交换分区 <code>/swap</code></strong>：</p>
-<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，则几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案</p>
+<p>交换分区类似于 Linux 的虚拟内存，当物理内存不足时，系统会使用它来存储暂时不活跃的数据。如果物理内存充足，可能几乎用不到swap。这个分区不是必须的，交换文件也可以作为替代方案</p>
 <p><strong>根分区 <code>/</code></strong>：</p>
 <p>根分区用于存放操作系统及其所有文件。如果不单独划分 <code>/home</code>，用户数据也会存放在根分区。建议为根分区分配至少 20GB，根据需求和剩余空间进行调整</p>
 <p><strong>btrfs子卷</strong>：</p>
@@ -2060,7 +2061,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">94.86</span> 
+      <span class="number-highlight">93.02</span> 
       k 字
   </div>
   <div>
