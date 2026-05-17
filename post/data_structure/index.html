@@ -370,7 +370,8 @@ unicode: "f6d2"
           <ol>
             <li><a href="#二叉树">二叉树</a></li>
             <li><a href="#dfs">DFS</a></li>
-            <li><a href="#树的重心">树的重心</a></li>
+            <li><a href="#邻接表">邻接表</a></li>
+            <li><a href="#树的质心">树的质心</a></li>
             <li><a href="#二叉搜索树">二叉搜索树</a></li>
           </ol>
         </li>
@@ -411,6 +412,7 @@ unicode: "f6d2"
         <li><a href="#d7">d7</a></li>
         <li><a href="#d8">d8</a></li>
         <li><a href="#d9">d9</a></li>
+        <li><a href="#after">after</a></li>
       </ol>
     </li>
   </ol>
@@ -3375,8 +3377,57 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="树的重心">树的重心
-</h4><p>树的重心也就是树上某一个节点，使其他节点到这个节点的加权距离最小，增加一个树的节点，重心最多移动一个位置</p>
+</div><h4 id="邻接表">邻接表
+</h4><p>用于记录两个点之间有边连接，在图中非常常见。一般用c++的vector实现</p>
+<p>需要引用vector的头文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>定义一个数组记录每个节点的连接状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">adj</span><span class="p">[</span><span class="mi">100001</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>主要实现，原理就是输入两个节点，分别将数组中这两个节点对应的数组中加入另一个节点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">tree</span><span class="p">(</span><span class="kt">int</span> <span class="n">u</span><span class="p">,</span><span class="kt">int</span> <span class="n">v</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="n">push_back</span><span class="p">(</span><span class="n">u</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用时只需要遍历某个节点的所有相邻节点即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="nl">v</span><span class="p">:</span><span class="n">adj</span><span class="p">[</span><span class="n">sy</span><span class="p">]){</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="树的质心">树的质心
+</h4><p>树的质心也就是树上某一个节点，使其他节点到这个节点的距离最小，增加一个树的叶节点，重心最多移动一个位置。实现它有两种方法</p>
+<p><strong>暴力</strong>：</p>
 <p>计算距离，从某个节点出发遍历所有节点，然后将每个节点的距离加起来</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3430,6 +3481,57 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">ans</span><span class="o">&lt;</span><span class="n">aaa</span><span class="p">)</span> <span class="n">aaa</span><span class="o">=</span><span class="n">ans</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">l</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="n">a</span><span class="p">].</span><span class="n">r</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>换根DP</strong>：</p>
+<p>首先计算出根节点的距离，和所有节点的子树大小加一</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">lon</span><span class="p">(</span><span class="kt">int</span> <span class="n">sy</span><span class="p">,</span><span class="kt">int</span> <span class="n">way</span><span class="p">,</span><span class="kt">int</span> <span class="n">f</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">sy</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ans</span><span class="o">+=</span><span class="n">way</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="nl">v</span><span class="p">:</span><span class="n">adj</span><span class="p">[</span><span class="n">sy</span><span class="p">]){</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">v</span><span class="o">==</span><span class="n">f</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">lon</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">way</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">sy</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size</span><span class="o">+=</span><span class="n">sizee</span><span class="p">[</span><span class="n">v</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sizee</span><span class="p">[</span><span class="n">sy</span><span class="p">]</span><span class="o">=</span><span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从根节点开始遍历整棵树。如果节点向下移动一位，那么新节点的子树和它本身的距离减一，其他节点距离加一。利用这个规律，可以得到下一个节点对应的距离是当前节点的距离减去下一个节点的sizee，再加上总结点数n减去sizee，也就是<code>as-sizee[v]*2+n</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">sy</span><span class="p">,</span><span class="kt">int</span> <span class="n">as</span><span class="p">,</span><span class="kt">int</span> <span class="n">f</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">sy</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="nl">v</span><span class="p">:</span><span class="n">adj</span><span class="p">[</span><span class="n">sy</span><span class="p">]){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">v</span><span class="o">==</span><span class="n">f</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">dfs</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">as</span><span class="o">-</span><span class="n">sizee</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="n">n</span><span class="p">,</span><span class="n">sy</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -4711,9 +4813,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="p1395-会议">P1395 会议
-</h4><p>又是一道树的重心题目</p>
+</h4><p>又是一道树的重心题目，这回重点理解了邻接表存储，然后把之前的暴力搜索优化了一些</p>
 <blockquote>
-<p>这次在读入树的部分出了问题。一直以来我的想法是先输入的节点为父，后输入为子，或者值更小的为父，更大的为子，但实际上输入只代表两个节点之间有边连接</p>
+<p>在读入树的部分出了问题。一直以来我的想法是先输入的节点为父，后输入为子，或者值更小的为父，更大的为子，但实际上输入只代表两个节点之间有边连接</p>
 <details>
 <summary><i>点击查看错误代码</i></summary>
 <div class="highlight"><div class="chroma">
@@ -4755,9 +4857,111 @@ unicode: "f6d2"
 </div></blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;algorithm&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">ansy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">adj</span><span class="p">[</span><span class="mi">100001</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="kt">long</span> <span class="kt">long</span> <span class="n">sizee</span><span class="p">[</span><span class="mi">100001</span><span class="p">],</span><span class="n">ans</span><span class="p">,</span><span class="n">anss</span><span class="o">=</span><span class="mi">10000000000000000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">tree</span><span class="p">(</span><span class="kt">int</span> <span class="n">u</span><span class="p">,</span><span class="kt">int</span> <span class="n">v</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">].</span><span class="nf">push_back</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">].</span><span class="nf">push_back</span><span class="p">(</span><span class="n">u</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">lon</span><span class="p">(</span><span class="kt">int</span> <span class="n">sy</span><span class="p">,</span><span class="kt">int</span> <span class="n">way</span><span class="p">,</span><span class="kt">int</span> <span class="n">f</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">sy</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ans</span><span class="o">+=</span><span class="n">way</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="nl">v</span><span class="p">:</span><span class="n">adj</span><span class="p">[</span><span class="n">sy</span><span class="p">]){</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">v</span><span class="o">==</span><span class="n">f</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">lon</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">way</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">sy</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">size</span><span class="o">+=</span><span class="n">sizee</span><span class="p">[</span><span class="n">v</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sizee</span><span class="p">[</span><span class="n">sy</span><span class="p">]</span><span class="o">=</span><span class="n">size</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">sy</span><span class="p">,</span><span class="kt">int</span> <span class="n">as</span><span class="p">,</span><span class="kt">int</span> <span class="n">f</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">sy</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">as</span><span class="o">&lt;</span><span class="n">anss</span><span class="p">)</span> <span class="n">anss</span><span class="o">=</span><span class="n">as</span><span class="p">,</span><span class="n">ansy</span><span class="o">=</span><span class="n">sy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">as</span><span class="o">==</span><span class="n">anss</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">ansy</span><span class="o">&gt;</span><span class="n">sy</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ansy</span><span class="o">=</span><span class="n">sy</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="nl">v</span><span class="p">:</span><span class="n">adj</span><span class="p">[</span><span class="n">sy</span><span class="p">]){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">v</span><span class="o">==</span><span class="n">f</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">dfs</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">as</span><span class="o">-</span><span class="n">sizee</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="o">+</span><span class="n">n</span><span class="p">,</span><span class="n">sy</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d%d&#34;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">tree</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">lon</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">dfs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ans</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">ansy</span><span class="p">,</span><span class="n">anss</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="图">图
 </h2><h3 id="基础知识-5">基础知识
@@ -4783,6 +4987,8 @@ unicode: "f6d2"
 </h3><p>树的题型是真的多，已经是第三天了，还是能见到新题型。每次见到新题型我就会选择查看题解来掌握算法，最后靠大模型的少量辅助自己写出来。一直重复这种模式导致我的心有点虚，不知道是不是真的学会了。今天学习时间不多，只写完一道半题目，二叉搜索树实在有点难</p>
 <h3 id="d9">d9
 </h3><p>二叉搜索树太难，卡了两天还是没法靠自己写出来，只能了解了一下原理，靠大模型辅助写完了，学力竭了。这三天难度太高，挫败感太强，学习意愿和效率严重下降</p>
+<h3 id="after">after
+</h3><p>回学校了，进入了零散学习的状态，效率极差，因为有作业和课程，还有马上截止的实验，所以一直没怎么学，一周才写完一道题。而且学的特别难受，经常是写几句就要下课了，我只好停下来。之后还要优先学操作系统，也不知道最后留给数据结构的时间有多少</p>
 
 </section>
 
@@ -5050,7 +5256,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">93.02</span> 
+      <span class="number-highlight">96.05</span> 
       k 字
   </div>
   <div>

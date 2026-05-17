@@ -280,37 +280,45 @@ unicode: "f6d2"
         <li><a href="#源码结构">源码结构</a></li>
       </ol>
     </li>
-    <li><a href="#调试与运行">调试与运行</a>
+    <li><a href="#运行与调试">运行与调试</a>
       <ol>
         <li><a href="#qemu">QEMU</a>
           <ol>
             <li><a href="#系统级模拟">系统级模拟</a></li>
             <li><a href="#用户级模拟">用户级模拟</a></li>
+            <li><a href="#对比">对比</a></li>
           </ol>
         </li>
-        <li><a href="#查看-linux-syscall-日志">查看 Linux syscall 日志</a></li>
-        <li><a href="#在自己的操作系统中运行程序">在自己的操作系统中运行程序</a></li>
-        <li><a href="#syscall-日志过滤">syscall 日志过滤</a></li>
-        <li><a href="#gdb-调试">GDB 调试</a></li>
+        <li><a href="#gdb-调试">GDB 调试</a>
+          <ol>
+            <li><a href="#启动">启动</a></li>
+            <li><a href="#实战">实战</a></li>
+          </ol>
+        </li>
         <li><a href="#踩坑记录">踩坑记录</a></li>
       </ol>
     </li>
     <li><a href="#系统调用">系统调用</a>
       <ol>
-        <li><a href="#系统调用的本质">系统调用的本质</a></li>
-        <li><a href="#注册系统调用号">注册系统调用号</a></li>
-        <li><a href="#实现系统调用">实现系统调用</a></li>
-        <li><a href="#系统调用实现逻辑">系统调用实现逻辑</a></li>
-        <li><a href="#编译进内核">编译进内核</a></li>
-        <li><a href="#编写测试程序">编写测试程序</a></li>
-        <li><a href="#重新编译">重新编译</a></li>
-        <li><a href="#运行测试">运行测试</a></li>
-        <li><a href="#遇到问题printf-报错">遇到问题：printf 报错</a></li>
-        <li><a href="#遇到问题undefined-reference-to-sys_echo">遇到问题：undefined reference to sys_echo</a></li>
-        <li><a href="#遇到问题copy_from_user-类型错误">遇到问题：copy_from_user 类型错误</a></li>
-        <li><a href="#遇到问题execvp-failure">遇到问题：execvp failure</a></li>
+        <li><a href="#基础调用">基础调用</a>
+          <ol>
+            <li><a href="#调用表">调用表</a></li>
+            <li><a href="#实现">实现</a></li>
+            <li><a href="#测试">测试</a></li>
+          </ol>
+        </li>
+        <li><a href="#trace-系统调用">trace 系统调用</a></li>
       </ol>
     </li>
+    <li><a href="#pcb-状态扩展">PCB 状态扩展</a></li>
+    <li><a href="#sys_trace-实现">sys_trace 实现</a></li>
+    <li><a href="#syscall-分发埋点">syscall 分发埋点</a></li>
+    <li><a href="#fork-状态继承">fork 状态继承</a>
+      <ol>
+        <li><a href="#踩坑记录-1">踩坑记录</a></li>
+      </ol>
+    </li>
+    <li><a href="#待整理">待整理</a></li>
   </ol>
 </nav>
         </div>
@@ -424,16 +432,10 @@ unicode: "f6d2"
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
-</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">cmake</span> <span class="n">ninja</span><span class="o">-</span><span class="n">build</span> \
-</span></span><span class="line"><span class="cl">    <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">libglib2</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpixman</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">dev</span> \
-</span></span><span class="line"><span class="cl">    <span class="n">gcc</span><span class="o">-</span><span class="n">riscv64</span><span class="o">-</span><span class="n">unknown</span><span class="o">-</span><span class="n">elf</span> <span class="n">gdb</span><span class="o">-</span><span class="n">multiarch</span>
-</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">mtools</span> <span class="n">dosfstools</span>
+</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">cmake</span> <span class="n">ninja</span><span class="o">-</span><span class="n">build</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">libglib2</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpixman</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span><span class="o">-</span><span class="n">riscv64</span><span class="o">-</span><span class="n">unknown</span><span class="o">-</span><span class="n">elf</span> <span class="n">gdb</span><span class="o">-</span><span class="n">multiarch</span> <span class="n">mtools</span> <span class="n">dosfstools</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Ububtu的架构是 x86_64，采用复杂指令集，一般用于普通PC程序开发，而实验中使用的操作系统是 RISC-V，采用精简指令集，一般用于嵌入式开发和操作系统内核构建。x86 CPU 不能直接执行 RISC-V 的机器码，所以不能用系统默认的 gcc 编译。这里我们需要用到交叉编译，也就是在 x86_64 架构的机器上，生成 RISC-V 的 ELF 程序，需要安装专门的 RISC-V 工具链</p>
@@ -528,22 +530,15 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl">kairos-lab-os-c-eh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入映射目录</p>
+</div><p>进入映射目录并克隆实验仓库</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /root/oslab
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>克隆实验仓库：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone 仓库URL
+</span></span><span class="line"><span class="cl">git clone 仓库URL
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="源码结构">源码结构
@@ -597,12 +592,12 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="err">└──</span> <span class="n">src</span>          <span class="c1"># 源文件目录（每一个源文件对应一个二进制可执行文件，在构建后被拷贝到文件镜像中）</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="调试与运行">调试与运行
+</div><h2 id="运行与调试">运行与调试
 </h2><h3 id="qemu">QEMU
-</h3><p>QEMU是一个开源的虚拟机软件。作用是在主机操作系统上通过运行虚拟机来运行其他操作系统。提供两种模拟方式，分别是系统级模拟与用户级模拟</p>
+</h3><p>QEMU 是一个开源的模拟器与虚拟化工具，可以在一种架构的主机上模拟另一种架构的运行环境。既能模拟完整计算机硬件来运行操作系统，也能单独运行异构架构的用户程序</p>
 <h4 id="系统级模拟">系统级模拟
 </h4><blockquote>
-<p>类似真机模拟，它模拟的是整台 RISC-V 计算机。系统级模拟直接模拟硬件行为，进行操作就是直接操纵硬件设施，这会让开发与调试更方便</p>
+<p>类似真机模拟，它模拟的是整台计算机的硬件环境。操作系统会认为自己正在真实硬件上运行，这会让开发与调试更方便</p>
 </blockquote>
 <p>第一次运行需要添加执行权限</p>
 <div class="highlight"><div class="chroma">
@@ -613,7 +608,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chmod +x run-qemu.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>然后启动，这里实际调用的是<code>qemu-system-riscv64</code></p>
+</div><p>启动QEMU，这里实际调用的是<code>qemu-system-riscv64</code>，<code>system</code>表示系统级模拟，<code>riscv64</code>表示模拟的是 64 位 RISC-V 架构</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -622,29 +617,123 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./run-qemu.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="用户级模拟">用户级模拟
-</h4><blockquote>
-<p>除了运行整个操作系统，还可以单独运行用户程序。用户级模拟就是给单个程序模拟了一个操作系统环境，让原本不能在此架构上运行的程序也可以运行</p>
-</blockquote>
-<p>进入用户程序目录：</p>
+</div><img src="1.png" style="width: 90%;" />
+<p>打开源代码根目录下的<code>Makefile</code>文件，找到QEMU的配置，可以看到这里写的是 QEMU 的执行参数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">QEMU</span> <span class="o">=</span> <span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">riscv64</span>
+</span></span><span class="line"><span class="cl"><span class="n">QEMUOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">machine</span> <span class="n">virt</span> <span class="o">-</span><span class="n">bios</span> <span class="n">bootloader</span><span class="o">/</span><span class="n">sbi</span><span class="o">-</span><span class="n">qemu</span> <span class="o">-</span><span class="n">kernel</span> <span class="o">$</span><span class="p">(</span><span class="n">BUILD_ROOT</span><span class="p">)</span><span class="o">/</span><span class="n">kernel</span> <span class="o">-</span><span class="n">m</span> <span class="mi">128</span><span class="n">M</span> <span class="o">-</span><span class="n">smp</span> <span class="o">$</span><span class="p">(</span><span class="n">CPUS</span><span class="p">)</span> <span class="o">-</span><span class="n">nographic</span>
+</span></span><span class="line"><span class="cl"><span class="n">QEMUOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">drive</span> <span class="n">file</span><span class="o">=$</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">img</span><span class="p">),</span><span class="k">if</span><span class="o">=</span><span class="n">none</span><span class="p">,</span><span class="n">format</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span><span class="n">id</span><span class="o">=</span><span class="n">x0</span>
+</span></span><span class="line"><span class="cl"><span class="n">QEMUOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">global</span> <span class="n">virtio</span><span class="o">-</span><span class="n">mmio</span><span class="o">.</span><span class="n">force</span><span class="o">-</span><span class="n">legacy</span><span class="o">=</span><span class="bp">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">QEMUOPTS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">device</span> <span class="n">virtio</span><span class="o">-</span><span class="n">blk</span><span class="o">-</span><span class="n">device</span><span class="p">,</span><span class="n">drive</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span><span class="n">bus</span><span class="o">=</span><span class="n">virtio</span><span class="o">-</span><span class="n">mmio</span><span class="o">-</span><span class="n">bus</span><span class="o">.</span><span class="mi">0</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>-machine virt</code>：指定 QEMU 模拟的硬件平台</li>
+<li><code>-bios bootloader/sbi-qemu</code>：加载 rustSBI 作为 bootloader</li>
+<li><code>-kernel $(BUILD_ROOT)/kernel</code>：指定加载的内核镜像</li>
+<li><code>-m 128M</code>：分配 128MB 内存</li>
+<li><code>-smp $(CPUS)</code>：指定 CPU 核心数量</li>
+<li><code>-drive file=$(fs.img)</code>：挂载文件系统镜像</li>
+</ul>
+<h4 id="用户级模拟">用户级模拟
+</h4><blockquote>
+<p>用户级模拟不会模拟完整硬件，只模拟用户程序运行所需的 CPU 执行环境。QEMU 会翻译不同架构的指令，然后将程序的系统调用转发给宿主机。这会让快速验证程序行为更方便</p>
+</blockquote>
+<p>进入用户程序目录，创建<code>hello.c</code>，之后要进行模拟的就是这个程序</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> user/src
+</span></span><span class="line"><span class="cl">vim hello.c
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>创建 hello.c：</p>
+</div><p>这个程序实现了对<code>test.txt</code>的创建、打开、写入、读出指定的字符串</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim hello.c
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;stdio.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;string.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;unistd.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;stdlib.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// The string to be written
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">txt</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;Hello World!</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Read Buffer
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// File descriptor &amp; tmp
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Create &amp; Open file
+</span></span></span><span class="line"><span class="cl">    <span class="n">fd</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="s">&#34;test.txt&#34;</span><span class="p">,</span> <span class="n">O_CREATE</span><span class="o">|</span><span class="n">O_RDWR</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">fd</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;1) Open test.txt</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Write file
+</span></span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nf">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">txt</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;2) Write Done</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Close file
+</span></span></span><span class="line"><span class="cl">    <span class="nf">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// re-open file
+</span></span></span><span class="line"><span class="cl">    <span class="n">fd</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="s">&#34;test.txt&#34;</span><span class="p">,</span> <span class="n">O_RDONLY</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">fd</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;3) Open test.txt</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Read file
+</span></span></span><span class="line"><span class="cl">    <span class="n">n</span> <span class="o">=</span> <span class="nf">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">assert</span><span class="p">(</span><span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">puts</span><span class="p">(</span><span class="s">&#34;4) Read content: &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">write</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Close file
+</span></span></span><span class="line"><span class="cl">    <span class="nf">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>然后返回项目根目录编译：</p>
+</div><p>返回项目根目录，用<code>make user</code>交叉编译这个程序。编译的所有结果在<code>build/</code>下，构建的可执行二进制格式文件在<code>build/user_prog</code>下</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -655,7 +744,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">make user
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>之后使用：</p>
+</div><img src="9.png" style="width: 90%;" />
+<p>调用 QEMU 用户级模拟</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -664,42 +754,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-riscv64 build/user_prog/hello
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里调用的是 QEMU 用户态模拟。</p>
-<p>操作系统运行在 QEMU 虚拟平台上，通过 make 构建生成内核与用户程序镜像。QEMU 模拟 RISC-V 硬件环境，执行 bootloader 后进入内核，最终加载用户程序执行。</p>
-<p>本质上是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">x86 Linux
-</span></span><span class="line"><span class="cl">↓
-</span></span><span class="line"><span class="cl">QEMU翻译RISC-V指令
-</span></span><span class="line"><span class="cl">↓
-</span></span><span class="line"><span class="cl">直接运行hello程序
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>程序运行后可以看到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">1) Open test.txt
-</span></span><span class="line"><span class="cl">2) Write Done
-</span></span><span class="line"><span class="cl">3) Open test.txt
-</span></span><span class="line"><span class="cl">4) Read content: Hello World!
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="查看-linux-syscall-日志">查看 Linux syscall 日志
-</h3><p>执行：</p>
+</div><p>可以看到如下输出，也能在项目根目录下找到对应的<code>test.txt</code></p>
+<img src="2.png" style="width: 90%;" />
+<p>给 QEMU 传递<code>-strace</code>参数来输出程序运行过程中产生的系统调用日志</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -708,25 +765,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-riscv64 -strace build/user_prog/hello
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">openat(...)
-</span></span><span class="line"><span class="cl">write(...)
-</span></span><span class="line"><span class="cl">read(...)
-</span></span><span class="line"><span class="cl">close(...)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个日志很重要。</p>
-<p>因为后面自己的操作系统实现 syscall 时，行为应该尽量和 Linux 保持一致。</p>
-<h3 id="在自己的操作系统中运行程序">在自己的操作系统中运行程序
-</h3><p>启动系统：</p>
+</div><img src="3.png" style="width: 90%;" />
+<h4 id="对比">对比
+</h4><blockquote>
+<p>这里需要对比 QEMU 用户模拟的日志和系统模拟的日志，这是为了之后调试可以通过对比两份日志的差异，方便的看出来哪里出现问题</p>
+</blockquote>
+<p>使用<code>make clean</code>来清除构建，然后启动系统的debug模式</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -737,7 +781,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">./run-qemu.sh <span class="nv">debug</span><span class="o">=</span>on
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入 shell 后执行：</p>
+</div><p>进入 shell 后运行程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -746,37 +790,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./hello
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">[DEBUG][SYSCALL...]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这些日志是自己写的内核输出的 syscall 调试信息。</p>
-<h3 id="syscall-日志过滤">syscall 日志过滤
-</h3><p>默认情况下系统调用日志会非常多。</p>
-<p>修改：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">src/kernel/syscall.c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>找到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">debug</span><span class="p">(...)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>改为：</p>
+</div><p>可以看到非常多的日志输出，这些日志是内核输出的 syscall 调试信息。为了解决日志过多，找不到需要的日志这个问题，可以修改<code>src/kernel/syscall.c</code>这个文件</p>
+<p><code>Ctrl + a</code> ，<code>x</code>退出QEMU，找到<code>syscall</code>函数，修改<code>debug</code>为<code>debug_if</code>，并指定过滤条件，作用是只打印 hello 进程的 syscall</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -795,18 +810,29 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="n">epc</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>作用是：</p>
+</div><p>重新清除构建并启动系统，可以看到下面的日志</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">只打印 hello 进程的 syscall
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
+</span></span><span class="line"><span class="cl">chmod +x run-qemu.sh
+</span></span><span class="line"><span class="cl">./run-qemu.sh debug=on
+</span></span><span class="line"><span class="cl">./hello
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>否则日志会被整个系统刷满。</p>
+</div><img src="4.png" style="width: 90%;" />
+<p>可以注意到这里的日志和上一步用户级模拟输出的日志本质上是一样的。在之后的开发中，因为 QEMU 用户级模拟最终还是依赖宿主 Linux 来处理 syscall，因此可以作为基准，和自己开发的系统中生成的日志进行对比，不一样的地方就是需要修改的地方</p>
+<blockquote>
+<p>注意：每次修改构建参数之前都要执行<code>make clean</code>，否则可能出现旧缓存导致的错误</p>
+</blockquote>
 <h3 id="gdb-调试">GDB 调试
-</h3><p>启动调试版 QEMU：</p>
+</h3><h4 id="启动">启动
+</h4><p>启动调试版 QEMU，执行后系统会暂停等待 GDB 连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -817,8 +843,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">./run-gdb.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>系统会暂停等待 GDB 连接。</p>
-<p>新开终端进入容器：</p>
+</div><img src="10.png" style="width: 90%;" />
+<p>新开一个终端，进入容器中的实验目录，然后启动GDB</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -827,7 +853,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gdb-multiarch
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>连接：</p>
+</div><p>进行连接，成功后 GDB 就接管了 QEMU 里的 CPU</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -838,66 +864,74 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">file build/kernel
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>常用命令：</p>
-<p>断点：</p>
+</div><img src="6.png" style="width: 90%;" />
+<p><strong>常用命令</strong>：</p>
+<p>断点：<code>b syscall</code></p>
+<p>继续运行：<code>c</code></p>
+<p>执行下一行：<code>n</code></p>
+<p>进入函数：<code>s</code></p>
+<p>查看寄存器：<code>info registers</code></p>
+<p>查看调用栈：<code>bt</code></p>
+<p>查看当前源码位置：<code>list</code></p>
+<p>查看变量：<code>p 变量名</code></p>
+<p>查看内存：<code>x/16x 地址</code></p>
+<p>退出 GDB：<code>q</code></p>
+<h4 id="实战">实战
+</h4><p>启动系统后看到下面的输出，意思是系统最初的用户进程init0退出了，所以内核报错后停止</p>
+<img src="5.png" style="width: 70%;" />
+<p>系统启动流程：bootloader &gt; kernel &gt; 初始化内存与文件系统 &gt; 创建第一个用户进程 &gt; exec(init0 )&gt; 进入shell</p>
+<p>现在关键是找到第最初的用户进程，根据提示找到<code>src/kernel/proc.c</code>，打开后搜索<code>init0</code>，可以看到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">USER0</span><span class="p">,</span> <span class="n">NULL</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">exec</span><span class="p">(</span><span class="n">USER0</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">panic</span><span class="p">(</span><span class="n">USER0</span> <span class="s2">&#34; load&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明<code>USER0</code>决定第一个用户进程</p>
+<img src="12.png" style="width: 90%;" />
+<p>在根目录查找<code>USER0</code>的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">b syscall
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -R &#34;define USER0&#34; .
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>继续运行：</p>
+</div><p>可以找到<code>#define USER0 &quot;masquerade&quot;</code>，这就是问题所在</p>
+<img src="13.png" style="width: 90%;" />
+<p>正常情况下，系统启动时第一个运行的用户程序应该是<code>#define USER0 &quot;init0&quot;</code>，但现在被改成了<code>masquerade</code>，所以系统启动后实际执行了这个程序。它就是实验故意放进去的假程序，不会正常启动系统，而是输出提示然后退出</p>
+<p>问题在于第一个用户进程是不能随便退出的。对于操作系统来说，kernel 虽然启动完成，但用户态环境还没有真正建立起来。第一个用户进程就像整个用户空间的根节点，一旦它退出，后面所有东西都没法继续运行。所以系统看到它退出就会直接停止运行，报错<code>panic: init exiting</code></p>
+<p>在 Linux 中也是一样，启动后会有一个最初的用户进程，一般是 init 或 systemd， PID 永远是 1。如果它异常退出，Linux 就会认为系统发生错误</p>
+<blockquote>
+<p>第一个用户进程不能退出，否则系统将失去整个用户态环境</p>
+</blockquote>
+<p>修复方法是编辑<code>include/param.h</code>这个文件，找到<code>#define USER0 &quot;masquerade&quot;</code>将<code>masquerade</code>改成<code>init0</code></p>
+<img src="14.png" style="width: 50%;" />
+<p>保存后重新编译，可以看到系统恢复正常</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">c
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
+</span></span><span class="line"><span class="cl">./run-qemu.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>单步：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">n
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看寄存器：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">info registers
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>查看调用栈：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="踩坑记录">踩坑记录
-</h3><p>脚本无法执行</p>
-<p>报错：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Permission denied
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>原因是 Linux 中脚本缺少 executable 权限。</p>
-<p>从 Windows 解压、复制或者 git 拉取的脚本经常出现这个问题。</p>
-<p>解决：</p>
+</div><img src="15.png" style="width: 90%;" />
+<h3 id="踩坑记录">踩坑记录
+</h3><p><strong>脚本无法执行，报错<code>Permission denied</code></strong>：原因是在 Linux 中当前脚本没有执行权，从 Windows 解压复制或者 git 拉取的脚本经常出现这个问题，解决方法是<code>chmod +x</code>增加权限</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -908,209 +942,14 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">chmod +x run-gdb.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>GDB 找不到文件</p>
-<p>原因是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">GDB运行在宿主机
-</span></span><span class="line"><span class="cl">内核文件在Docker容器
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">file build/kernel
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>无法找到目标文件。</p>
-<p>解决方法：</p>
-<p>进入容器内部执行 GDB。</p>
-<p>修改配置后系统异常</p>
-<p>实验文档特别强调：</p>
-<p>每次切换：</p>
-<ul>
-<li>debug模式</li>
-<li>CPU数量</li>
-<li>配置参数</li>
-</ul>
-<p>之前都应该执行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>否则可能出现旧缓存导致的问题。</p>
-<p>系统启动 panic</p>
-<p>启动后输出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">😅 Emmmm, I think you&#39;re in the wrong place...
-</span></span><span class="line"><span class="cl">😅 Please fix: start &#39;init0&#39; instead of me...
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">panic: init exiting
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个问题不是随机错误。</p>
-<p>系统启动流程实际上是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">QEMU
-</span></span><span class="line"><span class="cl">→ kernel启动
-</span></span><span class="line"><span class="cl">→ 初始化内存与文件系统
-</span></span><span class="line"><span class="cl">→ 创建第一个用户进程
-</span></span><span class="line"><span class="cl">→ exec(init0)
-</span></span><span class="line"><span class="cl">→ 进入shell
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>而实验故意修改了：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;masquerade&#34;
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>导致系统启动的是假程序。</p>
-<p>真正应该启动的是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;init0&#34;
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>修改：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim include/param.h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>改回：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define USER0 &#34;init0&#34;
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后重新编译：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
-</span></span><span class="line"><span class="cl">./run-qemu.sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里必须 make clean。</p>
-<p>因为头文件修改后，旧的 .o 文件可能不会全部重新生成。</p>
-<p>这个实验本质是在理解：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">kernel如何进入用户态
-</span></span><span class="line"><span class="cl">以及第一个用户进程为什么重要
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Linux 中：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">PID 1 = init/systemd
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果它退出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">kernel panic
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">panic: init exiting
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>本质是同样的逻辑。</p>
+</div><img src="7.png" style="width: 90%;" />
+<p><strong>GDB 找不到文件，报错<code>build/kernel无法找到目标文件</code></strong>：原因是GDB运行在家目录，而文件在实验目录中。解决方法是进入实验目录再执行 GDB</p>
+<img src="8.png" style="width: 60%;" />
 <h2 id="系统调用">系统调用
-</h2><h3 id="系统调用的本质">系统调用的本质
-</h3><p>用户程序没有权限直接访问内核。</p>
-<p>系统调用本质上是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">用户态
-</span></span><span class="line"><span class="cl">↓
-</span></span><span class="line"><span class="cl">ecall陷入内核
-</span></span><span class="line"><span class="cl">↓
-</span></span><span class="line"><span class="cl">内核根据syscall号调用对应函数
-</span></span><span class="line"><span class="cl">↓
-</span></span><span class="line"><span class="cl">返回结果
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>用户程序通过 syscall 进入内核执行特权操作。</p>
-<h3 id="注册系统调用号">注册系统调用号
-</h3><p>编辑：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">entry/syscall.tbl
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>添加：</p>
+</h2><p>用户程序没有权限直接访问内核，只能通过 syscall 对内核执行操作。系统调用也就是用户态通过ecall陷入内核，内核根据syscall号调用对应函数，然后返回结果</p>
+<h3 id="基础调用">基础调用
+</h3><h4 id="调用表">调用表
+</h4><p>首先分配系统调用号，打开<code>entry/syscall.tbl</code>文件，在尾部添加三列数据</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1119,29 +958,15 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">666 echo sys_echo
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>作用是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">系统调用号666
-</span></span><span class="line"><span class="cl">对应内核函数sys_echo
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>内核后面会自动生成 syscall 调用表。</p>
-<h3 id="实现系统调用">实现系统调用
-</h3><p>创建：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">src/sys_echo.c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>代码：</p>
+</div><ul>
+<li><code>666</code> 是系统调用号，必须是唯一的</li>
+<li><code>echo</code> 是 syscall 名称</li>
+<li><code>sys_echo</code> 是最终调用的内核函数</li>
+</ul>
+<img src="16.png" style="width: 60%;" />
+<p>之后构建脚本会自动生成 syscall 分发表，也就是一个函数指针数组</p>
+<h4 id="实现">实现
+</h4><p>构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。编辑<code>src/sys_echo.c</code>，写入以下代码来进行实现</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1184,13 +1009,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">user_ptr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nf">argint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">user_ptr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">argint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="n">len</span> <span class="o">=</span> <span class="mi">127</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">copy_from_user</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
@@ -1204,66 +1029,16 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="系统调用实现逻辑">系统调用实现逻辑
-</h3><p>系统调用参数保存在寄存器中。</p>
-<p>这里：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">a0 -&gt; 用户字符串地址
-</span></span><span class="line"><span class="cl">a1 -&gt; 长度
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>内核通过：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">argaddr</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="nf">argint</span><span class="p">()</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>获取参数。</p>
-<p>用户态地址不能直接访问。</p>
-<p>因为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">用户页表
-</span></span><span class="line"><span class="cl">≠
-</span></span><span class="line"><span class="cl">内核页表
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以必须：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">copy_from_user</span><span class="p">()</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>将数据复制到内核缓冲区。</p>
-<h3 id="编译进内核">编译进内核
-</h3><p>修改：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">src/Makefile
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>添加：</p>
+</div><blockquote>
+<p>可以看到这里的函数<code>uint64_t sys_echo()</code>并没有参数，这是因为系统调用和普通的用户态程序不一样</p>
+<ul>
+<li>用户态程序实现函数的过程是先把参数的值存进寄存器，跳转到函数进行执行，这时候再从寄存器取出值</li>
+<li>系统调用在函数执行之前，CPU先陷入内核态，函数需要的参数由内核统一管理。因此在CPU进入内核态的同时，就会将寄存器的上下文保存起来用于之后调用</li>
+</ul>
+<p>CPU 陷入内核时，这些寄存器内容会被保存到 trapframe 里，<code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数</p>
+<p>在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户的地址在内核无法对应相应内存，这时候就要用到<code>copy_from_user()</code>来拷贝内存</p>
+</blockquote>
+<p>完成后修改<code>src/Makefile</code>，添加下面的代码来将函数链接到内核，否则虽然代码存在但内核无法找到</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1272,18 +1047,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">obj-y</span> <span class="o">+=</span> sys_echo.o
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>否则链接阶段找不到 sys_echo。</p>
-<h3 id="编写测试程序">编写测试程序
-</h3><p>创建：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">user/src/test_echo.c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>代码：</p>
+</div><h4 id="测试">测试
+</h4><p>在<code>user/src/test_echo.c</code>中写入测试程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1306,8 +1071,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="重新编译">重新编译
-</h3><p>执行：</p>
+</div><p>重新编译</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1315,57 +1079,265 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
-</span></span><span class="line"><span class="cl">make
+</span></span><span class="line"><span class="cl">./run-qemu.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新生成：</p>
-<ul>
-<li>kernel</li>
-<li>用户程序</li>
-<li>文件系统镜像</li>
-</ul>
-<h3 id="运行测试">运行测试
-</h3><p>进入系统后执行：</p>
+</div><p>进入系统后执行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">test_echo
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">./test_echo
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>如果正常，会输出：</p>
+</div><blockquote>
+<p>这里不能输入<code>test_echo.c</code>，因为<code>.c</code> 是源码文件，内核只能执行 ELF 可执行文件，如果输入源码文件，内核尝试把文本文件当 ELF 加载，会出现<code>execvp failure</code></p>
+</blockquote>
+<p>如果正常，会输出<code>Hello Navi</code>，也就是刚刚代码中定义的值，说明系统调用成功</p>
+<img src="17.png" style="width: 60%;" />
+<h3 id="trace-系统调用">trace 系统调用
+</h3><p><code>trace</code> 的核心作用是监听指定 syscall 的执行</p>
+<p>例如：之后进程每次执行 <code>open</code>，内核都会打印日志</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Hello Navi
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">trace(open)
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>说明系统调用成功进入内核。</p>
-<h3 id="遇到问题printf-报错">遇到问题：printf 报错
-</h3><p>报错：</p>
+</div><p>同时要求：fork 后子进程继承 trace 状态</p>
+<p>注册 trace syscall打开：entry/syscall.tbl</p>
+<p>添加：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">implicit declaration of function &#39;printf&#39;
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">524 trace sys_trace
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>原因是：</p>
+</div><hr>
+<h2 id="pcb-状态扩展">PCB 状态扩展
+</h2><p>系统调用的监听状态需要保存在 PCB 中。</p>
+<p>打开：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">proc.h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">proc</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>中新增：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">trace_num</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里保存：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">当前进程正在监听的 syscall number
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="sys_trace-实现">sys_trace 实现
+</h2><p>在内核中实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_trace</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">=</span> <span class="n">num</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里本质上是在修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">当前 PCB 状态
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="syscall-分发埋点">syscall 分发埋点
+</h2><p>找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">src/kernel/syscall.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>中的 syscall 分发函数。</p>
+<p>通常逻辑类似：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">内核不是普通Linux程序
-</span></span><span class="line"><span class="cl">没有标准C库
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">num</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">a7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">ret</span> <span class="o">=</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">]();</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>不能使用：</p>
+</div><p>在 syscall 执行后增加：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">==</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;trace: PID %d calls %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">syscall_name</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里实际上是在：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">syscall dispatch 层做日志埋点
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>整个调用链：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">用户态
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">ecall
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">trap handler
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">syscall()
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">根据 a7 查 syscall
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">执行内核函数
+</span></span><span class="line"><span class="cl">    ↓
+</span></span><span class="line"><span class="cl">trace 判断
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h2 id="fork-状态继承">fork 状态继承
+</h2><p>trace 的关键点之一是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">子进程继承监听状态
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此在：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">fork / clone
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>相关逻辑中，需要增加：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">np</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>否则：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">父进程 trace
+</span></span><span class="line"><span class="cl">fork 后子进程丢失状态
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="踩坑记录-1">踩坑记录
+</h3><p>遇到问题：<code>printf</code> 报错</p>
+<p>报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">implicit declaration of function &#39;printf&#39;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>或者：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">stdio.h: No such file or directory
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原因：</p>
+<p>内核不是普通 Linux 用户程序，没有标准 C 库环境，不能直接使用 libc。</p>
+<p>错误写法：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1374,131 +1346,339 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>必须使用内核自己的：</p>
+</div><p>解决方法：</p>
+<p>使用内核自己的头文件：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;printf.h&#34;</span><span class="cp">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;printf.h&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>并使用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kprintf()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>或者框架提供的内核版 <code>printf</code>。</p>
+<hr>
+<p>遇到问题：<code>undefined reference to sys_echo</code></p>
+<p>报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="n">undefined</span><span class="w"> </span><span class="n">reference</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">`</span><span class="n">sys_echo</span><span class="o">`</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="遇到问题undefined-reference-to-sys_echo">遇到问题：undefined reference to sys_echo
-</h3><p>原因是：</p>
+</div><p>原因：</p>
+<p>新增的：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Makefile没有添加sys_echo.o
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sys_echo.c
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>链接器找不到函数实现。</p>
-<p>解决：</p>
+</div><p>没有加入 Makefile。</p>
+<p>虽然 syscall table 已经注册：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">obj-y</span> <span class="o">+=</span> sys_echo.o
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">666 -&gt; sys_echo
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="遇到问题copy_from_user-类型错误">遇到问题：copy_from_user 类型错误
-</h3><p>报错：</p>
+</div><p>但真正链接 kernel 时找不到函数实现。</p>
+<p>解决方法：</p>
+<p>在 Makefile 中添加：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">passing argument makes integer from pointer without a cast
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">obj-y += sys_echo.o
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>原因是直接使用：</p>
+</div><p>作用是将该文件编译并链接进入最终 kernel image。</p>
+<hr>
+<p>遇到问题：<code>copy_from_user</code> 参数类型错误</p>
+<p>报错：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">passing argument makes integer from pointer without a cast
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>作为用户地址。</p>
-<p>用户地址本质只是：</p>
+</div><p>原因：</p>
+<p>直接将：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">uint64_t虚拟地址
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">char *
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>不是普通指针。</p>
-<p>正确写法：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="n">addr</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">addr</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="遇到问题execvp-failure">遇到问题：execvp failure
-</h3><p>运行程序时报：</p>
+</div><p>作为用户地址传入。</p>
+<p>但用户态传来的指针本质上只是：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">execvp failure
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户虚拟地址
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>最开始以为是系统调用问题。</p>
-<p>后来发现是：</p>
+</div><p>不是内核可直接访问的普通指针。</p>
+<p>解决方法：</p>
+<p>使用：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">输入了 test_echo.c
-</span></span><span class="line"><span class="cl">而不是 test_echo
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t addr;
+</span></span><span class="line"><span class="cl">argaddr(0, &amp;addr);
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>内核只能执行 ELF 文件。</p>
-<p>源码文件只是普通文本。</p>
+</div><p>获取 syscall 参数。</p>
+<p>之后再：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">copy_from_user(buf, addr, len);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由内核完成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户空间 -&gt; 内核空间
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>的数据复制。</p>
+<hr>
+<p>遇到问题：<code>execvp failure</code></p>
+<p>报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">execvp failure
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原因一：</p>
+<p>输入了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">test_echo.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而不是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">test_echo
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>源码文件只是普通文本文件。</p>
+<p>内核只能执行 ELF 可执行文件。</p>
 <p>系统会检查 ELF 魔数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">0x7f 0x45 0x4c 0x46
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">0x7f 0x45 0x4c 0x46
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>不是 ELF 就会拒绝执行。</p>
-<p>另外一种情况是：</p>
+<p>原因二：</p>
+<p>修改用户程序后没有重新：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">修改后没有重新make clean
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean &amp;&amp; make
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>导致旧文件系统镜像没有更新。</p>
-<p>所以修改用户程序后最好：</p>
+</div><p>导致：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean <span class="o">&amp;&amp;</span> make
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fs.img
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新生成镜像。</p>
-
+</div><p>里的旧程序没有更新。</p>
+<p>解决方法：</p>
+<p>运行程序时只输入程序名，不带 <code>.c</code> 后缀。</p>
+<p>修改用户程序后重新：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean &amp;&amp; make
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新生成文件系统镜像。</p>
+<hr>
+<p>遇到问题：<code>expected identifier before if</code></p>
+<p>报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">expected identifier or &#39;(&#39; before &#39;if&#39;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原因：</p>
+<p>修改 syscall dispatch 时：</p>
+<ul>
+<li>大括号位置错误</li>
+<li><code>if</code> 写到函数外</li>
+<li>syscall() 函数结构被破坏</li>
+</ul>
+<p>这种错误在修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">syscall.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>时非常常见。</p>
+<p>解决方法：</p>
+<p>重新检查：</p>
+<ul>
+<li>syscall() 函数大括号</li>
+<li>if 所在作用域</li>
+<li>函数是否提前结束</li>
+</ul>
+<hr>
+<p>遇到问题：<code>panic: init exiting</code></p>
+<p>报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">please fix: start &#39;init0&#39; instead of me...
+</span></span><span class="line"><span class="cl">panic: init exiting
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>原因：</p>
+<ul>
+<li>init0 没进入 fs.img</li>
+<li>exec 流程异常</li>
+<li>syscall 修改导致用户程序无法正常加载</li>
+<li>文件系统镜像没有重新生成</li>
+</ul>
+<p>解决方法：</p>
+<p>检查：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">user/src/init0.c
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>是否存在。</p>
+<p>重新执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean &amp;&amp; make
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新生成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fs.img
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>检查：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">exec(USER0)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>是否正常返回。</p>
+<hr>
+<p>遇到问题：QEMU 无法退出或终端卡死</p>
+<p>现象：</p>
+<ul>
+<li>QEMU 无法输入</li>
+<li>shell 卡死</li>
+<li>debug 模式无法退出</li>
+</ul>
+<p>原因：</p>
+<ul>
+<li><code>-nographic</code> 占用当前终端</li>
+<li>GDB 调试模式未 detach</li>
+<li>qemu 进程未退出</li>
+</ul>
+<p>解决方法：</p>
+<p>退出 QEMU：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Ctrl + A
+</span></span><span class="line"><span class="cl">X
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>或者：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">kill -9 qemu进程PID
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>强制结束进程。</p>
+<h2 id="待整理">待整理
+</h2>
 </section>
 
 
@@ -1765,7 +1945,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">93.02</span> 
+      <span class="number-highlight">96.05</span> 
       k 字
   </div>
   <div>
