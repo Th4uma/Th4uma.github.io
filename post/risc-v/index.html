@@ -273,6 +273,20 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#前言">前言</a></li>
+    <li><a href="#知识结构">知识结构</a>
+      <ol>
+        <li><a href="#名词解释">名词解释</a>
+          <ol>
+            <li><a href="#进程调度">进程调度</a></li>
+            <li><a href="#内存管理">内存管理</a></li>
+            <li><a href="#cpu与硬件">CPU与硬件</a></li>
+            <li><a href="#系统调用">系统调用</a></li>
+            <li><a href="#程序构建">程序构建</a></li>
+          </ol>
+        </li>
+        <li><a href="#流程描述">流程描述</a></li>
+      </ol>
+    </li>
     <li><a href="#环境">环境</a>
       <ol>
         <li><a href="#安装">安装</a></li>
@@ -298,27 +312,44 @@ unicode: "f6d2"
         <li><a href="#踩坑记录">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#系统调用">系统调用</a>
+    <li><a href="#系统调用-1">系统调用</a>
       <ol>
         <li><a href="#基础调用">基础调用</a>
           <ol>
             <li><a href="#调用表">调用表</a></li>
-            <li><a href="#实现">实现</a></li>
+            <li><a href="#内核实现">内核实现</a></li>
             <li><a href="#测试">测试</a></li>
           </ol>
         </li>
-        <li><a href="#trace-系统调用">trace 系统调用</a></li>
-      </ol>
-    </li>
-    <li><a href="#pcb-状态扩展">PCB 状态扩展</a></li>
-    <li><a href="#sys_trace-实现">sys_trace 实现</a></li>
-    <li><a href="#syscall-分发埋点">syscall 分发埋点</a></li>
-    <li><a href="#fork-状态继承">fork 状态继承</a>
-      <ol>
+        <li><a href="#trace系统调用">trace系统调用</a>
+          <ol>
+            <li><a href="#pcb保存监听状态">PCB保存监听状态</a></li>
+            <li><a href="#实现拦截">实现拦截</a></li>
+            <li><a href="#状态继承">状态继承</a></li>
+            <li><a href="#测试-1">测试</a></li>
+          </ol>
+        </li>
+        <li>
+          <ol>
+            <li><a href="#用户与注册">用户与注册</a></li>
+            <li></li>
+          </ol>
+        </li>
         <li><a href="#踩坑记录-1">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#待整理">待整理</a></li>
+    <li><a href="#待整理">待整理</a>
+      <ol>
+        <li></li>
+        <li><a href="#第三步修改-srckernelsyscallc-第四步修改进程克隆文件-实现状态继承">第三步：修改 <code>src/kernel/syscall.c</code> (第四步：修改进程克隆文件 (实现状态继承)</a></li>
+        <li><a href="#第五步用户态接口声明若需要">第五步：用户态接口声明（若需要）</a>
+          <ol>
+            <li></li>
+          </ol>
+        </li>
+        <li></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -407,6 +438,105 @@ unicode: "f6d2"
 </blockquote>
 <p>对，上面的话是我在两小时前说出来的，但现在已经结束了配环境，开始第一个正式实验了。确实很有意思啊，我又反悔，决定进行记录了</p>
 </blockquote>
+<h2 id="知识结构">知识结构
+</h2><h3 id="名词解释">名词解释
+</h3><h4 id="进程调度">进程调度
+</h4><ul>
+<li>
+<p>进程：一个运行中的程序就是一个进程</p>
+</li>
+<li>
+<p>线程：多条线同时执行，目的是完成同一个任务，这就是线程</p>
+</li>
+<li>
+<p>调度：CPU在某段时间内快速切换运行多个进程，虽然CPU同一时刻只能运行一个进程，但由于切换的足够快，从而看起来是同时运行</p>
+</li>
+<li>
+<p>上下文：进程在某个时刻的完整状态，包含了寄存器栈指针等信息</p>
+</li>
+<li>
+<p>上下文切换：</p>
+</li>
+<li>
+<p>时间片：</p>
+</li>
+<li>
+<p>clone</p>
+</li>
+<li>
+<p>fork</p>
+</li>
+<li>
+<p>PCB</p>
+</li>
+<li>
+<p>用户进程：在用户态运行的程序，使用的硬件资源由内核来分配，权限低</p>
+</li>
+</ul>
+<h4 id="内存管理">内存管理
+</h4><ul>
+<li>
+<p>栈：存放函数调用相关的数据</p>
+</li>
+<li>
+<p>堆：程序运行过程中动态申请的内存区域</p>
+</li>
+<li>
+<p>虚拟内存：操作系统管理物理内存，为了防止信息泄露和安全问题，会给每个进程分配一块单独的专属内存，分配是通过虚拟地址来交给进程，这就是虚拟内存，而虚拟地址再通过页表映射到物理内存</p>
+</li>
+<li>
+<p>页表：虚拟内存对应物理内存的映射表，每个进程的页表都是独立的</p>
+</li>
+</ul>
+<h4 id="cpu与硬件">CPU与硬件
+</h4><ul>
+<li>
+<p>架构：CPU指令集和运行模式的整体设计结构，不同架构运行模式不同，指令不互通</p>
+</li>
+<li>
+<p>用户态：CPU运行普通程序的状态，很多权限受限，而且没有办法直接控制硬件</p>
+</li>
+<li>
+<p>内核态：CPU运行操作系统内核的状态，权限最高但没有办法直接由用户态控制</p>
+</li>
+<li>
+<p>寄存器：</p>
+</li>
+<li>
+<p>trap：陷入，在遇到系统调用、中断、异常等操作的时候，CPU状态改变成内核态这个过程就是陷入</p>
+</li>
+<li>
+<p>异常：</p>
+</li>
+<li>
+<p>中断：</p>
+</li>
+<li>
+<p>trapframe：CPU状态切换到内核态时，需要保存当前进程的上下文，这就是用来保存的结构体，切换回用户态时会将上下文取出用来恢复状态</p>
+</li>
+<li>
+<p>互斥：</p>
+</li>
+</ul>
+<h4 id="系统调用">系统调用
+</h4><ul>
+<li>syscall：系统调用，用户态如果需要执行内核态权限的操作就需要它，由用户态陷入内核态进行</li>
+<li>syscall 分发表：</li>
+</ul>
+<h4 id="程序构建">程序构建
+</h4><ul>
+<li>交叉编译：在一种架构机器上将程序源文件编译成另一种架构的可执行文件</li>
+<li>ELF：</li>
+</ul>
+<h3 id="流程描述">流程描述
+</h3><ul>
+<li>
+<p>系统启动流程：bootloader &gt; kernel &gt; 初始化内存与文件系统 &gt; 创建第一个用户进程 &gt; exec(init0) &gt; 进入shell</p>
+</li>
+<li>
+<p>系统调用流程：用户程序调用 syscall &gt; 参数与 syscall 编号写入寄存器 &gt; trap &gt; CPU 陷入内核态 &gt; 保存上下文到 trapframe &gt; 内核根据 syscall 编号找到对应处理函数 &gt; 解析参数并执行系统调用 &gt; 返回值写入寄存器 &gt; 恢复上下文 &gt; 返回用户态继续执行</p>
+</li>
+</ul>
 <h2 id="环境">环境
 </h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
 <ul>
@@ -414,7 +544,6 @@ unicode: "f6d2"
 <li>内存：8GB</li>
 <li>硬盘：50GB</li>
 <li>网络：NAT模式</li>
-<li>容器：Docker</li>
 </ul>
 <p><img src="/post/arp/1.png"
 	
@@ -831,7 +960,8 @@ unicode: "f6d2"
 <p>注意：每次修改构建参数之前都要执行<code>make clean</code>，否则可能出现旧缓存导致的错误</p>
 </blockquote>
 <h3 id="gdb-调试">GDB 调试
-</h3><h4 id="启动">启动
+</h3><p>GDB是重要的调试程序，对于开发中的排错非常实用</p>
+<h4 id="启动">启动
 </h4><p>启动调试版 QEMU，执行后系统会暂停等待 GDB 连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -879,8 +1009,7 @@ unicode: "f6d2"
 <h4 id="实战">实战
 </h4><p>启动系统后看到下面的输出，意思是系统最初的用户进程init0退出了，所以内核报错后停止</p>
 <img src="5.png" style="width: 70%;" />
-<p>系统启动流程：bootloader &gt; kernel &gt; 初始化内存与文件系统 &gt; 创建第一个用户进程 &gt; exec(init0 )&gt; 进入shell</p>
-<p>现在关键是找到第最初的用户进程，根据提示找到<code>src/kernel/proc.c</code>，打开后搜索<code>init0</code>，可以看到</p>
+<p>因此关键是找到最初的用户进程，根据提示找到<code>src/kernel/proc.c</code>，打开后搜索<code>init0</code>，可以看到</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -945,7 +1074,7 @@ unicode: "f6d2"
 </div><img src="7.png" style="width: 90%;" />
 <p><strong>GDB 找不到文件，报错<code>build/kernel无法找到目标文件</code></strong>：原因是GDB运行在家目录，而文件在实验目录中。解决方法是进入实验目录再执行 GDB</p>
 <img src="8.png" style="width: 60%;" />
-<h2 id="系统调用">系统调用
+<h2 id="系统调用-1">系统调用
 </h2><p>用户程序没有权限直接访问内核，只能通过 syscall 对内核执行操作。系统调用也就是用户态通过ecall陷入内核，内核根据syscall号调用对应函数，然后返回结果</p>
 <h3 id="基础调用">基础调用
 </h3><h4 id="调用表">调用表
@@ -963,10 +1092,11 @@ unicode: "f6d2"
 <li><code>echo</code> 是 syscall 名称</li>
 <li><code>sys_echo</code> 是最终调用的内核函数</li>
 </ul>
-<img src="16.png" style="width: 60%;" />
+<img src="16.png" style="width: 40%;" />
 <p>之后构建脚本会自动生成 syscall 分发表，也就是一个函数指针数组</p>
-<h4 id="实现">实现
-</h4><p>构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。编辑<code>src/sys_echo.c</code>，写入以下代码来进行实现</p>
+<h4 id="内核实现">内核实现
+</h4><p>构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。在内核源码目录编辑<code>src/sys_echo.c</code>，写入以下代码来进行实现</p>
+<p>逻辑就是执行函数时首先定义三个变量，一个<code>uint64_t</code>类型记录用户传来的地址，<code>len</code>记录传来的字符串长度，<code>buf</code>存储最终获取的字符串。然后从<code>trapframe</code>保存的上下文里取参数，得到地址和长度，最后通过<code>copy_from_use</code>r，传入<code>buf</code>、地址和长度来复制用户的数据，进行输出即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -997,6 +1127,12 @@ unicode: "f6d2"
 </span><span class="lnt">26
 </span><span class="lnt">27
 </span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;common.h&#34;</span><span class="cp">
@@ -1005,38 +1141,43 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;printf.h&#34;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_echo</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">user_ptr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 用户态传入的字符串地址
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">user_ptr</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">len</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">user_ptr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">argint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 从 syscall 参数里取参数
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">user_ptr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nf">argint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 防止溢出
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">len</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="n">len</span> <span class="o">=</span> <span class="mi">127</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">copy_from_user</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 从用户虚拟地址复制数据到内核
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">copy_from_user</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">user_ptr</span><span class="p">,</span> <span class="n">len</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">buf</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 手动添加字符串结束符
+</span></span></span><span class="line"><span class="cl">    <span class="n">buf</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 内核打印字符串，这里不是用户内存，是内核自己的 buf
+</span></span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 返回用户态
+</span></span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>可以看到这里的函数<code>uint64_t sys_echo()</code>并没有参数，这是因为系统调用和普通的用户态程序不一样</p>
 <ul>
-<li>用户态程序实现函数的过程是先把参数的值存进寄存器，跳转到函数进行执行，这时候再从寄存器取出值</li>
-<li>系统调用在函数执行之前，CPU先陷入内核态，函数需要的参数由内核统一管理。因此在CPU进入内核态的同时，就会将寄存器的上下文保存起来用于之后调用</li>
+<li>用户态程序实现函数的过程是先把参数的值存进寄存器，跳转到函数执行，这时候再从寄存器取出值</li>
+<li>系统调用是在用户执行syscall后，参数被放入寄存器，在CPU 陷入内核时，这些寄存器内容也就是上下文会被保存到<code>trapframe</code>里用于之后恢复进程。<code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int。在系统调用完成后，返回值被存入寄存器，用户态寄存器恢复，CPU回到用户态</li>
 </ul>
-<p>CPU 陷入内核时，这些寄存器内容会被保存到 trapframe 里，<code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数</p>
-<p>在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户的地址在内核无法对应相应内存，这时候就要用到<code>copy_from_user()</code>来拷贝内存</p>
+<p>在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户传入的是虚拟地址，这时候就要用到<code>copy_from_user()</code>来拷贝内存</p>
 </blockquote>
 <p>完成后修改<code>src/Makefile</code>，添加下面的代码来将函数链接到内核，否则虽然代码存在但内核无法找到</p>
 <div class="highlight"><div class="chroma">
@@ -1048,7 +1189,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="测试">测试
-</h4><p>在<code>user/src/test_echo.c</code>中写入测试程序</p>
+</h4><p>在是用户态程序源码目录下<code>user/src/test_echo.c</code>中写入测试程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1096,70 +1237,25 @@ unicode: "f6d2"
 </blockquote>
 <p>如果正常，会输出<code>Hello Navi</code>，也就是刚刚代码中定义的值，说明系统调用成功</p>
 <img src="17.png" style="width: 60%;" />
-<h3 id="trace-系统调用">trace 系统调用
-</h3><p><code>trace</code> 的核心作用是监听指定 syscall 的执行</p>
-<p>例如：之后进程每次执行 <code>open</code>，内核都会打印日志</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">trace(open)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>同时要求：fork 后子进程继承 trace 状态</p>
-<p>注册 trace syscall打开：entry/syscall.tbl</p>
-<p>添加：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">524 trace sys_trace
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
-<h2 id="pcb-状态扩展">PCB 状态扩展
-</h2><p>系统调用的监听状态需要保存在 PCB 中。</p>
-<p>打开：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">proc.h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">proc</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>中新增：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">trace_num</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里保存：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">当前进程正在监听的 syscall number
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
-<h2 id="sys_trace-实现">sys_trace 实现
-</h2><p>在内核中实现：</p>
+<h3 id="trace系统调用">trace系统调用
+</h3><p><code>trace</code> 的作用是监听指定 syscall 的执行，比如用户执行<code>trace(syscall_num)</code>，内核会监控当前进程之后的系统调用，如果发现<code>syscall_num</code>对应的系统调用，就输出相关信息。这个进程的子进程也将会继承监听项</p>
+<blockquote>
+<p>trace系统调用本质上和普通系统调用原理是一样的，因此基础操作大差不差</p>
+</blockquote>
+<h4 id="pcb保存监听状态">PCB保存监听状态
+</h4><blockquote>
+<p>PCB就是操作系统用来管理进程状态的数据结构，系统调用的监听状态需要保存在 PCB 里</p>
+</blockquote>
+<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号<img src="C:%5cUsers%5cThaumazein%5cAppData%5cRoaming%5cTypora%5ctypora-user-images%5cimage-20260519000404860.png"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260519000404860"
+	
+	
+></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1167,82 +1263,22 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_trace</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">();</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">struct proc {
+</span></span><span class="line"><span class="cl">    // ... 保持原有的其他字段不变 ...
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">=</span> <span class="n">num</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    int traced_syscall;    // 新增：用于存储当前进程监控的系统调用号
+</span></span><span class="line"><span class="cl">};
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里本质上是在修改：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">当前 PCB 状态
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
-<h2 id="syscall-分发埋点">syscall 分发埋点
-</h2><p>找到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">src/kernel/syscall.c
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>中的 syscall 分发函数。</p>
-<p>通常逻辑类似：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">num</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">a7</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="n">ret</span> <span class="o">=</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">]();</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在 syscall 执行后增加：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">==</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">        <span class="s">&#34;trace: PID %d calls %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">syscall_name</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里实际上是在：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">syscall dispatch 层做日志埋点
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>整个调用链：</p>
+</div><h4 id="实现拦截">实现拦截
+</h4><p>打开 <code>src/kernel/syscall.c</code>，进行两处修改：</p>
+<ol>
+<li>编写 <code>sys_trace</code> 的具体实现</li>
+</ol>
+<p>在文件末尾或系统调用函数聚集区添加以下标准代码：</p>
+<p>C</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1258,50 +1294,91 @@ unicode: "f6d2"
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">用户态
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">ecall
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">trap handler
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">syscall()
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">根据 a7 查 syscall
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">执行内核函数
-</span></span><span class="line"><span class="cl">    ↓
-</span></span><span class="line"><span class="cl">trace 判断
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t sys_trace(void) {
+</span></span><span class="line"><span class="cl">    int syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 获取用户态传入的第 0 个参数
+</span></span><span class="line"><span class="cl">    if (argint(0, &amp;syscall_num) &lt; 0) {
+</span></span><span class="line"><span class="cl">        return -1;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 将其写入当前进程的 PCB 中
+</span></span><span class="line"><span class="cl">    struct proc *p = current; // 如果编译报错找不到 current，请替换为 myproc()
+</span></span><span class="line"><span class="cl">    p-&gt;traced_syscall = syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>在 <code>void syscall(void)</code> 分发器中添加打印拦截</li>
+</ol>
+<p>找到 <code>void syscall(void)</code> 函数，在系统调用执行完毕并将返回值赋给用户上下文之后，加入判断逻辑：</p>
+<p>C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void) {
+</span></span><span class="line"><span class="cl">    struct proc *p = current; // 如果编译报错请替换为 myproc()
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 注意：根据你之前给出的资料，你的框架通过 proc_get_tf(p) 获取 trapframe
+</span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7; 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    if (num &gt; 0 &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) {
+</span></span><span class="line"><span class="cl">        uint64_t ret = syscalls[num]();
+</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = ret; // 写入返回值
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        // ======= 核心添加：拦截并打印 trace 信息 =======
+</span></span><span class="line"><span class="cl">        if (p-&gt;traced_syscall == num) {
+</span></span><span class="line"><span class="cl">            // 使用系统提供的 syscall_name 获取字符串名称
+</span></span><span class="line"><span class="cl">            kprintf(&#34;trace: PID %d calls %s\n&#34;, p-&gt;pid, syscall_name(num));
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">        // =============================================
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    } else {
+</span></span><span class="line"><span class="cl">        kprintf(&#34;PID %d %s: unknown sys call %d\n&#34;, p-&gt;pid, p-&gt;name, num);
+</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = -1;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><hr>
-<h2 id="fork-状态继承">fork 状态继承
-</h2><p>trace 的关键点之一是：</p>
+<h4 id="状态继承">状态继承
+</h4><p>trace 的关键点之一是：子进程继承监听状态因此在fork / clone相关逻辑中，需要增加：np-&gt;trace_num = p-&gt;trace_num;</p>
+<p><code>src/kernel/clone.c</code>（或者是 <code>fork.c</code>，看你的系统叫哪个） 找到创建新进程的地方，在把父进程（<code>p</code>）的属性复制给子进程（<code>np</code>）的代码附近，加上这一行：</p>
+<p>C</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">子进程继承监听状态
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>因此在：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">fork / clone
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>相关逻辑中，需要增加：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">np</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span><span class="p">;</span>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">np-&gt;traced_syscall = myproc()-&gt;traced_syscall;
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>否则：</p>
@@ -1315,7 +1392,175 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">fork 后子进程丢失状态
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="踩坑记录-1">踩坑记录
+</div><h4 id="测试-1">测试
+</h4><p>编辑usersrcinit0.c</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;stdio.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;stdlib.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;unistd.h&#34;
+</span></span><span class="line"><span class="cl">#include &#34;string.h&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">void __run(char *argv[]);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">static inline long __syscall1(long n, long a0) {
+</span></span><span class="line"><span class="cl">    register long a7 __asm__(&#34;a7&#34;) = n;
+</span></span><span class="line"><span class="cl">    register long a0_reg __asm__(&#34;a0&#34;) = a0;
+</span></span><span class="line"><span class="cl">    __asm__ volatile(
+</span></span><span class="line"><span class="cl">        &#34;ecall&#34;
+</span></span><span class="line"><span class="cl">        : &#34;+r&#34;(a0_reg)
+</span></span><span class="line"><span class="cl">        : &#34;r&#34;(a7)
+</span></span><span class="line"><span class="cl">        : &#34;memory&#34;
+</span></span><span class="line"><span class="cl">    );
+</span></span><span class="line"><span class="cl">    return a0_reg;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#define run(name, ...) {char *__cmd[] = {name, ##__VA_ARGS__, 0};__run(__cmd);}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">void main() {
+</span></span><span class="line"><span class="cl">    run(&#34;welcome&#34;);
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    printf(&#34;\n--- Start Trace Test ---\n&#34;);
+</span></span><span class="line"><span class="cl">    // 监听 172 号系统调用 (getpid)
+</span></span><span class="line"><span class="cl">    // 假设你的系统直接链接了内核提供的 syscall 接口
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    __syscall1(524, 172); 
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    getpid(); 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    int pid = fork();
+</span></span><span class="line"><span class="cl">    if(pid == 0){
+</span></span><span class="line"><span class="cl">        getpid(); 
+</span></span><span class="line"><span class="cl">        exit(0);
+</span></span><span class="line"><span class="cl">    } else {
+</span></span><span class="line"><span class="cl">        int s;
+</span></span><span class="line"><span class="cl">        wait(&amp;s);
+</span></span><span class="line"><span class="cl">        // 替换原本的 syscall(524, -1);
+</span></span><span class="line"><span class="cl">        __syscall1(524, -1);
+</span></span><span class="line"><span class="cl">        getpid(); 
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    printf(&#34;--- End Trace Test ---\n\n&#34;);
+</span></span><span class="line"><span class="cl">    // ===============================
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    run(&#34;sh&#34;);
+</span></span><span class="line"><span class="cl">    halt();
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#define WEXITSTATUS(s) (((s) &amp; 0xff00) &gt;&gt; 8)
+</span></span><span class="line"><span class="cl">void __run(char *argv[]) {
+</span></span><span class="line"><span class="cl">    char *env[] = {NULL};
+</span></span><span class="line"><span class="cl">    int npid = fork();
+</span></span><span class="line"><span class="cl">    if(npid &lt; 0) {
+</span></span><span class="line"><span class="cl">        printf(&#34;fork failed&#34;);
+</span></span><span class="line"><span class="cl">        for(;;);
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    if (npid == 0) { //子进程
+</span></span><span class="line"><span class="cl">        int ret = execve(argv[0], argv, env);
+</span></span><span class="line"><span class="cl">        printf(&#34;exec %s failed with %d\n&#34;, argv[0], ret);
+</span></span><span class="line"><span class="cl">    } else {          // 父进程
+</span></span><span class="line"><span class="cl">        int status;
+</span></span><span class="line"><span class="cl">        wait(&amp;status);
+</span></span><span class="line"><span class="cl">        printf(&#34;child %s exited with %d\n&#34;, argv[0], WEXITSTATUS(status));
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="">
+</h3><h4 id="用户与注册">用户与注册
+</h4><p>向用户态暴露系统调用接口与系统调用号常数。</p>
+<p>在user/include/unistd.c末尾添加</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define SYS_trace 524
+</span></span><span class="line"><span class="cl">int trace(int syscall_num);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在<code>entry/syscall.tbl</code>中添加调用表项</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">524 trace sys_trace
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="">
+</h4><h3 id="踩坑记录-1">踩坑记录
 </h3><p>遇到问题：<code>printf</code> 报错</p>
 <p>报错：</p>
 <div class="highlight"><div class="chroma">
@@ -1366,6 +1611,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>或者框架提供的内核版 <code>printf</code>。</p>
+<img src="18.png" style="width: 60%;" />
 <hr>
 <p>遇到问题：<code>undefined reference to sys_echo</code></p>
 <p>报错：</p>
@@ -1678,7 +1924,219 @@ unicode: "f6d2"
 </div>
 </div><p>强制结束进程。</p>
 <h2 id="待整理">待整理
-</h2>
+</h2><h3 id="">
+</h3><hr>
+<h3 id="第三步修改-srckernelsyscallc-第四步修改进程克隆文件-实现状态继承">第三步：修改 <code>src/kernel/syscall.c</code> (第四步：修改进程克隆文件 (实现状态继承)
+</h3><p>你的框架中必然存在负责进程复制的文件（如 <code>src/kernel/clone.c</code> 或 <code>src/kernel/fork.c</code>）。</p>
+<ol>
+<li>打开该文件，定位到 <code>sys_clone</code>、<code>clone</code> 或 <code>fork</code> 函数。</li>
+<li>找到代码中成功申请到子进程（通常命名为 <code>np</code>）并从父进程（<code>p</code> 或 <code>current</code>）拷贝数据的区域。</li>
+<li>在该区域添加一行代码，使得子进程能够继承父进程的监听状态：</li>
+</ol>
+<p>C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 在 clone/fork 内部拷贝逻辑处
+</span></span><span class="line"><span class="cl">np-&gt;traced_syscall = current-&gt;traced_syscall; // 如果用 myproc() 则是 myproc()-&gt;traced_syscall
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h3 id="第五步用户态接口声明若需要">第五步：用户态接口声明（若需要）
+</h3><p>在<code>entry/syscall.tbl</code>中添加调用表项</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">text
+</span></span><span class="line"><span class="cl">524 trace sys_trace
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>根据实验要求的第一步：<strong>在 <code>entry/syscall.tbl</code> 中添加约定系统调用号 524</strong>：</p>
+<p>Plaintext</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">524 trace sys_trace
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在内核源码目录编辑<code>src/sys_trace.c</code>，写入以下代码来进行实现，这段代码意思是获取用户态的num值然后将trace的目标设为这个值</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;common.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;kernel/proc.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;kernel/syscall.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_trace</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//获取用户态的num值
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">num</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">argint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">num</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">	<span class="c1">//将trace的目标设为这个值
+</span></span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">trace_num</span> <span class="o">=</span> <span class="n">num</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在/src/kernel syscall。c添加</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t
+</span></span><span class="line"><span class="cl">sys_trace(void)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 获取用户态传入的第 0 个参数（被监控的系统调用号）
+</span></span><span class="line"><span class="cl">    if (argint(0, &amp;syscall_num) &lt; 0)
+</span></span><span class="line"><span class="cl">        return -1;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 写入当前进程的 PCB 变量中
+</span></span><span class="line"><span class="cl">    current-&gt;traced_syscall = syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>是在 <code>src/kernel/syscall.c</code> 里，找到核心的 <code>syscall(void)</code> 分发函数。 在系统调用执行完、准备返回用户态的代码（通常在 <code>p-&gt;trapframe-&gt;a0 = ret;</code> 这一行的下面），加上拦截打印逻辑：</p>
+<p>C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">oid syscall(void) {
+</span></span><span class="line"><span class="cl">    struct proc *p = current;
+</span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7;
+</span></span><span class="line"><span class="cl">    uint64_t epc = read_csr(sepc);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    if (num &gt; 0 &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) {
+</span></span><span class="line"><span class="cl">        uint64_t ret = syscalls[num]();
+</span></span><span class="line"><span class="cl">        // debug_if(p-&gt;pid &gt;= first_user_pid, &#34;PID %d syscall &#34; grn(&#34;%s = %ld&#34;) &#34; from %#lx&#34;, p-&gt;pid, syscall_name(num), ret, epc);
+</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = ret;
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        if (p-&gt;traced_syscall == num) {
+</span></span><span class="line"><span class="cl">            // 如果编译报错提示找不到 syscall_name，请确保该文件头部有对应的声明或头文件包含
+</span></span><span class="line"><span class="cl">            kprintf(&#34;trace: PID %d calls %s\n&#34;, p-&gt;pid, syscall_name(num));
+</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">    } else {
+</span></span><span class="line"><span class="cl">        kprintf(&#34;PID %d %s: &#34;rd(&#34;unknown sys call %d&#34;)&#34; sepc %lx\n&#34;,
+</span></span><span class="line"><span class="cl">            p-&gt;pid, p-&gt;name, num, epc);
+</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = -ENOSYS;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="">
+</h4><p>因此 trace 最适合写在这里。</p>
+<p>编辑：src/kernel/syscall.c找到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 syscall 执行完成后加入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t
+</span></span><span class="line"><span class="cl">sys_trace(void)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 获取用户态传入的第 0 个参数（被监控的系统调用号）
+</span></span><span class="line"><span class="cl">    if (argint(0, &amp;syscall_num) &lt; 0)
+</span></span><span class="line"><span class="cl">        return -1;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 写入当前进程的 PCB 变量中
+</span></span><span class="line"><span class="cl">    current-&gt;traced_syscall = syscall_num;
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="">
+</h3>
 </section>
 
 
@@ -1945,7 +2403,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">96.05</span> 
+      <span class="number-highlight">98.79</span> 
       k 字
   </div>
   <div>
