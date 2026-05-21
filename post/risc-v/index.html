@@ -309,14 +309,14 @@ unicode: "f6d2"
             <li><a href="#实战">实战</a></li>
           </ol>
         </li>
-        <li><a href="#backtrace完成未整理">Backtrace（完成未整理）</a>
+        <li><a href="#backtrace">Backtrace</a>
           <ol>
             <li><a href="#原理">原理</a></li>
             <li><a href="#函数实现">函数实现</a></li>
             <li><a href="#测试">测试</a></li>
           </ol>
         </li>
-        <li><a href="#踩坑记录半整理">踩坑记录（半整理）</a></li>
+        <li><a href="#踩坑记录">踩坑记录</a></li>
       </ol>
     </li>
     <li><a href="#系统调用-1">系统调用</a>
@@ -328,16 +328,14 @@ unicode: "f6d2"
             <li><a href="#测试-1">测试</a></li>
           </ol>
         </li>
-        <li><a href="#trace系统调用完成半理解">trace系统调用（完成半理解）</a>
+        <li><a href="#trace系统调用">trace系统调用</a>
           <ol>
-            <li><a href="#pcb保存监听状态">PCB保存监听状态</a></li>
-            <li><a href="#系统调用注册">系统调用注册</a></li>
+            <li><a href="#pcb增加字段">PCB增加字段</a></li>
             <li><a href="#内核实现-1">内核实现</a></li>
-            <li><a href="#子进程继承">子进程继承</a></li>
-            <li><a href="#测试-2">测试</a></li>
+            <li><a href="#用户态调用">用户态调用</a></li>
           </ol>
         </li>
-        <li><a href="#踩坑记录半整理-1">踩坑记录（半整理）</a></li>
+        <li><a href="#踩坑记录半整理">踩坑记录（半整理）</a></li>
       </ol>
     </li>
     <li><a href="#内存与程序未整理">内存与程序（未整理）</a>
@@ -345,7 +343,7 @@ unicode: "f6d2"
         <li><a href="#内存布局">内存布局</a>
           <ol>
             <li><a href="#实现">实现</a></li>
-            <li><a href="#测试-3">测试</a></li>
+            <li><a href="#测试-2">测试</a></li>
           </ol>
         </li>
         <li><a href="#程序加载">程序加载</a>
@@ -354,7 +352,7 @@ unicode: "f6d2"
             <li><a href="#实现加载">实现加载</a></li>
           </ol>
         </li>
-        <li><a href="#踩坑记录">踩坑记录</a></li>
+        <li><a href="#踩坑记录-1">踩坑记录</a></li>
       </ol>
     </li>
     <li><a href="#进程与线程">进程与线程</a>
@@ -547,6 +545,7 @@ unicode: "f6d2"
 <li><code>_t</code> = type（类型）</li>
 </ul>
 </li>
+<li><code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int</li>
 </ul>
 <p>未分类：</p>
 <h3 id="流程描述">流程描述
@@ -1080,10 +1079,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="15.png" style="width: 90%;" />
-<h3 id="backtrace完成未整理">Backtrace（完成未整理）
+<h3 id="backtrace">Backtrace
 </h3><h4 id="原理">原理
 </h4><blockquote>
-<p>函数调用是用栈来实现的，通过栈可以保存过往的函数调用上下文，让程序有类似记忆的功能。而backtrace就是通过栈进行回溯，找到函数调用的来源链条</p>
+<p>函数调用是用栈来实现的，栈可以保存过往的函数调用上下文，让程序有类似记忆的功能。而backtrace就是通过栈进行回溯，利用fp遍历栈帧，然后读取每层的ra找到函数调用的来源链条</p>
 </blockquote>
 <p>在根目录下创建<code>hello.c</code>，写入下面的代码，这个代码构造了一条函数调用链：main() &gt; foo() &gt; bar()</p>
 <div class="highlight"><div class="chroma">
@@ -1136,7 +1135,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到函数的调用栈被打印出来，前面的一串十六进制是地址，后面的是函数名，按照bar，foo，main的顺序，刚好对应出栈的顺序</p>
-<p>程序运行时，每调用一次函数，CPU就会入栈一个栈帧。栈帧和栈的区别是：栈是程序运行中存储所有函数调用信息的总的数据结构，占用一整块连续内存，而栈帧是其中单次调用函数产生的数据，相当于栈的一个单元</p>
+<p>程序运行时，每调用一次函数，CPU就会创建一个栈帧。栈帧和栈的区别是：栈是程序运行中存储所有函数调用信息的总的数据结构，占用一整块连续内存，而栈帧是其中单次调用函数产生的数据，相当于栈的一个单元</p>
 <p>栈帧里面保存了：</p>
 <ul>
 <li>返回地址<code>Return Address，RA</code>：当前函数执行结束后，程序应该返回继续执行的位置</li>
@@ -1145,9 +1144,12 @@ unicode: "f6d2"
 <li>寄存器值<code>Saved Registers</code>：函数调用前需要暂时保存的寄存器值，用于之后恢复 CPU 状态</li>
 <li>函数参数<code>Function Arguments</code>：传递给当前函数的输入数据</li>
 </ul>
-<p>调用结束后，这个栈帧就会弹出。backtrace这个操作本质就是通过当前函数保存的fp，来向上一级级遍历，最终找到完整的调用链条</p>
+<p>调用结束后，这个栈帧就会弹出。backtrace这个操作本质就是通过当前函数保存的fp，来向上一级级的遍历，最终找到完整的调用链条，并输出链条中每个函数的返回地址，也就是ra(bar)、ra(foo)、ra(main)</p>
+<blockquote>
+<p>注意：这里输出的地址不是当前函数或者上一级函数的入口地址，而是当前函数执行完成后，上一个函数应该继续从哪句开始执行，ra就是这一句的地址。和fp的区别是fp找栈帧位置，ra找具体执行</p>
+</blockquote>
 <img src="25.png" style="width: 90%;" />
-<p>默认情况下程序只会保存一串地址，不能知道其他信息，上面看到的来源函数其实是GDB自动翻译的。为了便于定位，可以在编译时加上编译选项<code>-g</code>，也就是在ELF文件中加入DWARF调试信息表，可以记录这个地址对应的函数和这个函数来源于哪个文件的第几行，再经过GDB的翻译输出来</p>
+<p>默认情况下程序只会保存ra地址，不能知道其他信息，上面看到的来源函数其实是GDB自动翻译的。为了便于定位，可以在编译时加上编译选项<code>-g</code>，也就是在ELF文件中加入DWARF调试信息表，记录地址对应函数和代码行号。GDB用ra地址来查表，找到这个地址的函数信息并输出。因此最终看到的输出效果是函数名加上这个函数执行完成后的下一行代码位置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1158,7 +1160,7 @@ unicode: "f6d2"
 </div>
 </div><img src="27.png" style="width: 90%;" />
 <h4 id="函数实现">函数实现
-</h4><p>在 <code>src/utils.c</code>中加入 <code>backtrace</code> 函数</p>
+</h4><p>在 <code>src/utils.c</code>中加入 <code>backtrace</code> 函数，这个文件存放的是内核调试工具</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1232,33 +1234,8 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>RISC-V 栈帧布局：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">               +-------------------+  &lt;- 高地址 (Stack Base)
-</span></span><span class="line"><span class="cl">               |     ......        |
-</span></span><span class="line"><span class="cl">               +-------------------+
-</span></span><span class="line"><span class="cl">Previous FP -&gt; |  Saved Regs / etc |
-</span></span><span class="line"><span class="cl">               |  Return Address   |  &lt;- [FP - 8]  (当前函数的返回地址ra)
-</span></span><span class="line"><span class="cl">               |  Previous FP      |  &lt;- [FP - 16] (调用者的fp)
-</span></span><span class="line"><span class="cl">Current FP --&gt; +-------------------+  
-</span></span><span class="line"><span class="cl">               |  Local Variables  |
-</span></span><span class="line"><span class="cl">               |  ......           |
-</span></span><span class="line"><span class="cl">Current SP --&gt; +-------------------+  &lt;- 低地址 (Stack Top)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>由于在RISC-V中，s0寄存器用于存储fp，因此首先通过<code>asm volatile(&quot;mv %0, s0&quot; : &quot;=r&quot;(fp));</code>读取s0寄存器来获取当前函数栈帧的地址。一个栈帧中存储着两个fp，分别是自己的存储在<code>s0</code>，和上一个函数的存储在<code>fp-16</code>。fp 是一个局部基准，指向当前栈帧的某个固定点，然后往更高地址方向保存信息</p>
+<img src="44.png" style="width: 100%;" />
+<p>在RISC-V中，s0寄存器用于存储fp，因此首先通过<code>asm volatile(&quot;mv %0, s0&quot; : &quot;=r&quot;(fp));</code>读取s0寄存器来获取当前函数栈帧的地址。一个栈帧中存储着两个fp，分别是自己的存储在<code>s0</code>，和上一个函数的存储在<code>fp-16</code>。fp 在栈帧中是一个固定的锚点，ra和调用者的fp都是以fp为位置基准存储，所以能通过地址偏移来访问到</p>
 <p>为了防止函数一直向上寻找，超过当前进程的栈的地址范围导致崩溃，需要获取栈顶和栈底地址，其中：</p>
 <ul>
 <li>
@@ -1276,13 +1253,12 @@ unicode: "f6d2"
 </ul>
 <p>在栈的范围里进行回溯：</p>
 <ul>
-<li><code>*(uint64_t *)(fp - 8)</code> ：当前函数的返回地址，没用到？</li>
-<li><code>*(uint64_t *)(fp - 16)</code> ：上一级调用者的栈帧指针</li>
+<li><code>*(uint64_t *)(fp - 8)</code> ：当前函数的返回地址，在调用完成继续执行上级函数时会作为起点使用，这就是调用链的内容</li>
+<li><code>*(uint64_t *)(fp - 16)</code> ：上一级调用者的栈帧指针，用来作为调用链的结构</li>
 </ul>
 <p>最终将上级调用者的栈帧地址赋值给fp，就完成了一次回溯</p>
 <h4 id="测试">测试
-</h4><p>需要把 <code>backtrace()</code> 插进用户程序进入内核的必经之路——<strong>系统调用分发器</strong>。</p>
-<p>打开文件：<code>src/kernel/syscall.c</code>在void syscall(void)插入</p>
+</h4><p>所有用户态进入内核的路径最终都会汇聚到syscall。为了看到内核的函数调用链，可以将<code>backtrace()</code>插入<code>src/kernel/syscall.c</code>的<code>syscall()</code>函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1298,6 +1274,7 @@ unicode: "f6d2"
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void) {
@@ -1305,40 +1282,20 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7;
 </span></span><span class="line"><span class="cl">    uint64_t epc = read_csr(sepc);
 </span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 插入的部分
 </span></span><span class="line"><span class="cl">    static int trace_count = 0;
 </span></span><span class="line"><span class="cl">    if (trace_count &lt; 1) { 
 </span></span><span class="line"><span class="cl">        trace_count++;
 </span></span><span class="line"><span class="cl">        backtrace();
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    // ... 原本的系统调用分发逻辑不变 ...
+</span></span><span class="line"><span class="cl">    // ...
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新编译并运行，进入系统后就可以看到打印出的地址了</p>
+</div><p>重新编译并运行，进入系统后就可以看到打印出的地址了，这就是内核内部的调用链</p>
 <img src="32.png" style="width: 70%;" />
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">--- Backtrace Start ---
-</span></span><span class="line"><span class="cl">  0x802051a2
-</span></span><span class="line"><span class="cl">  0x8020a1bc
-</span></span><span class="line"><span class="cl">  0x80200234
-</span></span><span class="line"><span class="cl">--- Backtrace End ---
-</span></span><span class="line"><span class="cl">  child process.
-</span></span><span class="line"><span class="cl">  parent process. wstatus:0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>地址行号解析</p>
-<p>拿着屏幕上吐出来的第一行十六进制地址（例如 <code>802051a2</code>），另开一个开发机终端，运行：</p>
+<p>另开一个终端，运行下面的命令，然后将地址复制过来进行转换</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1347,22 +1304,14 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">riscv64-unknown-elf-addr2line -e build/kernel
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>把地址输入进去，如果回车后显示的是 <code>src/kernel/syscall.c</code> 对应的行号，且后续几行能对应到触发调度的代码，说明你的 Backtrace 彻底实现成功，可以直接提交评测拿满分了！</p>
-<p>th4uma@th4uma-VMware-Virtual-Platform:<del>/oslab/bs8f26agyq20260515130737$ riscv64-unknown-elf-addr2line -e build/kernel
-0x80215f74
-/root/oslab/bs8f26agyq20260515130737/src/kernel/syscall.c:108
-0x80218b00
-/root/oslab/bs8f26agyq20260515130737/src/kernel/trap.c:73
-^Xth4uma@th4uma-VMware-Virtual-Platform:</del>/oslab/bs8f26agyq20260515130737$ riscv64-unknown-elf-addr2line -e build/kernel
-0x80215f74
-/root/oslab/bs8f26agyq20260515130737/src/kernel/syscall.c:108
-0x80218b00
-/root/oslab/bs8f26agyq20260515130737/src/kernel/trap.c:73
-^X</p>
+</div><p>可以看到<code>syscall.c</code>和<code>trap.c</code>，说明syscall的源函数是trap，也证明了syscall的执行前提是CPU陷入内核态</p>
 <img src="33.png" style="width: 100%;" />
-<h3 id="踩坑记录半整理">踩坑记录（半整理）
-</h3><p><strong>脚本无法执行，报错<code>Permission denied</code></strong>：</p>
-<p>原因是在 Linux 中当前脚本没有执行权，从 Windows 解压复制或者 git 拉取的脚本经常出现这个问题，解决方法是<code>chmod +x</code>增加权限</p>
+<h3 id="踩坑记录">踩坑记录
+</h3><blockquote>
+<p>脚本无法执行，报错<code>Permission denied</code></p>
+</blockquote>
+<p><strong>原因</strong>：在 Linux 中当前脚本没有执行权，从 Windows 解压复制或者 git 拉取的脚本经常出现这个问题</p>
+<p><strong>解决方法</strong>：<code>chmod +x</code>增加权限</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1374,21 +1323,35 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="7.png" style="width: 100%;" />
-<p><strong>GDB 找不到文件，报错<code>build/kernel无法找到目标文件</code></strong>：</p>
-<p>原因是GDB运行在家目录，而文件在实验目录中。解决方法是进入实验目录再执行 GDB</p>
+<blockquote>
+<p>GDB 找不到文件，报错<code>build/kernel无法找到目标文件</code></p>
+</blockquote>
+<p><strong>原因</strong>：GDB运行在家目录，而文件在实验目录中</p>
+<p><strong>解决方法</strong>：进入实验目录再执行 GDB</p>
 <img src="8.png" style="width: 70%;" />
-<p><strong>内核编译完成后无限循环爆出 <code>--- Backtrace Start ---</code> 和 <code>--- Backtrace End ---</code>，中间不规律夹杂地址</strong>：</p>
-<p>把 <code>backtrace()</code> 挂到 <code>myproc()</code> 内部导致全系统炸裂<strong>解决方法</strong>：从打印模块中彻底删除测试桩，将 <code>backtrace()</code> 移至系统调用入口 <code>src/kernel/syscall.c</code> 中。</p>
-<p>内核在开机引导和终端加载时，其打印和环境初始化底层频繁使用了 <code>write</code> 等系统调用。只要将测试桩无差别地丢在 <code>syscall()</code> 函数中，开机时每一个字符或每一次行为都会高频触发回溯。</p>
+<blockquote>
+<p>内核编译完成后无限循环输出 <code>--- Backtrace Start ---</code> 和 <code>--- Backtrace End ---</code>，中间不规律夹杂地址</p>
+</blockquote>
+<p><strong>原因</strong>：把 <code>backtrace()</code> 放到了 <code>proc.c</code>的<code>myproc()</code> 中。<code>myproc()</code> 一般用于获取当前正在运行的进程PCB，会被内核路高频甚至嵌套调用，而且不同调用路径进入 myproc 的栈深度不同，才会出现这种情况</p>
+<p><strong>解决方法</strong>：将 <code>backtrace()</code> 放到调用可控的syscall函数中</p>
 <img src="30.png" style="width: 30%;" />
-<p><strong>编译完成后，进入系统前报错 <code>panic: kerneltrap</code></strong>：</p>
-<p>原因在 <code>proc.c</code> 的 <code>user0_init()</code> 中加入 <code>backtrace()</code> 导致在 <code>user0_init()</code> 执行期间，第一个用户进程还在创建阶段，其内核栈（<code>kstack</code>）和运行上下文还没有被完全构建完毕。此时强行进行栈回溯，由于没有合法的 <code>fp</code> 链，会导致指针解引用越界，触发内核异常页错误（Kernel Trap）。解决方法**：切勿在进程未完全就绪的初始化函数中执行栈回溯。</p>
+<blockquote>
+<p>编译完成后，进入系统前报错 <code>panic: kerneltrap</code></p>
+</blockquote>
+<p><strong>原因</strong>：把 <code>backtrace()</code> 放到了 <code>proc.c</code>的<code>user0_init()</code> 中，导致第一个用户进程还没有创建完成，栈信息还不稳定的时候就被调用。而backtrace依赖完整的栈，调用过程中可能会非法访问，从而触发了异常直接退出</p>
+<p><strong>解决方法</strong>：将 <code>backtrace()</code> 放到栈稳定后才被调用的syscall函数中</p>
 <img src="28.png" style="width: 70%;" />
-<p><strong>编译成功但不打印地址，没有任何输出</strong>：</p>
-<p>设置了精确过滤条件 <code>if (p &amp;&amp; p-&gt;pid &gt; 2 &amp;&amp; num == 1) { backtrace(); }</code>）导致完全不打印<strong>原因</strong>：硬编码了硬性的系统调用号（如 <code>num == 1</code>），但在不同的操作系统实现或动态生成的头文件（<code>syscall_gen.h</code>）中，<code>fork</code> 或 <code>clone</code> 的系统调用号并不一定是 1。条件未能命中，导致测试桩失效。解决方法**：不猜测具体的数字，改用内核自带的宏定义（如 <code>#ifdef SYS_fork</code>）或通过字符串匹配函数（如 <code>strcmp(syscall_name(num), &quot;fork&quot;) == 0</code>）进行精准 Hook 拦截。</p>
+<blockquote>
+<p>编译成功但不打印地址，没有任何输出</p>
+</blockquote>
+<p><strong>原因</strong>：为了防止打印次数过多，设置了过滤条件 <code>if (p &amp;&amp; p-&gt;pid &gt; 2 &amp;&amp; num == 1) { backtrace(); }</code>），但条件太严格导致所有输出都被过滤掉了</p>
+<p><strong>解决方法</strong>：修改过滤规则，采用计数打印，打印一次就结束</p>
 <img src="29.png" style="width: 70%;" />
-<p><strong>内核编译成功，输出正常，但输出次数过多</strong>：</p>
-<p>backtrace 正常在跑，但输出很多次，是因为把函数执行加在欢迎语句中间了，欢迎语句输出一个字符就打印一次计数器法（开机只印前 3 次，后续完全安静）</p>
+<blockquote>
+<p>内核编译成功，输出正常，但输出次数过多</p>
+</blockquote>
+<p><strong>原因</strong>：虽然把 <code>backtrace()</code> 放到了正确的位置，但<code>syscall()</code>本身会被多次调用，比如欢迎语句的输出，导致输出一个字符就执行一次backtrace</p>
+<p><strong>解决方法</strong>：添加过滤规则，计数打印，打印一次就结束</p>
 <img src="31.png" style="width: 30%;" />
 <h2 id="系统调用-1">系统调用
 </h2><p>用户程序没有权限直接访问内核，只能通过 syscall 对内核执行操作。系统调用也就是用户态通过ecall陷入内核，内核根据syscall号调用对应函数，然后返回结果</p>
@@ -1553,13 +1516,13 @@ unicode: "f6d2"
 </blockquote>
 <p>如果正常，会输出<code>Hello Navi</code>，也就是刚刚代码中定义的值，说明系统调用成功</p>
 <img src="17.png" style="width: 55%;" />
-<h3 id="trace系统调用完成半理解">trace系统调用（完成半理解）
-</h3><p><code>trace</code> 的作用是监听指定的 syscall 的执行，比如用户执行<code>trace(syscall_num)</code>，内核会监控当前进程之后的系统调用，如果执行了<code>syscall_num</code>对应的系统调用，就输出相关信息。这个进程的子进程也将会继承监听项</p>
-<h4 id="pcb保存监听状态">PCB保存监听状态
+<h3 id="trace系统调用">trace系统调用
+</h3><p><code>trace</code> 的作用是监听指定的 syscall 的执行，比如用户执行<code>trace(syscall_num)</code>，内核会监控当前进程之后的系统调用，如果执行了<code>syscall_num</code>对应的系统调用，就输出相关信息。这个进程的子进程也会继承监听项</p>
+<h4 id="pcb增加字段">PCB增加字段
 </h4><blockquote>
-<p>PCB就是操作系统用来管理一个进程状态的数据结构，里面会放入这个进程的一系列信息，类似登记表。系统调用的监听状态需要保存在 PCB 里。PCB在源码中的位置是<code>proc</code></p>
+<p>PCB就是操作系统用来管理一个进程状态的数据结构，里面会放入这个进程的一系列信息，每个进程都有自己独立的 PCB。系统调用的监听状态需要保存在 PCB 里，PCB在源码中的位置是<code>proc</code></p>
 </blockquote>
-<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号</p>
+<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号的变量。这里相当于每个进程的PCB里面新增了一个变量，让保存的状态里多一个监听号</p>
 <img src="19.png" style="width: 40%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1577,38 +1540,12 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">};
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="系统调用注册">系统调用注册
-</h4><p>系统调用需要一个唯一的 <code>syscall number</code>，用户态会通过这个编号告诉内核要调用哪个系统调用</p>
-<p>在传统 Linux 中，会在<code>user/include/unistd.h</code>末尾添加</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define SYS_trace 524
-</span></span><span class="line"><span class="cl">int trace(int syscall_num);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li><code>SYS_trace</code> ：定义系统调用号</li>
-<li><code>trace()</code> ：声明用户态函数</li>
-</ul>
-<p>不过这个实验并未使用 libc 封装，而是直接通过内联汇编执行 <code>ecall</code>，因此这里没有实际使用 <code>unistd.h</code> 中的定义。，执行了也没用会报错</p>
-<p>在<code>entry/syscall.tbl</code>中添加调用表项，来注册524号系统调用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">524 trace sys_trace
-</span></span></code></pre></td></tr></table>
-</div>
 </div><h4 id="内核实现-1">内核实现
 </h4><blockquote>
-<p>打开 <code>src/kernel/syscall.c</code>，进行两处修改</p>
+<p>主要实现</p>
 </blockquote>
-<p>文件末尾添加 <code>sys_trace</code>函数</p>
+<p><em>打开 <code>src/kernel/syscall.c</code>，进行两处修改</em></p>
+<p>文件末尾添加 <code>sys_trace</code>函数，当用户态执行<code>trace(num)</code>时，<code>num</code>就会被写入当前进程PCB的<code>traced_syscall</code>部分</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1630,20 +1567,20 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t sys_trace(void) {
 </span></span><span class="line"><span class="cl">    int syscall_num;
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 获取用户态传入的第 0 个参数
+</span></span><span class="line"><span class="cl">    // 获取用户态传入的第0个参数
 </span></span><span class="line"><span class="cl">    if (argint(0, &amp;syscall_num) &lt; 0) {
 </span></span><span class="line"><span class="cl">        return -1;
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 将其写入当前进程的 PCB 中
-</span></span><span class="line"><span class="cl">    struct proc *p = current; // 如果编译报错找不到 current，请替换为 myproc()
+</span></span><span class="line"><span class="cl">    // 写入当前进程的 PCB 中
+</span></span><span class="line"><span class="cl">    struct proc *p = current; 
 </span></span><span class="line"><span class="cl">    p-&gt;traced_syscall = syscall_num;
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    return 0;
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在 <code>void syscall(void)</code> 分发器中添加打印拦截，在系统调用执行完毕并将返回值赋给用户上下文之后，加入判断逻辑：</p>
+</div><p>在执行完系统调用，并将返回值放进a0寄存器后，对系统调用进行判断，如果和<code>traced_syscall</code>中存储的调用号相符就进行打印</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1662,35 +1599,43 @@ unicode: "f6d2"
 </span><span class="lnt">14
 </span><span class="lnt">15
 </span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void) {
 </span></span><span class="line"><span class="cl">    struct proc *p = current;
 </span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7; 
+</span></span><span class="line"><span class="cl">    uint64_t epc = read_csr(sepc);
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    if (num &gt; 0 &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) {
 </span></span><span class="line"><span class="cl">        uint64_t ret = syscalls[num]();
-</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = ret; // 写入返回值
+</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = ret; 
 </span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">        //拦截并打印 trace 信息
+</span></span><span class="line"><span class="cl">        //插入的部分
 </span></span><span class="line"><span class="cl">        if (p-&gt;traced_syscall == num) {
-</span></span><span class="line"><span class="cl">            // 使用系统提供的 syscall_name 获取字符串名称
 </span></span><span class="line"><span class="cl">            kprintf(&#34;trace: PID %d calls %s\n&#34;, p-&gt;pid, syscall_name(num));
 </span></span><span class="line"><span class="cl">        }
 </span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">    } else {
-</span></span><span class="line"><span class="cl">        kprintf(&#34;PID %d %s: unknown sys call %d\n&#34;, p-&gt;pid, p-&gt;name, num);
-</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = -1;
-</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">	// ...
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="子进程继承">子进程继承
-</h4><p>trace 有一个性质是子进程继承监听状态，</p>
-<p><code>src/kernel/clone.c</code> 找到创建新进程的地方np-&gt;parent = p;，在把父进程（<code>p</code>）的属性复制给子进程（<code>np</code>）的代码附近，加上这一行：</p>
+</div><blockquote>
+<p>调用表注册</p>
+</blockquote>
+<p>系统调用需要一个唯一的 <code>syscall number</code>，用户态会通过这个编号告诉内核要调用哪个系统调用</p>
+<p>在<code>entry/syscall.tbl</code>中添加调用表项，来注册524号系统调用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">524 trace sys_trace
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>子进程继承</p>
+</blockquote>
+<p>trace 有一个性质是子进程会继承监听状态，实现函数在<code>src/kernel/clone.c</code> 中。找到把父进程<code>p</code>的属性复制给子进程<code>np</code>的代码<code>np-&gt;parent = p;</code>，在这句之后，函数返回之前加上这一行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1700,11 +1645,26 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="26.png" style="width: 90%;" />
-<h4 id="测试-2">测试
-</h4><p>在用户态写一个程序，先调用 524 号系统调用开启 trace，再执行一些系统调用比如 getpid，看内核是否会输出类似 <code>trace: PID X calls getpid</code> 的信息，用来确认 trace 是否生效。</p>
-<p>这个环境里还没有封装好的 <code>trace()</code> 函数，所以测试代码一般用内联汇编直接发起 syscall，本质就是手动把 524 和参数放进寄存器，然后触发 <code>ecall</code> 进入内核。</p>
-<p>实际使用时，编辑 <code>user/src/init0.c</code></p>
-<p>在开头<code>void __run(char *argv[]);</code>后面添加</p>
+<h4 id="用户态调用">用户态调用
+</h4><blockquote>
+<p>在 Linux 中，一般会在用户态头文件<code>user/include/unistd.h</code>末尾添加声明</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define SYS_trace 524
+</span></span><span class="line"><span class="cl">int trace(int syscall_num);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>SYS_trace</code> ：定义系统调用号</li>
+<li><code>trace()</code> ：用户态声明trace函数</li>
+</ul>
+</blockquote>
+<p>当前环境没有 libc 提供标准的封装，所以用户态不能直接调用普通的 <code>trace()</code>，需要用汇编封装一个trace直接发起 syscall，就是手动把 524 和参数放进寄存器，然后触发 <code>ecall</code> 进入内核，最后把结果放回<code>a0_reg</code></p>
+<p>编辑 <code>user/src/init0.c</code> ，在开头<code>void __run(char *argv[]);</code>后面添加</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1721,8 +1681,8 @@ unicode: "f6d2"
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">static inline int trace(int syscall_num) {
-</span></span><span class="line"><span class="cl">    register long a7 __asm__(&#34;a7&#34;) = 524;         // 系统调用号 524
-</span></span><span class="line"><span class="cl">    register long a0_reg __asm__(&#34;a0&#34;) = syscall_num; // 参数：要监听的调用号
+</span></span><span class="line"><span class="cl">    register long a7 __asm__(&#34;a7&#34;) = 524;         // 系统调用号524
+</span></span><span class="line"><span class="cl">    register long a0_reg __asm__(&#34;a0&#34;) = syscall_num; // 要监听的调用号
 </span></span><span class="line"><span class="cl">    __asm__ volatile(
 </span></span><span class="line"><span class="cl">        &#34;ecall&#34;
 </span></span><span class="line"><span class="cl">        : &#34;+r&#34;(a0_reg)
@@ -1733,24 +1693,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>原本的main是这样</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void main() {
-</span></span><span class="line"><span class="cl">    run(&#34;welcome&#34;);
-</span></span><span class="line"><span class="cl">    run(&#34;sh&#34;);
-</span></span><span class="line"><span class="cl">    halt();
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在welcome下面加入</p>
+</div><p>在main函数中新增下面的程序，先调用 524 号系统调用开启 trace，再执行一些普通syscall比如 getpid，看内核是否会输出信息，用来确认 trace 是否生效</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1773,15 +1716,18 @@ unicode: "f6d2"
 </span><span class="lnt">18
 </span><span class="lnt">19
 </span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">printf(&#34;\n--- Start Trace Test ---\n&#34;);
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void main() {
+</span></span><span class="line"><span class="cl">    run(&#34;welcome&#34;);
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 像调用普通函数一样调用它，干净清爽
-</span></span><span class="line"><span class="cl">    trace(172); 
-</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    // 新增
+</span></span><span class="line"><span class="cl">    printf(&#34;\n--- Start Trace Test ---\n&#34;);
+</span></span><span class="line"><span class="cl">    trace(172);  
 </span></span><span class="line"><span class="cl">    getpid(); 
-</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    int pid = fork();
 </span></span><span class="line"><span class="cl">    if(pid == 0){
 </span></span><span class="line"><span class="cl">        getpid(); 
@@ -1789,12 +1735,15 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">    } else {
 </span></span><span class="line"><span class="cl">        int s;
 </span></span><span class="line"><span class="cl">        wait(&amp;s);
-</span></span><span class="line"><span class="cl">        
 </span></span><span class="line"><span class="cl">        // 传入 -1 取消监听
 </span></span><span class="line"><span class="cl">        trace(-1);
 </span></span><span class="line"><span class="cl">        getpid(); 
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">    printf(&#34;--- End Trace Test ---\n\n&#34;);
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    run(&#34;sh&#34;);
+</span></span><span class="line"><span class="cl">    halt();
+</span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译，可以看到成功输出了监控信息</p>
@@ -1809,12 +1758,18 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="20.png" style="width: 60%;" />
-<h3 id="踩坑记录半整理-1">踩坑记录（半整理）
-</h3><p><strong><code>printf</code>报错<code>implicit declaration of function 'printf'</code>和<code>stdio.h: No such file or directory</code></strong>：</p>
-<p>分别是最开始没有添加头文件，和第二次加入<code>#include &lt;stdio.h&gt;</code>产生的报错。原因是内核不是普通 Linux 用户程序，没有标准 C 库环境，不能直接使用 libc。解决方法是用内核自己的头文件<code>#include &quot;printf.h&quot;</code></p>
+<h3 id="踩坑记录半整理">踩坑记录（半整理）
+</h3><blockquote>
+<p><code>printf</code>报错<code>implicit declaration of function 'printf'</code>和<code>stdio.h: No such file or directory</code></p>
+</blockquote>
+<p>分别是最开始没有添加头文件，和第二次加入<code>#include &lt;stdio.h&gt;</code>产生的报错</p>
+<p><strong>原因</strong>：内核不是普通 Linux 用户程序，没有标准 C 库环境，不能直接使用 libc</p>
+<p><strong>解决方法</strong>：用内核自己的头文件<code>#include &quot;printf.h&quot;</code></p>
 <img src="18.png" style="width: 100%;" />
 <img src="24.png" style="width: 100%;" />
-<p><strong><code> sys_echo</code>报错<code>undefined reference to 'syscall'</code></strong>：</p>
+<blockquote>
+<p><code> sys_echo</code>报错<code>undefined reference to 'syscall'</code></p>
+</blockquote>
 <p>原因是用户态代码里调用了 <code>syscall()</code>，但工程里根本没有这个函数的实现，也没有链接到任何提供它的库，所以链接阶段直接报 <code>undefined reference</code>。</p>
 <p>在这个实验环境里，用户态通常不会提供完整的 libc，也不会默认有 <code>syscall()</code> 这种通用封装函数，所以直接写 <code>syscall(...)</code> 会导致链接失败。</p>
 <p>解决方式就是绕开这一层封装，直接用 RISC-V 的 <code>ecall</code> 指令发起系统调用，把参数放进约定寄存器里，比如 <code>a7</code> 放系统调用号，<code>a0</code> 放参数。这样就不依赖任何外部函数。</p>
@@ -1835,7 +1790,8 @@ unicode: "f6d2"
 </div><p>然后再调用<code>copy_from_user(buf, addr, len);</code>也就是先把用户指针转成内核能理解的地址数值，内核再把数据从用户空间拷贝到内核空间</p>
 <img src="21.png" style="width: 100%;" />
 <p><strong>编译完成后报错<code>panic: init exiting</code></strong>：</p>
-<p>原因是<code>init0.c</code>写错导致第一个用户进程退出，之后的用户进程无法启动，最终系统崩掉，解决方法是排查<code>init0.c</code>，保证逻辑完整</p>
+<p><strong>原因</strong>：<code>init0.c</code>写错导致第一个用户进程编译错误退出，之后的用户进程无法启动，最终系统崩掉</p>
+<p><strong>解决方法</strong>：排查<code>init0.c</code>，保证逻辑完整</p>
 <img src="23.png" style="width: 100%;" />
 <h2 id="内存与程序未整理">内存与程序（未整理）
 </h2><h3 id="内存布局">内存布局
@@ -1894,7 +1850,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="测试-3">测试
+</div><h4 id="测试-2">测试
 </h4><p>打开源文件 <code>src/kernel/exec.c</code>。定位到第 <code>110</code> 行附近插入调用语句：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2094,7 +2050,7 @@ Program Headers: ……
 </div>
 </div><p>重新编译后可以看到成功进入系统，说明程序通过编译</p>
 <img src="43.png" style="width: 60%;" />
-<h3 id="踩坑记录">踩坑记录
+<h3 id="踩坑记录-1">踩坑记录
 </h3><p>关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。</p>
 <p>/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error: &lsquo;vma_t&rsquo; {aka &lsquo;struct vma&rsquo;} has no member named &rsquo;link&rsquo;
 14 |         const typeof( ((type *)0)-&gt;member ) *__mptr = (ptr);    <br>
@@ -2550,7 +2506,7 @@ panic: init0 load</p>
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">102.60</span> 
+      <span class="number-highlight">102.64</span> 
       k 字
   </div>
   <div>
