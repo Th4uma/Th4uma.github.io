@@ -1237,8 +1237,8 @@
 &lt;li&gt;&lt;code&gt;trace()&lt;/code&gt; ：用户态声明trace函数&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;当前环境没有 libc 提供标准的封装，所以用户态不能直接调用普通的 &lt;code&gt;trace()&lt;/code&gt;，需要用汇编封装一个trace直接发起 syscall，就是手动把 524 和参数放进寄存器，然后触发 &lt;code&gt;ecall&lt;/code&gt; 进入内核，最后把结果放回&lt;code&gt;a0_reg&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;编辑 &lt;code&gt;user/src/init0.c&lt;/code&gt; ，在开头&lt;code&gt;void __run(char *argv[]);&lt;/code&gt;后面添加&lt;/p&gt;
+&lt;p&gt;这个环境没有 libc 提供标准的封装，所以用户态不能直接调用普通的 &lt;code&gt;trace()&lt;/code&gt;，需要自己封装一个trace函数发起syscall。也就是手动把 524 和监听目标分别放进a7和a0寄存器，然后触发 &lt;code&gt;ecall&lt;/code&gt; 进入内核，通过a0寄存器返回系统调用的返回值&lt;/p&gt;
+&lt;p&gt;编辑 &lt;code&gt;user/src/init0.c&lt;/code&gt; ，在开头&lt;code&gt;void __run(char *argv[]);&lt;/code&gt;后面添加下面的代码&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -1254,20 +1254,20 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;static inline int trace(int syscall_num) {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    register long a7 __asm__(&amp;#34;a7&amp;#34;) = 524;         // 系统调用号524
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    register long a0_reg __asm__(&amp;#34;a0&amp;#34;) = syscall_num; // 要监听的调用号
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    __asm__ volatile(
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &amp;#34;ecall&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        : &amp;#34;+r&amp;#34;(a0_reg)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        : &amp;#34;r&amp;#34;(a7)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        : &amp;#34;memory&amp;#34;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    );
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return a0_reg;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;inline&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;trace&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;syscall_num&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;register&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a7&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;__asm__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;a7&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;524&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;         &lt;span class=&#34;c1&#34;&gt;// 系统调用号524
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;register&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a0_reg&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;__asm__&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;a0&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;syscall_num&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// 要监听的调用号
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;__asm__&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;volatile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;s&#34;&gt;&amp;#34;ecall&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;+r&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a0_reg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a7&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;memory&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a0_reg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在main函数中新增下面的程序，先调用 524 号系统调用开启 trace，再执行一些普通syscall比如 getpid，看内核是否会输出信息，用来确认 trace 是否生效&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在main函数中新增下面的程序，先让trace监控172号系统调用getpid，然后执行调用，再创建一个子进程并调用，看内核是否会分别输出getpid和它的子进程信息。最后验证取消监听后还有没有输出&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -1293,31 +1293,37 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void main() {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    run(&amp;#34;welcome&amp;#34;);
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;run&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;welcome&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    // 新增
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    printf(&amp;#34;\n--- Start Trace Test ---\n&amp;#34;);
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    trace(172);  
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    getpid(); 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    int pid = fork();
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    if(pid == 0){
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        getpid(); 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        exit(0);
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    } else {
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        int s;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        wait(&amp;amp;s);
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        // 传入 -1 取消监听
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        trace(-1);
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        getpid(); 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    printf(&amp;#34;--- End Trace Test ---\n\n&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 新增
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;--- Start Trace Test ---&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;trace&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;172&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 创建子进程
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 如果是子进程就验证是否继承状态
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;// 父进程需要等待子进程结束调用
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;// 传入 -1 取消监听
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;trace&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;getpid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;--- End Trace Test ---&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    run(&amp;#34;sh&amp;#34;);
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    halt();
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;run&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;halt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重新编译，可以看到成功输出了监控信息&lt;/p&gt;
@@ -1332,7 +1338,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;20.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;h3 id=&#34;踩坑记录半整理&#34;&gt;踩坑记录（半整理）
+&lt;h3 id=&#34;踩坑记录-1&#34;&gt;踩坑记录
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;printf&lt;/code&gt;报错&lt;code&gt;implicit declaration of function &#39;printf&#39;&lt;/code&gt;和&lt;code&gt;stdio.h: No such file or directory&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -1344,13 +1350,13 @@
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt; sys_echo&lt;/code&gt;报错&lt;code&gt;undefined reference to &#39;syscall&#39;&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;原因是用户态代码里调用了 &lt;code&gt;syscall()&lt;/code&gt;，但工程里根本没有这个函数的实现，也没有链接到任何提供它的库，所以链接阶段直接报 &lt;code&gt;undefined reference&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;在这个实验环境里，用户态通常不会提供完整的 libc，也不会默认有 &lt;code&gt;syscall()&lt;/code&gt; 这种通用封装函数，所以直接写 &lt;code&gt;syscall(...)&lt;/code&gt; 会导致链接失败。&lt;/p&gt;
-&lt;p&gt;解决方式就是绕开这一层封装，直接用 RISC-V 的 &lt;code&gt;ecall&lt;/code&gt; 指令发起系统调用，把参数放进约定寄存器里，比如 &lt;code&gt;a7&lt;/code&gt; 放系统调用号，&lt;code&gt;a0&lt;/code&gt; 放参数。这样就不依赖任何外部函数。&lt;/p&gt;
-&lt;p&gt;可以在 &lt;code&gt;init0.c&lt;/code&gt; 里加一个内联函数，把 &lt;code&gt;trace&lt;/code&gt; 直接包装成 ecall 调用&lt;/p&gt;
-&lt;img src=&#34;22.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;strong&gt;&lt;code&gt;copy_from_user&lt;/code&gt; 参数类型错误，报错&lt;code&gt;passing argument 2 of &#39;copy_from_user&#39; makes integer from pointer without a cast&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
-&lt;p&gt;原因是把用户态的 &lt;code&gt;char *&lt;/code&gt; 指针直接传给了 &lt;code&gt;copy_from_user&lt;/code&gt;，但正常情况下传的应该是用户地址的数值形式。用户态指针在内核里只是一个虚拟地址标记，不能直接当普通指针用。应该先用 &lt;code&gt;argaddr&lt;/code&gt; 把参数取成 &lt;code&gt;uint64_t&lt;/code&gt; 地址&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：用户态代码里调用了 &lt;code&gt;syscall()&lt;/code&gt;作为trace函数，但代码里根本没有这个函数的实现，所以直接报错找不到&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：直接在 &lt;code&gt;init0.c&lt;/code&gt; 里自己写一个内联函数来实现 &lt;code&gt;trace&lt;/code&gt; 系统调用，这样就不再依赖写好的函数&lt;img src=&#34;22.png&#34; style=&#34;width: 100%;&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;copy_from_user&lt;/code&gt; 参数类型错误，报错&lt;code&gt;passing argument 2 of &#39;copy_from_user&#39; makes integer from pointer without a cast&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：把用户态的 &lt;code&gt;char *&lt;/code&gt; 指针直接传给了 &lt;code&gt;copy_from_user&lt;/code&gt;，但正常情况下传的应该是用户地址数值形式。用户态指针在内核里是用户虚拟地址，不能直接当普通指针用&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：先用 &lt;code&gt;argaddr&lt;/code&gt; 把参数取成 &lt;code&gt;uint64_t&lt;/code&gt; 地址&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1361,16 +1367,28 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;argaddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;然后再调用&lt;code&gt;copy_from_user(buf, addr, len);&lt;/code&gt;也就是先把用户指针转成内核能理解的地址数值，内核再把数据从用户空间拷贝到内核空间&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;然后再调用&lt;code&gt;copy_from_user(buf, addr, len);&lt;/code&gt;，内核通过传入的地址和长度信息把数据从用户寄存器拷贝到内核&lt;/p&gt;
 &lt;img src=&#34;21.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;strong&gt;编译完成后报错&lt;code&gt;panic: init exiting&lt;/code&gt;&lt;/strong&gt;：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;编译完成后报错&lt;code&gt;panic: init exiting&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：&lt;code&gt;init0.c&lt;/code&gt;写错导致第一个用户进程编译错误退出，之后的用户进程无法启动，最终系统崩掉&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：排查&lt;code&gt;init0.c&lt;/code&gt;，保证逻辑完整&lt;/p&gt;
 &lt;img src=&#34;23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;内存与程序未整理&#34;&gt;内存与程序（未整理）
 &lt;/h2&gt;&lt;h3 id=&#34;内存布局&#34;&gt;内存布局
-&lt;/h3&gt;&lt;h4 id=&#34;实现&#34;&gt;实现
-&lt;/h4&gt;&lt;p&gt;在根目录运行 &lt;code&gt;grep&lt;/code&gt; 命令查看 &lt;code&gt;vma_t&lt;/code&gt;的定义&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来&lt;/p&gt;
+&lt;h4 id=&#34;实现&#34;&gt;实现
+&lt;/h4&gt;&lt;p&gt;需要打印内存区域，首先就要找到保存这个区域的数据结构vma。vma就是虚拟内存，由于多个进程共享同一块物理内存，为了解决物理上不连续和安全问题，就给每一个进程分配一块连续地址的虚拟内存，用页表来映射到物理地址。虚拟内存在物理上可以不连续&lt;/p&gt;
+&lt;p&gt;一个进程的内存不是一整块，而是很多段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;代码段（程序本体）&lt;/li&gt;
+&lt;li&gt;堆（malloc）&lt;/li&gt;
+&lt;li&gt;栈（函数调用）&lt;/li&gt;
+&lt;li&gt;mmap 映射的区域&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这些每一段就是一个 VMA&lt;/p&gt;
+&lt;p&gt;在根目录运行 &lt;code&gt;grep&lt;/code&gt; 命令查看 &lt;code&gt;vma_t&lt;/code&gt;的定义&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1391,6 +1409,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;35.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;mm_t 一个进程的内存管理结构&lt;/p&gt;
+&lt;p&gt;里面维护：vma_head 也就是所有 VMA 的链表&lt;/p&gt;
 &lt;p&gt;打开 &lt;code&gt;mm/mmap.c&lt;/code&gt;，将原有的 &lt;code&gt;mmap_print&lt;/code&gt; 函数替换以下实现&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -1458,7 +1478,6 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;34.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;这是什么意思我不懂&lt;/p&gt;
 &lt;h3 id=&#34;程序加载&#34;&gt;程序加载
 &lt;/h3&gt;&lt;h4 id=&#34;内核elf&#34;&gt;内核ELF
 &lt;/h4&gt;&lt;p&gt;我们编译出来的内核本身其实就是个ELF文件格式，它被存放在build/kernel，我们可以通过readelf工具来读取它：&lt;/p&gt;
@@ -1624,7 +1643,7 @@ Program Headers: ……
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重新编译后可以看到成功进入系统，说明程序通过编译&lt;/p&gt;
 &lt;img src=&#34;43.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;h3 id=&#34;踩坑记录-1&#34;&gt;踩坑记录
+&lt;h3 id=&#34;踩坑记录-2&#34;&gt;踩坑记录
 &lt;/h3&gt;&lt;p&gt;关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。&lt;/p&gt;
 &lt;p&gt;/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error: &amp;lsquo;vma_t&amp;rsquo; {aka &amp;lsquo;struct vma&amp;rsquo;} has no member named &amp;rsquo;link&amp;rsquo;
 14 |         const typeof( ((type *)0)-&amp;gt;member ) *__mptr = (ptr);    &lt;br&gt;

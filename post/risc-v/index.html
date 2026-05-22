@@ -335,7 +335,7 @@ unicode: "f6d2"
             <li><a href="#用户态调用">用户态调用</a></li>
           </ol>
         </li>
-        <li><a href="#踩坑记录半整理">踩坑记录（半整理）</a></li>
+        <li><a href="#踩坑记录-1">踩坑记录</a></li>
       </ol>
     </li>
     <li><a href="#内存与程序未整理">内存与程序（未整理）</a>
@@ -352,7 +352,7 @@ unicode: "f6d2"
             <li><a href="#实现加载">实现加载</a></li>
           </ol>
         </li>
-        <li><a href="#踩坑记录-1">踩坑记录</a></li>
+        <li><a href="#踩坑记录-2">踩坑记录</a></li>
       </ol>
     </li>
     <li><a href="#进程与线程">进程与线程</a>
@@ -1663,8 +1663,8 @@ unicode: "f6d2"
 <li><code>trace()</code> ：用户态声明trace函数</li>
 </ul>
 </blockquote>
-<p>当前环境没有 libc 提供标准的封装，所以用户态不能直接调用普通的 <code>trace()</code>，需要用汇编封装一个trace直接发起 syscall，就是手动把 524 和参数放进寄存器，然后触发 <code>ecall</code> 进入内核，最后把结果放回<code>a0_reg</code></p>
-<p>编辑 <code>user/src/init0.c</code> ，在开头<code>void __run(char *argv[]);</code>后面添加</p>
+<p>这个环境没有 libc 提供标准的封装，所以用户态不能直接调用普通的 <code>trace()</code>，需要自己封装一个trace函数发起syscall。也就是手动把 524 和监听目标分别放进a7和a0寄存器，然后触发 <code>ecall</code> 进入内核，通过a0寄存器返回系统调用的返回值</p>
+<p>编辑 <code>user/src/init0.c</code> ，在开头<code>void __run(char *argv[]);</code>后面添加下面的代码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1680,20 +1680,20 @@ unicode: "f6d2"
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">static inline int trace(int syscall_num) {
-</span></span><span class="line"><span class="cl">    register long a7 __asm__(&#34;a7&#34;) = 524;         // 系统调用号524
-</span></span><span class="line"><span class="cl">    register long a0_reg __asm__(&#34;a0&#34;) = syscall_num; // 要监听的调用号
-</span></span><span class="line"><span class="cl">    __asm__ volatile(
-</span></span><span class="line"><span class="cl">        &#34;ecall&#34;
-</span></span><span class="line"><span class="cl">        : &#34;+r&#34;(a0_reg)
-</span></span><span class="line"><span class="cl">        : &#34;r&#34;(a7)
-</span></span><span class="line"><span class="cl">        : &#34;memory&#34;
-</span></span><span class="line"><span class="cl">    );
-</span></span><span class="line"><span class="cl">    return a0_reg;
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">trace</span><span class="p">(</span><span class="kt">int</span> <span class="n">syscall_num</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">register</span> <span class="kt">long</span> <span class="n">a7</span> <span class="nf">__asm__</span><span class="p">(</span><span class="s">&#34;a7&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mi">524</span><span class="p">;</span>         <span class="c1">// 系统调用号524
+</span></span></span><span class="line"><span class="cl">    <span class="k">register</span> <span class="kt">long</span> <span class="n">a0_reg</span> <span class="nf">__asm__</span><span class="p">(</span><span class="s">&#34;a0&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="n">syscall_num</span><span class="p">;</span> <span class="c1">// 要监听的调用号
+</span></span></span><span class="line"><span class="cl">    <span class="n">__asm__</span> <span class="k">volatile</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s">&#34;ecall&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="s">&#34;+r&#34;</span><span class="p">(</span><span class="n">a0_reg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="s">&#34;r&#34;</span><span class="p">(</span><span class="n">a7</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="s">&#34;memory&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">a0_reg</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在main函数中新增下面的程序，先调用 524 号系统调用开启 trace，再执行一些普通syscall比如 getpid，看内核是否会输出信息，用来确认 trace 是否生效</p>
+</div><p>在main函数中新增下面的程序，先让trace监控172号系统调用getpid，然后执行调用，再创建一个子进程并调用，看内核是否会分别输出getpid和它的子进程信息。最后验证取消监听后还有没有输出</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1719,31 +1719,37 @@ unicode: "f6d2"
 </span><span class="lnt">21
 </span><span class="lnt">22
 </span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void main() {
-</span></span><span class="line"><span class="cl">    run(&#34;welcome&#34;);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">run</span><span class="p">(</span><span class="s">&#34;welcome&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 新增
-</span></span><span class="line"><span class="cl">    printf(&#34;\n--- Start Trace Test ---\n&#34;);
-</span></span><span class="line"><span class="cl">    trace(172);  
-</span></span><span class="line"><span class="cl">    getpid(); 
-</span></span><span class="line"><span class="cl">    int pid = fork();
-</span></span><span class="line"><span class="cl">    if(pid == 0){
-</span></span><span class="line"><span class="cl">        getpid(); 
-</span></span><span class="line"><span class="cl">        exit(0);
-</span></span><span class="line"><span class="cl">    } else {
-</span></span><span class="line"><span class="cl">        int s;
-</span></span><span class="line"><span class="cl">        wait(&amp;s);
-</span></span><span class="line"><span class="cl">        // 传入 -1 取消监听
-</span></span><span class="line"><span class="cl">        trace(-1);
-</span></span><span class="line"><span class="cl">        getpid(); 
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    printf(&#34;--- End Trace Test ---\n\n&#34;);
+</span></span><span class="line"><span class="cl">    <span class="c1">// 新增
+</span></span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">--- Start Trace Test ---</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">trace</span><span class="p">(</span><span class="mi">172</span><span class="p">);</span>  
+</span></span><span class="line"><span class="cl">    <span class="nf">getpid</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">    <span class="c1">// 创建子进程
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="nf">fork</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果是子进程就验证是否继承状态
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">getpid</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">        <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 父进程需要等待子进程结束调用
+</span></span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 传入 -1 取消监听
+</span></span></span><span class="line"><span class="cl">        <span class="nf">trace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">getpid</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;--- End Trace Test ---</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    run(&#34;sh&#34;);
-</span></span><span class="line"><span class="cl">    halt();
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">    <span class="nf">run</span><span class="p">(</span><span class="s">&#34;sh&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">halt</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译，可以看到成功输出了监控信息</p>
@@ -1758,7 +1764,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="20.png" style="width: 60%;" />
-<h3 id="踩坑记录半整理">踩坑记录（半整理）
+<h3 id="踩坑记录-1">踩坑记录
 </h3><blockquote>
 <p><code>printf</code>报错<code>implicit declaration of function 'printf'</code>和<code>stdio.h: No such file or directory</code></p>
 </blockquote>
@@ -1770,13 +1776,13 @@ unicode: "f6d2"
 <blockquote>
 <p><code> sys_echo</code>报错<code>undefined reference to 'syscall'</code></p>
 </blockquote>
-<p>原因是用户态代码里调用了 <code>syscall()</code>，但工程里根本没有这个函数的实现，也没有链接到任何提供它的库，所以链接阶段直接报 <code>undefined reference</code>。</p>
-<p>在这个实验环境里，用户态通常不会提供完整的 libc，也不会默认有 <code>syscall()</code> 这种通用封装函数，所以直接写 <code>syscall(...)</code> 会导致链接失败。</p>
-<p>解决方式就是绕开这一层封装，直接用 RISC-V 的 <code>ecall</code> 指令发起系统调用，把参数放进约定寄存器里，比如 <code>a7</code> 放系统调用号，<code>a0</code> 放参数。这样就不依赖任何外部函数。</p>
-<p>可以在 <code>init0.c</code> 里加一个内联函数，把 <code>trace</code> 直接包装成 ecall 调用</p>
-<img src="22.png" style="width: 100%;" />
-<p><strong><code>copy_from_user</code> 参数类型错误，报错<code>passing argument 2 of 'copy_from_user' makes integer from pointer without a cast</code></strong>：</p>
-<p>原因是把用户态的 <code>char *</code> 指针直接传给了 <code>copy_from_user</code>，但正常情况下传的应该是用户地址的数值形式。用户态指针在内核里只是一个虚拟地址标记，不能直接当普通指针用。应该先用 <code>argaddr</code> 把参数取成 <code>uint64_t</code> 地址</p>
+<p><strong>原因</strong>：用户态代码里调用了 <code>syscall()</code>作为trace函数，但代码里根本没有这个函数的实现，所以直接报错找不到</p>
+<p><strong>解决方法</strong>：直接在 <code>init0.c</code> 里自己写一个内联函数来实现 <code>trace</code> 系统调用，这样就不再依赖写好的函数<img src="22.png" style="width: 100%;" /></p>
+<blockquote>
+<p><code>copy_from_user</code> 参数类型错误，报错<code>passing argument 2 of 'copy_from_user' makes integer from pointer without a cast</code></p>
+</blockquote>
+<p><strong>原因</strong>：把用户态的 <code>char *</code> 指针直接传给了 <code>copy_from_user</code>，但正常情况下传的应该是用户地址数值形式。用户态指针在内核里是用户虚拟地址，不能直接当普通指针用</p>
+<p><strong>解决方法</strong>：先用 <code>argaddr</code> 把参数取成 <code>uint64_t</code> 地址</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1787,16 +1793,28 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="nf">argaddr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">addr</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>然后再调用<code>copy_from_user(buf, addr, len);</code>也就是先把用户指针转成内核能理解的地址数值，内核再把数据从用户空间拷贝到内核空间</p>
+</div><p>然后再调用<code>copy_from_user(buf, addr, len);</code>，内核通过传入的地址和长度信息把数据从用户寄存器拷贝到内核</p>
 <img src="21.png" style="width: 100%;" />
-<p><strong>编译完成后报错<code>panic: init exiting</code></strong>：</p>
+<blockquote>
+<p>编译完成后报错<code>panic: init exiting</code></p>
+</blockquote>
 <p><strong>原因</strong>：<code>init0.c</code>写错导致第一个用户进程编译错误退出，之后的用户进程无法启动，最终系统崩掉</p>
 <p><strong>解决方法</strong>：排查<code>init0.c</code>，保证逻辑完整</p>
 <img src="23.png" style="width: 100%;" />
 <h2 id="内存与程序未整理">内存与程序（未整理）
 </h2><h3 id="内存布局">内存布局
-</h3><h4 id="实现">实现
-</h4><p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>的定义</p>
+</h3><p>这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来</p>
+<h4 id="实现">实现
+</h4><p>需要打印内存区域，首先就要找到保存这个区域的数据结构vma。vma就是虚拟内存，由于多个进程共享同一块物理内存，为了解决物理上不连续和安全问题，就给每一个进程分配一块连续地址的虚拟内存，用页表来映射到物理地址。虚拟内存在物理上可以不连续</p>
+<p>一个进程的内存不是一整块，而是很多段：</p>
+<ul>
+<li>代码段（程序本体）</li>
+<li>堆（malloc）</li>
+<li>栈（函数调用）</li>
+<li>mmap 映射的区域</li>
+</ul>
+<p>这些每一段就是一个 VMA</p>
+<p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1817,6 +1835,8 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="35.png" style="width: 100%;" />
+<p>mm_t 一个进程的内存管理结构</p>
+<p>里面维护：vma_head 也就是所有 VMA 的链表</p>
 <p>打开 <code>mm/mmap.c</code>，将原有的 <code>mmap_print</code> 函数替换以下实现</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1884,7 +1904,6 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="34.png" style="width: 60%;" />
-<p>这是什么意思我不懂</p>
 <h3 id="程序加载">程序加载
 </h3><h4 id="内核elf">内核ELF
 </h4><p>我们编译出来的内核本身其实就是个ELF文件格式，它被存放在build/kernel，我们可以通过readelf工具来读取它：</p>
@@ -2050,7 +2069,7 @@ Program Headers: ……
 </div>
 </div><p>重新编译后可以看到成功进入系统，说明程序通过编译</p>
 <img src="43.png" style="width: 60%;" />
-<h3 id="踩坑记录-1">踩坑记录
+<h3 id="踩坑记录-2">踩坑记录
 </h3><p>关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。</p>
 <p>/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error: &lsquo;vma_t&rsquo; {aka &lsquo;struct vma&rsquo;} has no member named &rsquo;link&rsquo;
 14 |         const typeof( ((type *)0)-&gt;member ) *__mptr = (ptr);    <br>
@@ -2506,7 +2525,7 @@ panic: init0 load</p>
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">102.64</span> 
+      <span class="number-highlight">103.91</span> 
       k 字
   </div>
   <div>
