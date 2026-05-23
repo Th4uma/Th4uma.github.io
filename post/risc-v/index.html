@@ -338,7 +338,7 @@ unicode: "f6d2"
         <li><a href="#踩坑记录-1">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#内存与程序未整理">内存与程序（未整理）</a>
+    <li><a href="#内存与程序">内存与程序</a>
       <ol>
         <li><a href="#内存布局">内存布局</a>
           <ol>
@@ -346,7 +346,7 @@ unicode: "f6d2"
             <li><a href="#测试-2">测试</a></li>
           </ol>
         </li>
-        <li><a href="#程序加载">程序加载</a>
+        <li><a href="#程序加载--1111">程序加载  1111</a>
           <ol>
             <li><a href="#内核elf">内核ELF</a></li>
             <li><a href="#实现加载">实现加载</a></li>
@@ -1801,20 +1801,16 @@ unicode: "f6d2"
 <p><strong>原因</strong>：<code>init0.c</code>写错导致第一个用户进程编译错误退出，之后的用户进程无法启动，最终系统崩掉</p>
 <p><strong>解决方法</strong>：排查<code>init0.c</code>，保证逻辑完整</p>
 <img src="23.png" style="width: 100%;" />
-<h2 id="内存与程序未整理">内存与程序（未整理）
+<h2 id="内存与程序">内存与程序
 </h2><h3 id="内存布局">内存布局
-</h3><p>这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来</p>
+</h3><blockquote>
+<p>这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来</p>
+</blockquote>
+<p>要打印内存区域，首先就要找到保存这个区域的数据结构vma，vma就是描述一段虚拟内存的结构体。每一个进程会被分配到一块连续地址的虚拟内存，用页表来将虚拟地址映射到物理地址，不同进程的物理页可以独立或者共享，虚拟内存解决了物理内存不连续和需要隔离的问题</p>
+<p>一个进程的虚拟内存不是一整块，是分成很多作用不同的段，每一段就是一个<code>vma_t</code>，比如程序代码、全局变量、堆、栈这一类。vma由链表存储，链表入口是<code>vma_head</code>，上面的一个段也就是一个节点，所有链表都存储在<code>mm_t</code>结构体中</p>
+<img src="45.png" style="width: 40%;" />
 <h4 id="实现">实现
-</h4><p>需要打印内存区域，首先就要找到保存这个区域的数据结构vma。vma就是虚拟内存，由于多个进程共享同一块物理内存，为了解决物理上不连续和安全问题，就给每一个进程分配一块连续地址的虚拟内存，用页表来映射到物理地址。虚拟内存在物理上可以不连续</p>
-<p>一个进程的内存不是一整块，而是很多段：</p>
-<ul>
-<li>代码段（程序本体）</li>
-<li>堆（malloc）</li>
-<li>栈（函数调用）</li>
-<li>mmap 映射的区域</li>
-</ul>
-<p>这些每一段就是一个 VMA</p>
-<p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>的定义</p>
+</h4><p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>这个结构体的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1823,7 +1819,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -n -A 20 &#34;struct vma {&#34; include/mm/mmap.h
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>从 <code>grep</code> 返回的定义可以发现，目标链表节点变量名叫 <code>head</code></p>
+</div><p>我的目的是找到<code>vma_t</code>中用于把节点挂在链表上的变量名称，从输出中可以发现，这个变量叫 <code>head</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1835,9 +1831,19 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="35.png" style="width: 100%;" />
-<p>mm_t 一个进程的内存管理结构</p>
-<p>里面维护：vma_head 也就是所有 VMA 的链表</p>
-<p>打开 <code>mm/mmap.c</code>，将原有的 <code>mmap_print</code> 函数替换以下实现</p>
+<ul>
+<li><code>addr</code>：按页对齐后这段虚拟内存的起点</li>
+<li><code>raddr</code>：实际映射的起点物理地址</li>
+<li><code>len</code>：按页对齐后这段虚拟内存的总大小</li>
+<li><code>rlen</code>：实际使用的长度，一般小于或等于 <code>len</code></li>
+<li><code>offset</code>：文件映射时，从文件哪个位置开始</li>
+<li><code>flags</code>：这段内存的类型</li>
+<li><code>prot</code>：访问权限，标记区域是否可以读写执行</li>
+<li><code>page_spec</code>：页相关的额外规则</li>
+<li><code>head</code>：用于链表的连接</li>
+<li><code>map_file</code>：映射的文件指针，没有文件就是空</li>
+</ul>
+<p>打开用于管理内存的代码 <code>mm/mmap.c</code>，放入 <code>mmap_print</code> 函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1858,7 +1864,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void mmap_print(mm_t *mm) {
 </span></span><span class="line"><span class="cl">    vma_t *vma;
 </span></span><span class="line"><span class="cl">    int id = 1;
-</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// 防止空指针
 </span></span><span class="line"><span class="cl">    if (mm == NULL) {
 </span></span><span class="line"><span class="cl">        return;
 </span></span><span class="line"><span class="cl">    }
@@ -1870,43 +1876,59 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="测试-2">测试
-</h4><p>打开源文件 <code>src/kernel/exec.c</code>。定位到第 <code>110</code> 行附近插入调用语句：</p>
+</div><p>逻辑就是传入某个进程的<code>mm_t</code>，然后从head开始遍历并输出里面所有的vma</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ustack -= sizeof(uint64_t) * argc;
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list_for_each_entry(vma, &amp;mm-&gt;vma_head, head)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>&amp;mm-&gt;vma_head</code>：链表入口</li>
+<li><code>vma</code>：当前遍历到的 vma_t</li>
+<li><code>head</code>：将节点挂入链表的变量，用来找下一个节点</li>
+</ul>
+<h4 id="测试-2">测试
+</h4><p>在 <code>src/kernel/exec.c</code>中这个位置插入函数调用</p>
+<p><code>exec</code>的作用是将一个进程中的程序换成新的程序。这个位置是在某个进程执行exec切换程序，初始化好新程序的内存但还没有释放旧内存的时候。放在这里是因为可以完整观察新程序的虚拟内存布局，还不会受到执行程序对内存产生的影响</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 初始化新程序的内存
+</span></span><span class="line"><span class="cl">ustack -= sizeof(uint64_t) * argc;
 </span></span><span class="line"><span class="cl">copy_to_user(ustack, argcv, sizeof(uint64_t) * argc);
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">mmap_print(newmm);//新增项
+</span></span><span class="line"><span class="cl">//新增项
+</span></span><span class="line"><span class="cl">mmap_print(newmm);
 </span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// 释放旧程序的内存
 </span></span><span class="line"><span class="cl">tf_reset(proc_get_tf(p), elfentry, ustack);
 </span></span><span class="line"><span class="cl">mmap_free(&amp;oldmm);
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新编译，可以看到成功输出了监控信息</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
-</span></span><span class="line"><span class="cl">./run-qemu.sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="34.png" style="width: 60%;" />
-<h3 id="程序加载">程序加载
+</div><p>重新编译，可以看到成功输出了监控信息。这里看到两段信息，表示同一个进程在exec过程中重新构建了vma</p>
+<img src="34.png" style="width: 90%;" />
+<h3 id="程序加载--1111">程序加载  1111
 </h3><h4 id="内核elf">内核ELF
-</h4><p>我们编译出来的内核本身其实就是个ELF文件格式，它被存放在build/kernel，我们可以通过readelf工具来读取它：</p>
+</h4><p>我们编译出来的内核，本质上就是一个 <strong>ELF 可执行文件</strong>，存放在build/kernel可以用 <code>readelf</code> 看它里面到底装了什么</p>
+<p>readelf -lh 是把这个 ELF 文件“怎么被加载、加载到哪、分成几块”打印出来它重点看两类东西：</p>
+<ul>
+<li>ELF 头（基本信息）</li>
+<li>Program Header（加载信息）</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1917,7 +1939,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">readelf -lh build/kernel
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="37.png" style="width: 60%;" />
+</div><img src="37.png" style="width: 90%;" />
 ELF Header:
   Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
   Class:                             ELF64
@@ -1948,15 +1970,22 @@ Program Headers:
    00     .text .rodata .data .bss 
 readelf -lh是什么意思？跳出来的一大堆又是什么？？ 为什么不问问神奇海螺ChatGPT呢！
 <p>此外，你还可以自己编写一个HelloWorld.c并使用gcc来编译它，再使用readelf来查看相关字段，看看有何异同？如果在编译选项中加入&ndash;static选项呢？</p>
-<p>在这，我们需要关注的是如下几个字段：</p>
-<p>OS/ABI: UNIX - System V
-Machine: RISC-V
-Entry point address: 0x80020000
-Program Headers: ……
-第一个字段指定了二进制程序使用的ABI(Application Binary Interface)标准，它规定了该可执行程序的运行环境（初始参数：argc、argv，栈结构，环境变量传递等等），如果你对此感兴趣，那么具体可以参考System V ABI - OSDev Wiki。</p>
-<p>第二个字段指定了该二进制可执行程序的指令集架构。</p>
-<p>第三个字段指定了该二进制可执行程序的入口地址。</p>
-<p>第四个字段则罗列了该程序的所有段（Segment），上面内核的段较为特殊，只有一个，正常情况下一个程序的段可能有好几个，可以分为数据段、代码段等等，分别还可以指定不同的读写执行权限。当程序被加载执行时，程序中所描述的这些段，将被操作系统从文件系统加载进内存中。</p>
+<ul>
+<li><code>OS/ABI</code>：程序运行所遵循的系统接口标准，定义参数传递 栈结构 环境变量等运行规则</li>
+<li><code>Machine</code>：目标指令集架构 表示程序运行的CPU类型如RISC-V</li>
+<li><code>Entry point address</code>：程序启动执行的入口地址 CPU从这里开始运行</li>
+<li><code>Program Headers</code>：程序加载描述表 定义文件内容如何映射到内存</li>
+<li><code>Type</code>：段类型 表示这一段在加载时的角色如LOAD</li>
+<li><code>Offset</code>：该段在文件中的起始位置</li>
+<li><code>VirtAddr</code>：该段加载到的虚拟地址</li>
+<li><code>PhysAddr</code>：该段对应的物理地址或映射地址</li>
+<li><code>FileSiz</code>：该段在文件中的大小</li>
+<li><code>MemSiz</code>：该段在内存中的占用大小 可能大于文件大小</li>
+<li><code>Flags</code>：该段权限标志 表示可读可写可执行</li>
+<li><code>Align</code>：内存对齐要求 一般以页大小为单位</li>
+<li><code>Section to Segment mapping</code>：段和节的对应关系 表示哪些section被打包进哪个segment</li>
+</ul>
+<p>ELF 就是“程序说明书”，Program Header 决定文件哪一部分放进内存哪一段，并且带着权限一起加载进去。ELF 文件就是“程序 + 加载规则”，readelf -lh 就是在看它怎么被放进内存、从哪开始执行、分了哪些区域。</p>
 <h4 id="实现加载">实现加载
 </h4><p>mmap_map函数声明或者定义。</p>
 <div class="highlight"><div class="chroma">
@@ -2068,15 +2097,19 @@ Program Headers: ……
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译后可以看到成功进入系统，说明程序通过编译</p>
-<img src="43.png" style="width: 60%;" />
+<img src="43.png" style="width: 90%;" />
 <h3 id="踩坑记录-2">踩坑记录
-</h3><p>关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。</p>
-<p>/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error: &lsquo;vma_t&rsquo; {aka &lsquo;struct vma&rsquo;} has no member named &rsquo;link&rsquo;
+</h3><blockquote>
+<p>mmap报错<code> 'vma_t' {aka 'struct vma'} has no member named 'link'</code></p>
+</blockquote>
+<p><strong>原因</strong>：写错vma_t中的链表变量名称</p>
+<p><strong>解决方法</strong>：grep查找定义后进行修改成head</p>
+<p>关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。</p>
+<p>/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error:
 14 |         const typeof( ((type *)0)-&gt;member ) *__mptr = (ptr);    <br>
 |                                  ^~</p>
-<p>grep查找定义后进行修改成head</p>
-<img src="36.png" style="width: 60%;" />
-<p>&lsquo;struct proghdr&rsquo; has no member named &lsquo;offset&rsquo;grep查找定义后进行修改成off最开始按标准 ELF 字段写了 <code>ph.offset</code>，但实验框架里的 <code>struct proghdr</code> 实际使用的是 xv6 风格字段名 <code>off</code>。通过查看 <code>include/elf.h</code> 里的结构定义，改成 <code>ph.off</code> 后解决编译错误。</p>
+<img src="36.png" style="width: 100%;" />
+<p><code>'struct proghdr' has no member named 'offset'</code>grep查找定义后进行修改成off最开始按标准 ELF 字段写了 <code>ph.offset</code>，但实验框架里的 <code>struct proghdr</code> 实际使用的是 xv6 风格字段名 <code>off</code>。通过查看 <code>include/elf.h</code> 里的结构定义，改成 <code>ph.off</code> 后解决编译错误。</p>
 <p>uint32_t type;
 uint32_t flags;
 uint64_t off;
@@ -2090,8 +2123,8 @@ uint64_t align;</p>
 <p>grep -n &ldquo;struct proghdr&rdquo; -A 30 includ
 e/elf.h
 31: struct proghdr {</p>
-<img src="39.png" style="width: 60%;" />
-<img src="41.png" style="width: 60%;" />
+<img src="39.png" style="width: 100%;" />
+<img src="41.png" style="width: 100%;" />
 <p>tataka os
 hart 0 start
 panic: init0 load</p>
@@ -2525,7 +2558,7 @@ panic: init0 load</p>
       共发表文章 
       <span class="number-highlight">25</span> 
       篇 ，总计 
-      <span class="number-highlight">103.91</span> 
+      <span class="number-highlight">104.57</span> 
       k 字
   </div>
   <div>
