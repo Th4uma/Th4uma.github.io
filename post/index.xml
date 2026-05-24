@@ -949,7 +949,7 @@
 &lt;p&gt;之后构建脚本会自动生成 syscall 分发表，也就是一个函数指针数组&lt;/p&gt;
 &lt;h4 id=&#34;内核实现&#34;&gt;内核实现
 &lt;/h4&gt;&lt;p&gt;构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。在内核源码目录编辑&lt;code&gt;src/sys_echo.c&lt;/code&gt;，写入以下代码来进行实现&lt;/p&gt;
-&lt;p&gt;逻辑就是执行函数时首先定义三个变量，一个&lt;code&gt;uint64_t&lt;/code&gt;类型记录用户传来的地址，&lt;code&gt;len&lt;/code&gt;记录传来的字符串长度，&lt;code&gt;buf&lt;/code&gt;存储最终获取的字符串。然后从&lt;code&gt;trapframe&lt;/code&gt;保存的上下文里取参数，得到地址和长度，最后通过&lt;code&gt;copy_from_use&lt;/code&gt;r，传入&lt;code&gt;buf&lt;/code&gt;、地址和长度来复制用户的数据，进行输出即可&lt;/p&gt;
+&lt;p&gt;逻辑就是执行函数时首先定义三个变量，一个&lt;code&gt;uint64_t&lt;/code&gt;类型记录用户传来的地址，&lt;code&gt;len&lt;/code&gt;记录传来的字符串长度，&lt;code&gt;buf&lt;/code&gt;存储最终获取的字符串。然后从&lt;code&gt;trapframe&lt;/code&gt;保存的上下文里取参数，得到地址和长度，最后通过&lt;code&gt;copy_from_user&lt;/code&gt;，传入&lt;code&gt;buf&lt;/code&gt;、地址和长度来复制用户的数据，进行输出即可&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -1028,7 +1028,7 @@
 &lt;p&gt;可以看到这里的函数&lt;code&gt;uint64_t sys_echo()&lt;/code&gt;并没有参数，这是因为系统调用和普通的用户态程序不一样&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;用户态程序实现函数的过程是先把参数的值存进寄存器，跳转到函数执行，这时候再从寄存器取出值&lt;/li&gt;
-&lt;li&gt;系统调用是在用户执行syscall后，参数被放入寄存器，在CPU 陷入内核时，这些寄存器内容也就是上下文会被保存到&lt;code&gt;trapframe&lt;/code&gt;里用于之后恢复进程。&lt;code&gt;argaddr(0, &amp;amp;user_ptr)&lt;/code&gt;就是在从这里取出第0个参数解析成地址，&lt;code&gt;argint(1, &amp;amp;len)&lt;/code&gt;就是取出第一个参数解析成int。在系统调用完成后，返回值被存入寄存器，用户态寄存器恢复，CPU回到用户态。syscall本质上是带有参数的trap&lt;/li&gt;
+&lt;li&gt;系统调用是在用户执行syscall后，参数被放入寄存器。调用号会被放进 &lt;code&gt;a7&lt;/code&gt; 寄存器，后面的参数会依次放进 &lt;code&gt;a0&lt;/code&gt; &lt;code&gt;a1&lt;/code&gt; 等寄存器。然后用户态执行 &lt;code&gt;ecall&lt;/code&gt; ，CPU 触发异常进入内核。在CPU 陷入内核时，这些寄存器内容也就是上下文会被保存到&lt;code&gt;trapframe&lt;/code&gt;里用于之后恢复进程。&lt;code&gt;argaddr(0, &amp;amp;user_ptr)&lt;/code&gt;就是在从这里取出第0个参数解析成地址，&lt;code&gt;argint(1, &amp;amp;len)&lt;/code&gt;就是取出第一个参数解析成int。在系统调用完成后，返回值被存入寄存器，用户态寄存器恢复，CPU回到用户态。syscall也就是带参数的trap&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户传入的是虚拟地址，这时候就要用到&lt;code&gt;copy_from_user()&lt;/code&gt;来拷贝内存&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -1219,6 +1219,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;26.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;现在这样只能监听一个系统调用，因为 PCB 里只保存了一个 &lt;code&gt;int traced_syscall&lt;/code&gt;如果想同时监听多个系统调用，可以把它改成数组来存储监听号&lt;/p&gt;
 &lt;h4 id=&#34;用户态调用&#34;&gt;用户态调用
 &lt;/h4&gt;&lt;blockquote&gt;
 &lt;p&gt;在 Linux 中，一般会在用户态头文件&lt;code&gt;user/include/unistd.h&lt;/code&gt;末尾添加声明&lt;/p&gt;
@@ -1381,7 +1382,7 @@
 &lt;p&gt;这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;要打印内存区域，首先就要找到保存这个区域的数据结构vma，vma就是描述一段虚拟内存的结构体。每一个进程会被分配到一块连续地址的虚拟内存，用页表来将虚拟地址映射到物理地址，不同进程的物理页可以独立或者共享，虚拟内存解决了物理内存不连续和需要隔离的问题&lt;/p&gt;
-&lt;p&gt;一个进程的虚拟内存不是一整块，是分成很多作用不同的段，每一段就是一个&lt;code&gt;vma_t&lt;/code&gt;，比如程序代码、全局变量、堆、栈这一类。vma由链表存储，链表入口是&lt;code&gt;vma_head&lt;/code&gt;，上面的一个段也就是一个节点，所有链表都存储在&lt;code&gt;mm_t&lt;/code&gt;结构体中&lt;/p&gt;
+&lt;p&gt;一个进程的虚拟内存并非一整块，是分成很多作用不同的段，每一段就是一个&lt;code&gt;vma_t&lt;/code&gt;，比如程序代码、全局变量、堆、栈这一类。vma由链表存储，链表入口是&lt;code&gt;vma_head&lt;/code&gt;，上面的一个段也就是一个节点，所有链表都存储在&lt;code&gt;mm_t&lt;/code&gt;结构体中&lt;/p&gt;
 &lt;img src=&#34;45.png&#34; style=&#34;width: 40%;&#34; /&gt;
 &lt;h4 id=&#34;实现&#34;&gt;实现
 &lt;/h4&gt;&lt;p&gt;在根目录运行 &lt;code&gt;grep&lt;/code&gt; 命令查看 &lt;code&gt;vma_t&lt;/code&gt;这个结构体的定义&lt;/p&gt;
@@ -1495,14 +1496,10 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;重新编译，可以看到成功输出了监控信息。这里看到两段信息，表示同一个进程在exec过程中重新构建了vma&lt;/p&gt;
 &lt;img src=&#34;34.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;h3 id=&#34;程序加载--1111&#34;&gt;程序加载  1111
-&lt;/h3&gt;&lt;h4 id=&#34;内核elf&#34;&gt;内核ELF
-&lt;/h4&gt;&lt;p&gt;我们编译出来的内核，本质上就是一个 &lt;strong&gt;ELF 可执行文件&lt;/strong&gt;，存放在build/kernel可以用 &lt;code&gt;readelf&lt;/code&gt; 看它里面到底装了什么&lt;/p&gt;
-&lt;p&gt;readelf -lh 是把这个 ELF 文件“怎么被加载、加载到哪、分成几块”打印出来它重点看两类东西：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ELF 头（基本信息）&lt;/li&gt;
-&lt;li&gt;Program Header（加载信息）&lt;/li&gt;
-&lt;/ul&gt;
+&lt;h3 id=&#34;程序加载-未完成&#34;&gt;程序加载 （未完成）
+&lt;/h3&gt;&lt;p&gt;ELF 文件里写着程序应该怎么放进内存，内核的 &lt;code&gt;exec&lt;/code&gt; 会按照 ELF 的 Program Header 给新进程创建 VMA，再把 ELF 里的内容复制到对应虚拟地址&lt;/p&gt;
+&lt;h4 id=&#34;内核elf&#34;&gt;内核ELF
+&lt;/h4&gt;&lt;p&gt;编译出来的内核本质上是一个 &lt;strong&gt;ELF 可执行文件&lt;/strong&gt;，放在&lt;code&gt;build/kernel&lt;/code&gt;中，可以用 &lt;code&gt;readelf&lt;/code&gt;查看它的基本信息和它应该怎么被加载到内存。&lt;code&gt;-h&lt;/code&gt; 就是查看ELF 文件头&lt;code&gt;ELF Header&lt;/code&gt;，&lt;code&gt;-l&lt;/code&gt; 也就是查看程序加载表&lt;code&gt;Program Headers&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1514,54 +1511,162 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;37.png&#34; style=&#34;width: 90%;&#34; /&gt;
-ELF Header:
-  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
-  Class:                             ELF64
-  Data:                              2&#39;s complement, little endian
-  Version:                           1 (current)
-  OS/ABI:                            UNIX - System V
-  ABI Version:                       0
-  Type:                              EXEC (Executable file)
-  Machine:                           RISC-V
-  Version:                           0x1
-  Entry point address:               0x80020000
-  Start of program headers:          64 (bytes into file)
-  Start of section headers:          920048 (bytes into file)
-  Flags:                             0x4, double-float ABI
-  Size of this header:               64 (bytes)
-  Size of program headers:           56 (bytes)
-  Number of program headers:         1
-  Size of section headers:           64 (bytes)
-  Number of section headers:         17
-  Section header string table index: 16
-Program Headers:
-  Type           Offset             VirtAddr           PhysAddr
-                 FileSiz            MemSiz              Flags  Align
-  LOAD           0x0000000000001000 0x0000000080020000 0x0000000080020000
-                 0x0000000000054a40 0x0000000000054a40  RWE    0x1000
- Section to Segment mapping:
-  Segment Sections...
-   00     .text .rodata .data .bss 
-readelf -lh是什么意思？跳出来的一大堆又是什么？？ 为什么不问问神奇海螺ChatGPT呢！
-&lt;p&gt;此外，你还可以自己编写一个HelloWorld.c并使用gcc来编译它，再使用readelf来查看相关字段，看看有何异同？如果在编译选项中加入&amp;ndash;static选项呢？&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ELF Header&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;ELF Header的作用是记录一个程序的基本信息，比如图中这几行：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;OS/ABI&lt;/code&gt;：程序运行所遵循的系统接口标准，定义参数传递 栈结构 环境变量等运行规则&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Machine&lt;/code&gt;：目标指令集架构 表示程序运行的CPU类型如RISC-V&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Entry point address&lt;/code&gt;：程序启动执行的入口地址 CPU从这里开始运行&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Program Headers&lt;/code&gt;：程序加载描述表 定义文件内容如何映射到内存&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Type&lt;/code&gt;：段类型 表示这一段在加载时的角色如LOAD&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Offset&lt;/code&gt;：该段在文件中的起始位置&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;VirtAddr&lt;/code&gt;：该段加载到的虚拟地址&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;PhysAddr&lt;/code&gt;：该段对应的物理地址或映射地址&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;FileSiz&lt;/code&gt;：该段在文件中的大小&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;MemSiz&lt;/code&gt;：该段在内存中的占用大小 可能大于文件大小&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Flags&lt;/code&gt;：该段权限标志 表示可读可写可执行&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Align&lt;/code&gt;：内存对齐要求 一般以页大小为单位&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;Section to Segment mapping&lt;/code&gt;：段和节的对应关系 表示哪些section被打包进哪个segment&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Class: ELF64&lt;/code&gt;：这是 64 位 ELF 文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Data: little endian&lt;/code&gt;：数据按小端序存储&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Type: EXEC&lt;/code&gt;：这是可执行文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Machine: RISC-V&lt;/code&gt;：这个程序是给 RISC-V CPU 跑的&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Entry point address: 0x80020000&lt;/code&gt;：程序启动时从这个地址开始执行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Number of program headers: 1&lt;/code&gt;：这个 ELF 里面只有一个加载段&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;ELF 就是“程序说明书”，Program Header 决定文件哪一部分放进内存哪一段，并且带着权限一起加载进去。ELF 文件就是“程序 + 加载规则”，readelf -lh 就是在看它怎么被放进内存、从哪开始执行、分了哪些区域。&lt;/p&gt;
+&lt;p&gt;其中最重要的是Entry point address: 0x80020000它告诉加载器程序放好之后，CPU 应该从 &lt;code&gt;0x80020000&lt;/code&gt; 开始执行&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Program Header&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Program Header的作用是存储将程序加载到内存相关的参数&lt;/p&gt;
+&lt;p&gt;你这里的输出是：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Program Headers:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Type           Offset             VirtAddr           PhysAddr
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 FileSiz            MemSiz              Flags  Align
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  LOAD           0x0000000000001000 0x0000000080020000 0x0000000080020000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 0x0000000000054a40 0x0000000000054a40  RWE    0x1000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这段的意思是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ELF 文件里从偏移 &lt;code&gt;0x1000&lt;/code&gt; 开始的一段内容，要被加载到内存地址 &lt;code&gt;0x80020000&lt;/code&gt;，大小是 &lt;code&gt;0x54a40&lt;/code&gt;，权限是可读 可写 可执行。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;拆开看：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Type: LOAD&lt;/code&gt;：这一段需要加载进内存&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Offset: 0x1000&lt;/code&gt;：这一段在 ELF 文件里的位置从 &lt;code&gt;0x1000&lt;/code&gt; 开始&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;VirtAddr: 0x80020000&lt;/code&gt;：这一段要放到虚拟地址 &lt;code&gt;0x80020000&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PhysAddr: 0x80020000&lt;/code&gt;：这一段对应的物理地址也是 &lt;code&gt;0x80020000&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;FileSiz: 0x54a40&lt;/code&gt;：文件里实际有这么多内容&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MemSiz: 0x54a40&lt;/code&gt;：加载到内存后占这么多空间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Flags: RWE&lt;/code&gt;：这一段可读 可写 可执行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Align: 0x1000&lt;/code&gt;：按 &lt;code&gt;0x1000&lt;/code&gt; 对齐，也就是按页大小对齐&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这句话最关键：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;LOAD  Offset 0x1000  VirtAddr 0x80020000  FileSiz 0x54a40  MemSiz 0x54a40
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;翻译成人话就是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;把 ELF 文件中从 &lt;code&gt;0x1000&lt;/code&gt; 开始、大小为 &lt;code&gt;0x54a40&lt;/code&gt; 的内容，放到内存地址 &lt;code&gt;0x80020000&lt;/code&gt; 开始的位置。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;其他 Program Header 类型&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;除了 &lt;code&gt;LOAD&lt;/code&gt;，Program Header 里还可能出现其他类型的段。&lt;code&gt;LOAD&lt;/code&gt; 负责告诉内核哪些内容要放进内存，其他类型更多是在补充运行时信息&lt;/p&gt;
+&lt;p&gt;常见的有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PHDR&lt;/code&gt;：记录 Program Header 自己在内存中的位置&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;INTERP&lt;/code&gt;：记录动态链接器路径，比如 &lt;code&gt;/lib/ld-linux-riscv64-lp64d.so.1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DYNAMIC&lt;/code&gt;：保存动态链接需要的信息，比如依赖库、重定位表、符号表&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NOTE&lt;/code&gt;：保存一些额外说明信息&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TLS&lt;/code&gt;：线程局部存储相关信息&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;GNU_STACK&lt;/code&gt;：说明栈是否可执行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;GNU_RELRO&lt;/code&gt;：运行初期可写，重定位完成后改成只读的区域&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个实验里主要处理 &lt;code&gt;LOAD&lt;/code&gt;，因为静态加载只需要把 ELF 中该进内存的段放到指定虚拟地址，再跳到入口地址执行&lt;/p&gt;
+&lt;p&gt;动态加载会多一步。如果 ELF 里有 &lt;code&gt;INTERP&lt;/code&gt; 段，内核不会直接把控制权交给用户程序入口，而是先加载动态链接器。动态链接器再根据 &lt;code&gt;DYNAMIC&lt;/code&gt; 段找到依赖的共享库，用 &lt;code&gt;mmap&lt;/code&gt; 把它们映射进进程地址空间，完成符号解析和重定位，最后跳到真正的程序入口&lt;/p&gt;
+&lt;p&gt;简单来说，静态加载主要由内核完成，动态加载还需要动态链接器继续处理共享库和符号地址&lt;/p&gt;
+&lt;p&gt;Section 和 Segment 有什么区别&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Section to Segment mapping:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Segment Sections...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   00     .text .rodata .data .bss
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个也容易绕。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;.text&lt;/code&gt;、&lt;code&gt;.rodata&lt;/code&gt;、&lt;code&gt;.data&lt;/code&gt;、&lt;code&gt;.bss&lt;/code&gt; 是 &lt;strong&gt;section&lt;/strong&gt;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;.text&lt;/code&gt;：代码&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.rodata&lt;/code&gt;：只读数据，比如字符串常量&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.data&lt;/code&gt;：已经初始化的全局变量&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.bss&lt;/code&gt;：未初始化的全局变量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但是程序加载时，内核主要看的是 &lt;strong&gt;segment&lt;/strong&gt;，也就是 Program Header 里的 &lt;code&gt;LOAD&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这段意思是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;.text&lt;/code&gt;、&lt;code&gt;.rodata&lt;/code&gt;、&lt;code&gt;.data&lt;/code&gt;、&lt;code&gt;.bss&lt;/code&gt; 这些 section 被打包进了同一个 LOAD segment 里，加载器加载这个 LOAD 段的时候，它们都会一起进内存。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;也就是说：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;section 是给链接器和分析工具看的，segment 是给加载器看的。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;readelf -lh&lt;/code&gt; 里真正决定加载行为的是 &lt;code&gt;Program Headers&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;除了查看内核 ELF，也可以自己写一个普通的 HelloWorld 程序，然后用 &lt;code&gt;gcc&lt;/code&gt; 编译，再用 &lt;code&gt;readelf&lt;/code&gt; 查看它的 ELF Header 和 Program Header&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Hello World&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;编译并查看：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc HelloWorld.c -o HelloWorld
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;readelf -lh HelloWorld
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;也可以加上 &lt;code&gt;--static&lt;/code&gt; 编译成静态链接程序：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc --static HelloWorld.c -o HelloWorld_static
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;readelf -lh HelloWorld_static
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;普通用户程序和内核 ELF 都是 ELF 文件，但是它们的加载地址、段数量、依赖方式一般会不一样&lt;/p&gt;
+&lt;p&gt;静态链接后，程序会把更多库代码直接放进 ELF 文件里，所以文件通常会变大，Program Header 里需要加载的内容也会更多&lt;/p&gt;
+&lt;p&gt;ELF 可以理解成程序说明书。Program Header 决定文件哪一部分放进内存、放到哪个地址、带什么权限。&lt;code&gt;readelf -lh&lt;/code&gt; 就是在看这个程序怎么被加载，以及从哪里开始运行&lt;/p&gt;
 &lt;h4 id=&#34;实现加载&#34;&gt;实现加载
-&lt;/h4&gt;&lt;p&gt;mmap_map函数声明或者定义。&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;这个实验里，程序加载的核心是 &lt;code&gt;exec&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;内核执行 &lt;code&gt;exec&lt;/code&gt; 时，会读取用户程序的 ELF 文件，然后根据 ELF 的 Program Header 给新进程创建对应的 VMA&lt;/p&gt;
+&lt;p&gt;先查看 &lt;code&gt;mmap_map&lt;/code&gt; 的声明和使用位置：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1570,7 +1675,7 @@ readelf -lh是什么意思？跳出来的一大堆又是什么？？ 为什么�
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -R &amp;#34;mmap_map(&amp;#34; -n .
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;你的 &lt;code&gt;mmap_map&lt;/code&gt; 原型：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;可以看到 &lt;code&gt;mmap_map&lt;/code&gt; 的函数原型大概是：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -1591,20 +1696,36 @@ readelf -lh是什么意思？跳出来的一大堆又是什么？？ 为什么�
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                int prot);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;你这个框架实际上已经支持：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;这个函数用来在进程地址空间里创建一段 VMA&lt;/p&gt;
+&lt;p&gt;参数含义大概是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mm&lt;/code&gt;：目标进程的地址空间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;fp&lt;/code&gt;：映射的文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;off&lt;/code&gt;：文件偏移&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addr&lt;/code&gt;：映射到的用户虚拟地址&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;len&lt;/code&gt;：映射长度&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;flags&lt;/code&gt;：映射方式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;prot&lt;/code&gt;：访问权限&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个框架里的 &lt;code&gt;mmap_map&lt;/code&gt; 已经支持文件映射，也就是 &lt;code&gt;file-backed mmap&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;ELF loader 可以通过它创建用户程序的 VMA，再把 ELF 文件内容加载到对应地址&lt;/p&gt;
+&lt;img src=&#34;38.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;可以用 &lt;code&gt;grep&lt;/code&gt; 查看当前框架里定义了哪些 &lt;code&gt;MAP_&lt;/code&gt; 标志：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;文件映射 mmap(file-backed mmap)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -R &amp;#34;#define MAP_&amp;#34; include
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;所以 ELF loader 可以直接把 ELF 文件和 VMA 绑定。&lt;/p&gt;
-&lt;img src=&#34;38.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;grep -R &amp;ldquo;#define MAP_&amp;rdquo; include这是为啥&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;这里主要是为了确认 &lt;code&gt;MAP_FIXED&lt;/code&gt; 这些标志在当前框架里有没有定义，以及它们具体写在哪个头文件里&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;MAP_FIXED&lt;/code&gt; 的作用是要求映射必须放到指定地址。ELF 的 Program Header 已经写好了段应该放到哪个虚拟地址，所以加载 ELF 时不能让内核随便找一块地址映射，必须按 &lt;code&gt;ph.vaddr&lt;/code&gt; 指定的位置创建 VMA&lt;/p&gt;
 &lt;img src=&#34;42.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;src/kernel/exec.c::exec&lt;/p&gt;
+&lt;p&gt;打开 &lt;code&gt;src/kernel/exec.c&lt;/code&gt;，找到 &lt;code&gt;exec&lt;/code&gt; 中处理 Program Header 的位置&lt;/p&gt;
+&lt;p&gt;原来的 ELF 加载逻辑需要根据每个 &lt;code&gt;LOAD&lt;/code&gt; 段创建 VMA，然后把文件内容复制进去&lt;/p&gt;
+&lt;p&gt;可以在处理 &lt;code&gt;ph.type == ELF_PROG_LOAD&lt;/code&gt; 的地方添加类似代码：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -1676,32 +1797,195 @@ readelf -lh是什么意思？跳出来的一大堆又是什么？？ 为什么�
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;mmap报错&lt;code&gt; &#39;vma_t&#39; {aka &#39;struct vma&#39;} has no member named &#39;link&#39;&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：写错vma_t中的链表变量名称&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：grep查找定义后进行修改成head&lt;/p&gt;
-&lt;p&gt;关于侵入式链表成员名称的误判。由于直接借用了标准参考代码中的命名常规范式，在调用链表遍历宏时盲目地将第三个参数填为了常用的名称，导致编译器高频抛出宿主结构体中找不到该数组成员的宏展开错误。直到利用工具追溯到对应的内存映射头文件，才发现该实验框架里的虚拟内存区域结构体用来连接前后节点的链表成员被特殊命名为了特定的名称，通过将其修改为源码中实际定义的变量名，底层依赖指针偏移计算首地址的宏机制才能正常通过静态类型检查并成功完成编译。&lt;/p&gt;
-&lt;p&gt;/root/oslab/h3sfp5wvze20260520123934/include/list.h:14:34: error:
-14 |         const typeof( ((type *)0)-&amp;gt;member ) *__mptr = (ptr);    &lt;br&gt;
-|                                  ^~&lt;/p&gt;
-&lt;img src=&#34;36.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;code&gt;&#39;struct proghdr&#39; has no member named &#39;offset&#39;&lt;/code&gt;grep查找定义后进行修改成off最开始按标准 ELF 字段写了 &lt;code&gt;ph.offset&lt;/code&gt;，但实验框架里的 &lt;code&gt;struct proghdr&lt;/code&gt; 实际使用的是 xv6 风格字段名 &lt;code&gt;off&lt;/code&gt;。通过查看 &lt;code&gt;include/elf.h&lt;/code&gt; 里的结构定义，改成 &lt;code&gt;ph.off&lt;/code&gt; 后解决编译错误。&lt;/p&gt;
-&lt;p&gt;uint32_t type;
-uint32_t flags;
-uint64_t off;
-uint64_t vaddr;
-uint64_t paddr;
-uint64_t filesz;
-uint64_t memsz;
-uint64_t align;&lt;/p&gt;
-&lt;p&gt;40-};
-41-&lt;/p&gt;
-&lt;p&gt;grep -n &amp;ldquo;struct proghdr&amp;rdquo; -A 30 includ
-e/elf.h
-31: struct proghdr {&lt;/p&gt;
-&lt;img src=&#34;39.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：链表遍历宏里的成员名写错了。&lt;code&gt;vma_t&lt;/code&gt; 本质上是 &lt;code&gt;struct vma&lt;/code&gt;，链表节点成员不是 &lt;code&gt;link&lt;/code&gt;，而是源码里实际定义的 &lt;code&gt;head&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;报错位置在 &lt;code&gt;include/list.h&lt;/code&gt; 中这个错误不是 &lt;code&gt;list.h&lt;/code&gt; 本身有问题，而是链表宏展开时会根据第三个参数去结构体里找对应成员。写成 &lt;code&gt;link&lt;/code&gt; 后，宏会尝试访问 &lt;code&gt;((vma_t *)0)-&amp;gt;link&lt;/code&gt;，但 &lt;code&gt;struct vma&lt;/code&gt; 里面没有这个成员，所以编译失败&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：用 &lt;code&gt;grep&lt;/code&gt; 查找 &lt;code&gt;struct vma&lt;/code&gt; 的定义，确认链表成员实际名称&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -n -A 20 &amp;#34;struct vma&amp;#34; include/mm/mmap.h
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到该实验框架里用于连接 VMA 链表的成员名是 &lt;code&gt;head&lt;/code&gt;，所以遍历时要写成：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;list_for_each_entry(vma, &amp;amp;mm-&amp;gt;vma_head, head) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;36.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ELF 加载相关代码编译时报错 &lt;code&gt;&#39;struct proghdr&#39; has no member named &#39;offset&#39;&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：字段名写成了标准 ELF 习惯里的 &lt;code&gt;offset&lt;/code&gt;，但这个实验框架里的 &lt;code&gt;struct proghdr&lt;/code&gt; 使用的是 xv6 风格字段名，实际成员叫 &lt;code&gt;off&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;通过查看 &lt;code&gt;include/elf.h&lt;/code&gt; 可以看到结构体定义：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;struct proghdr {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint32_t type;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint32_t flags;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t off;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t vaddr;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t paddr;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t filesz;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t memsz;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    uint64_t align;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;};
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;所以这里不是 ELF 逻辑错了，而是字段名称和当前实验框架不一致&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：使用 &lt;code&gt;grep&lt;/code&gt; 查找 &lt;code&gt;struct proghdr&lt;/code&gt; 的真实定义&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -n &amp;#34;struct proghdr&amp;#34; -A 30 include/elf.h
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后把代码里的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ph.offset
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;改成：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ph.off
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;39.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;img src=&#34;41.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;tataka os
-hart 0 start
-panic: init0 load&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;内核启动时报错 &lt;code&gt;panic: init0 load&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;启动输出类似：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tataka&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;hart&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;panic&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;init0&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;load&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：内核已经进入 ELF 加载流程，但 &lt;code&gt;exec()&lt;/code&gt; 加载 &lt;code&gt;init0&lt;/code&gt; 失败。这里的问题出在 VMA 建立时直接使用了 &lt;code&gt;ph.vaddr&lt;/code&gt; 和 &lt;code&gt;ph.memsz&lt;/code&gt;，没有对映射区间做页对齐&lt;/p&gt;
+&lt;p&gt;ELF 的段起始地址和大小不一定刚好按页对齐。如果直接用原始的 &lt;code&gt;ph.vaddr&lt;/code&gt; 到 &lt;code&gt;ph.vaddr + ph.memsz&lt;/code&gt; 建立 VMA，实际覆盖的虚拟地址范围可能不完整。之后 &lt;code&gt;loadseg&lt;/code&gt; 往用户地址写入段内容时，就可能访问到还没有建立映射的页面，最终导致 &lt;code&gt;init0&lt;/code&gt; 加载失败&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：建立 VMA 时不要直接使用原始段范围，而是把起始地址向下对齐，把结束地址向上对齐&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uint64_t start = PGROUNDDOWN(ph.vaddr);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uint64_t end = PGROUNDUP(ph.vaddr + ph.memsz);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后用对齐后的范围建立映射：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;do_mmap(mm, start, end - start, prot, flags, ...);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里的关键是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PGROUNDDOWN(ph.vaddr)&lt;/code&gt; 保证段起始地址所在的页也被映射&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PGROUNDUP(ph.vaddr + ph.memsz)&lt;/code&gt; 保证段结束位置覆盖到的页也被映射&lt;/li&gt;
+&lt;li&gt;VMA 管理的是页级别的虚拟内存区域，不能只按 ELF 段的原始字节范围粗略处理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;修改后，&lt;code&gt;loadseg&lt;/code&gt; 写入用户段内容时，对应虚拟地址已经有完整 VMA 覆盖，&lt;code&gt;init0&lt;/code&gt; 就可以正常加载&lt;/p&gt;
+&lt;img src=&#34;40.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h2 id=&#34;进程与线程未完成&#34;&gt;进程与线程（未完成
+&lt;/h2&gt;&lt;h3 id=&#34;yield系统调用&#34;&gt;yield系统调用
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;sched_yield&lt;/code&gt; 的作用是让当前进程主动放弃 CPU。进程调用这个系统调用后，从正在运行状态回到可运行状态，之后由调度器重新选择一个进程运行&lt;/p&gt;
+&lt;p&gt;这里不需要自己重新写调度逻辑，内核里已经有 &lt;code&gt;yield()&lt;/code&gt; 可以完成让出处理器的操作，所以这个实验的核心就是把 &lt;code&gt;yield()&lt;/code&gt; 包装成一个系统调用&lt;/p&gt;
+&lt;h4 id=&#34;实现-1&#34;&gt;实现
+&lt;/h4&gt;&lt;p&gt;系统调用需要先分配一个 syscall number。实验要求使用 124 号，对应 Linux 中的 &lt;code&gt;sys_sched_yield&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;打开 &lt;code&gt;entry/syscall.tbl&lt;/code&gt;，在尾部添加：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;124 sched_yield sys_sched_yield
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;124&lt;/code&gt; 是系统调用号&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sched_yield&lt;/code&gt; 是系统调用名称&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sys_sched_yield&lt;/code&gt; 是内核中真正执行的函数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这样用户态执行 124 号系统调用时，内核就会跳转到 &lt;code&gt;sys_sched_yield&lt;/code&gt; 函数&lt;/p&gt;
+&lt;p&gt;新建或编辑对应的内核源码文件，比如 &lt;code&gt;src/sys_sched_yield.c&lt;/code&gt;，实现 &lt;code&gt;sys_sched_yield&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#include &amp;#34;common.h&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#include &amp;#34;kernel/proc.h&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uint64_t sys_sched_yield(void) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    return 0;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这里的逻辑很简单，当前进程进入系统调用后，直接执行 &lt;code&gt;yield()&lt;/code&gt; 主动让出 CPU&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;yield()&lt;/code&gt; 会把当前进程重新放回可运行状态，也就是 &lt;code&gt;RUNNABLE&lt;/code&gt;，然后触发调度。当前进程之后不是不能运行了，而是要重新参与调度，等调度器再次选中它时才会继续执行&lt;/p&gt;
+&lt;p&gt;如果是新建的 &lt;code&gt;.c&lt;/code&gt; 文件，还需要修改 &lt;code&gt;src/Makefile&lt;/code&gt;，把它编译进内核：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;obj-y += sys_sched_yield.o
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;否则代码虽然写好了，但是不会被链接进最终的内核文件&lt;/p&gt;
+&lt;h4 id=&#34;测试-3&#34;&gt;测试
+&lt;/h4&gt;&lt;p&gt;这个测试会创建 3 个子进程，每个子进程循环 5 次。每轮循环里，子进程都会先调用 &lt;code&gt;sched_yield()&lt;/code&gt; 主动让出 CPU，然后再打印自己的 PID 和当前循环次数&lt;/p&gt;
+&lt;p&gt;在 &lt;code&gt;user/src/init0.c&lt;/code&gt; 开头部分新增中这个测试函数：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -1721,52 +2005,359 @@ panic: init0 load&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@th4uma-VMware-Virtual-Platform:~/oslab/nhxmljbwzs20260520134353# grep -R &amp;#34;#define MAP_&amp;#34; include
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_SHARED     0x01
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_PRIVATE    0x02
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_SHARED_VALIDATE 0x03
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_TYPE       0x0f
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_FIXED      0x10
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_ANON       0x20
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_ANONYMOUS  MAP_ANON
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_NORESERVE  0x4000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_GROWSDOWN  0x0100
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_DENYWRITE  0x0800
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_EXECUTABLE 0x1000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_LOCKED     0x2000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_POPULATE   0x8000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_NONBLOCK   0x10000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_STACK      0x20000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_HUGETLB    0x40000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_SYNC       0x80000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_FIXED_NOREPLACE 0x100000
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/mm/mmap.h:#define MAP_FILE       0
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_SHARED      (1UL &amp;lt;&amp;lt; 0)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_PRIVATE     (1UL &amp;lt;&amp;lt; 1)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_GROWSDOWN	0x01000		/* stack-like segment */
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_DENYWRITE	0x02000		/* ETXTBSY */
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_EXECUTABLE	0x04000		/* mark it as an executable */
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_LOCKED	0x08000		/* lock the mapping */
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;include/fs/fcntl.h:// #define MAP_FAILED ((void *) -1)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#include &amp;#34;syscall.h&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void test_yield() {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    for (int i = 0; i &amp;lt; 3; ++i) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        if (fork() == 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            for (int j = 0; j &amp;lt; 5; ++j) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                sched_yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                printf(&amp;#34;Child %d. Iteration %d.\n&amp;#34;, getpid(), j);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            exit(0);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;内核已经进入 ELF 加载流程，但 &lt;code&gt;exec()&lt;/code&gt; 返回失败，导致 init0 加载 panic。原因是直接使用 &lt;code&gt;ph.vaddr&lt;/code&gt; 和 &lt;code&gt;ph.memsz&lt;/code&gt; 建立 VMA，没有进行页对齐，导致 segment 覆盖范围不完整，&lt;code&gt;loadseg&lt;/code&gt; 写入用户地址时发生缺页问题。通过对映射区间使用 &lt;code&gt;PGROUNDDOWN&lt;/code&gt; 和 &lt;code&gt;PGROUNDUP&lt;/code&gt; 做页对齐后解决。&lt;/p&gt;
-&lt;img src=&#34;40.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;h2 id=&#34;进程与线程&#34;&gt;进程与线程
-&lt;/h2&gt;&lt;h3 id=&#34;进程优先级&#34;&gt;进程优先级
-&lt;/h3&gt;&lt;h2 id=&#34;待整理&#34;&gt;待整理
+&lt;/div&gt;&lt;p&gt;加入调用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void main() {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    run(&amp;#34;welcome&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    test_yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    run(&amp;#34;sh&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    halt();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;重新编译并运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make clean
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./run-qemu.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果实现正确，可以看到多个子进程交替输出类似下面的内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 3. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 4. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 5. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 3. Iteration 1.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 4. Iteration 1.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 5. Iteration 1.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;实际输出不一定完全长这样，只要能看到多个子进程都在运行，并且输出之间发生交替，就说明 &lt;code&gt;sched_yield()&lt;/code&gt; 已经让当前进程主动让出了处理器&lt;/p&gt;
+&lt;p&gt;多次运行这个测试，用例的输出不一定完全一致&lt;/p&gt;
+&lt;p&gt;原因是这里同时存在多个可运行进程。每个子进程都会调用 &lt;code&gt;sched_yield()&lt;/code&gt;，主动把 CPU 让出来，然后调度器会从可运行队列里选择下一个进程运行。哪个进程被选中，和进程进入队列的顺序、调度器实现、时钟中断发生的位置都有关系&lt;/p&gt;
+&lt;p&gt;所以虽然每个子进程内部的 &lt;code&gt;Iteration&lt;/code&gt; 一定是从 0 到 4 递增的，但是不同子进程之间的输出顺序不一定固定&lt;/p&gt;
+&lt;p&gt;比如可能是：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 3. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 4. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 5. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;也可能是：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 4. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 3. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Child 5. Iteration 0.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这不是错误，而是并发进程调度本身就具有不确定性&lt;/p&gt;
+&lt;img src=&#34;47.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;如果想让输出有序，就不能让多个子进程完全自由竞争 CPU。可以让父进程创建一个子进程后立刻 &lt;code&gt;wait&lt;/code&gt;，等这个子进程全部输出结束后，再创建下一个子进程。这样输出就会固定&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void test_yield() {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    for (int i = 0; i &amp;lt; 3; ++i) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        if (fork() == 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            for (int j = 0; j &amp;lt; 5; ++j) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                sched_yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                printf(&amp;#34;Child %d. Iteration %d.\n&amp;#34;, getpid(), j);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            exit(0);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样写之后，同一时间基本只有一个子进程在输出，父进程会等待当前子进程结束，再创建后面的子进程，所以输出顺序会稳定很多&lt;/p&gt;
+&lt;p&gt;不过这种做法本质上是把并发测试改成了顺序测试。如果目的是观察 &lt;code&gt;sched_yield()&lt;/code&gt; 造成的进程交替运行，原来的测试更合适。如果目的是得到稳定输出，就需要通过 &lt;code&gt;wait&lt;/code&gt;、锁、信号量、管道等同步机制控制执行顺序&lt;/p&gt;
+&lt;img src=&#34;46.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;进程时间片&#34;&gt;进程时间片
+&lt;/h3&gt;&lt;p&gt;当前 OS 的调度是时间片轮转调度，时钟中断发生后，内核会让当前进程让出 CPU，再由调度器选择下一个进程运行&lt;/p&gt;
+&lt;p&gt;原本的实现里，一个进程每次只能执行一个时间片。这个实验要做的是让进程可以连续执行多个时间片，只有剩余时间片用完时，才触发调度&lt;/p&gt;
+&lt;h4 id=&#34;pcb-增加字段&#34;&gt;PCB 增加字段
+&lt;/h4&gt;&lt;p&gt;时间片属于进程运行状态的一部分，所以需要保存在 PCB 中&lt;/p&gt;
+&lt;p&gt;打开 &lt;code&gt;include/kernel/proc.h&lt;/code&gt;，找到 &lt;code&gt;struct proc&lt;/code&gt; 或 &lt;code&gt;proc_t&lt;/code&gt;，添加一个字段记录当前进程还剩多少时间片&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;proc&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// ...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;time_slice&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;    &lt;span class=&#34;c1&#34;&gt;// 当前进程剩余时间片
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以再定义一个默认时间片数量，比如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#define TIME_SLICE_DEFAULT 3
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个值表示一个进程最多可以连续占用 3 个时钟中断周期&lt;/p&gt;
+&lt;h4 id=&#34;时钟中断&#34;&gt;时钟中断
+&lt;/h4&gt;&lt;p&gt;时间片是在时钟中断里消耗的，所以需要修改 &lt;code&gt;src/kernel/irq.c&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;原来的逻辑可能是每次时钟中断都直接让出 CPU，现在要改成先减少当前进程的剩余时间片，只有用完才让出处理器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;when_clock {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    // ...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    reset_timer();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    if (p &amp;amp;&amp;amp; p-&amp;gt;state == RUNNING &amp;amp;&amp;amp; !p-&amp;gt;killed) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    break;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;改成&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;when_clock {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    if (cpuid() == 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        clockintr();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    reset_timer();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    if (p &amp;amp;&amp;amp; p-&amp;gt;state == RUNNING &amp;amp;&amp;amp; !p-&amp;gt;killed) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        p-&amp;gt;time_slice--;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        info(&amp;#34;pid %d time_slice left %d\n&amp;#34;, p-&amp;gt;pid, p-&amp;gt;time_slice);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        if (p-&amp;gt;time_slice &amp;lt;= 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            info(&amp;#34;pid %d time_slice used up, yield\n&amp;#34;, p-&amp;gt;pid);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    break;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这样进程不会每次时钟中断都立刻被切走，而是可以连续运行多个时间片&lt;/p&gt;
+&lt;h4 id=&#34;重置时间片&#34;&gt;重置时间片
+&lt;/h4&gt;&lt;p&gt;时间片用完后，进程会通过 &lt;code&gt;yield()&lt;/code&gt; 回到调度器。调度器之后再次选中这个进程运行时，需要给它重新分配时间片&lt;/p&gt;
+&lt;p&gt;调度器实现在 &lt;code&gt;src/kernel/sched.c&lt;/code&gt; 的 &lt;code&gt;scheduler&lt;/code&gt; 中，可以在进程即将被切换运行前检查：放在 &lt;strong&gt;调度器选中进程之后，真正 &lt;code&gt;swtch&lt;/code&gt; 到进程之前&lt;/strong&gt; 比较合适。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;p-&amp;gt;__state = RUNNING;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;c-&amp;gt;proc = p;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;set_current(p);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;//
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;if (p-&amp;gt;time_slice &amp;lt;= 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  p-&amp;gt;time_slice = TIME_SLICE_DEFAULT;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;switchuvm(p-&amp;gt;mm);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;swtch(&amp;amp;c-&amp;gt;scheduler, &amp;amp;p-&amp;gt;context);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;switchkvm();
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;新进程创建时也应该有一个初始时间片，否则可能刚开始运行就被认为时间片已经用完&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;时间片和主动让出&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这个实验只处理时钟中断导致的时间片消耗。进程也可能主动调用 &lt;code&gt;yield()&lt;/code&gt; 让出 CPU，比如 &lt;code&gt;sched_yield&lt;/code&gt; 或内核线程中的主动调度。&lt;/p&gt;
+&lt;p&gt;如果想区分这两种情况，可以额外记录让出原因，并在调度器中打印。但这属于观察调度行为的扩展内容，不影响本关实现。&lt;/p&gt;
+&lt;p&gt;解除 &lt;code&gt;scavenger&lt;/code&gt; 内核线程后，会更容易看到主动让出的情况。修改默认时间片数量后，时间片耗尽导致的调度频率也会变化。&lt;/p&gt;
+&lt;p&gt;重新编译运行后可以看到输出了结果&lt;/p&gt;
+&lt;img src=&#34;50.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h3 id=&#34;踩坑记录-3&#34;&gt;踩坑记录
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;编译时报错 &lt;code&gt;implicit declaration of function &#39;test_yield&#39;&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：在 &lt;code&gt;user/src/init0.c&lt;/code&gt; 的 &lt;code&gt;main()&lt;/code&gt; 中调用了 &lt;code&gt;test_yield()&lt;/code&gt;，但在调用前没有声明或定义这个函数。C 编译器在看到 &lt;code&gt;test_yield()&lt;/code&gt; 时，不知道这个函数是否存在，也不知道它的返回值和参数类型&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：将 &lt;code&gt;test_yield()&lt;/code&gt; 函数放到 &lt;code&gt;main()&lt;/code&gt; 前面，或者在 &lt;code&gt;main()&lt;/code&gt; 前添加函数声明&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void test_yield();
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;把完整测试函数放在 &lt;code&gt;main()&lt;/code&gt; 前面&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;void test_yield() {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    for (int i = 0; i &amp;lt; 3; ++i) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        if (fork() == 0) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            for (int j = 0; j &amp;lt; 5; ++j) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                sched_yield();
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                printf(&amp;#34;Child %d. Iteration %d.\n&amp;#34;, getpid(), j);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            exit(0);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    wait(NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;48.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;编译时报错 &lt;code&gt;TIME_SLICE_DEFAULT undeclared&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：在 &lt;code&gt;sched.c&lt;/code&gt; 中使用了 &lt;code&gt;TIME_SLICE_DEFAULT&lt;/code&gt;，但没有在任何地方定义这个宏。编译器只能看到 &lt;code&gt;p-&amp;gt;time_slice = TIME_SLICE_DEFAULT;&lt;/code&gt;，却找不到 &lt;code&gt;TIME_SLICE_DEFAULT&lt;/code&gt; 具体代表什么值，所以直接报错&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方法&lt;/strong&gt;：在公共头文件中定义默认时间片数量，比如放到 &lt;code&gt;include/kernel/proc.h&lt;/code&gt; 中&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;#define TIME_SLICE_DEFAULT 3
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;因为 &lt;code&gt;irq.c&lt;/code&gt; 和 &lt;code&gt;sched.c&lt;/code&gt; 都会用到时间片相关逻辑，所以这个宏最好放在公共头文件里，而不是只写在某一个 &lt;code&gt;.c&lt;/code&gt; 文件中&lt;/p&gt;
+&lt;img src=&#34;49.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;待整理&#34;&gt;待整理
 &lt;/h2&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
