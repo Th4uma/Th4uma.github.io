@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
 <title>ICMP重定向与中间人攻击</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/icmp/'>
 
 <link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="ICMP重定向与中间人攻击">
-<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
 <meta property='og:url' content='https://th4uma.github.io/post/icmp/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-10T19:08:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-10T19:08:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/icmp.jpg' />
 <meta name="twitter:title" content="ICMP重定向与中间人攻击">
-<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免历史网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/cover/icmp.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -375,7 +375,7 @@ unicode: "f6d2"
     <h2 id="实验环境">实验环境
 </h2><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
     >ARP攻击原理学习</a></p>
-<p>启动实验前，对容器环境进行清理，避免历史网络配置干扰</p>
+<p>启动实验前，对容器环境进行清理，避免之前的网络配置干扰</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -409,7 +409,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div></blockquote>
-<p>容器全部启动后，网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机</p>
+<p>网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机</p>
 <div class="table-wrapper"><table>
   <thead>
       <tr>
@@ -447,13 +447,12 @@ unicode: "f6d2"
       <tr>
           <td><strong>Docker 网关</strong></td>
           <td><code>10.9.0.1</code></td>
-          <td>Docker 虚拟网络的默认出口。在实验中不参与路由转发</td>
+          <td>Docker 虚拟网络的默认出口，不参与实验</td>
       </tr>
   </tbody>
 </table></div>
 <h2 id="icmp-重定向攻击">ICMP 重定向攻击
-</h2><p>ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
-<p>ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击</p>
+</h2><p>ICMP Redirect 用于局域网优化路径。主机将数据包发送给网关时，如果网关发现存在更优的路径，会返回一个重定向报文来让主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺少认证，只要报文结构合法而且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击</p>
 <p><strong>攻击目标是修改受害者的路由缓存，让受害者发往目标主机的流量途经恶意路由器</strong></p>
 <h3 id="受害者">受害者
 </h3><blockquote>
@@ -697,7 +696,7 @@ unicode: "f6d2"
 </div>
 </div><p>还是失败了，又把最开始的<code>.11</code>添加回去，依旧不行，说明实验确实无法正常完成，只能进行模拟</p>
 <h2 id="中间人攻击">中间人攻击
-</h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改</p>
+</h2><p>攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改。路由缓存有时间限制，中间人攻击需要在有效期内完成，否则需要重新进行重定向攻击</p>
 <h3 id="通信">通信
 </h3><p>在目标主机上开启监听</p>
 <div class="highlight"><div class="chroma">
@@ -921,6 +920,25 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
+    <a href="/post/tcp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/tcp.jpg" loading="lazy" data-key="" data-hash="/images/cover/tcp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TCP协议攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
     <a href="/post/dns/">
         
         
@@ -990,25 +1008,6 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">OpenWrt插件推荐与配置</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/pve_op/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/op.jpg" loading="lazy" data-key="" data-hash="/images/cover/op.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
         </div>
     </a>
 </article>
@@ -1218,10 +1217,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">25</span> 
+      <span class="number-highlight">26</span> 
       篇 ，总计 
-      <span class="number-highlight">108.53</span> 
+      <span class="number-highlight">110.58</span> 
       k 字
   </div>
   <div>
@@ -1265,6 +1266,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         

