@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
 <title>Mitnick攻击</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/mitnick/'>
 
 <link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="Mitnick攻击">
-<meta property='og:description' content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
+<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n">
 <meta property='og:url' content='https://th4uma.github.io/post/mitnick/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-31T16:24:02&#43;08:00'/><meta property='article:modified_time' content='2026-05-31T16:24:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/mitnick.jpg' />
 <meta name="twitter:title" content="Mitnick攻击">
-<meta name="twitter:description" content="实验环境\r基础环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 攻击机 10.9.0.1 伪造身份并发送攻击报文 X-Terminal 10.9.0.5 受害主机 Trusted Server 10.9.0.6 被受害者信任的服务器 启动实验前先停止并清理容器环境，防止被之前的网络配置干扰\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/cover/mitnick.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -272,12 +272,8 @@ unicode: "f6d2"
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#实验环境">实验环境</a>
-      <ol>
-        <li><a href="#基础环境">基础环境</a></li>
-        <li><a href="#建立信任关系">建立信任关系</a></li>
-      </ol>
-    </li>
+    <li><a href="#实验环境">实验环境</a></li>
+    <li><a href="#建立信任关系">建立信任关系</a></li>
     <li><a href="#阻断真实服务器">阻断真实服务器</a></li>
     <li><a href="#伪造-tcp-连接与-rsh-会话">伪造 TCP 连接与 RSH 会话</a>
       <ol>
@@ -292,7 +288,6 @@ unicode: "f6d2"
         <li><a href="#重新执行攻击流程">重新执行攻击流程</a></li>
       </ol>
     </li>
-    <li><a href="#实验结论">实验结论</a></li>
   </ol>
 </nav>
         </div>
@@ -372,8 +367,7 @@ unicode: "f6d2"
     
     
     <h2 id="实验环境">实验环境
-</h2><h3 id="基础环境">基础环境
-</h3><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+</h2><p>我使用的是 Ubuntu  24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
     >ARP攻击原理学习</a></p>
 <p>网络结构如下：</p>
 <div class="table-wrapper"><table>
@@ -452,8 +446,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it trusted-server-10.9.0.6 /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="建立信任关系">建立信任关系
-</h3><blockquote>
+</div><h2 id="建立信任关系">建立信任关系
+</h2><blockquote>
 <p>Mitnick 攻击的原理就是利用受害者和服务器的信任关系，因此实验开始前必须先进行配置</p>
 </blockquote>
 <p>在受害者容器中切换到 <code>seed</code> 用户，配置<code>.rhosts</code>文件来信任来自服务器的连接</p>
@@ -474,7 +468,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p><code>.rhosts</code>是声明当前主机信任哪些远程主机的文件，写入<code>10.9.0.6</code>表示信任来自服务器的远程访问请求</p>
+<p><code>.rhosts</code>是声明当前主机信任哪些远程主机的文件，写入<code>10.9.0.6</code>表示信任来自服务器的远程访问请求，为什么切换seed？</p>
 </blockquote>
 <p>在服务器容器中切换到 <code>seed</code> 用户，用 <code>rsh</code> 远程执行命令获取受害者时间，如果返回正确的受害者系统时间而且不需要输入密码，说明信任关系建立成功</p>
 <div class="highlight"><div class="chroma">
@@ -490,9 +484,9 @@ unicode: "f6d2"
 </div><img src="1.png" style="width: 90%;" />
 <h2 id="阻断真实服务器">阻断真实服务器
 </h2><blockquote>
-<p>攻击的关键是伪造受信任服务器的身份，然后和受害者建立连接。为了防止真实服务器收到伪造包后回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器无法处理正常连接</p>
+<p>攻击的关键是伪造受信任服务器的身份，然后和受害者建立连接。为了防止真实服务器收到伪造包后回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器无法处理正常连接，不是连接受害者吗为什么防止真实服务器收包</p>
 </blockquote>
-<p>这个实验使用静态 ARP 映射来模拟洪泛攻击效果。首先在受害者容器把 <code>10.9.0.6</code> 映射到一个不存在的 MAC 地址，让受害者发往服务器的报文无法真正到达</p>
+<p>这个实验使用静态 ARP 映射来模拟洪泛攻击效果。在受害者容器把 <code>10.9.0.6</code> 映射到一个不存在的 MAC 地址，让受害者发往服务器的报文无法真正到达</p>
 <p>输入<code>exit</code>退出<code>seed</code>进入<code>root</code>，然后输入下面的命令修改受害者的arp缓存</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -536,7 +530,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_ack_plus_data.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本负责盲猜序列号，伪造 ACK 完成握手，并发送 RSH 命令数据、</p>
+</div><p>这个脚本负责盲猜序列号，伪造 ACK 完成握手，并发送 RSH 命令数据</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -650,7 +644,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn_ack_2nd.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本用于处理 X-Terminal 产生的第二个反向连接握手</p>
+</div><p>这个脚本用于处理受害者产生的第二个反向连接握手</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -732,7 +726,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本负责向 X-Terminal 发送伪造的 SYN 包，触发整个攻击流程。</p>
+</div><p>这个脚本负责向受害者发送伪造的 SYN 包，触发攻击</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -799,7 +793,7 @@ unicode: "f6d2"
 </div>
 </div><p><code>+ +</code> 表示信任任意主机上的任意用户。这个配置非常危险，一旦写入成功，攻击者就可以直接登录受害主机</p>
 <h3 id="重新执行攻击流程">重新执行攻击流程
-</h3><p>重新运行前面的三个攻击脚本：</p>
+</h3><p>重新运行前面的三个攻击脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -812,7 +806,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>攻击完成后，回到攻击机容器中切换到 <code>seed</code> 用户，并尝试直接登录 X-Terminal：</p>
+</div><p>攻击完成后，回到攻击机容器中切换到 <code>seed</code> 用户，尝试直接登录受害者远程连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -823,9 +817,9 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">rlogin 10.9.0.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>如果无需密码即可进入 <code>10.9.0.5</code> 的 Shell，说明后门已经植入成功。</p>
+</div><p>无需密码就能进入 <code>10.9.0.5</code> 的 Shell，说明后门植入成功</p>
 <img src="6.png" style="width: 90%;" />
-<p>进入后可以查看 <code>.rhosts</code> 文件内容：</p>
+<p>进入后可以查看 <code>.rhosts</code> 文件内容，可以看到内容变成<code>+ +</code>，说明攻击者获得了对受害主机的直接访问权限</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -834,21 +828,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">more .rhosts
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>如果文件内容变成：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">+ +
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>说明 X-Terminal 的信任策略已经被篡改，攻击者获得了对受害主机的直接访问权限。</p>
-<img src="7.png" style="width: 90%;" />
-<h2 id="实验结论">实验结论
-</h2><p>Mitnick 攻击利用了早期 TCP 协议和基于主机信任机制的安全缺陷。攻击者先让真实 Trusted Server 静默，再伪造其 IP 地址与 X-Terminal 建立连接，通过预测 TCP 序列号完成伪造握手，最后借助 RSH 协议注入命令。</p>
-<p>这个实验可以看出，单纯依赖 IP 地址和主机信任关系进行认证是不安全的。攻击者只要能够伪造源 IP 并预测连接状态，就可能绕过登录认证。</p>
-<p>RSH、RLOGIN 这类协议本身缺乏加密和强认证机制，已经不适合在真实环境中使用。实际环境中应使用 SSH 替代，并关闭 <code>.rhosts</code>、<code>hosts.equiv</code> 这类基于主机信任的认证方式。</p>
+</div><img src="7.png" style="width: 90%;" />
+<blockquote>
+<p>Mitnick 攻击利用了早期 TCP 协议和通信缺乏认证的弱点，攻击者只要能伪造源 IP 并预测连接状态，就可能绕过登录认证。可以看出只依赖 IP 地址和信任关系认证是不安全的。RSH、RLOGIN 协议缺乏加密和强认证，已经不适合在真实环境中使用，现在一般使用 SSH 替代，还要关闭 <code>.rhosts</code>这种静态文件的认证方式</p>
+</blockquote>
 
 </section>
 
@@ -1224,7 +1207,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">114.11</span> 
+      <span class="number-highlight">114.04</span> 
       k 字
   </div>
   <div>
