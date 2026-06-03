@@ -8,12 +8,12 @@
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
         <lastBuildDate>Mon, 27 Apr 2026 01:35:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/c%E8%AF%AD%E8%A8%80/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>C语言数据结构学习</title>
+        <title>C/C&#43;&#43;数据结构学习</title>
         <link>https://th4uma.github.io/post/data_structure/</link>
         <pubDate>Mon, 27 Apr 2026 01:35:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/data_structure/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/sjjg.jpg" alt="Featured image of post C语言数据结构学习" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/sjjg.jpg" alt="Featured image of post C/C&#43;&#43;数据结构学习" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;高中打NOIP时，这部分是让我最头疼的地方，怎么也学不会。看着老师在上面写代码，我只能感到深深的迷茫，后来才发现原来是因为跳过了数据结构的基础直接开始编程。现在就来完成一下三年前留下的遗憾&lt;/p&gt;
 &lt;h2 id=&#34;数据范围&#34;&gt;数据范围
 &lt;/h2&gt;&lt;ul&gt;
@@ -4490,7 +4490,7 @@
 &lt;/h2&gt;&lt;h3 id=&#34;基础知识-5&#34;&gt;基础知识
 &lt;/h3&gt;&lt;h4 id=&#34;bfs&#34;&gt;BFS
 &lt;/h4&gt;&lt;p&gt;bfs也就是广度优先搜索，一般用队列模拟。和dfs类似，假设某个地点有多条路可以走到，bfs就是先遍历当前节点下一步所有可能的节点，然后一层层遍历下去直到找到目标或者到达尽头。如果说dfs的查找方式是一条条的，那么bfs就是一层层。这里就是高中怎么也看不懂的部分，这次一定要攻克&lt;/p&gt;
-&lt;p&gt;代码逻辑就是从某个节点出发，一般按照从左到右的顺序，将它的所有子节点依次入队，然后不断取出队首的节点，遍历当前节点进行入队子节点的操作，直到队列变空&lt;/p&gt;
+&lt;p&gt;代码逻辑就是从某个节点出发，一般按照从左到右的顺序，将它的所有子节点依次入队，然后不断取出队首的节点，遍历当前节点进行入队子节点的操作，直到队列变空。注意bfs并不是递归实现&lt;/p&gt;
 &lt;h3 id=&#34;题目练习-5&#34;&gt;题目练习
 &lt;/h3&gt;&lt;h4 id=&#34;p5318-深基18例3查找文献&#34;&gt;P5318 【深基18.例3】查找文献
 &lt;/h4&gt;&lt;p&gt;图的dfs和bfs,学会了如何在遍历图的时候不遍历重复节点，以及bfs原理和实现&lt;/p&gt;
@@ -4803,7 +4803,10 @@
 &lt;/div&gt;&lt;h4 id=&#34;p4017-最大食物链计数&#34;&gt;P4017 最大食物链计数
 &lt;/h4&gt;&lt;p&gt;这道题的核心是找到所有从开头节点到结尾节点的路径数量，而这里有一个规律，后一个节点的路径数量是它的所有前驱节点路径数量和。因此首先需要增加两个数组存储每个节点的出度和入度，入度为0的就是生产者也就是开头，出度为0就是消费者也就是结尾，然后用删除节点的方法来计算&lt;/p&gt;
 &lt;p&gt;将所有头节点依次加入队列，这时每个头节点到它自己的路径数量是1。出队一个节点，找到它的后继节点，将这些节点的路径数量加上当前出队节点的路径数。然后删除节点，也就是将后继节点的入度减一，入度为0的就是新头节点，将它们入队。就这样一直遍历完成整个图，最终所有尾节点的路径和就是答案&lt;/p&gt;
-&lt;h2 id=&#34;学习记录&#34;&gt;学习记录
+&lt;h2 id=&#34;排序&#34;&gt;排序
+&lt;/h2&gt;&lt;h4 id=&#34;冒泡排序&#34;&gt;冒泡排序
+&lt;/h4&gt;&lt;h4 id=&#34;快速排序&#34;&gt;快速排序
+&lt;/h4&gt;&lt;h2 id=&#34;学习记录&#34;&gt;学习记录
 &lt;/h2&gt;&lt;h3 id=&#34;d1&#34;&gt;d1
 &lt;/h3&gt;&lt;p&gt;总体感觉非常浮躁，写代码遇到很多粗心导致的小问题、大量边界问题和一点逻辑问题，都没有耐心去读，而是直接问ai。数组和链表的基本框架可以写出来了，但进阶一点的写法还是极其不熟练&lt;/p&gt;
 &lt;h3 id=&#34;d2&#34;&gt;d2
