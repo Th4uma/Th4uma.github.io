@@ -279,13 +279,13 @@ unicode: "f6d2"
       <ol>
         <li><a href="#修改攻击脚本">修改攻击脚本</a></li>
         <li><a href="#执行攻击">执行攻击</a></li>
-        <li><a href="#验证攻击结果">验证攻击结果</a></li>
+        <li><a href="#验证">验证</a></li>
       </ol>
     </li>
     <li><a href="#设置永久后门">设置永久后门</a>
       <ol>
-        <li><a href="#修改攻击载荷">修改攻击载荷</a></li>
-        <li><a href="#重新执行攻击流程">重新执行攻击流程</a></li>
+        <li><a href="#修改攻击命令">修改攻击命令</a></li>
+        <li><a href="#重新进行攻击">重新进行攻击</a></li>
       </ol>
     </li>
   </ol>
@@ -450,7 +450,7 @@ unicode: "f6d2"
 </h2><blockquote>
 <p>Mitnick 攻击的原理就是利用受害者和服务器的信任关系，因此实验开始前必须先进行配置</p>
 </blockquote>
-<p>在受害者容器中切换到 <code>seed</code> 用户，配置<code>.rhosts</code>文件来信任来自服务器的连接</p>
+<p>在受害者容器中切换到<code>seed</code>用户，配置<code>.rhosts</code>文件来信任来自服务器的连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -468,9 +468,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
-<p><code>.rhosts</code>是声明当前主机信任哪些远程主机的文件，写入<code>10.9.0.6</code>表示信任来自服务器的远程访问请求，为什么切换seed？</p>
+<p><code>.rhosts</code>是声明当前主机信任哪些远程主机的文件，写入<code>10.9.0.6</code>表示信任来自服务器的远程访问请求，切换seed用户是因为这个配置文件是作用于用户的，而之后的实验使用普通用户seed比起root来说更便于观察</p>
 </blockquote>
-<p>在服务器容器中切换到 <code>seed</code> 用户，用 <code>rsh</code> 远程执行命令获取受害者时间，如果返回正确的受害者系统时间而且不需要输入密码，说明信任关系建立成功</p>
+<p>在服务器容器中切换到 <code>seed</code> 用户，用 <code>rsh</code> 远程执行命令获取受害者时间，如果返回正确的受害者系统时间而且不需要输入密码，就说明信任关系建立成功</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -481,12 +481,12 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">rsh 10.9.0.5 date
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="1.png" style="width: 90%;" />
+</div><img src="1.png" style="width: 100%;" />
 <h2 id="阻断真实服务器">阻断真实服务器
 </h2><blockquote>
-<p>攻击的关键是伪造受信任服务器的身份，然后和受害者建立连接。为了防止真实服务器收到伪造包后回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器无法处理正常连接，不是连接受害者吗为什么防止真实服务器收包</p>
+<p>攻击的关键是伪造受信任服务器的身份发送伪造SYN包，然后和受害者建立连接。受害者收到包后会向真实服务器回复SYN+ACK，为了防止真实服务器收到包发现不合法，回复RST关闭连接，攻击者需要让真实服务器暂时无法正常回应。一般会使用 SYN 洪泛攻击让服务器瘫痪</p>
 </blockquote>
-<p>这个实验使用静态 ARP 映射来模拟洪泛攻击效果。在受害者容器把 <code>10.9.0.6</code> 映射到一个不存在的 MAC 地址，让受害者发往服务器的报文无法真正到达</p>
+<p>为了效果稳定，这个实验用静态 ARP 映射来模拟洪泛攻击效果。在受害者容器把 <code>10.9.0.6</code> 映射到一个不存在的 MAC 地址，让受害者发给服务器的包无法真正到达</p>
 <p>输入<code>exit</code>退出<code>seed</code>进入<code>root</code>，然后输入下面的命令修改受害者的arp缓存</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -498,11 +498,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">arp -n
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到修改前受害者可以ping通服务器，修改后就全部丢包，之后服务器就无法对实验产生任何干扰了，相当于静默状态</p>
+</div><p>可以看到修改前受害者可以 ping 通服务器，修改后就全部丢包，之后服务器就无法对实验产生任何干扰了，相当于静默状态</p>
 <img src="2.png" style="width: 90%;" />
 <h2 id="伪造-tcp-连接与-rsh-会话">伪造 TCP 连接与 RSH 会话
-</h2><p>攻击者伪造受信任服务器的 IP 地址，向受害者发起连接，盲猜 TCP 序列号完成握手。连接建立后，再通过 RSH 协议注入命令</p>
-<h3 id="修改攻击脚本">修改攻击脚本
+</h2><h3 id="修改攻击脚本">修改攻击脚本
 </h3><p>打开 <code>volumes/spoof_ack_plus_data.py</code>，将注入命令改成创建 <code>/tmp/mitnick</code> 文件：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -512,14 +511,14 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">data</span>  <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">srv_port2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">seed</span><span class="se">\x00</span><span class="s1">touch /tmp/mitnick</span><span class="se">\x00</span><span class="s1">&#39;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输入<code>ip addr</code>确认攻击者容器的网卡名，找到 <code>10.9.0.1</code> 对应的网卡，我这里是叫<code>br-302e4ba285b3</code></p>
-<img src="3.png" style="width: 90%;" />
+</div><p>输入 <code>ip addr</code> 确认攻击者容器的网卡名，找到 <code>10.9.0.1</code> 对应的网卡，我这里是叫<code>br-302e4ba285b3</code></p>
+<img src="3.png" style="width: 100%;" />
 <p>将所有攻击脚本末尾 <code>sniff()</code> 函数中的 <code>iface</code> 改成实际的网卡名，否则脚本正常运行，但实际上抓不到目标的通信流量</p>
 <h3 id="执行攻击">执行攻击
 </h3><blockquote>
-<p>在攻击机容器中需要开启三个终端，并行运行三个脚本</p>
+<p>在攻击机容器中需要开启三个终端，并行运行三个脚本。攻击流程是发送SYN，回复ACK顺带注入命令，最后回复SYN+ACK用于处理rsh协议的stderr反向连接</p>
 </blockquote>
-<p>终端 1 运行 <code>spoof_ack_plus_data.py</code>：</p>
+<p>终端1运行 <code>spoof_ack_plus_data.py</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -530,7 +529,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_ack_plus_data.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本负责盲猜序列号，伪造 ACK 完成握手，并发送 RSH 命令数据</p>
+</div><p>这个脚本抓取受害者返回的 SYN+ACK 包，读取序列号，再伪造 ACK 完成握手。之后伪造一段 rsh 命令让受害者执行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -633,7 +632,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-302e4ba285b3&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">myFilter</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>终端 2 运行 <code>spoof_syn_ack_2nd.py</code>：</p>
+</div><p>终端2运行 <code>spoof_syn_ack_2nd.py</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -644,7 +643,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn_ack_2nd.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本用于处理受害者产生的第二个反向连接握手</p>
+</div><p>脚本2中注入的数据实际上是<code>9090\0seed\0seed\0touch /tmp/mitnick\0</code>，意思是规定<strong>stderr错误输出应该发往9090端口</strong>，提供用户名与需要执行的命令内容。受害者收到后会发送一个SYN包主动连接9090端口，但服务器目前静默了无法回复，为了完成连接，需要再写一个脚本来处理这个包，代替服务器回复 SYN+ACK</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -715,7 +714,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">sniff</span><span class="p">(</span><span class="n">iface</span><span class="o">=</span><span class="s1">&#39;br-302e4ba285b3&#39;</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prn</span><span class="o">=</span><span class="n">spoof</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>终端 3 运行 <code>spoof_syn.py</code>：</p>
+</div><p>终端3运行 <code>spoof_syn.py</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -726,7 +725,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个脚本负责向受害者发送伪造的 SYN 包，触发攻击</p>
+</div><p>这个脚本向受害者发送一个伪造的 SYN 包，发起 rsh 连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -767,9 +766,12 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="n">send</span><span class="p">(</span><span class="n">ip</span><span class="o">/</span><span class="n">tcp</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="4.png" style="width: 90%;" />
-<h3 id="验证攻击结果">验证攻击结果
-</h3><p>回到受害者容器中检查 <code>/tmp/mitnick</code> 文件是否生成，这里可以看到文件说明攻击者成功伪造服务器身份并注入了命令</p>
+</div><img src="4.png" style="width: 100%;" />
+<blockquote>
+<p>按照这个运行顺序是因为<code>spoof_ack_plus_data.py</code>和<code>spoof_syn_ack_2nd.py</code>都是检测到特定包才执行后续内容，而<code>spoof_syn.py</code>执行后就直接发出SYN包。因此先开启前两个脚本的监听，再用第三个发包来防止错过</p>
+</blockquote>
+<h3 id="验证">验证
+</h3><p>回到受害者容器中检查 <code>/tmp/mitnick</code> 文件是否生成，这里可以看到文件，说明攻击者成功伪造服务器身份，成功注入命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -778,10 +780,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -l /tmp/mitnick
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="5.png" style="width: 90%;" />
+</div><img src="5.png" style="width: 80%;" />
 <h2 id="设置永久后门">设置永久后门
 </h2><p>前面的攻击只是创建了一个文件。为了进一步利用受害者，攻击者可以通过注入命令修改 <code>.rhosts</code> 文件来植入永久后门</p>
-<h3 id="修改攻击载荷">修改攻击载荷
+<h3 id="修改攻击命令">修改攻击命令
 </h3><p>在攻击机中修改 <code>spoof_ack_plus_data.py</code> 的数据部分，将原来的 <code>touch</code> 命令替换为修改 <code>.rhosts</code> 的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -792,7 +794,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>+ +</code> 表示信任任意主机上的任意用户。这个配置非常危险，一旦写入成功，攻击者就可以直接登录受害主机</p>
-<h3 id="重新执行攻击流程">重新执行攻击流程
+<h3 id="重新进行攻击">重新进行攻击
 </h3><p>重新运行前面的三个攻击脚本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -806,7 +808,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">python3 spoof_syn.py
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>攻击完成后，回到攻击机容器中切换到 <code>seed</code> 用户，尝试直接登录受害者远程连接</p>
+</div><p>攻击完成后，回到攻击机容器中切换到 <code>seed</code> 用户，用rlogin远程登录受害者主机</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -818,8 +820,8 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>无需密码就能进入 <code>10.9.0.5</code> 的 Shell，说明后门植入成功</p>
-<img src="6.png" style="width: 90%;" />
-<p>进入后可以查看 <code>.rhosts</code> 文件内容，可以看到内容变成<code>+ +</code>，说明攻击者获得了对受害主机的直接访问权限</p>
+<img src="6.png" style="width: 100%;" />
+<p>进入后查看 <code>.rhosts</code> 文件，可以看到内容变成<code>+ +</code>，说明攻击者已经获得对受害主机的直接访问权限</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -828,9 +830,9 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">more .rhosts
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="7.png" style="width: 90%;" />
+</div><img src="7.png" style="width: 60%;" />
 <blockquote>
-<p>Mitnick 攻击利用了早期 TCP 协议和通信缺乏认证的弱点，攻击者只要能伪造源 IP 并预测连接状态，就可能绕过登录认证。可以看出只依赖 IP 地址和信任关系认证是不安全的。RSH、RLOGIN 协议缺乏加密和强认证，已经不适合在真实环境中使用，现在一般使用 SSH 替代，还要关闭 <code>.rhosts</code>这种静态文件的认证方式</p>
+<p>Mitnick 攻击利用了早期 TCP 协议缺乏认证的弱点，攻击者只要能伪造状态相符的包，就可能绕过登录认证，可以看出只依赖 IP 地址和信任关系是不安全的。rsh和rlogin目前已经不适合在真实环境使用，一般用 SSH 替代，还要关闭 <code>.rhosts</code>这种静态文件的认证方式</p>
 </blockquote>
 
 </section>
@@ -1207,7 +1209,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">114.04</span> 
+      <span class="number-highlight">114.60</span> 
       k 字
   </div>
   <div>
