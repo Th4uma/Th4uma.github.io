@@ -349,7 +349,7 @@ unicode: "f6d2"
         </li>
         <li><a href="#程序加载-未完成">程序加载 （未完成）</a>
           <ol>
-            <li><a href="#内核elf">内核ELF</a></li>
+            <li><a href="#elf详解">ELF详解</a></li>
             <li><a href="#实现加载">实现加载</a></li>
           </ol>
         </li>
@@ -389,6 +389,18 @@ unicode: "f6d2"
             <li><a href="#验证-1">验证</a></li>
           </ol>
         </li>
+        <li><a href="#fat32簇链">FAT32簇链</a>
+          <ol>
+            <li><a href="#函数实现-3">函数实现</a></li>
+            <li><a href="#验证-2">验证</a></li>
+          </ol>
+        </li>
+        <li><a href="#磁盘块缓存">磁盘块缓存</a>
+          <ol>
+            <li><a href="#函数实现-4">函数实现</a></li>
+            <li><a href="#验证-3">验证</a></li>
+          </ol>
+        </li>
         <li><a href="#踩坑记录-4">踩坑记录</a></li>
       </ol>
     </li>
@@ -396,8 +408,8 @@ unicode: "f6d2"
       <ol>
         <li><a href="#管道通信">管道通信</a>
           <ol>
-            <li><a href="#函数实现-3">函数实现</a></li>
-            <li><a href="#验证-2">验证</a></li>
+            <li><a href="#函数实现-5">函数实现</a></li>
+            <li><a href="#验证-4">验证</a></li>
           </ol>
         </li>
       </ol>
@@ -1986,9 +1998,9 @@ unicode: "f6d2"
 </div><p>重新编译，可以看到成功输出了监控信息。这里看到两段信息，表示同一个进程在exec过程中重新构建了vma</p>
 <img src="34.png" style="width: 90%;" />
 <h3 id="程序加载-未完成">程序加载 （未完成）
-</h3><p>ELF 文件里写着程序应该怎么放进内存，内核的 <code>exec</code> 会按照 ELF 的 Program Header 给新进程创建 VMA，再把 ELF 里的内容复制到对应虚拟地址</p>
-<h4 id="内核elf">内核ELF
-</h4><p>编译出来的内核本质上是一个 <strong>ELF 可执行文件</strong>，放在<code>build/kernel</code>中，可以用 <code>readelf</code>查看它的基本信息和它应该怎么被加载到内存。<code>-h</code> 就是查看ELF 文件头<code>ELF Header</code>，<code>-l</code> 也就是查看程序加载表<code>Program Headers</code></p>
+</h3><p>程序编译后获得的文件就是ELF，比起源代码来说，ELF 文件还记录了程序应该怎么放进内存，包含地址、长度、权限这些内容。内核的 <code>exec</code> 会把当前进程原本的vma按照ELF的规则替换成新程序的vma，然后继续从ELF header的地址执行程序</p>
+<h4 id="elf详解">ELF详解
+</h4><p>编译出来的内核本质上是一个ELF可执行文件，放在<code>build/kernel</code>中。可以用 <code>readelf</code>查看它的基本信息和它应该怎么被加载到内存。<code>-h</code> 就是查看ELF 文件头<code>ELF Header</code>，<code>-l</code> 也就是查看程序加载表<code>Program Headers</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2003,69 +2015,32 @@ unicode: "f6d2"
 <blockquote>
 <p>ELF Header</p>
 </blockquote>
-<p>ELF Header的作用是记录一个程序的基本信息，比如图中这几行：</p>
+<p>ELF Header的作用是存储程序基本参数，主要的如下：</p>
 <ul>
-<li><code>Class: ELF64</code>：这是 64 位 ELF 文件</li>
-<li><code>Data: little endian</code>：数据按小端序存储</li>
-<li><code>Type: EXEC</code>：这是可执行文件</li>
-<li><code>Machine: RISC-V</code>：这个程序是给 RISC-V CPU 跑的</li>
-<li><code>Entry point address: 0x80020000</code>：程序启动时从这个地址开始执行</li>
-<li><code>Number of program headers: 1</code>：这个 ELF 里面只有一个加载段</li>
+<li><code>Class: ELF64</code>：文件分类：这是 64 位 ELF 文件</li>
+<li><code>Data: little endian</code>：数据存储规律：数据按小端序存储</li>
+<li><code>OS/ABI: UNIX - System V</code>：指定了二进制程序使用的ABI标准，规定了这个可执行程序的运行环境，比如初始参数argc、argv，栈结构，环境变量传递等</li>
+<li><code>Type: EXEC</code>：段类型：这是可执行文件</li>
+<li><code>Machine: RISC-V</code>：CPU架构：这个程序是给 RISC-V CPU 跑的</li>
+<li><code>Entry point address: 0x80020000</code>：CPU执行程序的起始地址：一个虚拟地址号</li>
+<li><code>Number of program headers: 1</code>：加载段：这个 ELF 里面只有一个加载段</li>
 </ul>
-<p>其中最重要的是Entry point address: 0x80020000它告诉加载器程序放好之后，CPU 应该从 <code>0x80020000</code> 开始执行</p>
 <blockquote>
 <p>Program Header</p>
 </blockquote>
-<p>Program Header的作用是存储将程序加载到内存相关的参数</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Program Headers:
-</span></span><span class="line"><span class="cl">  Type           Offset             VirtAddr           PhysAddr
-</span></span><span class="line"><span class="cl">                 FileSiz            MemSiz              Flags  Align
-</span></span><span class="line"><span class="cl">  LOAD           0x0000000000001000 0x0000000080020000 0x0000000080020000
-</span></span><span class="line"><span class="cl">                 0x0000000000054a40 0x0000000000054a40  RWE    0x1000
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这段的意思是：</p>
-<blockquote>
-<p>ELF 文件里从偏移 <code>0x1000</code> 开始的一段内容，要被加载到内存地址 <code>0x80020000</code>，大小是 <code>0x54a40</code>，权限是可读 可写 可执行。</p>
-</blockquote>
-<p>拆开看：</p>
+<p>ELF文件分为很多段Segment，而Program Header的作用就是存储这个程序的所有段参数，也就是和程序加载到内存有关的参数。当程序被加载执行时，这些段会被操作系统从文件系统加载进内存中</p>
 <ul>
-<li><code>Type: LOAD</code>：这一段需要加载进内存</li>
-<li><code>Offset: 0x1000</code>：这一段在 ELF 文件里的位置从 <code>0x1000</code> 开始</li>
-<li><code>VirtAddr: 0x80020000</code>：这一段要放到虚拟地址 <code>0x80020000</code></li>
-<li><code>PhysAddr: 0x80020000</code>：这一段对应的物理地址也是 <code>0x80020000</code></li>
-<li><code>FileSiz: 0x54a40</code>：文件里实际有这么多内容</li>
-<li><code>MemSiz: 0x54a40</code>：加载到内存后占这么多空间</li>
-<li><code>Flags: RWE</code>：这一段可读 可写 可执行</li>
-<li><code>Align: 0x1000</code>：按 <code>0x1000</code> 对齐，也就是按页大小对齐</li>
+<li><code>Type: LOAD</code>：段类型是内存信息</li>
+<li><code>Offset: 0x1000</code>：在 ELF 文件里的位置</li>
+<li><code>VirtAddr: 0x80020000</code>：放到虚拟地址 <code>0x80020000</code></li>
+<li><code>PhysAddr: 0x80020000</code>：对应的物理地址是 <code>0x80020000</code></li>
+<li><code>FileSiz: 0x54a40</code>：在ELF文件中真实大小</li>
+<li><code>MemSiz: 0x54a40</code>：加载到内存后所占空间</li>
+<li><code>Flags: RWE</code>：这一段可读写执行</li>
+<li><code>Align: 0x1000</code>：按页大小对齐</li>
 </ul>
-<p>这句话最关键：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">LOAD  Offset 0x1000  VirtAddr 0x80020000  FileSiz 0x54a40  MemSiz 0x54a40
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>翻译成人话就是：</p>
-<blockquote>
-<p>把 ELF 文件中从 <code>0x1000</code> 开始、大小为 <code>0x54a40</code> 的内容，放到内存地址 <code>0x80020000</code> 开始的位置。</p>
-</blockquote>
-<blockquote>
-<p>其他 Program Header 类型</p>
-</blockquote>
-<p>除了 <code>LOAD</code>，Program Header 里还可能出现其他类型的段。<code>LOAD</code> 负责告诉内核哪些内容要放进内存，其他类型更多是在补充运行时信息</p>
-<p>常见的有：</p>
+<p>图中这段的意思是在 ELF 文件从 <code>0x1000</code> 开始的一段内容，要被加载到内存地址 <code>0x80020000</code>，大小是 <code>0x54a40</code>，权限是可读写执行，按列来看也就是ELF文件，虚拟内存，物理内存三块，按行来看是地址，大小与参数</p>
+<p>内核的段比较特殊，只有一个，其他类型的段可能有好几个，比如数据段、代码段等，还可以分别指定不同的读写执行权限</p>
 <ul>
 <li><code>PHDR</code>：记录 Program Header 自己在内存中的位置</li>
 <li><code>INTERP</code>：记录动态链接器路径，比如 <code>/lib/ld-linux-riscv64-lp64d.so.1</code></li>
@@ -2075,38 +2050,23 @@ unicode: "f6d2"
 <li><code>GNU_STACK</code>：说明栈是否可执行</li>
 <li><code>GNU_RELRO</code>：运行初期可写，重定位完成后改成只读的区域</li>
 </ul>
-<p>这个实验里主要处理 <code>LOAD</code>，因为静态加载只需要把 ELF 中该进内存的段放到指定虚拟地址，再跳到入口地址执行</p>
-<p>动态加载会多一步。如果 ELF 里有 <code>INTERP</code> 段，内核不会直接把控制权交给用户程序入口，而是先加载动态链接器。动态链接器再根据 <code>DYNAMIC</code> 段找到依赖的共享库，用 <code>mmap</code> 把它们映射进进程地址空间，完成符号解析和重定位，最后跳到真正的程序入口</p>
-<p>简单来说，静态加载主要由内核完成，动态加载还需要动态链接器继续处理共享库和符号地址</p>
-<p>Section 和 Segment 有什么区别</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Section to Segment mapping:
-</span></span><span class="line"><span class="cl">  Segment Sections...
-</span></span><span class="line"><span class="cl">   00     .text .rodata .data .bss
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个也容易绕。</p>
-<p><code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 是 <strong>section</strong>。</p>
+<blockquote>
+<p>Section 和 Segment</p>
+</blockquote>
+<p>Section 是编译时的分类，Segment 是运行时的分类</p>
+<p><code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 这些 section 被打包进了同一个 LOAD segment 里，加载器加载这个 LOAD 段的时候，它们都会一起进内存</p>
 <ul>
 <li><code>.text</code>：代码</li>
 <li><code>.rodata</code>：只读数据，比如字符串常量</li>
 <li><code>.data</code>：已经初始化的全局变量</li>
 <li><code>.bss</code>：未初始化的全局变量</li>
 </ul>
-<p>但是程序加载时，内核主要看的是 <strong>segment</strong>，也就是 Program Header 里的 <code>LOAD</code>。</p>
-<p>这段意思是：</p>
+<p>但是程序加载时，内核主要看的是segment，也就是 Program Header 里的 <code>LOAD</code></p>
+<p>也就是说<code>readelf -lh</code> 里真正决定加载行为的是 <code>Program Headers</code>。</p>
 <blockquote>
-<p><code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 这些 section 被打包进了同一个 LOAD segment 里，加载器加载这个 LOAD 段的时候，它们都会一起进内存。</p>
+<p>用户与内核对比</p>
 </blockquote>
-<p>也就是说：</p>
-<p><strong>section 是给链接器和分析工具看的，segment 是给加载器看的。</strong></p>
-<p><code>readelf -lh</code> 里真正决定加载行为的是 <code>Program Headers</code>。</p>
+<p>上面查看的是内核ELF，这里实现是用户elf，区别是</p>
 <p>除了查看内核 ELF，也可以自己写一个普通的 HelloWorld 程序，然后用 <code>gcc</code> 编译，再用 <code>readelf</code> 查看它的 ELF Header 和 Program Header</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2210,8 +2170,7 @@ unicode: "f6d2"
 </div><p>这里主要是为了确认 <code>MAP_FIXED</code> 这些标志在当前框架里有没有定义，以及它们具体写在哪个头文件里</p>
 <p><code>MAP_FIXED</code> 的作用是要求映射必须放到指定地址。ELF 的 Program Header 已经写好了段应该放到哪个虚拟地址，所以加载 ELF 时不能让内核随便找一块地址映射，必须按 <code>ph.vaddr</code> 指定的位置创建 VMA</p>
 <img src="42.png" style="width: 60%;" />
-<p>src/kernel/exec.c::exec</p>
-<p>打开 <code>src/kernel/exec.c</code>，找到 <code>exec</code> 中处理 Program Header 的位置</p>
+<p>打开 <code>src/kernel/exec.c</code>，找到 <code>exec</code> 函数中处理 Program Header 的位置</p>
 <p>原来的 ELF 加载逻辑需要根据每个 <code>LOAD</code> 段创建 VMA，然后把文件内容复制进去</p>
 <p>可以在处理 <code>ph.type == ELF_PROG_LOAD</code> 的地方添加类似代码：</p>
 <div class="highlight"><div class="chroma">
@@ -2980,16 +2939,18 @@ unicode: "f6d2"
 </span><span class="lnt">18
 </span><span class="lnt">19
 </span><span class="lnt">20
+</span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">FR_t</span> <span class="nf">lookup_handler</span><span class="p">(</span><span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">__helper</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: target=[%s], current=[%s], offset=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//临时打印，正式实现可以删除
+</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: target=[%s], current=[%s], offset=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">            <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: found [%s]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//临时打印
+</span></span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: found [%s]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">=</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
@@ -3079,6 +3040,323 @@ unicode: "f6d2"
 </div><p>可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>，外层遍历停止，系统继续执行后续加载流程。</p>
 <p>最后系统正常进入 shell：</p>
 <img src="54.png" style="width: 100%;" />
+<h3 id="fat32簇链">FAT32簇链
+</h3><p>FAT32 是一种显式链式分配文件系统。文件内容不一定连续存放在磁盘上，而是按簇组织。每个簇在 FAT 表中都有一个对应表项，表项里保存的是下一个簇号。只要从文件起始簇开始，不断读取 FAT 表中的后继簇号，就可以沿着簇链找到整个文件的数据。</p>
+<p>这里要补全的是 <code>fat_next_cluster</code>，它的作用是给定当前簇号 <code>cclus</code>，返回它在 FAT 表中记录的下一个簇号。</p>
+<h4 id="函数实现-3">函数实现
+</h4><p>打开 <code>src/fs/fat32.c</code>，找到 <code>fat_next_cluster</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint32_t</span> <span class="nf">fat_next_cluster</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">cclus</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">answer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//打印用于直观看结果
+</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;fat_next: %u -&gt; %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cclus</span><span class="p">,</span> <span class="n">answer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>开头先判断当前簇是不是空闲簇或者结束簇：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果当前簇已经是结束标记，或者本身就是空闲簇，就不应该继续追踪后继簇号。继续查这种簇没有意义，所以直接触发 <code>panic</code>。</p>
+<p>下面这句会读取当前簇号所在的 FAT 表扇区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>clus2fatsec</code> 会根据簇号计算它对应的 FAT 表项在哪个扇区中。<code>bread</code> 则把这个扇区读入缓存，返回对应的块缓冲区。</p>
+<p>真正读取后继簇号的是这一句：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>clus2offset</code> 会计算当前簇号对应的 FAT 表项在这个扇区内部的偏移。FAT32 中每个表项占 4 字节，所以找到偏移后，把这个位置的数据按 <code>uint32_t</code> 读取出来，就得到了下一个簇号。</p>
+<p>FAT32 的表项虽然是 32 位，但有效簇号通常只使用低 28 位，高 4 位属于保留部分，所以读取后还需要保留低 28 位：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果源码中已经定义了对应的掩码宏，可以用框架里的宏替代 <code>0x0FFFFFFF</code>。</p>
+<p>最后释放缓冲区并返回结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>bread</code> 读取出的块缓冲区用完后需要通过 <code>brelse</code> 释放，否则会影响块缓存的正常使用。</p>
+<h4 id="验证-2">验证
+</h4><p>重新编译运行后，可以看到系统在读取文件时不断打印当前簇号和后继簇号：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 156 -&gt; 157
+</span></span><span class="line"><span class="cl">fat_next: 157 -&gt; 158
+</span></span><span class="line"><span class="cl">fat_next: 158 -&gt; 159
+</span></span><span class="line"><span class="cl">fat_next: 159 -&gt; 160
+</span></span><span class="line"><span class="cl">fat_next: 160 -&gt; 161
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这说明 FAT 表中记录的是一条显式簇链。文件系统先拿到当前簇号，再通过 <code>fat_next_cluster</code> 查询 FAT 表，得到下一个簇号，然后继续沿着这条链读取后续数据。</p>
+<p>后面启动 shell 时也能看到类似输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 249 -&gt; 250
+</span></span><span class="line"><span class="cl">fat_next: 250 -&gt; 251
+</span></span><span class="line"><span class="cl">fat_next: 251 -&gt; 252
+</span></span><span class="line"><span class="cl">fat_next: 252 -&gt; 253
+</span></span><span class="line"><span class="cl">fat_next: 253 -&gt; 254
+</span></span><span class="line"><span class="cl">fat_next: 254 -&gt; 255
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这说明系统在加载用户程序时已经正常使用了簇链追踪功能。如果后继簇号读取错误，跨簇文件就无法被完整读出，系统也可能无法正常启动到 shell。</p>
+<img src="55.png" style="width: 40%;" />
+<h3 id="磁盘块缓存">磁盘块缓存
+</h3><p>磁盘访问速度比内存慢很多，所以文件系统不会每次都直接访问磁盘，而是会在内存中维护一组块缓存。读取磁盘块时，先在缓存里查找。如果目标块已经存在，就直接返回缓存；如果不存在，再选择一个空闲缓存块回收，用它去缓存新的磁盘块。</p>
+<p>这里使用 LRU 链表管理缓存块。链表头部表示最近使用过的缓存，链表尾部表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头部。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收。</p>
+<h4 id="函数实现-4">函数实现
+</h4><p>打开 <code>src/fs/bio.c</code>，补全 <code>bget</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="nf">bget</span><span class="p">(</span><span class="n">uint</span> <span class="n">dev</span><span class="p">,</span> <span class="n">uint</span> <span class="n">blockno</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">acquire</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 查找目标磁盘块是否已经在缓存中
+</span></span></span><span class="line"><span class="cl">    <span class="nf">list_for_each_entry</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">,</span> <span class="n">lru</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">==</span> <span class="n">dev</span> <span class="o">&amp;&amp;</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">==</span> <span class="n">blockno</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 临时验证输出：说明当前块命中缓存，不需要重新回收缓存块
+</span></span></span><span class="line"><span class="cl">            <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache hit: block=%u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">blockno</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">acquiresleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 缓存未命中，从 LRU 链表尾部开始寻找可以回收的缓存块
+</span></span></span><span class="line"><span class="cl">    <span class="nf">list_for_each_entry_reverse</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">,</span> <span class="n">lru</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 临时验证输出：说明当前缓存块被回收，用来缓存新的磁盘块
+</span></span></span><span class="line"><span class="cl">            <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache recycle: old=%u new=%u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span><span class="p">,</span> <span class="n">blockno</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">=</span> <span class="n">blockno</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">valid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">acquiresleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;bget: no buffers&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>前半部分是在缓存链表中查找目标块。如果 <code>dev</code> 和 <code>blockno</code> 都匹配，说明目标块已经在缓存里，直接增加引用计数，然后获取这个缓存块自己的睡眠锁并返回。</p>
+<p>如果没有命中缓存，就从 LRU 链表尾部开始查找。尾部是最久没有使用的缓存块，最适合被回收。但不是所有尾部块都能直接回收，只有 <code>refcnt == 0</code> 的块才说明当前没有外部使用，可以被替换成新的磁盘块。</p>
+<p>回收时需要更新设备号、块号、有效标记和引用计数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">=</span> <span class="n">blockno</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span><span class="o">-&gt;</span><span class="n">valid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>valid</code> 设为 0 表示这个缓存块虽然已经绑定到了新的磁盘块号，但内容还没有真正从磁盘读入。之后上层读取时会再触发磁盘读入。</p>
+<p>再补全 <code>brelse</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">brelse</span><span class="p">(</span><span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">holdingsleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;brelse&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">bsync</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">releasesleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">acquire</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span><span class="o">--</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 临时验证输出：说明该缓存块已经没有外部引用，被移动到 LRU 链表头部
+</span></span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache release: block=%u move to head</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nf">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>brelse</code> 表示上层已经使用完这个块缓存。这里先同步缓存和磁盘内容，然后释放块自己的睡眠锁。之后修改全局缓存状态，所以需要获取 <code>bcache.lock</code>。</p>
+<p>当 <code>refcnt</code> 减到 0 时，说明这个缓存块当前已经没有外部引用。它刚刚被使用完，所以属于最近使用过的块，需要从原来的位置删除，再移动到 LRU 链表头部。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样链表尾部就会逐渐保留最久没有被使用的缓存块。之后缓存未命中时，从尾部反向遍历，就能优先回收最近最少使用的块。</p>
+<h4 id="验证-3">验证
+</h4><p>重新编译运行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
+</span></span><span class="line"><span class="cl">./run-qemu.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>系统启动和读取文件时会触发块缓存读写。如果能看到缓存块被回收、释放后移动到链表头部，以及重复访问时出现命中，就说明 LRU 块缓存逻辑已经生效。</p>
+<p>验证完成后删除这些 <code>kprintf</code>，避免文件系统访问时输出过多调试信息。</p>
+<img src="56.png" style="width: 100%;" />
 <h3 id="踩坑记录-4">踩坑记录
 </h3><p>测试时候输出open /password failed</p>
 <p>在 <code>user/src</code> 下新建 <code>test_lookup.c</code>：</p>
@@ -3146,7 +3424,7 @@ unicode: "f6d2"
 </h3><p>管道可以理解成内核提供的一块缓冲区，用来让两个进程之间传递数据。普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量，所以需要通过内核提供的通信机制来交换数据。</p>
 <p>管道有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据。因为一个管道更适合单向传输，所以这次实验中要创建两个管道，一个负责父进程传给子进程，一个负责子进程传回父进程。</p>
 <p>这次实验要做的事情是父进程从标准输入读取一串长度为 16 的字母序列，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后由父进程输出。</p>
-<h4 id="函数实现-3">函数实现
+<h4 id="函数实现-5">函数实现
 </h4><p>在 <code>user/src</code> 下新建用户程序，比如 <code>pipe_test.c</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3389,7 +3667,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="验证-2">验证
+</div><h4 id="验证-4">验证
 </h4><p>重新编译运行进入系统后运行程序：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3804,7 +4082,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">118.52</span> 
+      <span class="number-highlight">120.42</span> 
       k 字
   </div>
   <div>
