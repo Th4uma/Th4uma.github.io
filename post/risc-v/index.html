@@ -343,11 +343,11 @@ unicode: "f6d2"
       <ol>
         <li><a href="#内存布局">内存布局</a>
           <ol>
-            <li><a href="#实现">实现</a></li>
-            <li><a href="#测试-2">测试</a></li>
+            <li><a href="#打印函数调用链">打印函数调用链</a></li>
+            <li><a href="#验证">验证</a></li>
           </ol>
         </li>
-        <li><a href="#程序加载-未完成">程序加载 （未完成）</a>
+        <li><a href="#程序加载">程序加载</a>
           <ol>
             <li><a href="#elf详解">ELF详解</a></li>
             <li><a href="#实现加载">实现加载</a></li>
@@ -360,8 +360,8 @@ unicode: "f6d2"
       <ol>
         <li><a href="#yield系统调用">yield系统调用</a>
           <ol>
-            <li><a href="#实现-1">实现</a></li>
-            <li><a href="#测试-3">测试</a></li>
+            <li><a href="#实现">实现</a></li>
+            <li><a href="#测试-2">测试</a></li>
           </ol>
         </li>
         <li><a href="#进程时间片">进程时间片</a>
@@ -375,41 +375,41 @@ unicode: "f6d2"
           <ol>
             <li><a href="#函数实现-1">函数实现</a></li>
             <li><a href="#初始化线程">初始化线程</a></li>
-            <li><a href="#验证">验证</a></li>
+            <li><a href="#验证-1">验证</a></li>
           </ol>
         </li>
         <li><a href="#踩坑记录-3">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#文件系统">文件系统</a>
+    <li><a href="#文件系统1111">文件系统1111</a>
       <ol>
         <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
           <ol>
             <li><a href="#函数实现-2">函数实现</a></li>
-            <li><a href="#验证-1">验证</a></li>
+            <li><a href="#验证-2">验证</a></li>
           </ol>
         </li>
         <li><a href="#fat32簇链">FAT32簇链</a>
           <ol>
             <li><a href="#函数实现-3">函数实现</a></li>
-            <li><a href="#验证-2">验证</a></li>
+            <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
         <li><a href="#磁盘块缓存">磁盘块缓存</a>
           <ol>
             <li><a href="#函数实现-4">函数实现</a></li>
-            <li><a href="#验证-3">验证</a></li>
+            <li><a href="#验证-4">验证</a></li>
           </ol>
         </li>
         <li><a href="#踩坑记录-4">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#进程间通信">进程间通信</a>
+    <li><a href="#进程间通信1111">进程间通信1111</a>
       <ol>
         <li><a href="#管道通信">管道通信</a>
           <ol>
             <li><a href="#函数实现-5">函数实现</a></li>
-            <li><a href="#验证-4">验证</a></li>
+            <li><a href="#验证-5">验证</a></li>
           </ol>
         </li>
       </ol>
@@ -552,6 +552,9 @@ unicode: "f6d2"
 <li>
 <p>页表：虚拟内存对应物理内存的映射表，每个进程的页表都是独立的</p>
 </li>
+<li>
+<p>按页对齐：</p>
+</li>
 </ul>
 <h4 id="cpu与硬件">CPU与硬件
 </h4><ul>
@@ -600,6 +603,7 @@ unicode: "f6d2"
 </ul>
 </li>
 <li><code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int</li>
+<li>字段</li>
 </ul>
 <p>未分类：</p>
 <h3 id="流程描述">流程描述
@@ -610,26 +614,43 @@ unicode: "f6d2"
 <li>
 <p>系统调用流程：用户程序调用 syscall &gt; 参数与 syscall 编号写入寄存器 &gt; trap &gt; CPU 陷入内核态 &gt; 保存上下文到 trapframe &gt; 内核根据 syscall 编号找到对应处理函数 &gt; 解析参数并执行系统调用 &gt; 返回值写入寄存器 &gt; 恢复上下文 &gt; 返回用户态继续执行</p>
 </li>
+<li>
+<p>程序加载流程：调用 exec &gt; 读取 ELF &gt; 遍历 Program Header &gt; 找到 PT_LOAD 段 &gt; mmap_map 创建 VMA &gt; loadseg 加载段内容 &gt; 设置入口地址 &gt; 进入新程序执行</p>
+</li>
 </ul>
 <h3 id="文件作用">文件作用
-</h3><p>系统调用类：
+</h3><ul>
+<li>
+<p>系统调用：
 常见文件：kernel/syscall.h、kernel/syscall.c、kernel/sysproc.c、user/user.h、user/usys.pl、Makefile
-常见套路：分配 syscall 编号 → 在 syscall 表注册 → 写 sys_xxx → user.h 声明 → usys.pl 加入口 → 写用户测试程序</p>
-<p>进程类：
+常见方法：分配 syscall 编号 → 在 syscall 表注册 → 写 sys_xxx → user.h 声明 → usys.pl 加入口 → 写用户测试程序</p>
+</li>
+<li>
+<p>进程：
 常见文件：kernel/proc.h、kernel/proc.c、kernel/sysproc.c、kernel/trap.c
-常见套路：PCB 加字段 → fork 复制或初始化字段 → scheduler/exit/wait 中处理状态 → syscall 提供接口</p>
-<p>调度类：
+常见方法：PCB 加字段 → fork 复制或初始化字段 → scheduler/exit/wait 中处理状态 → syscall 提供接口</p>
+</li>
+<li>
+<p>调度：
 常见文件：kernel/proc.h、kernel/proc.c、kernel/trap.c
-常见套路：PCB 加调度字段 → timer interrupt 中更新 → scheduler 中选择进程 → yield 触发切换</p>
-<p>内存类：
+常见方法：PCB 加调度字段 → timer interrupt 中更新 → scheduler 中选择进程 → yield 触发切换</p>
+</li>
+<li>
+<p>内存：
 常见文件：kernel/vm.c、kernel/proc.c、kernel/memlayout.h、kernel/riscv.h
-常见套路：页表遍历 → walk 查 PTE → mappages 建映射 → uvmunmap 释放 → copyin/copyout 处理用户地址</p>
-<p>程序加载类：
+常见方法：页表遍历 → walk 查 PTE → mappages 建映射 → uvmunmap 释放 → copyin/copyout 处理用户地址</p>
+</li>
+<li>
+<p>程序加载：
 常见文件：kernel/exec.c、kernel/elf.h、kernel/proc.c、kernel/vm.c
-常见套路：读取 ELF 头 → 遍历 program header → 分配地址空间 → 加载段 → 设置用户栈和入口地址</p>
-<p>文件系统类：
+常见方法：读取 ELF 头 → 遍历 program header → 分配地址空间 → 加载段 → 设置用户栈和入口地址</p>
+</li>
+<li>
+<p>文件系统：
 常见文件：kernel/fs.c、kernel/file.c、kernel/sysfile.c、kernel/fcntl.h
-常见套路：从 fd 找 file → 从 file 找 inode → ilock → readi/writei → iunlock</p>
+常见方法：从 fd 找 file → 从 file 找 inode → ilock → readi/writei → iunlock</p>
+</li>
+</ul>
 <h2 id="环境">环境
 </h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
 <ul>
@@ -1595,7 +1616,7 @@ unicode: "f6d2"
 </h4><blockquote>
 <p>PCB就是操作系统用来管理一个进程状态的数据结构，里面会放入这个进程的一系列信息，每个进程都有自己独立的 PCB。系统调用的监听状态需要保存在 PCB 里，PCB在源码中的位置是<code>proc</code></p>
 </blockquote>
-<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号的变量。这里相当于每个进程的PCB里面新增了一个变量，让保存的状态里多一个监听号</p>
+<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号的字段。这里相当于每个进程的PCB里面新增了一个字段，让保存的状态里多一个监听号</p>
 <img src="19.png" style="width: 40%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1880,10 +1901,10 @@ unicode: "f6d2"
 </h3><blockquote>
 <p>这部分是要在进程执行程序的时候，把这个进程当前用的内存区域列表打印出来</p>
 </blockquote>
-<p>要打印内存区域，首先就要找到保存这个区域的数据结构vma，vma就是描述一段虚拟内存的结构体。每一个进程会被分配到一块连续地址的虚拟内存，用页表来将虚拟地址映射到物理地址，不同进程的物理页可以独立或者共享，虚拟内存解决了物理内存不连续和需要隔离的问题</p>
+<p>要打印内存区域，首先就要找到保存这个区域的数据结构vma，vma就是描述一段虚拟内存的结构体。每一个进程会被分配到一块连续地址的虚拟内存，其中划分出来多块不同作用的区域，最后用页表来将虚拟地址映射到物理地址，不同进程的物理页可以独立或者共享，虚拟内存解决了物理内存不连续和需要隔离的问题</p>
 <p>一个进程的虚拟内存并非一整块，是分成很多作用不同的段，每一段就是一个<code>vma_t</code>，比如程序代码、全局变量、堆、栈这一类。vma由链表存储，链表入口是<code>vma_head</code>，上面的一个段也就是一个节点，所有链表都存储在<code>mm_t</code>结构体中</p>
 <img src="45.png" style="width: 40%;" />
-<h4 id="实现">实现
+<h4 id="打印函数调用链">打印函数调用链
 </h4><p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>这个结构体的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1917,7 +1938,7 @@ unicode: "f6d2"
 <li><code>head</code>：用于链表的连接</li>
 <li><code>map_file</code>：映射的文件指针，没有文件就是空</li>
 </ul>
-<p>打开用于管理内存的代码 <code>mm/mmap.c</code>，放入 <code>mmap_print</code> 函数</p>
+<p>在用于管理内存的代码 <code>mm/mmap.c</code>写入 <code>mmap_print</code> 函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1964,7 +1985,7 @@ unicode: "f6d2"
 <li><code>vma</code>：当前遍历到的 vma_t</li>
 <li><code>head</code>：将节点挂入链表的变量，用来找下一个节点</li>
 </ul>
-<h4 id="测试-2">测试
+<h4 id="验证">验证
 </h4><p>在 <code>src/kernel/exec.c</code>中这个位置插入函数调用</p>
 <blockquote>
 <p><code>exec</code>的作用是将一个进程中的程序换成新的程序。这个位置是在某个进程执行exec切换程序，初始化好新程序的内存但还没有释放旧内存的时候。放在这里是因为可以完整观察新程序的虚拟内存布局，还不会受到执行程序对内存产生的影响</p>
@@ -1995,10 +2016,11 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">mmap_free(&amp;oldmm);
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新编译，可以看到成功输出了监控信息。这里看到两段信息，表示同一个进程在exec过程中重新构建了vma</p>
+</div><p>重新编译，可以看到成功输出了监控信息。这里看到多段信息，这说明在内核编译完成，进入系统的过程中有多个进程都调用了exec</p>
 <img src="34.png" style="width: 90%;" />
-<h3 id="程序加载-未完成">程序加载 （未完成）
-</h3><p>程序编译后获得的文件就是ELF，比起源代码来说，ELF 文件还记录了程序应该怎么放进内存，包含地址、长度、权限这些内容。内核的 <code>exec</code> 会把当前进程原本的vma按照ELF的规则替换成新程序的vma，然后继续从ELF header的地址执行程序</p>
+<h3 id="程序加载">程序加载
+</h3><p>程序编译后获得的文件就是ELF，比起源代码来说，ELF 文件还记录了程序应该怎么放进内存，包含地址、长度、权限这些内容</p>
+<p>一个 ELF 里面有一个 Program Header Table，里面有很多条 Program Header。每一条 Program Header 描述一个段，也就是一个 Segment。一个 Segment 由多个 Section 组成</p>
 <h4 id="elf详解">ELF详解
 </h4><p>编译出来的内核本质上是一个ELF可执行文件，放在<code>build/kernel</code>中。可以用 <code>readelf</code>查看它的基本信息和它应该怎么被加载到内存。<code>-h</code> 就是查看ELF 文件头<code>ELF Header</code>，<code>-l</code> 也就是查看程序加载表<code>Program Headers</code></p>
 <div class="highlight"><div class="chroma">
@@ -2020,18 +2042,18 @@ unicode: "f6d2"
 <li><code>Class: ELF64</code>：文件分类：这是 64 位 ELF 文件</li>
 <li><code>Data: little endian</code>：数据存储规律：数据按小端序存储</li>
 <li><code>OS/ABI: UNIX - System V</code>：指定了二进制程序使用的ABI标准，规定了这个可执行程序的运行环境，比如初始参数argc、argv，栈结构，环境变量传递等</li>
-<li><code>Type: EXEC</code>：段类型：这是可执行文件</li>
+<li><code>Type: EXEC</code>：文件类型：这是可执行文件</li>
 <li><code>Machine: RISC-V</code>：CPU架构：这个程序是给 RISC-V CPU 跑的</li>
 <li><code>Entry point address: 0x80020000</code>：CPU执行程序的起始地址：一个虚拟地址号</li>
-<li><code>Number of program headers: 1</code>：加载段：这个 ELF 里面只有一个加载段</li>
+<li><code>Number of program headers: 1</code>：program headers数量：这个 ELF 里面只有一个LOAD段</li>
 </ul>
 <blockquote>
 <p>Program Header</p>
 </blockquote>
 <p>ELF文件分为很多段Segment，而Program Header的作用就是存储这个程序的所有段参数，也就是和程序加载到内存有关的参数。当程序被加载执行时，这些段会被操作系统从文件系统加载进内存中</p>
 <ul>
-<li><code>Type: LOAD</code>：段类型是内存信息</li>
-<li><code>Offset: 0x1000</code>：在 ELF 文件里的位置</li>
+<li><code>Type: LOAD</code>：表示这个段需要被加载进内存</li>
+<li><code>Offset: 0x1000</code>：在 ELF 文件里的起始位置</li>
 <li><code>VirtAddr: 0x80020000</code>：放到虚拟地址 <code>0x80020000</code></li>
 <li><code>PhysAddr: 0x80020000</code>：对应的物理地址是 <code>0x80020000</code></li>
 <li><code>FileSiz: 0x54a40</code>：在ELF文件中真实大小</li>
@@ -2039,8 +2061,8 @@ unicode: "f6d2"
 <li><code>Flags: RWE</code>：这一段可读写执行</li>
 <li><code>Align: 0x1000</code>：按页大小对齐</li>
 </ul>
-<p>图中这段的意思是在 ELF 文件从 <code>0x1000</code> 开始的一段内容，要被加载到内存地址 <code>0x80020000</code>，大小是 <code>0x54a40</code>，权限是可读写执行，按列来看也就是ELF文件，虚拟内存，物理内存三块，按行来看是地址，大小与参数</p>
-<p>内核的段比较特殊，只有一个，其他类型的段可能有好几个，比如数据段、代码段等，还可以分别指定不同的读写执行权限</p>
+<p>图中这段的意思是在 ELF 文件从 <code>0x1000</code> 开始的一段内容，要被加载到内存地址 <code>0x80020000</code>，大小是 <code>0x54a40</code>，权限是可读写执行。按列来看是ELF文件，虚拟内存，物理内存三块，按行来看是地址，大小与参数</p>
+<p>内核的段比较特殊，只有一个，其他类型的段可能有好几个，比如数据段、代码段，还可以分别指定不同的读写执行权限</p>
 <ul>
 <li><code>PHDR</code>：记录 Program Header 自己在内存中的位置</li>
 <li><code>INTERP</code>：记录动态链接器路径，比如 <code>/lib/ld-linux-riscv64-lp64d.so.1</code></li>
@@ -2053,21 +2075,18 @@ unicode: "f6d2"
 <blockquote>
 <p>Section 和 Segment</p>
 </blockquote>
-<p>Section 是编译时的分类，Segment 是运行时的分类</p>
-<p><code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 这些 section 被打包进了同一个 LOAD segment 里，加载器加载这个 LOAD 段的时候，它们都会一起进内存</p>
+<p>Section 是编译器使用，Segment 是加载器和操作系统执行程序时使用。<code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 这些 section 被打包进了同一个 LOAD Segment 里，加载器加载这个 LOAD 段的时候，它们都会一起进内存</p>
 <ul>
 <li><code>.text</code>：代码</li>
 <li><code>.rodata</code>：只读数据，比如字符串常量</li>
 <li><code>.data</code>：已经初始化的全局变量</li>
 <li><code>.bss</code>：未初始化的全局变量</li>
 </ul>
-<p>但是程序加载时，内核主要看的是segment，也就是 Program Header 里的 <code>LOAD</code></p>
-<p>也就是说<code>readelf -lh</code> 里真正决定加载行为的是 <code>Program Headers</code>。</p>
 <blockquote>
 <p>用户与内核对比</p>
 </blockquote>
-<p>上面查看的是内核ELF，这里实现是用户elf，区别是</p>
-<p>除了查看内核 ELF，也可以自己写一个普通的 HelloWorld 程序，然后用 <code>gcc</code> 编译，再用 <code>readelf</code> 查看它的 ELF Header 和 Program Header</p>
+<p>上面查看的是内核 ELF，它比较特殊，一般由 bootloader 加载到固定的内核地址，比如这里的 <code>0x80020000</code>。在操作系统真正运行以后，<code>exec</code> 加载的一般是用户程序 ELF</p>
+<p>为了进行对比，可以自己写一个 helloworld 程序，然后用 <code>gcc</code> 编译，再用 <code>readelf</code> 查看它的 ELF Header 和 Program Header</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2086,44 +2105,73 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>编译并查看：</p>
+</div><p>编译并查看</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc HelloWorld.c -o HelloWorld
-</span></span><span class="line"><span class="cl">readelf -lh HelloWorld
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc helloworld.c -o helloworld
+</span></span><span class="line"><span class="cl">readelf -lh helloworld
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>也可以加上 <code>--static</code> 编译成静态链接程序：</p>
+</div><img src="57.png" style="width: 100%;" />
+<img src="58.png" style="width: 100%;" />
+<p>也可以加上 <code>--static</code> 编译成静态链接程序：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc --static HelloWorld.c -o HelloWorld_static
-</span></span><span class="line"><span class="cl">readelf -lh HelloWorld_static
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc --static helloworld.c -o helloworld_static
+</span></span><span class="line"><span class="cl">readelf -lh helloworld_static
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>普通用户程序和内核 ELF 都是 ELF 文件，但是它们的加载地址、段数量、依赖方式一般会不一样</p>
-<p>静态链接后，程序会把更多库代码直接放进 ELF 文件里，所以文件通常会变大，Program Header 里需要加载的内容也会更多</p>
-<p>ELF 可以理解成程序说明书。Program Header 决定文件哪一部分放进内存、放到哪个地址、带什么权限。<code>readelf -lh</code> 就是在看这个程序怎么被加载，以及从哪里开始运行</p>
+</div><img src="60.png" style="width: 100%;" />
+<img src="61.png" style="width: 100%;" />
+<p>可以发现内核 ELF 比普通 Linux 用户程序 ELF 简单很多。内核 ELF 是 RISC-V 架构，固定入口地址，而且只有一个 LOAD 段，helloworld程序虽然很短但运行在 Linux 用户态，运行时涉及的东西更多，相应的也有更多的 Program Header 段</p>
 <h4 id="实现加载">实现加载
-</h4><p>这个实验里，程序加载的核心是 <code>exec</code></p>
-<p>内核执行 <code>exec</code> 时，会读取用户程序的 ELF 文件，然后根据 ELF 的 Program Header 给新进程创建对应的 VMA</p>
-<p>先查看 <code>mmap_map</code> 的声明和使用位置：</p>
+</h4><blockquote>
+<p>这里需要遍历所有Program Header，将type是LOAD的部分加载进内存</p>
+</blockquote>
+<p>程序加载的核心是 <code>exec</code>，内核执行 <code>exec</code> 时会丢弃当前进程原本的vma，然后按照ELF的规则建立新程序的vma，然后继续从ELF header记录的入口地址执行程序</p>
+<p>程序需要用到<code>MAP_FIXED</code>，首先用 <code>grep</code> 确认一下它的定义</p>
+<blockquote>
+<p>ELF 的 Program Header 已经写好了段应该放到哪个虚拟地址，<code>MAP_FIXED</code> 的作用就是要求内核不能随便找一块地址映射，而是必须按 <code>ph.vaddr</code> 指定的位置创建 VMA</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -R &#34;mmap_map(&#34; -n .
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -R &#34;#define MAP_&#34; include
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到 <code>mmap_map</code> 的函数原型大概是：</p>
+</div><img src="42.png" style="width: 100%;" />
+<p>查找 <code>struct proghdr</code> 的定义，从而确认Program Header中的字段名</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -n &#34;struct proghdr&#34; -A 30 include/elf.h
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="41.png" style="width: 100%;" />
+<p>查找 <code>mmap_map</code> 和<code>loadseg</code>的定义</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">grep</span> <span class="o">-</span><span class="n">R</span> <span class="s2">&#34;mmap_map(&#34;</span> <span class="o">-</span><span class="n">n</span> <span class="o">.</span>
+</span></span><span class="line"><span class="cl"><span class="n">grep</span> <span class="o">-</span><span class="n">R</span> <span class="s2">&#34;loadseg(&#34;</span> <span class="o">-</span><span class="n">n</span> <span class="o">.</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到这两个函数的原型</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2144,35 +2192,25 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">                int prot);
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个函数用来在进程地址空间里创建一段 VMA</p>
-<p>参数含义大概是：</p>
-<ul>
-<li><code>mm</code>：目标进程的地址空间</li>
-<li><code>fp</code>：映射的文件</li>
-<li><code>off</code>：文件偏移</li>
-<li><code>addr</code>：映射到的用户虚拟地址</li>
-<li><code>len</code>：映射长度</li>
-<li><code>flags</code>：映射方式</li>
-<li><code>prot</code>：访问权限</li>
-</ul>
-<p>这个框架里的 <code>mmap_map</code> 已经支持文件映射，也就是 <code>file-backed mmap</code></p>
-<p>ELF loader 可以通过它创建用户程序的 VMA，再把 ELF 文件内容加载到对应地址</p>
-<img src="38.png" style="width: 60%;" />
-<p>可以用 <code>grep</code> 查看当前框架里定义了哪些 <code>MAP_</code> 标志：</p>
+</div><img src="38.png" style="width: 100%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -R &#34;#define MAP_&#34; include
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">static</span> <span class="ne">int</span> <span class="n">loadseg</span><span class="p">(</span><span class="n">mm_t</span> <span class="o">*</span><span class="n">mm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">uint64_t</span> <span class="n">va</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">entry_t</span> <span class="o">*</span><span class="n">ip</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">uint</span> <span class="n">offset</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">uint</span> <span class="n">sz</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里主要是为了确认 <code>MAP_FIXED</code> 这些标志在当前框架里有没有定义，以及它们具体写在哪个头文件里</p>
-<p><code>MAP_FIXED</code> 的作用是要求映射必须放到指定地址。ELF 的 Program Header 已经写好了段应该放到哪个虚拟地址，所以加载 ELF 时不能让内核随便找一块地址映射，必须按 <code>ph.vaddr</code> 指定的位置创建 VMA</p>
-<img src="42.png" style="width: 60%;" />
-<p>打开 <code>src/kernel/exec.c</code>，找到 <code>exec</code> 函数中处理 Program Header 的位置</p>
-<p>原来的 ELF 加载逻辑需要根据每个 <code>LOAD</code> 段创建 VMA，然后把文件内容复制进去</p>
-<p>可以在处理 <code>ph.type == ELF_PROG_LOAD</code> 的地方添加类似代码：</p>
+</div><img src="59.png" style="width: 100%;" />
+<p>打开 <code>src/kernel/exec.c</code>，找到 <code>exec</code> 函数中处理 Program Header 的位置，添加下面的代码</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2194,125 +2232,114 @@ unicode: "f6d2"
 </span><span class="lnt">17
 </span><span class="lnt">18
 </span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">mmap_map</span><span class="p">(</span><span class="n">newmm</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="n">NULL</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="mi">0</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="n">ph</span><span class="o">.</span><span class="n">vaddr</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="n">ph</span><span class="o">.</span><span class="n">memsz</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="n">MAP_FIXED</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">             <span class="n">elf_map_prot</span><span class="p">(</span><span class="n">ph</span><span class="o">.</span><span class="n">flags</span><span class="p">))</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">goto</span> <span class="n">bad</span><span class="p">;</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 遍历 Program Headers
+</span></span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">elf</span><span class="p">.</span><span class="n">phoff</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">elf</span><span class="p">.</span><span class="n">phnum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">,</span> <span class="n">off</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ph</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 提取其中一个ph，它描述了一个段
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">reade</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ph</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ph</span><span class="p">))</span> <span class="o">!=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">ph</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 判断是不是LOAD
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">PT_LOAD</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 检查内存大小是否合法
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">memsz</span> <span class="o">&lt;</span> <span class="n">ph</span><span class="p">.</span><span class="n">filesz</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//计算这个LOAD段按页对齐后的地址与大小
+</span></span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">start</span> <span class="o">=</span> <span class="nf">PGROUNDDOWN</span><span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">vaddr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">PGROUNDUP</span><span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">vaddr</span> <span class="o">+</span> <span class="n">ph</span><span class="p">.</span><span class="n">memsz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 创建vma
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">mmap_map</span><span class="p">(</span><span class="n">newmm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="nb">NULL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">start</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">sz</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">MAP_FIXED</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="nf">elf_map_prot</span><span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">flags</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//将文件内容加载到新创建的内存
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">loadseg</span><span class="p">(</span><span class="n">newmm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ph</span><span class="p">.</span><span class="n">vaddr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ep</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ph</span><span class="p">.</span><span class="n">off</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ph</span><span class="p">.</span><span class="n">filesz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">loadseg</span><span class="p">(</span><span class="n">newmm</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ph</span><span class="o">.</span><span class="n">vaddr</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ep</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ph</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="n">ph</span><span class="o">.</span><span class="n">filesz</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">eunlock</span><span class="p">(</span><span class="n">ep</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="n">goto</span> <span class="n">bad</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 打印程序vma，调试用
+</span></span></span><span class="line"><span class="cl"><span class="nf">mmap_print</span><span class="p">(</span><span class="n">newmm</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里各参数含义：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">newmm              -&gt; 新进程地址空间
-</span></span><span class="line"><span class="cl">NULL               -&gt; 不直接绑定 file
-</span></span><span class="line"><span class="cl">0                  -&gt; file offset
-</span></span><span class="line"><span class="cl">ph.vaddr           -&gt; ELF 指定虚拟地址
-</span></span><span class="line"><span class="cl">ph.memsz           -&gt; 内存长度
-</span></span><span class="line"><span class="cl">MAP_FIXED          -&gt; 必须映射到指定地址
-</span></span><span class="line"><span class="cl">elf_map_prot(...)  -&gt; 段权限
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>重新编译后可以看到成功进入系统，说明程序通过编译</p>
+</div><p>加载一个 <code>LOAD</code> 段时，内核先根据 <code>ph.vaddr</code> 和 <code>ph.memsz</code> 算出这个段在虚拟内存里要占的范围，并按页对齐创建 VMA；然后用 <code>ph.off</code> 作为 ELF 文件中的读取起点，读取 <code>ph.filesz</code> 大小的内容，放到 <code>ph.vaddr</code> 对应的虚拟地址中</p>
+<p><code>mmap_map</code> 参数：</p>
+<ul>
+<li><code>newmm</code>：新程序的地址空间</li>
+<li><code>NULL</code>：这里不直接绑定文件</li>
+<li><code>0</code>：文件偏移参数，这里不使用</li>
+<li><code>start</code>：按页对齐后的虚拟地址起点</li>
+<li><code>sz</code>：按页对齐后的映射长度</li>
+<li><code>MAP_FIXED</code>：要求映射到指定地址</li>
+<li><code>elf_map_prot(ph.flags)</code>：根据 ELF 段权限设置 VMA 权限</li>
+</ul>
+<p><code>loadseg</code> 参数：</p>
+<ul>
+<li><code>newmm</code>：新程序的地址空间</li>
+<li><code>ph.vaddr</code>：段内容要放到的虚拟地址</li>
+<li><code>ep</code>：当前正在加载的 ELF 文件</li>
+<li><code>ph.off</code>：在 ELF 文件中读取起点</li>
+<li><code>ph.filesz</code>：需要从 ELF 文件中读取的大小</li>
+</ul>
+<p>重新编译后可以看到打印出来的多组vma，说明成功创建新程序的vma并加载LOAD段</p>
 <img src="43.png" style="width: 90%;" />
 <h3 id="踩坑记录-2">踩坑记录
 </h3><blockquote>
 <p>mmap报错<code> 'vma_t' {aka 'struct vma'} has no member named 'link'</code></p>
 </blockquote>
-<p><strong>原因</strong>：链表遍历宏里的成员名写错了。<code>vma_t</code> 本质上是 <code>struct vma</code>，链表节点成员不是 <code>link</code>，而是源码里实际定义的 <code>head</code></p>
-<p>报错位置在 <code>include/list.h</code> 中,是链表宏展开时会根据第三个参数去结构体里找对应成员。写成 <code>link</code> 后，宏会尝试访问 <code>((vma_t *)0)-&gt;link</code>，但 <code>struct vma</code> 里面没有这个成员，所以编译失败</p>
-<p><strong>解决方法</strong>：用 <code>grep</code> 查找 <code>struct vma</code> 的定义，确认链表成员实际名称可以看到该实验框架里用于连接 VMA 链表的成员名是 <code>head</code>，所以遍历时要写成head</p>
+<p><strong>原因</strong>：将链表遍历中用于连接链表的变量名写成了<code>link</code>，但<code>struct vma</code> 里面找不到这个变量，所以编译失败</p>
+<p><strong>解决方法</strong>：用 <code>grep</code> 查找 <code>struct vma</code> 的定义，可以看到用于连接链表的变量名实际上是 <code>head</code>，改正即可</p>
 <img src="36.png" style="width: 100%;" />
 <blockquote>
-<p>ELF 加载相关代码编译时报错 <code>'struct proghdr' has no member named 'offset'</code></p>
+<p>程序加载代码编译时报错 <code>'struct proghdr' has no member named 'offset'</code></p>
 </blockquote>
-<p><strong>原因</strong>：字段名写成了标准 ELF 习惯里的 <code>offset</code>，但这个实验框架里的 <code>struct proghdr</code> 使用的是 xv6 风格字段名，实际成员叫 <code>off</code></p>
-<p>通过查看 <code>include/elf.h</code> 可以看到结构体定义：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">struct proghdr {
-</span></span><span class="line"><span class="cl">    uint32_t type;
-</span></span><span class="line"><span class="cl">    uint32_t flags;
-</span></span><span class="line"><span class="cl">    uint64_t off;
-</span></span><span class="line"><span class="cl">    uint64_t vaddr;
-</span></span><span class="line"><span class="cl">    uint64_t paddr;
-</span></span><span class="line"><span class="cl">    uint64_t filesz;
-</span></span><span class="line"><span class="cl">    uint64_t memsz;
-</span></span><span class="line"><span class="cl">    uint64_t align;
-</span></span><span class="line"><span class="cl">};
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以是字段名称和当前实验框架不一致</p>
-<p><strong>解决方法</strong>：使用 <code>grep</code> 查找 <code>struct proghdr</code> 的真实定义</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -n &#34;struct proghdr&#34; -A 30 include/elf.h
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后把代码里的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ph.offset
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>改成：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ph.off
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="39.png" style="width: 100%;" />
-<img src="41.png" style="width: 100%;" />
+<p><strong>原因</strong>：将loadseg中的字段名写成了<code>offset</code>，但<code>struct proghdr</code> 里面找不到这个变量，所以编译失败</p>
+<p><strong>解决方法</strong>：用 <code>grep</code> 查找 <code>struct proghdr</code> 的定义，可以看到用于确定在ELF文件中起始位置的字段名实际上是 <code>off</code>，改正即可</p>
+<img src="39.png" style="width: 100%;" />
 <blockquote>
 <p>内核启动时报错 <code>panic: init0 load</code></p>
 </blockquote>
-<p>启动输出类似：</p>
+<p><strong>原因</strong>：创建 VMA 时直接用了 <code>ph.vaddr</code> 和 <code>ph.memsz</code>，没有页对齐。VMA 是按页管理的，如果直接映射原始范围，段的起始地址或结束地址没有刚好在页边界，之后 <code>loadseg</code> 写入段内容时，可能因为部分页没有正确创建导致失败</p>
+<p><strong>解决方法</strong>：创建 VMA 前先对段范围做页对齐。用 <code>PGROUNDDOWN(ph.vaddr)</code> 得到按页向下对齐后的起始地址，用 <code>PGROUNDUP(ph.vaddr + ph.memsz)</code> 得到按页向上对齐后的结束地址，再用对齐后的范围创建 VMA</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2320,46 +2347,18 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">tataka</span> <span class="n">os</span>
-</span></span><span class="line"><span class="cl"><span class="n">hart</span> <span class="mi">0</span> <span class="n">start</span>
-</span></span><span class="line"><span class="cl"><span class="n">panic</span><span class="p">:</span> <span class="n">init0</span> <span class="nb">load</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>原因</strong>：内核已经进入 ELF 加载流程，但 <code>exec()</code> 加载 <code>init0</code> 失败。这里的问题出在 VMA 建立时直接使用了 <code>ph.vaddr</code> 和 <code>ph.memsz</code>，没有对映射区间做页对齐</p>
-<p>ELF 的段起始地址和大小不一定刚好按页对齐。如果直接用原始的 <code>ph.vaddr</code> 到 <code>ph.vaddr + ph.memsz</code> 建立 VMA，实际覆盖的虚拟地址范围可能不完整。之后 <code>loadseg</code> 往用户地址写入段内容时，就可能访问到还没有建立映射的页面，最终导致 <code>init0</code> 加载失败</p>
-<p><strong>解决方法</strong>：建立 VMA 时不要直接使用原始段范围，而是把起始地址向下对齐，把结束地址向上对齐</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t start = PGROUNDDOWN(ph.vaddr);
 </span></span><span class="line"><span class="cl">uint64_t end = PGROUNDUP(ph.vaddr + ph.memsz);
+</span></span><span class="line"><span class="cl">uint64_t sz = end - start;
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>然后用对齐后的范围建立映射：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">do_mmap(mm, start, end - start, prot, flags, ...);
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里的关键是：</p>
-<ul>
-<li><code>PGROUNDDOWN(ph.vaddr)</code> 保证段起始地址所在的页也被映射</li>
-<li><code>PGROUNDUP(ph.vaddr + ph.memsz)</code> 保证段结束位置覆盖到的页也被映射</li>
-<li>VMA 管理的是页级别的虚拟内存区域，不能只按 ELF 段的原始字节范围粗略处理</li>
-</ul>
-<p>修改后，<code>loadseg</code> 写入用户段内容时，对应虚拟地址已经有完整 VMA 覆盖，<code>init0</code> 就可以正常加载</p>
+</div><p>然后使用 <code>start</code> 和 <code>sz</code> 创建映射即可。修改后 VMA 的范围会覆盖当前段涉及到的所有页，<code>loadseg</code> 写入时对应的虚拟地址已经被 VMA 完整覆盖，<code>init0</code> 可以正常加载</p>
 <img src="40.png" style="width: 60%;" />
 <h2 id="进程与线程未完成">进程与线程（未完成
 </h2><h3 id="yield系统调用">yield系统调用
 </h3><p><code>sched_yield</code> 的作用是让当前进程主动放弃 CPU。进程调用这个系统调用后，从正在运行状态回到可运行状态，之后由调度器重新选择一个进程运行</p>
 <p>这里不需要自己重新写调度逻辑，内核里已经有 <code>yield()</code> 可以完成让出处理器的操作，所以这个实验的核心就是把 <code>yield()</code> 包装成一个系统调用</p>
-<h4 id="实现-1">实现
+<h4 id="实现">实现
 </h4><p>系统调用需要先分配一个 syscall number。实验要求使用 124 号，对应 Linux 中的 <code>sys_sched_yield</code></p>
 <p>打开 <code>entry/syscall.tbl</code>，在尾部添加：</p>
 <div class="highlight"><div class="chroma">
@@ -2409,7 +2408,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>否则代码虽然写好了，但是不会被链接进最终的内核文件</p>
-<h4 id="测试-3">测试
+<h4 id="测试-2">测试
 </h4><p>这个测试会创建 3 个子进程，每个子进程循环 5 次。每轮循环里，子进程都会先调用 <code>sched_yield()</code> 主动让出 CPU，然后再打印自己的 PID 和当前循环次数</p>
 <p>在 <code>user/src/init0.c</code> 开头部分新增中这个测试函数：</p>
 <div class="highlight"><div class="chroma">
@@ -2823,7 +2822,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这句的作用是创建一个名字为 <code>mythread</code> 的内核线程，并把它的执行函数设置为 <code>mythread_fn</code>。系统启动过程中调用 <code>mythread_init()</code> 后，这个线程就会进入调度体系。等调度器选中它时，它就会开始执行 <code>mythread_fn</code></p>
-<h4 id="验证">验证
+<h4 id="验证-1">验证
 </h4><p>重新编译运行,如果内核线程创建成功，并且 <code>/password</code> 文件读取正常，启动过程中就能看到类似下面的输出<code>password: Secret: 321jk3gb12hjg4213123bh21jkh123ui</code></p>
 <p>这条输出是内核线程自己在内核态中通过 <code>kprintf</code> 打印出来的。这也说明这个线程并不依赖用户态程序触发。系统启动后，只要线程被创建，并且文件系统已经初始化完成，它就能自己执行读取文件的任务。</p>
 <img src="51.png" style="width: 100%;" />
@@ -2894,7 +2893,7 @@ unicode: "f6d2"
 </div>
 </div><p>因为 <code>irq.c</code> 和 <code>sched.c</code> 都会用到时间片相关逻辑，所以这个宏最好放在公共头文件里，而不是只写在某一个 <code>.c</code> 文件中</p>
 <img src="49.png" style="width: 100%;" />
-<h2 id="文件系统">文件系统
+<h2 id="文件系统1111">文件系统1111
 </h2><h3 id="fat32下的文件检索">FAT32下的文件检索
 </h3><p>平时打开文件时，表面上只是传入了一个文件名，但文件系统内部需要根据这个名字在目录中找到对应的目录项。FAT32 的目录项比较特殊，真实结构里会涉及短文件名和长文件名，不过当前框架已经把这些细节封装到了目录遍历函数里。</p>
 <p>这里真正要处理的是逻辑层面的文件查找：遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置。</p>
@@ -3025,7 +3024,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这表示继续遍历后面的目录项。</p>
-<h4 id="验证-1">验证
+<h4 id="验证-2">验证
 </h4><p>重新编译运行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3133,7 +3132,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>bread</code> 读取出的块缓冲区用完后需要通过 <code>brelse</code> 释放，否则会影响块缓存的正常使用。</p>
-<h4 id="验证-2">验证
+<h4 id="验证-3">验证
 </h4><p>重新编译运行后，可以看到系统在读取文件时不断打印当前簇号和后继簇号：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3342,7 +3341,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这样链表尾部就会逐渐保留最久没有被使用的缓存块。之后缓存未命中时，从尾部反向遍历，就能优先回收最近最少使用的块。</p>
-<h4 id="验证-3">验证
+<h4 id="验证-4">验证
 </h4><p>重新编译运行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3419,7 +3418,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>最终改成了在检索函数加打印</p>
-<h2 id="进程间通信">进程间通信
+<h2 id="进程间通信1111">进程间通信1111
 </h2><h3 id="管道通信">管道通信
 </h3><p>管道可以理解成内核提供的一块缓冲区，用来让两个进程之间传递数据。普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量，所以需要通过内核提供的通信机制来交换数据。</p>
 <p>管道有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据。因为一个管道更适合单向传输，所以这次实验中要创建两个管道，一个负责父进程传给子进程，一个负责子进程传回父进程。</p>
@@ -3667,7 +3666,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="验证-4">验证
+</div><h4 id="验证-5">验证
 </h4><p>重新编译运行进入系统后运行程序：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4082,7 +4081,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">120.42</span> 
+      <span class="number-highlight">120.48</span> 
       k 字
   </div>
   <div>
