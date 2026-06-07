@@ -325,14 +325,14 @@ unicode: "f6d2"
         <li><a href="#基础调用">基础调用</a>
           <ol>
             <li><a href="#调用表">调用表</a></li>
-            <li><a href="#内核实现">内核实现</a></li>
+            <li><a href="#获取字符串并打印">获取字符串并打印</a></li>
             <li><a href="#测试-1">测试</a></li>
           </ol>
         </li>
         <li><a href="#trace系统调用">trace系统调用</a>
           <ol>
             <li><a href="#pcb增加字段">PCB增加字段</a></li>
-            <li><a href="#内核实现-1">内核实现</a></li>
+            <li><a href="#内核实现">内核实现</a></li>
             <li><a href="#用户态调用">用户态调用</a></li>
           </ol>
         </li>
@@ -356,11 +356,12 @@ unicode: "f6d2"
         <li><a href="#踩坑记录-2">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#进程与线程未完成">进程与线程（未完成</a>
+    <li><a href="#进程与线程">进程与线程</a>
       <ol>
         <li><a href="#yield系统调用">yield系统调用</a>
           <ol>
-            <li><a href="#实现">实现</a></li>
+            <li><a href="#原理-1">原理</a></li>
+            <li><a href="#实现调用">实现调用</a></li>
             <li><a href="#测试-2">测试</a></li>
           </ol>
         </li>
@@ -368,13 +369,14 @@ unicode: "f6d2"
           <ol>
             <li><a href="#pcb-增加字段">PCB 增加字段</a></li>
             <li><a href="#时钟中断">时钟中断</a></li>
-            <li><a href="#重置时间片">重置时间片</a></li>
+            <li><a href="#初始化时间片">初始化时间片</a></li>
+            <li><a href="#时间片主动让出">时间片主动让出</a></li>
           </ol>
         </li>
         <li><a href="#内核线程">内核线程</a>
           <ol>
-            <li><a href="#函数实现-1">函数实现</a></li>
-            <li><a href="#初始化线程">初始化线程</a></li>
+            <li><a href="#读取密码并打印">读取密码并打印</a></li>
+            <li><a href="#创建线程">创建线程</a></li>
             <li><a href="#验证-1">验证</a></li>
           </ol>
         </li>
@@ -385,19 +387,19 @@ unicode: "f6d2"
       <ol>
         <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
           <ol>
-            <li><a href="#函数实现-2">函数实现</a></li>
+            <li><a href="#函数实现-1">函数实现</a></li>
             <li><a href="#验证-2">验证</a></li>
           </ol>
         </li>
         <li><a href="#fat32簇链">FAT32簇链</a>
           <ol>
-            <li><a href="#函数实现-3">函数实现</a></li>
+            <li><a href="#函数实现-2">函数实现</a></li>
             <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
         <li><a href="#磁盘块缓存">磁盘块缓存</a>
           <ol>
-            <li><a href="#函数实现-4">函数实现</a></li>
+            <li><a href="#函数实现-3">函数实现</a></li>
             <li><a href="#验证-4">验证</a></li>
           </ol>
         </li>
@@ -408,7 +410,7 @@ unicode: "f6d2"
       <ol>
         <li><a href="#管道通信">管道通信</a>
           <ol>
-            <li><a href="#函数实现-5">函数实现</a></li>
+            <li><a href="#函数实现-4">函数实现</a></li>
             <li><a href="#验证-5">验证</a></li>
           </ol>
         </li>
@@ -677,8 +679,8 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">update</span>
-</span></span><span class="line"><span class="cl"><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span> <span class="n">build</span><span class="o">-</span><span class="n">essential</span> <span class="n">cmake</span> <span class="n">ninja</span><span class="o">-</span><span class="n">build</span> <span class="n">python3</span> <span class="n">python3</span><span class="o">-</span><span class="n">pip</span> <span class="n">libglib2</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="n">dev</span> <span class="n">libpixman</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">dev</span> <span class="n">gcc</span><span class="o">-</span><span class="n">riscv64</span><span class="o">-</span><span class="n">unknown</span><span class="o">-</span><span class="n">elf</span> <span class="n">gdb</span><span class="o">-</span><span class="n">multiarch</span> <span class="n">mtools</span> <span class="n">dosfstools</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">sudo apt install -y git build-essential cmake ninja-build python3 python3-pip libglib2.0-dev libpixman-1-dev gcc-riscv64-unknown-elf gdb-multiarch mtools dosfstools
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>Ububtu的架构是 x86_64，采用复杂指令集，一般用于普通PC程序开发，而实验中使用的操作系统是 RISC-V，采用精简指令集，一般用于嵌入式开发和操作系统内核构建。x86 CPU 不能直接执行 RISC-V 的机器码，所以不能用系统默认的 gcc 编译。这里我们需要用到交叉编译，也就是在 x86_64 架构的机器上，生成 RISC-V 的 ELF 程序，需要安装专门的 RISC-V 工具链</p>
@@ -1062,9 +1064,9 @@ unicode: "f6d2"
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make clean
 </span></span><span class="line"><span class="cl">chmod +x run-qemu.sh
-</span></span><span class="line"><span class="cl">./run-qemu.sh debug=on
+</span></span><span class="line"><span class="cl">./run-qemu.sh <span class="nv">debug</span><span class="o">=</span>on
 </span></span><span class="line"><span class="cl">./hello
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1133,10 +1135,10 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">USER0</span><span class="p">,</span> <span class="n">NULL</span><span class="p">};</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">USER0</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">};</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">exec</span><span class="p">(</span><span class="n">USER0</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">panic</span><span class="p">(</span><span class="n">USER0</span> <span class="s2">&#34; load&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nf">exec</span><span class="p">(</span><span class="n">USER0</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="n">envp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="n">USER0</span> <span class="s">&#34; load&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
@@ -1148,7 +1150,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">grep -R &#34;define USER0&#34; .
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -R <span class="s2">&#34;define USER0&#34;</span> .
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以找到<code>#define USER0 &quot;masquerade&quot;</code>，这就是问题所在</p>
@@ -1371,20 +1373,20 @@ unicode: "f6d2"
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void) {
-</span></span><span class="line"><span class="cl">    struct proc *p = current;
-</span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7;
-</span></span><span class="line"><span class="cl">    uint64_t epc = read_csr(sepc);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">syscall</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="nf">proc_get_tf</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">a7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">epc</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sepc</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 插入的部分
-</span></span><span class="line"><span class="cl">    static int trace_count = 0;
-</span></span><span class="line"><span class="cl">    if (trace_count &lt; 1) { 
-</span></span><span class="line"><span class="cl">        trace_count++;
-</span></span><span class="line"><span class="cl">        backtrace();
-</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    <span class="c1">// 插入的部分
+</span></span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="kt">int</span> <span class="n">trace_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">trace_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">        <span class="n">trace_count</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">backtrace</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    // ...
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译并运行，进入系统后就可以看到打印出的地址了，这就是内核内部的调用链</p>
@@ -1467,9 +1469,21 @@ unicode: "f6d2"
 </ul>
 <img src="16.png" style="width: 40%;" />
 <p>之后构建脚本会自动生成 syscall 分发表，也就是一个函数指针数组</p>
-<h4 id="内核实现">内核实现
-</h4><p>构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。在内核源码目录编辑<code>src/sys_echo.c</code>，写入以下代码来进行实现</p>
-<p>逻辑就是执行函数时首先定义三个变量，一个<code>uint64_t</code>类型记录用户传来的地址，<code>len</code>记录传来的字符串长度，<code>buf</code>存储最终获取的字符串。然后从<code>trapframe</code>保存的上下文里取参数，得到地址和长度，最后通过<code>copy_from_user</code>，传入<code>buf</code>、地址和长度来复制用户的数据，进行输出即可</p>
+<h4 id="获取字符串并打印">获取字符串并打印
+</h4><p>构建系统时会自动生成系统调用的声明，所以直接实现系统调用即可。在内核源码目录编辑<code>src/sys_echo.c</code>，写入代码来进行实现</p>
+<p>其中有关地址与内存的部分需要用到<code>argint</code>、<code>argaddr</code> 、 <code>copy_from_user</code> 函数，因此先查找它们的定义，可以看到：</p>
+<ul>
+<li>
+<p><code>argint(int n, int *ip)</code> ：从 syscall 参数中取出第 <code>n</code> 个参数，并按整数保存到 <code>ip</code> 指向的位置</p>
+</li>
+<li>
+<p><code>argaddr(int n, uint64_t *ip)</code> ：从 syscall 参数中取出第 <code>n</code> 个参数，并按用户态虚拟地址保存到 <code>ip</code> 指向的位置</p>
+</li>
+<li>
+<p><code>copy_from_user(void *to, uint64_t from, size_t len)</code>： 在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户传入的是虚拟地址，这时候就要用到<code>copy_from_user()</code>来拷贝内存。先用 <code>argaddr</code> 取出用户地址，再用 <code>copy_from_user</code> 把用户态虚拟地址从 <code>from</code> 开始的 <code>len</code> 字节数据复制到内核缓冲区 <code>to</code> 中，代码中对应的是<code>buf</code></p>
+</li>
+</ul>
+<p>完整代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1544,14 +1558,11 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><blockquote>
-<p>可以看到这里的函数<code>uint64_t sys_echo()</code>并没有参数，这是因为系统调用和普通的用户态程序不一样</p>
+</div><p>可以看到这里的函数<code>uint64_t sys_echo()</code>并没有参数，这是因为系统调用和普通的用户态程序不一样</p>
 <ul>
 <li>用户态程序实现函数的过程是先把参数的值存进寄存器，跳转到函数执行，这时候再从寄存器取出值</li>
-<li>系统调用是在用户执行syscall后，参数被放入寄存器。调用号会被放进 <code>a7</code> 寄存器，后面的参数会依次放进 <code>a0</code> <code>a1</code> 等寄存器。然后用户态执行 <code>ecall</code> ，CPU 触发异常进入内核。在CPU 陷入内核时，这些寄存器内容也就是上下文会被保存到<code>trapframe</code>里用于之后恢复进程。<code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int。在系统调用完成后，返回值被存入寄存器，用户态寄存器恢复，CPU回到用户态。syscall也就是带参数的trap</li>
+<li>系统调用是在用户执行syscall后，参数被放入寄存器。调用号会被放进 <code>a7</code> 寄存器，后面的参数会依次放进 <code>a0</code> <code>a1</code> 等寄存器。然后用户态执行 <code>ecall</code> ，CPU 触发异常进入内核。在CPU 陷入内核时，这些寄存器内容，也就是上下文会被保存到<code>trapframe</code>里用于之后恢复进程，<code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int。在系统调用完成后，返回值被存入寄存器，用户态寄存器恢复，CPU回到用户态。syscall也就是带参数的trap</li>
 </ul>
-<p>在内核态无法直接访问用户态的指针，因为用户页表和内核页表不一样，用户传入的是虚拟地址，这时候就要用到<code>copy_from_user()</code>来拷贝内存</p>
-</blockquote>
 <p>完成后修改<code>src/Makefile</code>，添加下面的代码来将函数链接到内核，否则虽然代码存在但内核无法找到</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1616,7 +1627,7 @@ unicode: "f6d2"
 </h4><blockquote>
 <p>PCB就是操作系统用来管理一个进程状态的数据结构，里面会放入这个进程的一系列信息，每个进程都有自己独立的 PCB。系统调用的监听状态需要保存在 PCB 里，PCB在源码中的位置是<code>proc</code></p>
 </blockquote>
-<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 函数，在最后一行添加系统调用号的字段。这里相当于每个进程的PCB里面新增了一个字段，让保存的状态里多一个监听号</p>
+<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 结构体，在最后一行添加系统调用号的字段。这里相当于每个进程的PCB里面新增了一个字段，让保存的状态里多一个监听号</p>
 <img src="19.png" style="width: 40%;" />
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1627,14 +1638,14 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">struct proc {
-</span></span><span class="line"><span class="cl">    // ...
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    int traced_syscall;    //存储需要监控的系统调用号
-</span></span><span class="line"><span class="cl">};
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">proc</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// ...
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">traced_syscall</span><span class="p">;</span>    <span class="c1">//存储需要监控的系统调用号
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="内核实现-1">内核实现
+</div><h4 id="内核实现">内核实现
 </h4><blockquote>
 <p>主要实现</p>
 </blockquote>
@@ -1658,20 +1669,20 @@ unicode: "f6d2"
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t sys_trace(void) {
-</span></span><span class="line"><span class="cl">    int syscall_num;
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_trace</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">syscall_num</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 获取用户态传入的第0个参数
-</span></span><span class="line"><span class="cl">    if (argint(0, &amp;syscall_num) &lt; 0) {
-</span></span><span class="line"><span class="cl">        return -1;
-</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    <span class="c1">// 获取用户态传入的第0个参数
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">argint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">syscall_num</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    // 写入当前进程的 PCB 中
-</span></span><span class="line"><span class="cl">    struct proc *p = current; 
-</span></span><span class="line"><span class="cl">    p-&gt;traced_syscall = syscall_num;
+</span></span><span class="line"><span class="cl">    <span class="c1">// 写入当前进程的 PCB 中
+</span></span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">traced_syscall</span> <span class="o">=</span> <span class="n">syscall_num</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    return 0;
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>在执行完系统调用，并将返回值放进a0寄存器后，对系统调用进行判断，如果和<code>traced_syscall</code>中存储的调用号相符就进行打印</p>
@@ -1695,22 +1706,22 @@ unicode: "f6d2"
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void syscall(void) {
-</span></span><span class="line"><span class="cl">    struct proc *p = current;
-</span></span><span class="line"><span class="cl">    int num = proc_get_tf(p)-&gt;a7; 
-</span></span><span class="line"><span class="cl">    uint64_t epc = read_csr(sepc);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">syscall</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="nf">proc_get_tf</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">a7</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">epc</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sepc</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    if (num &gt; 0 &amp;&amp; num &lt; NELEM(syscalls) &amp;&amp; syscalls[num]) {
-</span></span><span class="line"><span class="cl">        uint64_t ret = syscalls[num]();
-</span></span><span class="line"><span class="cl">        proc_get_tf(p)-&gt;a0 = ret; 
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="nf">NELEM</span><span class="p">(</span><span class="n">syscalls</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">uint64_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">syscalls</span><span class="p">[</span><span class="n">num</span><span class="p">]();</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">proc_get_tf</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">a0</span> <span class="o">=</span> <span class="n">ret</span><span class="p">;</span> 
 </span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">        //插入的部分
-</span></span><span class="line"><span class="cl">        if (p-&gt;traced_syscall == num) {
-</span></span><span class="line"><span class="cl">            kprintf(&#34;trace: PID %d calls %s\n&#34;, p-&gt;pid, syscall_name(num));
-</span></span><span class="line"><span class="cl">        }
+</span></span><span class="line"><span class="cl">        <span class="c1">//插入的部分
+</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">traced_syscall</span> <span class="o">==</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;trace: PID %d calls %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="nf">syscall_name</span><span class="p">(</span><span class="n">num</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span><span class="line"><span class="cl">        
-</span></span><span class="line"><span class="cl">	// ...
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">	<span class="c1">// ...
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
@@ -1735,11 +1746,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">np-&gt;traced_syscall = myproc()-&gt;traced_syscall;
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">np</span><span class="o">-&gt;</span><span class="n">traced_syscall</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">traced_syscall</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="26.png" style="width: 90%;" />
-<p>现在这样只能监听一个系统调用，因为 PCB 里只保存了一个 <code>int traced_syscall</code>如果想同时监听多个系统调用，可以把它改成数组来存储监听号</p>
+</div><img src="26.png" style="width: 70%;" />
+<p>现在这样只能监听一个系统调用，因为 PCB 里只保存了一个 <code>int traced_syscall</code>。如果想同时监听多个系统调用，可以把它改成数组来存储监听号</p>
 <h4 id="用户态调用">用户态调用
 </h4><blockquote>
 <p>在 Linux 中，一般会在用户态头文件<code>user/include/unistd.h</code>末尾添加声明</p>
@@ -1749,8 +1760,8 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define SYS_trace 524
-</span></span><span class="line"><span class="cl">int trace(int syscall_num);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define SYS_trace 524
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">trace</span><span class="p">(</span><span class="kt">int</span> <span class="n">syscall_num</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
@@ -1956,31 +1967,24 @@ unicode: "f6d2"
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void mmap_print(mm_t *mm) {
-</span></span><span class="line"><span class="cl">    vma_t *vma;
-</span></span><span class="line"><span class="cl">    int id = 1;
-</span></span><span class="line"><span class="cl">	// 防止空指针
-</span></span><span class="line"><span class="cl">    if (mm == NULL) {
-</span></span><span class="line"><span class="cl">        return;
-</span></span><span class="line"><span class="cl">    }
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">mmap_print</span><span class="p">(</span><span class="kt">mm_t</span> <span class="o">*</span><span class="n">mm</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">vma_t</span> <span class="o">*</span><span class="n">vma</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 防止空指针
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">mm</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    list_for_each_entry(vma, &amp;mm-&gt;vma_head, head) {
-</span></span><span class="line"><span class="cl">        kprintf(&#34;%d. &#34;, id++);
-</span></span><span class="line"><span class="cl">        vma_print(vma);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">    <span class="nf">list_for_each_entry</span><span class="p">(</span><span class="n">vma</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">mm</span><span class="o">-&gt;</span><span class="n">vma_head</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;%d. &#34;</span><span class="p">,</span> <span class="n">id</span><span class="o">++</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">vma_print</span><span class="p">(</span><span class="n">vma</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>逻辑就是传入某个进程的<code>mm_t</code>，然后从head开始遍历并输出里面所有的vma</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list_for_each_entry(vma, &amp;mm-&gt;vma_head, head)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+<p><code>list_for_each_entry(vma, &amp;mm-&gt;vma_head, head)</code>中的参数含义：</p>
+<ul>
 <li><code>&amp;mm-&gt;vma_head</code>：链表入口</li>
 <li><code>vma</code>：当前遍历到的 vma_t</li>
 <li><code>head</code>：将节点挂入链表的变量，用来找下一个节点</li>
@@ -2004,16 +2008,16 @@ unicode: "f6d2"
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 初始化新程序的内存
-</span></span><span class="line"><span class="cl">ustack -= sizeof(uint64_t) * argc;
-</span></span><span class="line"><span class="cl">copy_to_user(ustack, argcv, sizeof(uint64_t) * argc);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 初始化新程序的内存
+</span></span></span><span class="line"><span class="cl"><span class="n">ustack</span> <span class="o">-=</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">argc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">copy_to_user</span><span class="p">(</span><span class="n">ustack</span><span class="p">,</span> <span class="n">argcv</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span> <span class="o">*</span> <span class="n">argc</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">//新增项
-</span></span><span class="line"><span class="cl">mmap_print(newmm);
+</span></span><span class="line"><span class="cl"><span class="c1">//新增项
+</span></span></span><span class="line"><span class="cl"><span class="nf">mmap_print</span><span class="p">(</span><span class="n">newmm</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">// 释放旧程序的内存
-</span></span><span class="line"><span class="cl">tf_reset(proc_get_tf(p), elfentry, ustack);
-</span></span><span class="line"><span class="cl">mmap_free(&amp;oldmm);
+</span></span><span class="line"><span class="cl"><span class="c1">// 释放旧程序的内存
+</span></span></span><span class="line"><span class="cl"><span class="nf">tf_reset</span><span class="p">(</span><span class="nf">proc_get_tf</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">elfentry</span><span class="p">,</span> <span class="n">ustack</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">mmap_free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">oldmm</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译，可以看到成功输出了监控信息。这里看到多段信息，这说明在内核编译完成，进入系统的过程中有多个进程都调用了exec</p>
@@ -2112,7 +2116,7 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc helloworld.c -o helloworld
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcc helloworld.c -o helloworld
 </span></span><span class="line"><span class="cl">readelf -lh helloworld
 </span></span></code></pre></td></tr></table>
 </div>
@@ -2125,7 +2129,7 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">gcc --static helloworld.c -o helloworld_static
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gcc --static helloworld.c -o helloworld_static
 </span></span><span class="line"><span class="cl">readelf -lh helloworld_static
 </span></span></code></pre></td></tr></table>
 </div>
@@ -2167,8 +2171,8 @@ unicode: "f6d2"
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">grep</span> <span class="o">-</span><span class="n">R</span> <span class="s2">&#34;mmap_map(&#34;</span> <span class="o">-</span><span class="n">n</span> <span class="o">.</span>
-</span></span><span class="line"><span class="cl"><span class="n">grep</span> <span class="o">-</span><span class="n">R</span> <span class="s2">&#34;loadseg(&#34;</span> <span class="o">-</span><span class="n">n</span> <span class="o">.</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -R <span class="s2">&#34;mmap_map(&#34;</span> -n .
+</span></span><span class="line"><span class="cl">grep -R <span class="s2">&#34;loadseg(&#34;</span> -n .
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>可以看到这两个函数的原型</p>
@@ -2183,13 +2187,13 @@ unicode: "f6d2"
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">vma_t *mmap_map(mm_t *mm,
-</span></span><span class="line"><span class="cl">                struct file *fp,
-</span></span><span class="line"><span class="cl">                off_t off,
-</span></span><span class="line"><span class="cl">                uint64_t addr,
-</span></span><span class="line"><span class="cl">                uint64_t len,
-</span></span><span class="line"><span class="cl">                int flags,
-</span></span><span class="line"><span class="cl">                int prot);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">vma_t</span> <span class="o">*</span><span class="nf">mmap_map</span><span class="p">(</span><span class="kt">mm_t</span> <span class="o">*</span><span class="n">mm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="k">struct</span> <span class="n">file</span> <span class="o">*</span><span class="n">fp</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">off_t</span> <span class="n">off</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">uint64_t</span> <span class="n">addr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">uint64_t</span> <span class="n">len</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">int</span> <span class="n">prot</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="38.png" style="width: 100%;" />
@@ -2202,9 +2206,9 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">static</span> <span class="ne">int</span> <span class="n">loadseg</span><span class="p">(</span><span class="n">mm_t</span> <span class="o">*</span><span class="n">mm</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                   <span class="n">uint64_t</span> <span class="n">va</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                   <span class="n">entry_t</span> <span class="o">*</span><span class="n">ip</span><span class="p">,</span>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">int</span> <span class="nf">loadseg</span><span class="p">(</span><span class="kt">mm_t</span> <span class="o">*</span><span class="n">mm</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="kt">uint64_t</span> <span class="n">va</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="kt">entry_t</span> <span class="o">*</span><span class="n">ip</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">                   <span class="n">uint</span> <span class="n">offset</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">                   <span class="n">uint</span> <span class="n">sz</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
@@ -2347,20 +2351,47 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">uint64_t start = PGROUNDDOWN(ph.vaddr);
-</span></span><span class="line"><span class="cl">uint64_t end = PGROUNDUP(ph.vaddr + ph.memsz);
-</span></span><span class="line"><span class="cl">uint64_t sz = end - start;
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="n">start</span> <span class="o">=</span> <span class="nf">PGROUNDDOWN</span><span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">vaddr</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">PGROUNDUP</span><span class="p">(</span><span class="n">ph</span><span class="p">.</span><span class="n">vaddr</span> <span class="o">+</span> <span class="n">ph</span><span class="p">.</span><span class="n">memsz</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>然后使用 <code>start</code> 和 <code>sz</code> 创建映射即可。修改后 VMA 的范围会覆盖当前段涉及到的所有页，<code>loadseg</code> 写入时对应的虚拟地址已经被 VMA 完整覆盖，<code>init0</code> 可以正常加载</p>
 <img src="40.png" style="width: 60%;" />
-<h2 id="进程与线程未完成">进程与线程（未完成
+<h2 id="进程与线程">进程与线程
 </h2><h3 id="yield系统调用">yield系统调用
-</h3><p><code>sched_yield</code> 的作用是让当前进程主动放弃 CPU。进程调用这个系统调用后，从正在运行状态回到可运行状态，之后由调度器重新选择一个进程运行</p>
-<p>这里不需要自己重新写调度逻辑，内核里已经有 <code>yield()</code> 可以完成让出处理器的操作，所以这个实验的核心就是把 <code>yield()</code> 包装成一个系统调用</p>
-<h4 id="实现">实现
-</h4><p>系统调用需要先分配一个 syscall number。实验要求使用 124 号，对应 Linux 中的 <code>sys_sched_yield</code></p>
-<p>打开 <code>entry/syscall.tbl</code>，在尾部添加：</p>
+</h3><h4 id="原理-1">原理
+</h4><p><code>yield</code> 的作用是让当前进程主动让出CPU。它将当前进程的状态从<code>RUNNING</code>改成<code>RUNNABLE</code>，然后调度器重新选择可运行的进程。而当前进程会重新参与调度，下一次被选中后再运行</p>
+<p><code>yield</code>的实现在<code>src/kernel/sched.c</code>中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">yield</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">proc</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nf">myproc</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">acquire</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">pstate_migrate</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">RUNNABLE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sched</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>myproc()</code>：获取当前进程</li>
+<li><code>acquire(&amp;p-&gt;lock)</code>：给当前进程加锁，防止状态修改时出问题</li>
+<li><code>pstate_migrate(p, RUNNABLE)</code>：把当前进程状态改成 <code>RUNNABLE</code></li>
+<li><code>sched()</code>：进入调度器，重新选择可运行的进程</li>
+<li><code>release(&amp;p-&gt;lock)</code>：当前进程之后被调度回来后，释放进程锁</li>
+</ul>
+<h4 id="实现调用">实现调用
+</h4><p>系统调用需要先分配一个没有被使用过的 syscall number，打开 <code>entry/syscall.tbl</code>，在尾部添加</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2374,8 +2405,7 @@ unicode: "f6d2"
 <li><code>sched_yield</code> 是系统调用名称</li>
 <li><code>sys_sched_yield</code> 是内核中真正执行的函数</li>
 </ul>
-<p>这样用户态执行 124 号系统调用时，内核就会跳转到 <code>sys_sched_yield</code> 函数</p>
-<p>新建或编辑对应的内核源码文件，比如 <code>src/sys_sched_yield.c</code>，实现 <code>sys_sched_yield</code></p>
+<p>编辑 <code>src/sys_sched_yield.c</code>，实现 <code>sys_sched_yield</code>。这部分很简单，用户调用<code>sched_yield</code>后，内核直接执行<code>yield</code>即可</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2387,30 +2417,26 @@ unicode: "f6d2"
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;common.h&#34;
-</span></span><span class="line"><span class="cl">#include &#34;kernel/proc.h&#34;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">uint64_t sys_sched_yield(void) {
-</span></span><span class="line"><span class="cl">    yield();
-</span></span><span class="line"><span class="cl">    return 0;
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;common.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;kernel/sched.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">uint64_t</span> <span class="nf">sys_sched_yield</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里的逻辑很简单，当前进程进入系统调用后，直接执行 <code>yield()</code> 主动让出 CPU</p>
-<p><code>yield()</code> 会把当前进程重新放回可运行状态，也就是 <code>RUNNABLE</code>，然后触发调度。当前进程之后不是不能运行了，而是要重新参与调度，等调度器再次选中它时才会继续执行</p>
-<p>如果是新建的 <code>.c</code> 文件，还需要修改 <code>src/Makefile</code>，把它编译进内核：</p>
+</div><p>最后修改<code>src/Makefile</code>，添加下面的代码来将函数链接到内核，否则虽然代码存在但内核无法找到</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">obj-y += sys_sched_yield.o
+<pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">obj-y</span> <span class="o">+=</span> sys_sched_yield.o
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>否则代码虽然写好了，但是不会被链接进最终的内核文件</p>
-<h4 id="测试-2">测试
-</h4><p>这个测试会创建 3 个子进程，每个子进程循环 5 次。每轮循环里，子进程都会先调用 <code>sched_yield()</code> 主动让出 CPU，然后再打印自己的 PID 和当前循环次数</p>
-<p>在 <code>user/src/init0.c</code> 开头部分新增中这个测试函数：</p>
+</div><h4 id="测试-2">测试
+</h4><p>在 <code>user/src/init0.c</code> 开头部分写入这个测试函数，这个测试会创建 3 个子进程，每个子进程循环 5 次。每轮循环里，子进程都会先调用 <code>sched_yield()</code> 主动让出 CPU，等下次被调度器选中再打印自己的 PID 和当前循环次数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2430,28 +2456,30 @@ unicode: "f6d2"
 </span><span class="lnt">15
 </span><span class="lnt">16
 </span><span class="lnt">17
+</span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#include &#34;syscall.h&#34;
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">void test_yield() {
-</span></span><span class="line"><span class="cl">    for (int i = 0; i &lt; 3; ++i) {
-</span></span><span class="line"><span class="cl">        if (fork() == 0) {
-</span></span><span class="line"><span class="cl">            for (int j = 0; j &lt; 5; ++j) {
-</span></span><span class="line"><span class="cl">                sched_yield();
-</span></span><span class="line"><span class="cl">                printf(&#34;Child %d. Iteration %d.\n&#34;, getpid(), j);
-</span></span><span class="line"><span class="cl">            }
-</span></span><span class="line"><span class="cl">            exit(0);
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;syscall.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">test_yield</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    	<span class="c1">// 创建子进程，只有子进程fork返回0
+</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">sched_yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Child %d. Iteration %d.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">getpid</span><span class="p">(),</span> <span class="n">j</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 父进程等待子进程结束
+</span></span></span><span class="line"><span class="cl">    <span class="nf">wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>加入调用</p>
+</div><p>在main函数中，进入系统打印欢迎消息之后加入调用</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2464,81 +2492,20 @@ unicode: "f6d2"
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void main() {
-</span></span><span class="line"><span class="cl">    run(&#34;welcome&#34;);
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">run</span><span class="p">(</span><span class="s">&#34;welcome&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    test_yield();
+</span></span><span class="line"><span class="cl">    <span class="nf">test_yield</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    run(&#34;sh&#34;);
-</span></span><span class="line"><span class="cl">    halt();
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">    <span class="nf">run</span><span class="p">(</span><span class="s">&#34;sh&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">halt</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>重新编译并运行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
-</span></span><span class="line"><span class="cl">./run-qemu.sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果实现正确，可以看到多个子进程交替输出类似下面的内容：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Child 3. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 4. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 5. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 3. Iteration 1.
-</span></span><span class="line"><span class="cl">Child 4. Iteration 1.
-</span></span><span class="line"><span class="cl">Child 5. Iteration 1.
-</span></span><span class="line"><span class="cl">...
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>实际输出不一定完全长这样，只要能看到多个子进程都在运行，并且输出之间发生交替，就说明 <code>sched_yield()</code> 已经让当前进程主动让出了处理器</p>
-<p>多次运行这个测试，用例的输出不一定完全一致</p>
-<p>原因是这里同时存在多个可运行进程。每个子进程都会调用 <code>sched_yield()</code>，主动把 CPU 让出来，然后调度器会从可运行队列里选择下一个进程运行。哪个进程被选中，和进程进入队列的顺序、调度器实现、时钟中断发生的位置都有关系</p>
-<p>所以虽然每个子进程内部的 <code>Iteration</code> 一定是从 0 到 4 递增的，但是不同子进程之间的输出顺序不一定固定</p>
-<p>比如可能是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Child 3. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 4. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 5. Iteration 0.
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>也可能是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Child 4. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 3. Iteration 0.
-</span></span><span class="line"><span class="cl">Child 5. Iteration 0.
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这不是错误，而是并发进程调度本身就具有不确定性</p>
+</div><p>重新编译并运行，可以看到如图输出</p>
 <img src="47.png" style="width: 60%;" />
-<p>如果想让输出有序，就不能让多个子进程完全自由竞争 CPU。可以让父进程创建一个子进程后立刻 <code>wait</code>，等这个子进程全部输出结束后，再创建下一个子进程。这样输出就会固定</p>
+<p>输出三个不同PID的<code>Child</code>说明三个子进程都成功输出了，但输出顺序没有规律，并且有些内容被嵌套了，这是因为多个子进程是平行关系，无法预测调度器下一个选择的进程，类似于抢CPU</p>
+<p>如果想让输出有序，就不能让子进程自由竞争 CPU。可以创建一个子进程后立刻 <code>wait</code>，等这个子进程全部输出结束后，再创建下一个子进程，这样输出顺序就会固定</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2555,29 +2522,26 @@ unicode: "f6d2"
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void test_yield() {
-</span></span><span class="line"><span class="cl">    for (int i = 0; i &lt; 3; ++i) {
-</span></span><span class="line"><span class="cl">        if (fork() == 0) {
-</span></span><span class="line"><span class="cl">            for (int j = 0; j &lt; 5; ++j) {
-</span></span><span class="line"><span class="cl">                sched_yield();
-</span></span><span class="line"><span class="cl">                printf(&#34;Child %d. Iteration %d.\n&#34;, getpid(), j);
-</span></span><span class="line"><span class="cl">            }
-</span></span><span class="line"><span class="cl">            exit(0);
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">        wait(NULL);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">test_yield</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nf">fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">sched_yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Child %d. Iteration %d.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="nf">getpid</span><span class="p">(),</span> <span class="n">j</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">wait</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这样写之后，同一时间基本只有一个子进程在输出，父进程会等待当前子进程结束，再创建后面的子进程，所以输出顺序会稳定很多</p>
-<p>不过这种做法本质上是把并发测试改成了顺序测试。如果目的是观察 <code>sched_yield()</code> 造成的进程交替运行，原来的测试更合适。如果目的是得到稳定输出，就需要通过 <code>wait</code>、锁、信号量、管道等同步机制控制执行顺序</p>
-<img src="46.png" style="width: 60%;" />
+</div><img src="46.png" style="width: 60%;" />
 <h3 id="进程时间片">进程时间片
-</h3><p>当前 OS 的调度是时间片轮转调度，时钟中断发生后，内核会让当前进程让出 CPU，再由调度器选择下一个进程运行</p>
-<p>原本的实现里，一个进程每次只能执行一个时间片。这个实验要做的是让进程可以连续执行多个时间片，只有剩余时间片用完时，才触发调度</p>
+</h3><p>原本OS的进程调度是基于时间片轮转来调度的。时钟中断后内核会让当前进程立刻yield让出 CPU，然后调度器选择下一个进程，一个进程每次只能执行一个时间片</p>
+<p>而这里要做的是让一个进程可以连续执行多个时间片，只有剩余的时间片用完时才触发调度</p>
 <h4 id="pcb-增加字段">PCB 增加字段
-</h4><p>时间片属于进程运行状态的一部分，所以需要保存在 PCB 中</p>
-<p>打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 或 <code>proc_t</code>，添加一个字段记录当前进程还剩多少时间片</p>
+</h4><p>时间片属于进程运行状态的一部分，所以需要保存在 PCB 中。打开 <code>include/kernel/proc.h</code>，找到 <code>struct proc</code> 结构体，最后一行添加<code>time_slice</code>字段，用来记录当前进程还剩多少时间片</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2590,46 +2554,55 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="n">proc</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// ...
 </span></span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">time_slice</span><span class="p">;</span>    <span class="c1">// 当前进程剩余时间片
-</span></span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">time_slice</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以再定义一个默认时间片数量，比如：</p>
+</div><p>再定义3作为默认时间片数量，也就是一个进程被调度器选中后，最多可以连续经历 3 次时钟中断</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define TIME_SLICE_DEFAULT 3
-</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define TIME_SLICE_DEFAULT 3
+</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>这个值表示一个进程最多可以连续占用 3 个时钟中断周期</p>
-<h4 id="时钟中断">时钟中断
-</h4><p>时间片是在时钟中断里消耗的，所以需要修改 <code>src/kernel/irq.c</code></p>
-<p>原来的逻辑可能是每次时钟中断都直接让出 CPU，现在要改成先减少当前进程的剩余时间片，只有用完才让出处理器</p>
+</div><h4 id="时钟中断">时钟中断
+</h4><blockquote>
+<p>时间片是在时钟中断里消耗的，所以需要修改 <code>src/kernel/irq.c</code></p>
+</blockquote>
+<p>原来的逻辑是每次时钟中断都直接让出 CPU</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">when_clock {
-</span></span><span class="line"><span class="cl">    // ...
-</span></span><span class="line"><span class="cl">    reset_timer();
-</span></span><span class="line"><span class="cl">    if (p &amp;&amp; p-&gt;state == RUNNING &amp;&amp; !p-&gt;killed) {
-</span></span><span class="line"><span class="cl">        yield();
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    break;
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">when_clock</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nf">cpuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// debug(&#34;clock...\n&#34;);
+</span></span></span><span class="line"><span class="cl">                <span class="nf">clockintr</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">reset_timer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">==</span> <span class="n">RUNNING</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// give up the CPU if this is a timer interrupt.
+</span></span></span><span class="line"><span class="cl">                <span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>改成</p>
+</div><p>改成这样的程序，这样每次时钟中断时当前进程不会立刻调用 <code>yield()</code>，而是剩余时间片减一，只有减少到0后才会让出CPU</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2651,29 +2624,27 @@ unicode: "f6d2"
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">when_clock {
-</span></span><span class="line"><span class="cl">    if (cpuid() == 0) {
-</span></span><span class="line"><span class="cl">        clockintr();
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    reset_timer();
-</span></span><span class="line"><span class="cl">    if (p &amp;&amp; p-&gt;state == RUNNING &amp;&amp; !p-&gt;killed) {
-</span></span><span class="line"><span class="cl">        p-&gt;time_slice--;
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">when_clock</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">cpuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">clockintr</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">reset_timer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">==</span> <span class="n">RUNNING</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span><span class="o">--</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        info(&#34;pid %d time_slice left %d\n&#34;, p-&gt;pid, p-&gt;time_slice);
+</span></span><span class="line"><span class="cl">        <span class="nf">info</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">pid %d time_slice left %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        if (p-&gt;time_slice &lt;= 0) {
-</span></span><span class="line"><span class="cl">            info(&#34;pid %d time_slice used up, yield\n&#34;, p-&gt;pid);
-</span></span><span class="line"><span class="cl">            yield();
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    break;
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">info</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">pid %d time_slice used up, yield</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这样进程不会每次时钟中断都立刻被切走，而是可以连续运行多个时间片</p>
-<h4 id="重置时间片">重置时间片
-</h4><p>时间片用完后，进程会通过 <code>yield()</code> 回到调度器。调度器之后再次选中这个进程运行时，需要给它重新分配时间片</p>
-<p>调度器实现在 <code>src/kernel/sched.c</code> 的 <code>scheduler</code> 中，可以在进程即将被切换运行前检查：放在 <strong>调度器选中进程之后，真正 <code>swtch</code> 到进程之前</strong> 比较合适。</p>
+</div><h4 id="初始化时间片">初始化时间片
+</h4><p>时间片用完后，进程会通过 <code>yield()</code> 回到调度器。调度器的实现在 <code>src/kernel/sched.c</code> 的 <code>scheduler</code> 中，可以在进程被选中后，真正被切换之前初始化时间片，这样在它被调度时，又可以继续运行多个时钟中断周期</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2691,36 +2662,117 @@ unicode: "f6d2"
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">p-&gt;__state = RUNNING;
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">__state</span> <span class="o">=</span> <span class="n">RUNNING</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">c-&gt;proc = p;
-</span></span><span class="line"><span class="cl">set_current(p);
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">set_current</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">//
-</span></span><span class="line"><span class="cl">if (p-&gt;time_slice &lt;= 0) {
-</span></span><span class="line"><span class="cl">  p-&gt;time_slice = TIME_SLICE_DEFAULT;
-</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl"><span class="c1">// 初始化时间片
+</span></span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span> <span class="o">=</span> <span class="n">TIME_SLICE_DEFAULT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">switchuvm(p-&gt;mm);
-</span></span><span class="line"><span class="cl">swtch(&amp;c-&gt;scheduler, &amp;p-&gt;context);
-</span></span><span class="line"><span class="cl">switchkvm();
+</span></span><span class="line"><span class="cl"><span class="nf">switchuvm</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">swtch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">scheduler</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">context</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">switchkvm</span><span class="p">();</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>新进程创建时也应该有一个初始时间片，否则可能刚开始运行就被认为时间片已经用完</p>
-<blockquote>
-<p>时间片和主动让出</p>
-</blockquote>
-<p>这个实验只处理时钟中断导致的时间片消耗。进程也可能主动调用 <code>yield()</code> 让出 CPU，比如 <code>sched_yield</code> 或内核线程中的主动调度。</p>
-<p>如果想区分这两种情况，可以额外记录让出原因，并在调度器中打印。但这属于观察调度行为的扩展内容，不影响本关实现。</p>
-<p>解除 <code>scavenger</code> 内核线程后，会更容易看到主动让出的情况。修改默认时间片数量后，时间片耗尽导致的调度频率也会变化。</p>
-<p>重新编译运行后可以看到输出了结果</p>
-<img src="50.png" style="width: 100%;" />
+</div><p>重新编译运行后可以看到输出了结果，<code>time_slice</code>是一直在减少的，说明每一次时钟中断，时间片就减少1。减少到0后就输出了<code>yield</code>，说明这个进程在时间片用完后调用 <code>yield()</code> 让出 CPU</p>
+<img src="50.png" style="width: 50%;" />
+<h4 id="时间片主动让出">时间片主动让出
+</h4><p>进程让出 CPU 有两种情况，一种是时间片用完，在时钟中断中调用 <code>yield()</code>，另一种是进程主动调用 <code>yield()</code>比如 <code>sched_yield()</code> 。为了区分这两种情况，可以在 PCB 中增加一个字段记录让出原因</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">yield_reason</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为了更容易观察到时间片耗尽的情况，这里将默认时间片改成2来增加切换次数。还需要定义两个值用来标记是哪一种让出情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define TIME_SLICE_DEFAULT 2
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define YIELD_VOLUNTARY 0
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define YIELD_TIMESLICE 1
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <code>src/kernel/irq.c</code> 中，时间片用完时，把原因标记为时间片耗尽</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">time_slice</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">yield_reason</span> <span class="o">=</span> <span class="n">YIELD_TIMESLICE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在 <code>src/kernel/sched.c</code> 的 <code>scheduler</code> 中， <code>swtch</code> 返回后判断原因。打印完成后再把 <code>yield_reason</code> 初始化成 <code>YIELD_VOLUNTARY</code>，避免影响下一次判断</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">switchuvm</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">mm</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">swtch</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">scheduler</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">context</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">switchkvm</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">yield_reason</span> <span class="o">==</span> <span class="n">YIELD_TIMESLICE</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">info</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">pid %d time_slice used up, yield</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">info</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">pid %d yield voluntarily</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">yield_reason</span> <span class="o">=</span> <span class="n">YIELD_VOLUNTARY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">c</span><span class="o">-&gt;</span><span class="n">proc</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里的 <code>p</code> 是调度器刚刚切换过去运行的进程。<code>swtch</code> 前的 <code>p</code> 是将要运行的进程，<code>swtch</code> 返回后的 <code>p</code> 是刚刚运行完并让出 CPU 的同一个进程。<code>swtch</code> 返回后控制权回到了调度器，所以此时可以通过 <code>p-&gt;yield_reason</code> 判断它刚才为什么让出 CPU</p>
+<p>这样如果进程因为 <code>time_slice</code> 减到 0 被切走，就会打印时间片耗尽，如果没有被标记为 <code>YIELD_TIMESLICE</code>，就说明是其他情况导致的yield</p>
+<img src="62.png" style="width: 50%;" />
+<p>内核main中有一个叫做<code>scavenger</code>的内核线程，它会做出主动让出调度器的动作。运行它之后，输出中会更容易看到主动让出的提示，因为它会主动调用 <code>yield()</code></p>
+<p>在 <code>src/main.c</code> 中，把这一行注释去掉</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">scavenger_init();
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新编译运行，发现输出中不停出现<code>yield voluntarily</code>，说明这个线程会循环调用yield</p>
+<img src="63.png" style="width: 30%;" />
 <h3 id="内核线程">内核线程
-</h3><p>内核线程可以理解成运行在内核里的特殊进程。普通用户进程需要通过 <code>ecall</code> 触发系统调用，然后从用户态陷入内核态，执行完之后再返回用户态。而内核线程从创建开始就在内核态运行</p>
-<p>它虽然叫线程，但在这个实验框架里依然会被调度器调度，也有自己的 PCB 和内核栈。区别在于它不执行 ELF 用户程序，也没有普通用户进程那样的用户态执行流程。它更像是内核自己创建出来的后台任务，用来完成一些持续性的维护工作，比如文件系统缓存写回、脏块同步、资源回收这一类事情。</p>
-<p>这次实验要做的事情就是创建一个内核线程，让它在文件系统初始化完成后，读取文件镜像里的 <code>/password</code> 文件，并把文件内容打印出来。</p>
-<h4 id="函数实现-1">函数实现
-</h4><p>使用 <code>kthread_create</code> 创建线程，使用 <code>namee</code> 查找文件目录项，使用 <code>reade</code> 读取文件内容。在源码里查找这些函数的定义</p>
+</h3><p>内核线程就是运行在内核里的特殊进程。普通用户进程在需要内核服务时，要通过 <code>ecall</code> 触发系统调用，然后从用户态陷入内核态，执行完之后再返回用户态，而内核线程从创建开始就在内核态运行</p>
+<p>虽然它叫线程，但和普通进程一样会被调度器调度，也有自己的 PCB 和内核栈。区别在于普通用户进程运行的是用户程序，而内核线程运行的是内核里的函数。类似内核自己创建出来的后台任务，用来完成一些持续的维护工作，比如文件系统缓存写回、脏块同步、资源回收这类</p>
+<h4 id="读取密码并打印">读取密码并打印
+</h4><blockquote>
+<p>这部分的目标是创建一个内核线程，让它在文件系统初始化完成后，读取文件镜像里的 <code>/password</code> 文件并打印</p>
+</blockquote>
+<p>这里需要使用 <code>kthread_create</code> 创建线程，使用 <code>namee</code> 查找文件目录项，使用 <code>reade</code> 读取文件内容。首先在源码里查找这些函数的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2734,7 +2786,12 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="53.png" style="width: 100%;" />
-<p>打开 <code>src/mythread.c</code>，补全 <code>mythread_fn</code>：</p>
+<ul>
+<li><code>kthread_create(char *name, kthread_callback_t callback)</code>：创建一个内核线程。<code>name</code> 是线程名称，<code>callback</code> 是线程启动后执行的函数</li>
+<li><code>namee(entry_t *from, char *path)</code>：根据路径查找文件系统中的目录项。<code>from</code> 表示查找的起始目录，<code>path</code> 表示要查找的路径</li>
+<li><code>reade(entry_t *entry, int user, uint64_t buff, off_t off, int n)</code>：从指定文件目录项中读取内容。<code>entry</code> 是要读取的文件，<code>user</code> 表示目标地址是否是用户态地址，<code>buff</code> 是保存读取结果的缓冲区地址，<code>off</code> 是文件内读取偏移，<code>n</code> 是读取字节数</li>
+</ul>
+<p>在 <code>src/mythread.c</code>中写入下面的代码，实现<code>mythread_fn</code>函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -2770,6 +2827,9 @@ unicode: "f6d2"
 </span><span class="lnt">31
 </span><span class="lnt">32
 </span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;common.h&#34;</span><span class="cp">
@@ -2778,22 +2838,25 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">mythread_fn</span><span class="p">(</span><span class="kt">proc_t</span> <span class="o">*</span><span class="n">me</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// Wait for fs initialization
+</span></span><span class="line"><span class="cl">    <span class="c1">// 在文件系统初始化完成之前一直让出CPU
 </span></span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">fat</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">yield</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nf">__sync_synchronize</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="c1">// 创建并初始化保存密码的数组
+</span></span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">memset</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">entry_t</span> <span class="o">*</span><span class="n">ep</span> <span class="o">=</span> <span class="nf">namee</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="s">&#34;/password&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="c1">// 查找密码文件
+</span></span></span><span class="line"><span class="cl">    <span class="kt">entry_t</span> <span class="o">*</span><span class="n">ep</span> <span class="o">=</span> <span class="nf">namee</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="s">&#34;/password&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ep</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;mythread: /password not found</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="nf">reade</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">    <span class="c1">// 读取文件内容
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="nf">reade</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">buf</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;mythread: read /password failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">);</span>
@@ -2807,8 +2870,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="初始化线程">初始化线程
-</h4><p>工作函数写完后，还需要在 <code>mythread_init()</code> 中真正创建线程在上面的文件最底下增加这个函数</p>
+</div><h4 id="创建线程">创建线程
+</h4><p>工作函数写完后，还需要在 <code>mythread_init()</code> 中真正创建线程。在 <code>src/mythread.c</code>增加这个函数</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2816,73 +2879,42 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void mythread_init() {
-</span></span><span class="line"><span class="cl">    kthread_create(&#34;mythread&#34;, mythread_fn);
-</span></span><span class="line"><span class="cl">}
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">mythread_init</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">kthread_create</span><span class="p">(</span><span class="s">&#34;mythread&#34;</span><span class="p">,</span> <span class="n">mythread_fn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这句的作用是创建一个名字为 <code>mythread</code> 的内核线程，并把它的执行函数设置为 <code>mythread_fn</code>。系统启动过程中调用 <code>mythread_init()</code> 后，这个线程就会进入调度体系。等调度器选中它时，它就会开始执行 <code>mythread_fn</code></p>
+</div><p>这个函数创建了一个叫 <code>mythread</code> 的内核线程。系统启动过程中调用 <code>mythread_init()</code> 后，这个线程就会进入调度，调度器选中它时，就会开始执行 <code>mythread_fn</code>函数</p>
 <h4 id="验证-1">验证
-</h4><p>重新编译运行,如果内核线程创建成功，并且 <code>/password</code> 文件读取正常，启动过程中就能看到类似下面的输出<code>password: Secret: 321jk3gb12hjg4213123bh21jkh123ui</code></p>
-<p>这条输出是内核线程自己在内核态中通过 <code>kprintf</code> 打印出来的。这也说明这个线程并不依赖用户态程序触发。系统启动后，只要线程被创建，并且文件系统已经初始化完成，它就能自己执行读取文件的任务。</p>
-<img src="51.png" style="width: 100%;" />
+</h4><p>在 <code>src/main.c</code> 中，调用创建线程函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 放在函数声明区域
+</span></span><span class="line"><span class="cl">extern void mythread_init();
+</span></span><span class="line"><span class="cl">// 放在内核启动流程中
+</span></span><span class="line"><span class="cl">mythread_init();
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新编译运行，可以看到启动过程中就输出了密码。这是因为这条输出是内核线程自己在内核态中用 <code>kprintf</code> 打印出来的，不依赖用户态程序触发。系统启动后，只要线程被创建，而且文件系统已经初始化完成，它就能自己执行读取文件的任务</p>
+<img src="51.png" style="width: 70%;" />
 <h3 id="踩坑记录-3">踩坑记录
 </h3><blockquote>
 <p>编译时报错 <code>implicit declaration of function 'test_yield'</code></p>
 </blockquote>
-<p><strong>原因</strong>：在 <code>user/src/init0.c</code> 的 <code>main()</code> 中调用了 <code>test_yield()</code>，但在调用前没有声明或定义这个函数。C 编译器在看到 <code>test_yield()</code> 时，不知道这个函数是否存在，也不知道它的返回值和参数类型</p>
-<p><strong>解决方法</strong>：将 <code>test_yield()</code> 函数放到 <code>main()</code> 前面，或者在 <code>main()</code> 前添加函数声明</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void test_yield();
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>把完整测试函数放在 <code>main()</code> 前面</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void test_yield() {
-</span></span><span class="line"><span class="cl">    for (int i = 0; i &lt; 3; ++i) {
-</span></span><span class="line"><span class="cl">        if (fork() == 0) {
-</span></span><span class="line"><span class="cl">            for (int j = 0; j &lt; 5; ++j) {
-</span></span><span class="line"><span class="cl">                sched_yield();
-</span></span><span class="line"><span class="cl">                printf(&#34;Child %d. Iteration %d.\n&#34;, getpid(), j);
-</span></span><span class="line"><span class="cl">            }
-</span></span><span class="line"><span class="cl">            exit(0);
-</span></span><span class="line"><span class="cl">        }
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">    wait(NULL);
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="48.png" style="width: 100%;" />
+<p><strong>原因</strong>：在 <code>user/src/init0.c</code> 的 <code>main()</code> 中调用了 <code>test_yield()</code>，但在调用前没有声明或定义这个函数</p>
+<p><strong>解决方法</strong>：将 <code>test_yield()</code> 函数在 <code>main()</code> 之前定义</p>
+<img src="48.png" style="width: 100%;" />
 <blockquote>
 <p>编译时报错 <code>TIME_SLICE_DEFAULT undeclared</code></p>
 </blockquote>
-<p><strong>原因</strong>：在 <code>sched.c</code> 中使用了 <code>TIME_SLICE_DEFAULT</code>，但没有在任何地方定义这个宏。编译器只能看到 <code>p-&gt;time_slice = TIME_SLICE_DEFAULT;</code>，却找不到 <code>TIME_SLICE_DEFAULT</code> 具体代表什么值，所以直接报错</p>
-<p><strong>解决方法</strong>：在公共头文件中定义默认时间片数量，比如放到 <code>include/kernel/proc.h</code> 中</p>
+<p><strong>原因</strong>：在 <code>sched.c</code> 中使用了 <code>TIME_SLICE_DEFAULT</code>，但没有在任何地方定义它。编译器找不到 <code>TIME_SLICE_DEFAULT</code> 所以直接报错</p>
+<p><strong>解决方法</strong>：在 <code>include/kernel/proc.h</code> 中定义默认时间片数量。这个文件是公共头文件，<code>irq.c</code> 和 <code>sched.c</code>都包含了它，因此可以使用其中定义的宏</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -2891,13 +2923,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define TIME_SLICE_DEFAULT 3
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>因为 <code>irq.c</code> 和 <code>sched.c</code> 都会用到时间片相关逻辑，所以这个宏最好放在公共头文件里，而不是只写在某一个 <code>.c</code> 文件中</p>
-<img src="49.png" style="width: 100%;" />
+</div><img src="49.png" style="width: 100%;" />
 <h2 id="文件系统1111">文件系统1111
 </h2><h3 id="fat32下的文件检索">FAT32下的文件检索
 </h3><p>平时打开文件时，表面上只是传入了一个文件名，但文件系统内部需要根据这个名字在目录中找到对应的目录项。FAT32 的目录项比较特殊，真实结构里会涉及短文件名和长文件名，不过当前框架已经把这些细节封装到了目录遍历函数里。</p>
 <p>这里真正要处理的是逻辑层面的文件查找：遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置。</p>
-<h4 id="函数实现-2">函数实现
+<h4 id="函数实现-1">函数实现
 </h4><p>入口函数是 <code>fat_dirlookup</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3038,11 +3069,11 @@ unicode: "f6d2"
 </div>
 </div><p>可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>，外层遍历停止，系统继续执行后续加载流程。</p>
 <p>最后系统正常进入 shell：</p>
-<img src="54.png" style="width: 100%;" />
+<img src="54.png" style="width: 70%;" />
 <h3 id="fat32簇链">FAT32簇链
 </h3><p>FAT32 是一种显式链式分配文件系统。文件内容不一定连续存放在磁盘上，而是按簇组织。每个簇在 FAT 表中都有一个对应表项，表项里保存的是下一个簇号。只要从文件起始簇开始，不断读取 FAT 表中的后继簇号，就可以沿着簇链找到整个文件的数据。</p>
 <p>这里要补全的是 <code>fat_next_cluster</code>，它的作用是给定当前簇号 <code>cclus</code>，返回它在 FAT 表中记录的下一个簇号。</p>
-<h4 id="函数实现-3">函数实现
+<h4 id="函数实现-2">函数实现
 </h4><p>打开 <code>src/fs/fat32.c</code>，找到 <code>fat_next_cluster</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3175,7 +3206,7 @@ unicode: "f6d2"
 <h3 id="磁盘块缓存">磁盘块缓存
 </h3><p>磁盘访问速度比内存慢很多，所以文件系统不会每次都直接访问磁盘，而是会在内存中维护一组块缓存。读取磁盘块时，先在缓存里查找。如果目标块已经存在，就直接返回缓存；如果不存在，再选择一个空闲缓存块回收，用它去缓存新的磁盘块。</p>
 <p>这里使用 LRU 链表管理缓存块。链表头部表示最近使用过的缓存，链表尾部表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头部。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收。</p>
-<h4 id="函数实现-4">函数实现
+<h4 id="函数实现-3">函数实现
 </h4><p>打开 <code>src/fs/bio.c</code>，补全 <code>bget</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3423,7 +3454,7 @@ unicode: "f6d2"
 </h3><p>管道可以理解成内核提供的一块缓冲区，用来让两个进程之间传递数据。普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量，所以需要通过内核提供的通信机制来交换数据。</p>
 <p>管道有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据。因为一个管道更适合单向传输，所以这次实验中要创建两个管道，一个负责父进程传给子进程，一个负责子进程传回父进程。</p>
 <p>这次实验要做的事情是父进程从标准输入读取一串长度为 16 的字母序列，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后由父进程输出。</p>
-<h4 id="函数实现-5">函数实现
+<h4 id="函数实现-4">函数实现
 </h4><p>在 <code>user/src</code> 下新建用户程序，比如 <code>pipe_test.c</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4081,7 +4112,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">27</span> 
       篇 ，总计 
-      <span class="number-highlight">120.48</span> 
+      <span class="number-highlight">120.76</span> 
       k 字
   </div>
   <div>
