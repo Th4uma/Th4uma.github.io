@@ -7,7 +7,58 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Sun, 31 May 2026 16:24:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 09 Jun 2026 18:05:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>一次校园网异常流量引出的代理分析与上网方案</title>
+        <link>https://th4uma.github.io/post/daili/</link>
+        <pubDate>Tue, 09 Jun 2026 18:05:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/daili/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/daili.jpg" alt="Featured image of post 一次校园网异常流量引出的代理分析与上网方案" /&gt;&lt;h2 id=&#34;前情提要&#34;&gt;前情提要
+&lt;/h2&gt;&lt;p&gt;半年前，我买了一个路由器，刷了OpenWrt还&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/op_add/#openclash&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;部署了小猫&lt;/a&gt;，在这之后上网变得简单又方便，我很开心。但半年后报应来了，学校查到我用校园网科学上网，导致我被导员约谈，为了防止学位证升天，回去也只好关闭了小猫。但是，不上网是万万不可能的，之后的一周我就用手机开热点给电脑，电脑再科学上网。有时候犯懒，会抱着一丝侥幸心理，电脑直接开启魔法&lt;/p&gt;
+&lt;p&gt;本以为这一点点流量没关系，但10天后又被约谈了一次，看到导员手里的表格，我才发现之前完全搞错了问题所在。表格记录了我使用的机场名，访问的一个某敏感SS级别宗教网站，还有访问时间，但实际上我连这个网站都没听说过，更不用说访问了。看来之前被约谈也是因为这个网站，而不是翻墙本身，毕竟我不怎么看视频，流量用量非常小，平时也就用用ai和github这些，按理说不应该被约谈的&lt;/p&gt;
+&lt;h2 id=&#34;异常信息分析&#34;&gt;异常信息分析
+&lt;/h2&gt;&lt;p&gt;相关域名：zh.[redacted].org
+客户端地址：10.150.117.23
+服务器地址：103.181.165.138:36602&lt;/p&gt;
+&lt;p&gt;客户端地址理所当然也就是我的路由器了，毕竟是网络总出口，&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;IPv4 上游&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;协议:&lt;/strong&gt; DHCP 客户端
+&lt;strong&gt;地址:&lt;/strong&gt; 10.150.117.23/16
+&lt;strong&gt;网关:&lt;/strong&gt; 10.150.0.1
+&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.1
+&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.10
+&lt;strong&gt;剩余有效期:&lt;/strong&gt; 2d 17h 3m 42s
+&lt;strong&gt;已连接:&lt;/strong&gt; 24d 6h 56m 18s&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://192.168.10.1/luci-static/resources/icons/ethernet.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;img&#34;
+	
+	
+&gt;&lt;strong&gt;设备:&lt;/strong&gt; 以太网适配器: &amp;ldquo;eth1&amp;rdquo;
+&lt;strong&gt;MAC 地址:&lt;/strong&gt; 8C:8C:AA:3A:1D:56&lt;/p&gt;
+&lt;p&gt;103.181.165.138:36602就不知道了，应该是节点ip&lt;/p&gt;
+&lt;p&gt;访问时间线&lt;/p&gt;
+&lt;p&gt;日期| 记录时间
+6 月 1 日| 23:26 |不清楚，大概是在学习
+6 月 2 日| 09:54 |早上起来准备看网课，当时没有关闭手机的WiFi自启，而手机常驻魔法，估计是流量漏了
+6 月 2 日| 13:58 | 这时候我在上课，没有用校园网
+6 月 4 日| 01:23 | 学习中，在用GPT，估计是手机没开热点
+6 月 4 日| 02:12 | 同上
+6 月 4 日| 09:57 | 同2号早上
+6 月 6 日| 12:27 | 同4号半夜
+6 月 6 日| 12:45 | 同4号半夜&lt;/p&gt;
+&lt;p&gt;最开始我的猜测是dns污染或者机场节点不干净。结合访问时间来看，答案确定了，就是节点不干净。之前秉持能用就行，一直用着便宜的按量机场，也懒得仔细找靠谱机场。再加上我流量用量少，好机场性价比低所以尽管我知道这个机场不好用，经常让GPT报错，还大概率不安全，但还是一直用着了，没想到给自己找了大麻烦&lt;/p&gt;
+&lt;h2 id=&#34;解决方案&#34;&gt;解决方案
+&lt;/h2&gt;&lt;p&gt;其实第一次被约谈我就想到这个方案了，也就是在路由器中把流量分出去。首先用手机给路由器或者电脑共享网络，然后在路由器中将代理流量和可疑流量分给手机来转发，其他流量正常走校园网。这样既不会导致手机流量不够用，又解决了每次科学上网都要开热点的麻烦，还规避了学校的监测，简直是完美的方案。但考虑到这段时间任务压力大，我就想着拖到暑假再处理，只是没想到第二次约谈这么快就来了，只好立刻开始&lt;/p&gt;
+&lt;p&gt;第一个任务就是换机场，毕竟原来的垃圾机场我自己都嫌弃&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>Mitnick攻击</title>
         <link>https://th4uma.github.io/post/mitnick/</link>
         <pubDate>Sun, 31 May 2026 16:24:02 +0800</pubDate>
@@ -290,7 +341,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;python3 spoof_syn_ack_2nd.py
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;脚本2中注入的数据实际上是&lt;code&gt;9090\0seed\0seed\0touch /tmp/mitnick\0&lt;/code&gt;，意思是规定&lt;strong&gt;stderr错误输出应该发往9090端口&lt;/strong&gt;，提供用户名与需要执行的命令内容。受害者收到后会发送一个SYN包主动连接9090端口，但服务器目前静默了无法回复，为了完成连接，需要再写一个脚本来处理这个包，代替服务器回复 SYN+ACK&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;脚本1中注入的数据实际上是&lt;code&gt;9090\0seed\0seed\0touch /tmp/mitnick\0&lt;/code&gt;，意思是规定&lt;strong&gt;stderr错误输出应该发往9090端口&lt;/strong&gt;，提供用户名与需要执行的命令内容。受害者收到后会发送一个SYN包主动连接9090端口，但服务器目前静默了无法回复，为了完成连接，需要再写一个脚本来处理这个包，代替服务器回复 SYN+ACK&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -480,6 +531,7 @@
 &lt;/div&gt;&lt;img src=&#34;7.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Mitnick 攻击利用了早期 TCP 协议缺乏认证的弱点，攻击者只要能伪造状态相符的包，就可能绕过登录认证，可以看出只依赖 IP 地址和信任关系是不安全的。rsh和rlogin目前已经不适合在真实环境使用，一般用 SSH 替代，还要关闭 &lt;code&gt;.rhosts&lt;/code&gt;这种静态文件的认证方式&lt;/p&gt;
+&lt;p&gt;Mitnick 攻击和TCP协议攻击的区别：TCP协议攻击在已有连接中伪造包进行欺骗，而Mitnick 攻击需要在没有连接的情况下伪造服务器连接，并盲猜受害者的TCP序列号从而建立连接&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
         </item>
@@ -1059,7 +1111,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install -y git build-essential cmake ninja-build python3 python3-pip libglib2.0-dev libpixman-1-dev gcc-riscv64-unknown-elf gdb-multiarch mtools dosfstools
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Ububtu的架构是 x86_64，采用复杂指令集，一般用于普通PC程序开发，而实验中使用的操作系统是 RISC-V，采用精简指令集，一般用于嵌入式开发和操作系统内核构建。x86 CPU 不能直接执行 RISC-V 的机器码，所以不能用系统默认的 gcc 编译。这里我们需要用到交叉编译，也就是在 x86_64 架构的机器上，生成 RISC-V 的 ELF 程序，需要安装专门的 RISC-V 工具链&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;Ubuntu的架构是 x86_64，采用复杂指令集，一般用于普通PC程序开发，而实验中使用的操作系统是 RISC-V，采用精简指令集，一般用于嵌入式开发和操作系统内核构建。x86 CPU 不能直接执行 RISC-V 的机器码，所以不能用系统默认的 gcc 编译。这里我们需要用到交叉编译，也就是在 x86_64 架构的机器上，生成 RISC-V 的 ELF 程序，需要安装专门的 RISC-V 工具链&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;code&gt;gcc&lt;/code&gt; ：GNU 编译器&lt;/p&gt;
