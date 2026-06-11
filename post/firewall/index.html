@@ -436,10 +436,227 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="netfilter-内核级防火墙">Netfilter 内核级防火墙
-</h2><blockquote>
-<p>Netfilter 是 Linux 内核提供的网络包处理框架，可以在数据包进入、转发、发出等阶段注册 Hook 函数。这个实验中通过加载内核模块，在内核层拦截发往指定地址的数据包。</p>
-</blockquote>
-<p>在路由器容器中进入源码目录，目录中包含 <code>Makefile</code> 和 <code>seedFilter.c</code>：</p>
+</h2><p>防火墙的拦截程序在 <code>seedFilter.c</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/netfilter.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/netfilter_ipv4.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/ip.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/tcp.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/udp.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/if_ether.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/inet.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">static</span> <span class="k">struct</span> <span class="n">nf_hook_ops</span> <span class="n">hook1</span><span class="p">,</span> <span class="n">hook2</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">blockTCPICMP</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">priv</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="k">struct</span> <span class="n">nf_hook_state</span> <span class="o">*</span><span class="n">state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">iphdr</span> <span class="o">*</span><span class="n">iph</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">udphdr</span> <span class="o">*</span><span class="n">udph</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">u16</span>  <span class="n">port</span>   <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="kt">char</span> <span class="n">ip</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;10.9.0.1&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">u32</span>  <span class="n">ip_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skb</span><span class="p">)</span> <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">iph</span> <span class="o">=</span> <span class="nf">ip_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// Convert the IPv4 address from dotted decimal to 32-bit binary
+</span></span></span><span class="line"><span class="cl">   <span class="nf">in4_pton</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">u8</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ip_addr</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">IPPROTO_UDP</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="n">udph</span> <span class="o">=</span> <span class="nf">udp_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">       <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span> <span class="o">==</span> <span class="n">ip_addr</span> <span class="o">&amp;&amp;</span> <span class="nf">ntohs</span><span class="p">(</span><span class="n">udph</span><span class="o">-&gt;</span><span class="n">dest</span><span class="p">)</span> <span class="o">==</span> <span class="n">port</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&#34;*** Dropping %pI4 (UDP), port %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">NF_DROP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">printInfo</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">priv</span><span class="p">,</span> <span class="k">struct</span> <span class="n">sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="k">const</span> <span class="k">struct</span> <span class="n">nf_hook_state</span> <span class="o">*</span><span class="n">state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">iphdr</span> <span class="o">*</span><span class="n">iph</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="kt">char</span> <span class="o">*</span><span class="n">hook</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="kt">char</span> <span class="o">*</span><span class="n">protocol</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">switch</span> <span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">hook</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">NF_INET_LOCAL_IN</span><span class="p">:</span>     <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;LOCAL_IN&#34;</span><span class="p">;</span>     <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">NF_INET_LOCAL_OUT</span><span class="p">:</span>    <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;LOCAL_OUT&#34;</span><span class="p">;</span>    <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">NF_INET_PRE_ROUTING</span><span class="p">:</span>  <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;PRE_ROUTING&#34;</span><span class="p">;</span>  <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">NF_INET_POST_ROUTING</span><span class="p">:</span> <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;POST_ROUTING&#34;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">NF_INET_FORWARD</span><span class="p">:</span>      <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;FORWARD&#34;</span><span class="p">;</span>      <span class="k">break</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">     <span class="k">default</span><span class="o">:</span>                   <span class="n">hook</span> <span class="o">=</span> <span class="s">&#34;IMPOSSIBLE&#34;</span><span class="p">;</span>   <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_INFO</span> <span class="s">&#34;*** %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">hook</span><span class="p">);</span> <span class="c1">// Print out the hook info
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">iph</span> <span class="o">=</span> <span class="nf">ip_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">switch</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">protocol</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">IPPROTO_UDP</span><span class="p">:</span>  <span class="n">protocol</span> <span class="o">=</span> <span class="s">&#34;UDP&#34;</span><span class="p">;</span>   <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">IPPROTO_TCP</span><span class="p">:</span>  <span class="n">protocol</span> <span class="o">=</span> <span class="s">&#34;TCP&#34;</span><span class="p">;</span>   <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">     <span class="k">case</span> <span class="nl">IPPROTO_ICMP</span><span class="p">:</span> <span class="n">protocol</span> <span class="o">=</span> <span class="s">&#34;ICMP&#34;</span><span class="p">;</span>  <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">     <span class="k">default</span><span class="o">:</span>           <span class="n">protocol</span> <span class="o">=</span> <span class="s">&#34;OTHER&#34;</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// Print out the IP addresses and protocol
+</span></span></span><span class="line"><span class="cl">   <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_INFO</span> <span class="s">&#34;    %pI4  --&gt; %pI4 (%s)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                    <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">saddr</span><span class="p">),</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span><span class="p">),</span> <span class="n">protocol</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">registerFilter</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_INFO</span> <span class="s">&#34;Registering filters.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">hook1</span><span class="p">.</span><span class="n">hook</span> <span class="o">=</span> <span class="n">printInfo</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook1</span><span class="p">.</span><span class="n">hooknum</span> <span class="o">=</span> <span class="n">NF_INET_LOCAL_IN</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook1</span><span class="p">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook1</span><span class="p">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">NF_IP_PRI_FIRST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">nf_register_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hook</span> <span class="o">=</span> <span class="n">blockUDP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hooknum</span> <span class="o">=</span> <span class="n">NF_INET_POST_ROUTING</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">NF_IP_PRI_FIRST</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">nf_register_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">removeFilter</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_INFO</span> <span class="s">&#34;The filters are being removed.</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">nf_unregister_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">nf_unregister_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">module_init</span><span class="p">(</span><span class="n">registerFilter</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">module_exit</span><span class="p">(</span><span class="n">removeFilter</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">MODULE_LICENSE</span><span class="p">(</span><span class="s">&#34;GPL&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由于容器中没有安装make，新开一个终端，在宿主机进入源码目录，这里面包含 <code>Makefile</code> 和 <code>seedFilter.c</code>。在这里对内核进行编译</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /home/th4uma/seed-labs/category-network/Firewall/Labsetup/volumes/packet_filter
+</span></span><span class="line"><span class="cl">make
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在路由器容器中进入源码目录</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -448,16 +665,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /volumes/packet_filter
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>先编译内核模块：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">make
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>为了方便观察新的日志，加载模块前先清空 <code>dmesg</code>：</p>
+</div><p>为了方便观察新的日志，加载模块前先清空 <code>dmesg</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -477,7 +685,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">lsmod <span class="p">|</span> grep seedFilter
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>模块加载后，在外部主机中访问路由器：</p>
+</div><img src="1.png" style="width: 90%;" />
+<p>模块加载后，在外部主机中访问路由器：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -488,8 +697,9 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">telnet 10.9.0.1
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\1.png" style="width: 100%;" />
-<p>可以看到外部主机无法收到响应，<code>ping</code> 出现 100% 丢包，<code>telnet</code> 也一直卡在连接阶段。回到路由器中查看内核日志：</p>
+</div><p>可以看到外部主机无法收到响应，<code>ping</code> 出现 100% 丢包，<code>telnet</code> 也一直卡在连接阶段。</p>
+<img src="2.png" style="width: 90%;" />
+<p>回到路由器中查看内核日志：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -498,8 +708,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dmesg <span class="p">|</span> tail -20
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\2.png" style="width: 95%;" />
-<p>日志中出现了 <code>Dropping 10.9.0.1 (ICMP)</code> 和 <code>Dropping 10.9.0.1 (TCP), port 23</code>，说明内核模块已经在底层拦截了发往路由器的 ICMP 和 Telnet 流量。</p>
+</div><p>日志中出现了 <code>Dropping 10.9.0.1 (ICMP)</code> 和 <code>Dropping 10.9.0.1 (TCP), port 23</code>，说明内核模块已经在底层拦截了发往路由器的 ICMP 和 Telnet 流量。</p>
+<img src="3.png" style="width: 90%;" />
 <p>这个任务和普通应用层过滤不同，拦截动作发生在内核网络协议栈中。只要数据包匹配模块中写好的条件，就会直接返回 <code>NF_DROP</code>，后面的网络栈不会继续处理这个包，所以外部主机表现为收不到任何响应。</p>
 <h2 id="无状态防火墙规则">无状态防火墙规则
 </h2><blockquote>
@@ -981,7 +1191,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">29</span> 
       篇 ，总计 
-      <span class="number-highlight">126.98</span> 
+      <span class="number-highlight">127.33</span> 
       k 字
   </div>
   <div>
