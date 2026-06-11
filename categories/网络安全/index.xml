@@ -15,7 +15,7 @@
         <guid>https://th4uma.github.io/post/firewall/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/firewall.jpg" alt="Featured image of post 防火墙探索" /&gt;&lt;h2 id=&#34;实验环境&#34;&gt;实验环境
 &lt;/h2&gt;&lt;p&gt;我使用的是 Ubuntu 24.04.4，基本环境配置见&lt;a class=&#34;link&#34; href=&#34;https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;ARP攻击原理学习&lt;/a&gt;。&lt;/p&gt;
+    &gt;ARP攻击原理学习&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;网络结构如下：&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
@@ -27,50 +27,45 @@
 	&lt;/thead&gt;
 	&lt;tbody&gt;
 			&lt;tr&gt;
-					&lt;td&gt;External Host&lt;/td&gt;
+					&lt;td&gt;外部主机&lt;/td&gt;
 					&lt;td&gt;&lt;code&gt;10.9.0.5&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;外部主机，用来模拟外部访问者&lt;/td&gt;
+					&lt;td&gt;用来模拟外部访问者&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
-					&lt;td&gt;Router&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt; / &lt;code&gt;192.168.60.1&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;路由器，同时作为防火墙&lt;/td&gt;
+					&lt;td&gt;路由器&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;10.9.0.1&lt;/code&gt;（外网口&lt;code&gt;eth0&lt;/code&gt; ）/ &lt;code&gt;192.168.60.1&lt;/code&gt;（内网口&lt;code&gt;eth1&lt;/code&gt;）&lt;/td&gt;
+					&lt;td&gt;作为防火墙&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
-					&lt;td&gt;Internal Server&lt;/td&gt;
+					&lt;td&gt;内部服务器&lt;/td&gt;
 					&lt;td&gt;&lt;code&gt;192.168.60.5&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;内部受保护服务器&lt;/td&gt;
+					&lt;td&gt;受防火墙保护&lt;/td&gt;
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;路由器有两个网口：&lt;code&gt;eth0&lt;/code&gt; 连接外部网络，地址为 &lt;code&gt;10.9.0.1&lt;/code&gt;；&lt;code&gt;eth1&lt;/code&gt; 连接内部网络，地址为 &lt;code&gt;192.168.60.1&lt;/code&gt;。后续防火墙规则主要就是围绕这两个方向进行控制。&lt;/p&gt;
-&lt;p&gt;启动实验前先清理旧容器，防止之前的实验环境占用网络或端口：&lt;/p&gt;
+&lt;p&gt;启动实验前先清理容器环境，防止被之前的网络配置干扰&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker stop &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;docker ps -a -q&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt; 2&amp;gt;/dev/null
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker rm &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;docker ps -a -q&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt; 2&amp;gt;/dev/null
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker stop &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;sudo docker ps -q&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt; 2&amp;gt;/dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker system prune -f
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;进入实验目录，构建并启动容器：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;进入实验目录并启动&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; seed-labs/category-firewall/Labsetup
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker-compose build
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker-compose up -d
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker ps
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; seed-labs/category-network/Firewall/Labsetup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose up -d
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;打开三个终端，分别进入对应容器。&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;打开三个终端分别进入对应的容器&lt;/p&gt;
 &lt;p&gt;外部主机：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;

@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习。\n网络结构如下：\n节点 IP 地址 作用 External Host 10.9.0.5 外部主机，用来模拟外部访问者 Router 10.9.0.1 / 192.168.60.1 路由器，同时作为防火墙 Internal Server 192.168.60.5 内部受保护服务器 路由器有两个网口：eth0 连接外部网络，地址为 10.9.0.1；eth1 连接内部网络，地址为 192.168.60.1。后续防火墙规则主要就是围绕这两个方向进行控制。\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 外部主机 10.9.0.5 用来模拟外部访问者 路由器 10.9.0.1（外网口eth0 ）/ 192.168.60.1（内网口eth1） 作为防火墙 内部服务器 192.168.60.5 受防火墙保护 启动实验前先清理容器环境，防止被之前的网络配置干扰\n">
 <title>防火墙探索</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/firewall/'>
 
 <link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="防火墙探索">
-<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习。\n网络结构如下：\n节点 IP 地址 作用 External Host 10.9.0.5 外部主机，用来模拟外部访问者 Router 10.9.0.1 / 192.168.60.1 路由器，同时作为防火墙 Internal Server 192.168.60.5 内部受保护服务器 路由器有两个网口：eth0 连接外部网络，地址为 10.9.0.1；eth1 连接内部网络，地址为 192.168.60.1。后续防火墙规则主要就是围绕这两个方向进行控制。\n">
+<meta property='og:description' content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 外部主机 10.9.0.5 用来模拟外部访问者 路由器 10.9.0.1（外网口eth0 ）/ 192.168.60.1（内网口eth1） 作为防火墙 内部服务器 192.168.60.5 受防火墙保护 启动实验前先清理容器环境，防止被之前的网络配置干扰\n">
 <meta property='og:url' content='https://th4uma.github.io/post/firewall/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-11T00:52:02&#43;08:00'/><meta property='article:modified_time' content='2026-06-11T00:52:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/firewall.jpg' />
 <meta name="twitter:title" content="防火墙探索">
-<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习。\n网络结构如下：\n节点 IP 地址 作用 External Host 10.9.0.5 外部主机，用来模拟外部访问者 Router 10.9.0.1 / 192.168.60.1 路由器，同时作为防火墙 Internal Server 192.168.60.5 内部受保护服务器 路由器有两个网口：eth0 连接外部网络，地址为 10.9.0.1；eth1 连接内部网络，地址为 192.168.60.1。后续防火墙规则主要就是围绕这两个方向进行控制。\n"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="实验环境\r我使用的是 Ubuntu 24.04.4，基本环境配置见ARP攻击原理学习\n网络结构如下：\n节点 IP 地址 作用 外部主机 10.9.0.5 用来模拟外部访问者 路由器 10.9.0.1（外网口eth0 ）/ 192.168.60.1（内网口eth1） 作为防火墙 内部服务器 192.168.60.5 受防火墙保护 启动实验前先清理容器环境，防止被之前的网络配置干扰\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/cover/firewall.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -357,7 +357,7 @@ unicode: "f6d2"
     
     <h2 id="实验环境">实验环境
 </h2><p>我使用的是 Ubuntu 24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
-    >ARP攻击原理学习</a>。</p>
+    >ARP攻击原理学习</a></p>
 <p>网络结构如下：</p>
 <div class="table-wrapper"><table>
 	<thead>
@@ -369,50 +369,45 @@ unicode: "f6d2"
 	</thead>
 	<tbody>
 			<tr>
-					<td>External Host</td>
+					<td>外部主机</td>
 					<td><code>10.9.0.5</code></td>
-					<td>外部主机，用来模拟外部访问者</td>
+					<td>用来模拟外部访问者</td>
 			</tr>
 			<tr>
-					<td>Router</td>
-					<td><code>10.9.0.1</code> / <code>192.168.60.1</code></td>
-					<td>路由器，同时作为防火墙</td>
+					<td>路由器</td>
+					<td><code>10.9.0.1</code>（外网口<code>eth0</code> ）/ <code>192.168.60.1</code>（内网口<code>eth1</code>）</td>
+					<td>作为防火墙</td>
 			</tr>
 			<tr>
-					<td>Internal Server</td>
+					<td>内部服务器</td>
 					<td><code>192.168.60.5</code></td>
-					<td>内部受保护服务器</td>
+					<td>受防火墙保护</td>
 			</tr>
 	</tbody>
 </table></div>
-<p>路由器有两个网口：<code>eth0</code> 连接外部网络，地址为 <code>10.9.0.1</code>；<code>eth1</code> 连接内部网络，地址为 <code>192.168.60.1</code>。后续防火墙规则主要就是围绕这两个方向进行控制。</p>
-<p>启动实验前先清理旧容器，防止之前的实验环境占用网络或端口：</p>
+<p>启动实验前先清理容器环境，防止被之前的网络配置干扰</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker stop <span class="k">$(</span>docker ps -a -q<span class="k">)</span> 2&gt;/dev/null
-</span></span><span class="line"><span class="cl">docker rm <span class="k">$(</span>docker ps -a -q<span class="k">)</span> 2&gt;/dev/null
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker stop <span class="k">$(</span>sudo docker ps -q<span class="k">)</span> 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">sudo docker system prune -f
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入实验目录，构建并启动容器：</p>
+</div><p>进入实验目录并启动</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> seed-labs/category-firewall/Labsetup
-</span></span><span class="line"><span class="cl">docker-compose build
-</span></span><span class="line"><span class="cl">docker-compose up -d
-</span></span><span class="line"><span class="cl">docker ps
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> seed-labs/category-network/Firewall/Labsetup
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>打开三个终端，分别进入对应容器。</p>
+</div><p>打开三个终端分别进入对应的容器</p>
 <p>外部主机：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -986,7 +981,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">29</span> 
       篇 ，总计 
-      <span class="number-highlight">126.28</span> 
+      <span class="number-highlight">126.98</span> 
       k 字
   </div>
   <div>
@@ -1030,8 +1025,6 @@ if (busuanziValue) {
 }
 </script>
     <section class="powerby">
-        
-        
         
         
         
