@@ -439,7 +439,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo apt update
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>安装 Docker CE（社区版 ）、Docker CE CLI 和 Containerd</p>
+</div><p>安装 Docker CE 社区版、Docker CE CLI 和 Containerd</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -577,8 +577,8 @@ unicode: "f6d2"
 <p>这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径</p>
 <h3 id="arp-request-进行缓存投毒">ARP Request 进行缓存投毒
 </h3><blockquote>
-<p>实验目标：使 Host A 错误地将伪造 IP (10.9.0.99) 映射到攻击者指定的 MAC 地址</p>
-<p>方法：构造 ARP Request，广播伪造数据包</p>
+<p>实验目标：使 Host A 错误地将伪造 IP 10.9.0.99 映射到攻击者指定的 MAC 地址</p>
+<p>方法：构造 ARP 请求包，广播伪造数据包</p>
 </blockquote>
 <p>进入容器 M</p>
 <div class="highlight"><div class="chroma">
@@ -671,10 +671,10 @@ unicode: "f6d2"
 <h3 id="arp-reply-投毒">ARP Reply 投毒
 </h3><blockquote>
 <p>实验目标：验证未经请求的 ARP Reply 报文能否篡改受害者的 ARP 缓存</p>
-<p>方法：构造 ARP Reply，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
+<p>方法：构造 ARP 返回包，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
 </blockquote>
 <h4 id="缓存中不存在ip">缓存中不存在IP
-</h4><p>在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中不存在的 IP</p>
+</h4><p>在容器M构造 ARP Reply 包<code>op=2 </code>，宣告一个 Host A 缓存中不存在的 IP</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -724,7 +724,7 @@ unicode: "f6d2"
 </div><p>在容器 A 查看 ARP 缓存，缓存没有新增</p>
 <img src="7.png" style="width: 100%;" />
 <h4 id="缓存中存在ip">缓存中存在IP
-</h4><p>在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址</p>
+</h4><p>在容器M构造 ARP Reply 包，宣告一个 Host A 缓存中存在的 IP，但修改 MAC 地址</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -784,9 +784,9 @@ unicode: "f6d2"
 <p>实验目标：测试源 IP 和目的 IP 相同的特殊广播 ARP 报文的投毒效果</p>
 <p>方法：在攻击者 M 中发送无端 ARP 广播包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试</p>
 </blockquote>
-<p>Gratuitous ARP（无端 ARP）本质是主机主动广播自己的 IP-MAC 映射，用于更新网络中其他主机的缓存</p>
+<p>Gratuitous ARP 本质是主机主动广播自己的 IP-MAC 映射，用于更新网络中其他主机的缓存</p>
 <h4 id="缓存中不存在ip-1">缓存中不存在IP
-</h4><p>在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中不存在的 IP</p>
+</h4><p>在容器M构造 ARP Gratuitous 包<code>psrc=pdst</code>，宣告一个 Host A 缓存中不存在的 IP</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -838,7 +838,7 @@ unicode: "f6d2"
 </div><p>在容器 A 查看 ARP 缓存，缓存没有新增</p>
 <img src="8.png" style="width: 100%;" />
 <h4 id="缓存中存在ip-1">缓存中存在IP
-</h4><p>在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址</p>
+</h4><p>在容器M构造 ARP Gratuitous 包，宣告一个 Host A 缓存中存在的 IP，但修改 MAC 地址</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1716,7 +1716,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">29</span> 
       篇 ，总计 
-      <span class="number-highlight">127.33</span> 
+      <span class="number-highlight">126.96</span> 
       k 字
   </div>
   <div>

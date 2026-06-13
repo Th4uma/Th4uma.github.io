@@ -273,10 +273,9 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#实验环境">实验环境</a></li>
-    <li><a href="#netfilter-内核级防火墙">Netfilter 内核级防火墙</a></li>
-    <li><a href="#无状态防火墙规则">无状态防火墙规则</a></li>
+    <li><a href="#netfilter内核级防火墙">Netfilter内核级防火墙</a></li>
+    <li><a href="#无状态防火墙">无状态防火墙</a></li>
     <li><a href="#网络流量限速">网络流量限速</a></li>
-    <li><a href="#实验总结">实验总结</a></li>
   </ol>
 </nav>
         </div>
@@ -435,8 +434,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -it host1-192.168.60.5 /bin/bash
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="netfilter-内核级防火墙">Netfilter 内核级防火墙
-</h2><p>防火墙的拦截程序在 <code>seedFilter.c</code></p>
+</div><h2 id="netfilter内核级防火墙">Netfilter内核级防火墙
+</h2><blockquote>
+<p>内核级防火墙和普通应用层过滤不同，是在内核中写一个模块，当包进入内核时就进行处理，拦截位置更靠前。这里需要实现让外部主机无法通过 ping 和 telnet 访问路由器</p>
+</blockquote>
+<p>防火墙的拦截程序在 <code>seedFilter.c</code>，大致逻辑就是注册两个hook，hook1在确认目标是自己时调用打印函数打印包信息，hook2在包进入时调用丢包函数进行判断，丢弃目标 IP 是<code>10.9.0.1</code>的 ICMP 包和 23 端口的 TCP 包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">  1
@@ -540,6 +542,15 @@ unicode: "f6d2"
 </span><span class="lnt"> 99
 </span><span class="lnt">100
 </span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;linux/kernel.h&gt;</span><span class="cp">
@@ -560,7 +571,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">                       <span class="k">const</span> <span class="k">struct</span> <span class="n">nf_hook_state</span> <span class="o">*</span><span class="n">state</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">iphdr</span> <span class="o">*</span><span class="n">iph</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">udphdr</span> <span class="o">*</span><span class="n">udph</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">struct</span> <span class="n">tcphdr</span> <span class="o">*</span><span class="n">tcph</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">   <span class="n">u16</span>  <span class="n">port</span>   <span class="o">=</span> <span class="mi">23</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="kt">char</span> <span class="n">ip</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;10.9.0.1&#34;</span><span class="p">;</span>
@@ -569,16 +580,25 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">skb</span><span class="p">)</span> <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">   <span class="n">iph</span> <span class="o">=</span> <span class="nf">ip_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">   <span class="c1">// Convert the IPv4 address from dotted decimal to 32-bit binary
-</span></span></span><span class="line"><span class="cl">   <span class="nf">in4_pton</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">u8</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ip_addr</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">   <span class="nf">in4_pton</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">u8</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ip_addr</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">IPPROTO_UDP</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">       <span class="n">udph</span> <span class="o">=</span> <span class="nf">udp_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">       <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span> <span class="o">==</span> <span class="n">ip_addr</span> <span class="o">&amp;&amp;</span> <span class="nf">ntohs</span><span class="p">(</span><span class="n">udph</span><span class="o">-&gt;</span><span class="n">dest</span><span class="p">)</span> <span class="o">==</span> <span class="n">port</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">            <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&#34;*** Dropping %pI4 (UDP), port %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">NF_DROP</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span> <span class="o">!=</span> <span class="n">ip_addr</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">IPPROTO_ICMP</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&#34;*** Dropping %pI4 (ICMP)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">       <span class="k">return</span> <span class="n">NF_DROP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">IPPROTO_TCP</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="n">tcph</span> <span class="o">=</span> <span class="nf">tcp_hdr</span><span class="p">(</span><span class="n">skb</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">       <span class="k">if</span> <span class="p">(</span><span class="nf">ntohs</span><span class="p">(</span><span class="n">tcph</span><span class="o">-&gt;</span><span class="n">dest</span><span class="p">)</span> <span class="o">==</span> <span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">printk</span><span class="p">(</span><span class="n">KERN_WARNING</span> <span class="s">&#34;*** Dropping %pI4 (TCP), port %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">iph</span><span class="o">-&gt;</span><span class="n">daddr</span><span class="p">),</span> <span class="n">port</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">           <span class="k">return</span> <span class="n">NF_DROP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">       <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">NF_ACCEPT</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl">
@@ -624,8 +644,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">   <span class="n">hook1</span><span class="p">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">NF_IP_PRI_FIRST</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="nf">nf_register_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook1</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hook</span> <span class="o">=</span> <span class="n">blockUDP</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hooknum</span> <span class="o">=</span> <span class="n">NF_INET_POST_ROUTING</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hook</span> <span class="o">=</span> <span class="n">blockTCPICMP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">hooknum</span> <span class="o">=</span> <span class="n">NF_INET_PRE_ROUTING</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">pf</span> <span class="o">=</span> <span class="n">PF_INET</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="n">hook2</span><span class="p">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">NF_IP_PRI_FIRST</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">   <span class="nf">nf_register_net_hook</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_net</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">hook2</span><span class="p">);</span>
@@ -645,7 +665,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="nf">MODULE_LICENSE</span><span class="p">(</span><span class="s">&#34;GPL&#34;</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>由于容器中没有安装make，新开一个终端，在宿主机进入源码目录，这里面包含 <code>Makefile</code> 和 <code>seedFilter.c</code>。在这里对内核进行编译</p>
+</div><p>由于容器中没有安装make，新开一个终端，在宿主机进入源码目录，这里面包含 <code>Makefile</code> 和 <code>seedFilter.c</code>。在这里对内核模块进行编译</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -665,28 +685,30 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /volumes/packet_filter
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>为了方便观察新的日志，加载模块前先清空 <code>dmesg</code></p>
+</div><p>移除旧模块，清空旧内核日志</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dmesg -C
-</span></span><span class="line"><span class="cl">insmod seedFilter.ko
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rmmod seedFilter
+</span></span><span class="line"><span class="cl">dmesg -C
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>用 <code>lsmod</code> 查看模块是否加载成功：</p>
+</div><p>手动加载模块，然后用 <code>lsmod</code> 查看模块是否加载成功</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">lsmod <span class="p">|</span> grep seedFilter
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">insmod seedFilter.ko
+</span></span><span class="line"><span class="cl">lsmod <span class="p">|</span> grep seedFilter
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="1.png" style="width: 90%;" />
-<p>模块加载后，在外部主机中访问路由器：</p>
+</div><img src="1.png" style="width: 100%;" />
+<p>在外部主机中访问路由器，可以看到外部主机无法收到响应，<code>ping</code>全部丢包，<code>telnet</code> 也一直卡在尝试连接</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -697,9 +719,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">telnet 10.9.0.1
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到外部主机无法收到响应，<code>ping</code> 出现 100% 丢包，<code>telnet</code> 也一直卡在连接阶段。</p>
-<img src="2.png" style="width: 90%;" />
-<p>回到路由器中查看内核日志：</p>
+</div><img src="2.png" style="width: 90%;" />
+<p>回到路由器中查看内核日志，可以看到丢弃ICMP包和23端口的TCP包的日志，和上面代码对应，说明拦截规则生效</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -708,25 +729,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dmesg <span class="p">|</span> tail -20
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>日志中出现了 <code>Dropping 10.9.0.1 (ICMP)</code> 和 <code>Dropping 10.9.0.1 (TCP), port 23</code>，说明内核模块已经在底层拦截了发往路由器的 ICMP 和 Telnet 流量。</p>
-<img src="3.png" style="width: 90%;" />
-<p>这个任务和普通应用层过滤不同，拦截动作发生在内核网络协议栈中。只要数据包匹配模块中写好的条件，就会直接返回 <code>NF_DROP</code>，后面的网络栈不会继续处理这个包，所以外部主机表现为收不到任何响应。</p>
-<h2 id="无状态防火墙规则">无状态防火墙规则
+</div><img src="3.png" style="width: 80%;" />
+<h2 id="无状态防火墙">无状态防火墙
 </h2><blockquote>
-<p>前面的 Netfilter 模块是直接写内核代码进行过滤，这一部分改用 <code>iptables</code> 配置无状态防火墙规则。目标是让外部主机不能主动 Ping 内部服务器，但内部服务器仍然可以正常访问外部主机。</p>
+<p>这部分是用 <code>iptables</code> 配置无状态防火墙规则。为了防止外部恶意探测，这里实现让外部主机不能ping通内部服务器，但内部服务器可以正常ping外部主机</p>
 </blockquote>
-<p>为了避免前面加载的内核模块影响后续实验，可以先在路由器中卸载模块并清理旧规则：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rmmod seedFilter
-</span></span><span class="line"><span class="cl">iptables -F
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>接着在路由器中配置 <code>FORWARD</code> 链。<code>FORWARD</code> 链负责处理经过路由器转发的数据包，外部主机访问内部服务器、内部服务器访问外部主机，都属于转发流量。</p>
+<p>在路由器中配置 <code>FORWARD</code> 链，它负责处理路由器转发的数据包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -741,15 +749,14 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">iptables -P FORWARD DROP
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\3.png" style="width: 100%;" />
-<p>这几条规则的含义是：</p>
+</div><p>含义分别是：</p>
 <ul>
-<li>从外网口 <code>eth0</code> 进入的 ICMP echo-request 直接丢弃，也就是阻止外部主机主动 Ping 内部服务器；</li>
-<li>从内网口 <code>eth1</code> 进入的 ICMP echo-request 允许通过，也就是允许内部服务器主动 Ping 外部主机；</li>
-<li>ICMP echo-reply 允许通过，保证内部主动发起的 Ping 能收到响应；</li>
-<li>默认策略设置为 <code>DROP</code>，没有匹配到规则的转发流量全部丢弃。</li>
+<li>丢掉外网口 <code>eth0</code> 收到的 ICMP 请求包，也就是阻止外部主机 Ping 内部服务器</li>
+<li>正常转发内网口 <code>eth1</code> 收到的 ICMP 请求包，也就是允许内部服务器主动 Ping 外部主机</li>
+<li>正常转发所有 ICMP 响应包，让内部发起的 Ping 能收到响应</li>
+<li>默认策略是 <code>DROP</code>，丢掉所有没有匹配规则的包</li>
 </ul>
-<p>在外部主机中尝试 Ping 内部服务器：</p>
+<p>在外部主机中 Ping 内部服务器，全部丢包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -758,8 +765,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 192.168.60.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\4.png" style="width: 90%;" />
-<p>可以看到外部主机访问内部服务器失败，出现 100% 丢包。再从内部服务器向外部方向发起 Ping：</p>
+</div><img src="4.png" style="width: 90%;" />
+<p>在内部服务器中 Ping 外部主机，全部成功，说明达到了防火墙的目的</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -768,13 +775,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 10.9.0.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\5.png" style="width: 90%;" />
-<p>内部方向的访问可以正常收到响应，说明规则实现了简单的单向访问控制。这个规则集本身没有记录连接状态，只是根据入口网卡、协议类型和 ICMP 类型进行匹配，所以属于无状态过滤。</p>
+</div><img src="5.png" style="width: 80%;" />
 <h2 id="网络流量限速">网络流量限速
 </h2><blockquote>
-<p>除了直接允许或拒绝数据包，防火墙还可以限制某类流量的速率。这里使用 <code>iptables</code> 的 <code>limit</code> 模块限制来自 <code>10.9.0.5</code> 的 ICMP 流量，用来模拟对 ICMP 泛洪的防护。</p>
+<p>前两个部分都是直接丢弃所有外部特定流量，适用于不可访问的服务器，而这部分适用于可访问服务器。这里用 <code>iptables</code> 的 <code>limit</code> 模块限制特定源 IP 的发包速率，防止受到 ICMP 泛洪攻击</p>
 </blockquote>
-<p>先在路由器中清空之前的 <code>FORWARD</code> 规则：</p>
+<p>先清空之前的 <code>FORWARD</code> 规则</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -783,7 +789,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -F FORWARD
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>然后添加限速规则：</p>
+</div><p>添加限速规则</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -796,8 +802,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">iptables -A FORWARD -j ACCEPT
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>第一条规则表示允许源地址为 <code>10.9.0.5</code> 的 ICMP 流量，但速率限制为每分钟 10 个包，并允许最开始有 5 个包的突发流量。第二条规则会丢弃同一源地址剩余的 ICMP 包。第三条规则放行其他流量，防止实验过程中把无关通信一起阻断。</p>
-<p>在外部主机中连续 Ping 内部服务器：</p>
+</div><p>含义分别是：</p>
+<ul>
+<li>对于<code>10.9.0.5</code>这个 IP 发出的 ICMP 包，只允许平均每分钟 10 个包通过，并允许最开始突发通过 5 个包</li>
+<li>丢掉<code>10.9.0.5</code>这个 IP 的其他 ICMP 包</li>
+<li>放行其他不匹配前两条规则的包，防止影响其他转发流量</li>
+</ul>
+<p>在外部主机中 Ping 内部服务器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -806,12 +817,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 192.168.60.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="d:\Users\Thaumazein\Downloads\6.png" style="width: 90%;" />
-<p>从结果可以看到，前 5 个包连续通过，这是 <code>--limit-burst 5</code> 允许的突发流量。之后返回包的序号变成 <code>7</code>、<code>13</code>、<code>19</code>、<code>25</code>、<code>31</code>，中间的包被防火墙丢弃，基本符合每分钟 10 个包，也就是大约 6 秒通过 1 个包的限制。</p>
-<h2 id="实验总结">实验总结
-</h2><p>这次实验主要对防火墙的三种实现方式进行了验证。</p>
-<p>Netfilter 模块是在内核层直接拦截数据包，灵活性高，但需要编写和加载内核模块，操作风险也更高。<code>iptables</code> 则是在已有框架上配置规则，更适合日常管理和实验验证。无状态规则可以根据源地址、入口网卡、协议类型等字段快速决定是否放行，但它不理解连接上下文，只能做比较简单的访问控制。<code>limit</code> 模块进一步说明防火墙不仅能阻断流量，也可以对流量进行速率控制，从而减轻简单的泛洪攻击影响。</p>
-<p>从结果看，外部主机无法主动访问内部服务器，内部服务器仍可以访问外部主机；限速规则也成功把连续 ICMP 流量控制在指定速率内，说明实验中的防火墙规则生效。</p>
+</div><img src="6.png" style="width: 90%;" />
+<p>可以看到前5个包全部通过，这是<code>--limit-burst 5</code>允许的突发流量，之后大约每6秒才会成功返回1个数据包，这就是<code>--limit 10/minute</code>在起限制</p>
+<blockquote>
+<p>现实应用中还可以根据源 IP 和协议类型来设置限速，从而防止DoS。但这种方法无法避免DDoS</p>
+</blockquote>
 
 </section>
 
@@ -1191,7 +1201,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">29</span> 
       篇 ，总计 
-      <span class="number-highlight">127.33</span> 
+      <span class="number-highlight">126.96</span> 
       k 字
   </div>
   <div>

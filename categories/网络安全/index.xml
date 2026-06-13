@@ -93,8 +93,11 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it host1-192.168.60.5 /bin/bash
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;netfilter-内核级防火墙&#34;&gt;Netfilter 内核级防火墙
-&lt;/h2&gt;&lt;p&gt;防火墙的拦截程序在 &lt;code&gt;seedFilter.c&lt;/code&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;h2 id=&#34;netfilter内核级防火墙&#34;&gt;Netfilter内核级防火墙
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;内核级防火墙和普通应用层过滤不同，是在内核中写一个模块，当包进入内核时就进行处理，拦截位置更靠前。这里需要实现让外部主机无法通过 ping 和 telnet 访问路由器&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;防火墙的拦截程序在 &lt;code&gt;seedFilter.c&lt;/code&gt;，大致逻辑就是注册两个hook，hook1在确认目标是自己时调用打印函数打印包信息，hook2在包进入时调用丢包函数进行判断，丢弃目标 IP 是&lt;code&gt;10.9.0.1&lt;/code&gt;的 ICMP 包和 23 端口的 TCP 包&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;  1
@@ -198,6 +201,15 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 99
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;100
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;101
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;102
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;103
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;104
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;105
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;106
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;107
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;108
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;109
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;110
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;linux/kernel.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -218,7 +230,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                       &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;nf_hook_state&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;state&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;iphdr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;udphdr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;udph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tcphdr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcph&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;u16&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;   &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;23&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;10.9.0.1&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
@@ -227,16 +239,25 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;skb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_ACCEPT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;ip_hdr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;skb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;c1&#34;&gt;// Convert the IPv4 address from dotted decimal to 32-bit binary
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;nf&#34;&gt;in4_pton&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u8&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;\0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;nf&#34;&gt;in4_pton&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;u8&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ip_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;\0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;protocol&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPPROTO_UDP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;udph&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;udp_hdr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;skb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;daddr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ip_addr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;ntohs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;udph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dest&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;){&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;KERN_WARNING&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;*** Dropping %pI4 (UDP), port %d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;daddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_DROP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;daddr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ip_addr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_ACCEPT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;protocol&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPPROTO_ICMP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;nf&#34;&gt;printk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;KERN_WARNING&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;*** Dropping %pI4 (ICMP)&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;daddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_DROP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;protocol&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IPPROTO_TCP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;n&#34;&gt;tcph&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;tcp_hdr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;skb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;ntohs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tcph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dest&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           &lt;span class=&#34;nf&#34;&gt;printk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;KERN_WARNING&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;*** Dropping %pI4 (TCP), port %d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;iph&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;daddr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;           &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_DROP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_ACCEPT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
@@ -282,8 +303,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;priority&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_IP_PRI_FIRST&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;nf&#34;&gt;nf_register_net_hook&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;init_net&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hook1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hook&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;blockUDP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hooknum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_INET_POST_ROUTING&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hook&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;blockTCPICMP&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hooknum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_INET_PRE_ROUTING&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pf&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PF_INET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;priority&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NF_IP_PRI_FIRST&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;nf&#34;&gt;nf_register_net_hook&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;init_net&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hook2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
@@ -303,7 +324,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;MODULE_LICENSE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;GPL&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;由于容器中没有安装make，新开一个终端，在宿主机进入源码目录，这里面包含 &lt;code&gt;Makefile&lt;/code&gt; 和 &lt;code&gt;seedFilter.c&lt;/code&gt;。在这里对内核进行编译&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;由于容器中没有安装make，新开一个终端，在宿主机进入源码目录，这里面包含 &lt;code&gt;Makefile&lt;/code&gt; 和 &lt;code&gt;seedFilter.c&lt;/code&gt;。在这里对内核模块进行编译&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -323,28 +344,30 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /volumes/packet_filter
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;为了方便观察新的日志，加载模块前先清空 &lt;code&gt;dmesg&lt;/code&gt;&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;移除旧模块，清空旧内核日志&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dmesg -C
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;insmod seedFilter.ko
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rmmod seedFilter
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dmesg -C
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;用 &lt;code&gt;lsmod&lt;/code&gt; 查看模块是否加载成功：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;手动加载模块，然后用 &lt;code&gt;lsmod&lt;/code&gt; 查看模块是否加载成功&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lsmod &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep seedFilter
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;insmod seedFilter.ko
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lsmod &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep seedFilter
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;模块加载后，在外部主机中访问路由器：&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;在外部主机中访问路由器，可以看到外部主机无法收到响应，&lt;code&gt;ping&lt;/code&gt;全部丢包，&lt;code&gt;telnet&lt;/code&gt; 也一直卡在尝试连接&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -355,9 +378,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;telnet 10.9.0.1
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;可以看到外部主机无法收到响应，&lt;code&gt;ping&lt;/code&gt; 出现 100% 丢包，&lt;code&gt;telnet&lt;/code&gt; 也一直卡在连接阶段。&lt;/p&gt;
-&lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;回到路由器中查看内核日志：&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;回到路由器中查看内核日志，可以看到丢弃ICMP包和23端口的TCP包的日志，和上面代码对应，说明拦截规则生效&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -366,25 +388,12 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dmesg &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tail -20
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;日志中出现了 &lt;code&gt;Dropping 10.9.0.1 (ICMP)&lt;/code&gt; 和 &lt;code&gt;Dropping 10.9.0.1 (TCP), port 23&lt;/code&gt;，说明内核模块已经在底层拦截了发往路由器的 ICMP 和 Telnet 流量。&lt;/p&gt;
-&lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;这个任务和普通应用层过滤不同，拦截动作发生在内核网络协议栈中。只要数据包匹配模块中写好的条件，就会直接返回 &lt;code&gt;NF_DROP&lt;/code&gt;，后面的网络栈不会继续处理这个包，所以外部主机表现为收不到任何响应。&lt;/p&gt;
-&lt;h2 id=&#34;无状态防火墙规则&#34;&gt;无状态防火墙规则
+&lt;/div&gt;&lt;img src=&#34;3.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h2 id=&#34;无状态防火墙&#34;&gt;无状态防火墙
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;前面的 Netfilter 模块是直接写内核代码进行过滤，这一部分改用 &lt;code&gt;iptables&lt;/code&gt; 配置无状态防火墙规则。目标是让外部主机不能主动 Ping 内部服务器，但内部服务器仍然可以正常访问外部主机。&lt;/p&gt;
+&lt;p&gt;这部分是用 &lt;code&gt;iptables&lt;/code&gt; 配置无状态防火墙规则。为了防止外部恶意探测，这里实现让外部主机不能ping通内部服务器，但内部服务器可以正常ping外部主机&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;为了避免前面加载的内核模块影响后续实验，可以先在路由器中卸载模块并清理旧规则：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rmmod seedFilter
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -F
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;接着在路由器中配置 &lt;code&gt;FORWARD&lt;/code&gt; 链。&lt;code&gt;FORWARD&lt;/code&gt; 链负责处理经过路由器转发的数据包，外部主机访问内部服务器、内部服务器访问外部主机，都属于转发流量。&lt;/p&gt;
+&lt;p&gt;在路由器中配置 &lt;code&gt;FORWARD&lt;/code&gt; 链，它负责处理路由器转发的数据包&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -399,15 +408,14 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -P FORWARD DROP
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;d:\Users\Thaumazein\Downloads\3.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;这几条规则的含义是：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;含义分别是：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;从外网口 &lt;code&gt;eth0&lt;/code&gt; 进入的 ICMP echo-request 直接丢弃，也就是阻止外部主机主动 Ping 内部服务器；&lt;/li&gt;
-&lt;li&gt;从内网口 &lt;code&gt;eth1&lt;/code&gt; 进入的 ICMP echo-request 允许通过，也就是允许内部服务器主动 Ping 外部主机；&lt;/li&gt;
-&lt;li&gt;ICMP echo-reply 允许通过，保证内部主动发起的 Ping 能收到响应；&lt;/li&gt;
-&lt;li&gt;默认策略设置为 &lt;code&gt;DROP&lt;/code&gt;，没有匹配到规则的转发流量全部丢弃。&lt;/li&gt;
+&lt;li&gt;丢掉外网口 &lt;code&gt;eth0&lt;/code&gt; 收到的 ICMP 请求包，也就是阻止外部主机 Ping 内部服务器&lt;/li&gt;
+&lt;li&gt;正常转发内网口 &lt;code&gt;eth1&lt;/code&gt; 收到的 ICMP 请求包，也就是允许内部服务器主动 Ping 外部主机&lt;/li&gt;
+&lt;li&gt;正常转发所有 ICMP 响应包，让内部发起的 Ping 能收到响应&lt;/li&gt;
+&lt;li&gt;默认策略是 &lt;code&gt;DROP&lt;/code&gt;，丢掉所有没有匹配规则的包&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;在外部主机中尝试 Ping 内部服务器：&lt;/p&gt;
+&lt;p&gt;在外部主机中 Ping 内部服务器，全部丢包&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -416,8 +424,8 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ping 192.168.60.5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;d:\Users\Thaumazein\Downloads\4.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;可以看到外部主机访问内部服务器失败，出现 100% 丢包。再从内部服务器向外部方向发起 Ping：&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;在内部服务器中 Ping 外部主机，全部成功，说明达到了防火墙的目的&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -426,13 +434,12 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ping 10.9.0.5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;d:\Users\Thaumazein\Downloads\5.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;内部方向的访问可以正常收到响应，说明规则实现了简单的单向访问控制。这个规则集本身没有记录连接状态，只是根据入口网卡、协议类型和 ICMP 类型进行匹配，所以属于无状态过滤。&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;5.png&#34; style=&#34;width: 80%;&#34; /&gt;
 &lt;h2 id=&#34;网络流量限速&#34;&gt;网络流量限速
 &lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;除了直接允许或拒绝数据包，防火墙还可以限制某类流量的速率。这里使用 &lt;code&gt;iptables&lt;/code&gt; 的 &lt;code&gt;limit&lt;/code&gt; 模块限制来自 &lt;code&gt;10.9.0.5&lt;/code&gt; 的 ICMP 流量，用来模拟对 ICMP 泛洪的防护。&lt;/p&gt;
+&lt;p&gt;前两个部分都是直接丢弃所有外部特定流量，适用于不可访问的服务器，而这部分适用于可访问服务器。这里用 &lt;code&gt;iptables&lt;/code&gt; 的 &lt;code&gt;limit&lt;/code&gt; 模块限制特定源 IP 的发包速率，防止受到 ICMP 泛洪攻击&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;先在路由器中清空之前的 &lt;code&gt;FORWARD&lt;/code&gt; 规则：&lt;/p&gt;
+&lt;p&gt;先清空之前的 &lt;code&gt;FORWARD&lt;/code&gt; 规则&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -441,7 +448,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -F FORWARD
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;然后添加限速规则：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;添加限速规则&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -454,8 +461,13 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;iptables -A FORWARD -j ACCEPT
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;第一条规则表示允许源地址为 &lt;code&gt;10.9.0.5&lt;/code&gt; 的 ICMP 流量，但速率限制为每分钟 10 个包，并允许最开始有 5 个包的突发流量。第二条规则会丢弃同一源地址剩余的 ICMP 包。第三条规则放行其他流量，防止实验过程中把无关通信一起阻断。&lt;/p&gt;
-&lt;p&gt;在外部主机中连续 Ping 内部服务器：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;含义分别是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于&lt;code&gt;10.9.0.5&lt;/code&gt;这个 IP 发出的 ICMP 包，只允许平均每分钟 10 个包通过，并允许最开始突发通过 5 个包&lt;/li&gt;
+&lt;li&gt;丢掉&lt;code&gt;10.9.0.5&lt;/code&gt;这个 IP 的其他 ICMP 包&lt;/li&gt;
+&lt;li&gt;放行其他不匹配前两条规则的包，防止影响其他转发流量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在外部主机中 Ping 内部服务器&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -464,12 +476,11 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ping 192.168.60.5
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;img src=&#34;d:\Users\Thaumazein\Downloads\6.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;从结果可以看到，前 5 个包连续通过，这是 &lt;code&gt;--limit-burst 5&lt;/code&gt; 允许的突发流量。之后返回包的序号变成 &lt;code&gt;7&lt;/code&gt;、&lt;code&gt;13&lt;/code&gt;、&lt;code&gt;19&lt;/code&gt;、&lt;code&gt;25&lt;/code&gt;、&lt;code&gt;31&lt;/code&gt;，中间的包被防火墙丢弃，基本符合每分钟 10 个包，也就是大约 6 秒通过 1 个包的限制。&lt;/p&gt;
-&lt;h2 id=&#34;实验总结&#34;&gt;实验总结
-&lt;/h2&gt;&lt;p&gt;这次实验主要对防火墙的三种实现方式进行了验证。&lt;/p&gt;
-&lt;p&gt;Netfilter 模块是在内核层直接拦截数据包，灵活性高，但需要编写和加载内核模块，操作风险也更高。&lt;code&gt;iptables&lt;/code&gt; 则是在已有框架上配置规则，更适合日常管理和实验验证。无状态规则可以根据源地址、入口网卡、协议类型等字段快速决定是否放行，但它不理解连接上下文，只能做比较简单的访问控制。&lt;code&gt;limit&lt;/code&gt; 模块进一步说明防火墙不仅能阻断流量，也可以对流量进行速率控制，从而减轻简单的泛洪攻击影响。&lt;/p&gt;
-&lt;p&gt;从结果看，外部主机无法主动访问内部服务器，内部服务器仍可以访问外部主机；限速规则也成功把连续 ICMP 流量控制在指定速率内，说明实验中的防火墙规则生效。&lt;/p&gt;
+&lt;/div&gt;&lt;img src=&#34;6.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;可以看到前5个包全部通过，这是&lt;code&gt;--limit-burst 5&lt;/code&gt;允许的突发流量，之后大约每6秒才会成功返回1个数据包，这就是&lt;code&gt;--limit 10/minute&lt;/code&gt;在起限制&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;现实应用中还可以根据源 IP 和协议类型来设置限速，从而防止DoS。但这种方法无法避免DDoS&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
         </item>
         <item>
@@ -483,45 +494,72 @@
     &gt;部署了小猫&lt;/a&gt;，在这之后上网变得简单又方便，我很开心。但半年后报应来了，学校查到我用校园网科学上网，导致我被导员约谈，为了防止学位证升天，回去也只好关闭了小猫。但是，不上网是万万不可能的，之后的一周我就用手机开热点给电脑，电脑再科学上网。有时候犯懒，会抱着一丝侥幸心理，电脑直接开启魔法&lt;/p&gt;
 &lt;p&gt;本以为这一点点流量没关系，但10天后又被约谈了一次，看到导员手里的表格，我才发现之前完全搞错了问题所在。表格记录了我使用的机场名，访问的一个某敏感SS级别宗教网站，还有访问时间，但实际上我连这个网站都没听说过，更不用说访问了。看来之前被约谈也是因为这个网站，而不是翻墙本身，毕竟我不怎么看视频，流量用量非常小，平时也就用用ai和github这些，按理说不应该被约谈的&lt;/p&gt;
 &lt;h2 id=&#34;异常信息分析&#34;&gt;异常信息分析
-&lt;/h2&gt;&lt;p&gt;相关域名：zh.[redacted].org
+&lt;/h2&gt;&lt;h3 id=&#34;相关信息&#34;&gt;相关信息
+&lt;/h3&gt;&lt;p&gt;相关域名：zh.[redacted].org
 客户端地址：10.150.117.23
 服务器地址：103.181.165.138:36602&lt;/p&gt;
-&lt;p&gt;客户端地址理所当然也就是我的路由器了，毕竟是网络总出口，&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;IPv4 上游&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;协议:&lt;/strong&gt; DHCP 客户端
-&lt;strong&gt;地址:&lt;/strong&gt; 10.150.117.23/16
-&lt;strong&gt;网关:&lt;/strong&gt; 10.150.0.1
-&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.1
-&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.10
-&lt;strong&gt;剩余有效期:&lt;/strong&gt; 2d 17h 3m 42s
-&lt;strong&gt;已连接:&lt;/strong&gt; 24d 6h 56m 18s&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://192.168.10.1/luci-static/resources/icons/ethernet.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;img&#34;
-	
-	
-&gt;&lt;strong&gt;设备:&lt;/strong&gt; 以太网适配器: &amp;ldquo;eth1&amp;rdquo;
-&lt;strong&gt;MAC 地址:&lt;/strong&gt; 8C:8C:AA:3A:1D:56&lt;/p&gt;
-&lt;p&gt;103.181.165.138:36602就不知道了，应该是节点ip&lt;/p&gt;
-&lt;p&gt;访问时间线&lt;/p&gt;
-&lt;p&gt;日期| 记录时间
-6 月 1 日| 23:26 |不清楚，大概是在学习
-6 月 2 日| 09:54 |早上起来准备看网课，当时没有关闭手机的WiFi自启，而手机常驻魔法，估计是流量漏了
-6 月 2 日| 13:58 | 这时候我在上课，没有用校园网
-6 月 4 日| 01:23 | 学习中，在用GPT，估计是手机没开热点
-6 月 4 日| 02:12 | 同上
-6 月 4 日| 09:57 | 同2号早上
-6 月 6 日| 12:27 | 同4号半夜
-6 月 6 日| 12:45 | 同4号半夜&lt;/p&gt;
-&lt;p&gt;最开始我的猜测是dns污染或者机场节点不干净。结合访问时间来看，答案确定了，就是节点不干净。之前秉持能用就行，一直用着便宜的按量机场，也懒得仔细找靠谱机场。再加上我流量用量少，好机场性价比低所以尽管我知道这个机场不好用，经常让GPT报错，还大概率不安全，但还是一直用着了，没想到给自己找了大麻烦&lt;/p&gt;
+&lt;p&gt;客户端地址理所当然也就是我的路由器了，毕竟是网络总出口，103.181.165.138:36602 就不知道了，应该是节点ip&lt;/p&gt;
+&lt;h3 id=&#34;访问时间线&#34;&gt;访问时间线
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;日期&lt;/th&gt;
+					&lt;th&gt;记录时间&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 1 日&lt;/td&gt;
+					&lt;td&gt;23:26&lt;/td&gt;
+					&lt;td&gt;不清楚，大概是在学习&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 2 日&lt;/td&gt;
+					&lt;td&gt;09:54&lt;/td&gt;
+					&lt;td&gt;早上起来准备看网课，当时没有关闭手机的WiFi自启，而手机常驻魔法，估计是流量漏了，也有可能是备用机没有流量卡，开着魔法连了校园网&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 2 日&lt;/td&gt;
+					&lt;td&gt;13:58&lt;/td&gt;
+					&lt;td&gt;这时候我在上课，没有用校园网&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;01:23&lt;/td&gt;
+					&lt;td&gt;学习中，在用GPT，估计是手机没开热点&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;02:12&lt;/td&gt;
+					&lt;td&gt;同上&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;09:57&lt;/td&gt;
+					&lt;td&gt;同2号早上&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 6 日&lt;/td&gt;
+					&lt;td&gt;12:27&lt;/td&gt;
+					&lt;td&gt;同4号半夜&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 6 日&lt;/td&gt;
+					&lt;td&gt;12:45&lt;/td&gt;
+					&lt;td&gt;同4号半夜&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;判断&#34;&gt;判断
+&lt;/h3&gt;&lt;p&gt;最开始我的猜测是dns污染或者机场节点不干净。结合访问时间来看，答案确定了，就是节点不干净。之前秉持能用就行，一直用着便宜的按量机场，也懒得仔细找靠谱机场。再加上我流量用量少，好机场性价比低所以尽管我知道这个机场不好用，经常让GPT报错，还大概率不安全，但还是一直用着了，没想到给自己找了大麻烦。&lt;/p&gt;
 &lt;h2 id=&#34;解决方案&#34;&gt;解决方案
-&lt;/h2&gt;&lt;p&gt;其实第一次被约谈我就想到这个方案了，也就是在路由器中把流量分出去。首先用手机给路由器或者电脑共享网络，然后在路由器中将代理流量和可疑流量分给手机来转发，其他流量正常走校园网。这样既不会导致手机流量不够用，又解决了每次科学上网都要开热点的麻烦，还规避了学校的监测，简直是完美的方案。但考虑到这段时间任务压力大，我就想着拖到暑假再处理，只是没想到第二次约谈这么快就来了，只好立刻开始&lt;/p&gt;
-&lt;p&gt;第一个任务就是换机场，毕竟原来的垃圾机场我自己都嫌弃&lt;/p&gt;
-</description>
+&lt;/h2&gt;&lt;h3 id=&#34;设想&#34;&gt;设想
+&lt;/h3&gt;&lt;p&gt;其实第一次被约谈我就想到这个方案了，也就是在路由器中把流量分出去。首先用手机给路由器或者电脑共享网络，然后在路由器中将代理流量和可疑流量分给手机来转发，其他流量正常走校园网。这样既不会导致手机流量不够用，又解决了每次科学上网都要开热点的麻烦，还规避了学校的监测，简直是完美的方案。但考虑到这段时间任务压力大，我就想着拖到暑假再处理，只是没想到第二次约谈这么快就来了，只好立刻开始&lt;/p&gt;
+&lt;h3 id=&#34;机场&#34;&gt;机场
+&lt;/h3&gt;&lt;p&gt;第一个任务就是换机场，毕竟原来的垃圾机场我自己都嫌弃，原来的是八戒的29元100g，不仅出现这次的问题，访问gpt还经常ssl证书错误，选择了tag的包年200g，含税170元&lt;/p&gt;
+&lt;h3 id=&#34;流量规划&#34;&gt;流量规划
+&lt;/h3&gt;</description>
         </item>
         <item>
         <title>Mitnick攻击</title>
@@ -2392,7 +2430,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt update
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;安装 Docker CE（社区版 ）、Docker CE CLI 和 Containerd&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;安装 Docker CE 社区版、Docker CE CLI 和 Containerd&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2530,8 +2568,8 @@
 &lt;p&gt;这意味着攻击者可以通过构造伪造的 ARP 报文，欺骗受害主机修改缓存，从而影响数据的实际转发路径&lt;/p&gt;
 &lt;h3 id=&#34;arp-request-进行缓存投毒&#34;&gt;ARP Request 进行缓存投毒
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;实验目标：使 Host A 错误地将伪造 IP (10.9.0.99) 映射到攻击者指定的 MAC 地址&lt;/p&gt;
-&lt;p&gt;方法：构造 ARP Request，广播伪造数据包&lt;/p&gt;
+&lt;p&gt;实验目标：使 Host A 错误地将伪造 IP 10.9.0.99 映射到攻击者指定的 MAC 地址&lt;/p&gt;
+&lt;p&gt;方法：构造 ARP 请求包，广播伪造数据包&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;进入容器 M&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2624,10 +2662,10 @@
 &lt;h3 id=&#34;arp-reply-投毒&#34;&gt;ARP Reply 投毒
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;实验目标：验证未经请求的 ARP Reply 报文能否篡改受害者的 ARP 缓存&lt;/p&gt;
-&lt;p&gt;方法：构造 ARP Reply，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试&lt;/p&gt;
+&lt;p&gt;方法：构造 ARP 返回包，广播伪造数据包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;缓存中不存在ip&#34;&gt;缓存中不存在IP
-&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中不存在的 IP&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Reply 包&lt;code&gt;op=2 &lt;/code&gt;，宣告一个 Host A 缓存中不存在的 IP&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2677,7 +2715,7 @@
 &lt;/div&gt;&lt;p&gt;在容器 A 查看 ARP 缓存，缓存没有新增&lt;/p&gt;
 &lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;缓存中存在ip&#34;&gt;缓存中存在IP
-&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Reply 包（op=2 ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Reply 包，宣告一个 Host A 缓存中存在的 IP，但修改 MAC 地址&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2737,9 +2775,9 @@
 &lt;p&gt;实验目标：测试源 IP 和目的 IP 相同的特殊广播 ARP 报文的投毒效果&lt;/p&gt;
 &lt;p&gt;方法：在攻击者 M 中发送无端 ARP 广播包，分别针对 Host A 缓存中存在和不存在的 IP 进行测试&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;Gratuitous ARP（无端 ARP）本质是主机主动广播自己的 IP-MAC 映射，用于更新网络中其他主机的缓存&lt;/p&gt;
+&lt;p&gt;Gratuitous ARP 本质是主机主动广播自己的 IP-MAC 映射，用于更新网络中其他主机的缓存&lt;/p&gt;
 &lt;h4 id=&#34;缓存中不存在ip-1&#34;&gt;缓存中不存在IP
-&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中不存在的 IP&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Gratuitous 包&lt;code&gt;psrc=pdst&lt;/code&gt;，宣告一个 Host A 缓存中不存在的 IP&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -2791,7 +2829,7 @@
 &lt;/div&gt;&lt;p&gt;在容器 A 查看 ARP 缓存，缓存没有新增&lt;/p&gt;
 &lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h4 id=&#34;缓存中存在ip-1&#34;&gt;缓存中存在IP
-&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Gratuitous 包（psrc=pdst ），宣告一个 Host A 缓存中存在的 IP，但修改其 MAC 地址&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;在容器M构造 ARP Gratuitous 包，宣告一个 Host A 缓存中存在的 IP，但修改 MAC 地址&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1

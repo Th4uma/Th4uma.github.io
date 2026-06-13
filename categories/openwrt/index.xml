@@ -18,45 +18,72 @@
     &gt;部署了小猫&lt;/a&gt;，在这之后上网变得简单又方便，我很开心。但半年后报应来了，学校查到我用校园网科学上网，导致我被导员约谈，为了防止学位证升天，回去也只好关闭了小猫。但是，不上网是万万不可能的，之后的一周我就用手机开热点给电脑，电脑再科学上网。有时候犯懒，会抱着一丝侥幸心理，电脑直接开启魔法&lt;/p&gt;
 &lt;p&gt;本以为这一点点流量没关系，但10天后又被约谈了一次，看到导员手里的表格，我才发现之前完全搞错了问题所在。表格记录了我使用的机场名，访问的一个某敏感SS级别宗教网站，还有访问时间，但实际上我连这个网站都没听说过，更不用说访问了。看来之前被约谈也是因为这个网站，而不是翻墙本身，毕竟我不怎么看视频，流量用量非常小，平时也就用用ai和github这些，按理说不应该被约谈的&lt;/p&gt;
 &lt;h2 id=&#34;异常信息分析&#34;&gt;异常信息分析
-&lt;/h2&gt;&lt;p&gt;相关域名：zh.[redacted].org
+&lt;/h2&gt;&lt;h3 id=&#34;相关信息&#34;&gt;相关信息
+&lt;/h3&gt;&lt;p&gt;相关域名：zh.[redacted].org
 客户端地址：10.150.117.23
 服务器地址：103.181.165.138:36602&lt;/p&gt;
-&lt;p&gt;客户端地址理所当然也就是我的路由器了，毕竟是网络总出口，&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;IPv4 上游&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;协议:&lt;/strong&gt; DHCP 客户端
-&lt;strong&gt;地址:&lt;/strong&gt; 10.150.117.23/16
-&lt;strong&gt;网关:&lt;/strong&gt; 10.150.0.1
-&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.1
-&lt;strong&gt;DNS:&lt;/strong&gt; 210.32.32.10
-&lt;strong&gt;剩余有效期:&lt;/strong&gt; 2d 17h 3m 42s
-&lt;strong&gt;已连接:&lt;/strong&gt; 24d 6h 56m 18s&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://192.168.10.1/luci-static/resources/icons/ethernet.png&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;img&#34;
-	
-	
-&gt;&lt;strong&gt;设备:&lt;/strong&gt; 以太网适配器: &amp;ldquo;eth1&amp;rdquo;
-&lt;strong&gt;MAC 地址:&lt;/strong&gt; 8C:8C:AA:3A:1D:56&lt;/p&gt;
-&lt;p&gt;103.181.165.138:36602就不知道了，应该是节点ip&lt;/p&gt;
-&lt;p&gt;访问时间线&lt;/p&gt;
-&lt;p&gt;日期| 记录时间
-6 月 1 日| 23:26 |不清楚，大概是在学习
-6 月 2 日| 09:54 |早上起来准备看网课，当时没有关闭手机的WiFi自启，而手机常驻魔法，估计是流量漏了
-6 月 2 日| 13:58 | 这时候我在上课，没有用校园网
-6 月 4 日| 01:23 | 学习中，在用GPT，估计是手机没开热点
-6 月 4 日| 02:12 | 同上
-6 月 4 日| 09:57 | 同2号早上
-6 月 6 日| 12:27 | 同4号半夜
-6 月 6 日| 12:45 | 同4号半夜&lt;/p&gt;
-&lt;p&gt;最开始我的猜测是dns污染或者机场节点不干净。结合访问时间来看，答案确定了，就是节点不干净。之前秉持能用就行，一直用着便宜的按量机场，也懒得仔细找靠谱机场。再加上我流量用量少，好机场性价比低所以尽管我知道这个机场不好用，经常让GPT报错，还大概率不安全，但还是一直用着了，没想到给自己找了大麻烦&lt;/p&gt;
+&lt;p&gt;客户端地址理所当然也就是我的路由器了，毕竟是网络总出口，103.181.165.138:36602 就不知道了，应该是节点ip&lt;/p&gt;
+&lt;h3 id=&#34;访问时间线&#34;&gt;访问时间线
+&lt;/h3&gt;&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;日期&lt;/th&gt;
+					&lt;th&gt;记录时间&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 1 日&lt;/td&gt;
+					&lt;td&gt;23:26&lt;/td&gt;
+					&lt;td&gt;不清楚，大概是在学习&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 2 日&lt;/td&gt;
+					&lt;td&gt;09:54&lt;/td&gt;
+					&lt;td&gt;早上起来准备看网课，当时没有关闭手机的WiFi自启，而手机常驻魔法，估计是流量漏了，也有可能是备用机没有流量卡，开着魔法连了校园网&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 2 日&lt;/td&gt;
+					&lt;td&gt;13:58&lt;/td&gt;
+					&lt;td&gt;这时候我在上课，没有用校园网&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;01:23&lt;/td&gt;
+					&lt;td&gt;学习中，在用GPT，估计是手机没开热点&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;02:12&lt;/td&gt;
+					&lt;td&gt;同上&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 4 日&lt;/td&gt;
+					&lt;td&gt;09:57&lt;/td&gt;
+					&lt;td&gt;同2号早上&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 6 日&lt;/td&gt;
+					&lt;td&gt;12:27&lt;/td&gt;
+					&lt;td&gt;同4号半夜&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;6 月 6 日&lt;/td&gt;
+					&lt;td&gt;12:45&lt;/td&gt;
+					&lt;td&gt;同4号半夜&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;判断&#34;&gt;判断
+&lt;/h3&gt;&lt;p&gt;最开始我的猜测是dns污染或者机场节点不干净。结合访问时间来看，答案确定了，就是节点不干净。之前秉持能用就行，一直用着便宜的按量机场，也懒得仔细找靠谱机场。再加上我流量用量少，好机场性价比低所以尽管我知道这个机场不好用，经常让GPT报错，还大概率不安全，但还是一直用着了，没想到给自己找了大麻烦。&lt;/p&gt;
 &lt;h2 id=&#34;解决方案&#34;&gt;解决方案
-&lt;/h2&gt;&lt;p&gt;其实第一次被约谈我就想到这个方案了，也就是在路由器中把流量分出去。首先用手机给路由器或者电脑共享网络，然后在路由器中将代理流量和可疑流量分给手机来转发，其他流量正常走校园网。这样既不会导致手机流量不够用，又解决了每次科学上网都要开热点的麻烦，还规避了学校的监测，简直是完美的方案。但考虑到这段时间任务压力大，我就想着拖到暑假再处理，只是没想到第二次约谈这么快就来了，只好立刻开始&lt;/p&gt;
-&lt;p&gt;第一个任务就是换机场，毕竟原来的垃圾机场我自己都嫌弃&lt;/p&gt;
-</description>
+&lt;/h2&gt;&lt;h3 id=&#34;设想&#34;&gt;设想
+&lt;/h3&gt;&lt;p&gt;其实第一次被约谈我就想到这个方案了，也就是在路由器中把流量分出去。首先用手机给路由器或者电脑共享网络，然后在路由器中将代理流量和可疑流量分给手机来转发，其他流量正常走校园网。这样既不会导致手机流量不够用，又解决了每次科学上网都要开热点的麻烦，还规避了学校的监测，简直是完美的方案。但考虑到这段时间任务压力大，我就想着拖到暑假再处理，只是没想到第二次约谈这么快就来了，只好立刻开始&lt;/p&gt;
+&lt;h3 id=&#34;机场&#34;&gt;机场
+&lt;/h3&gt;&lt;p&gt;第一个任务就是换机场，毕竟原来的垃圾机场我自己都嫌弃，原来的是八戒的29元100g，不仅出现这次的问题，访问gpt还经常ssl证书错误，选择了tag的包年200g，含税170元&lt;/p&gt;
+&lt;h3 id=&#34;流量规划&#34;&gt;流量规划
+&lt;/h3&gt;</description>
         </item>
         <item>
         <title>OpenWrt插件推荐与配置</title>
