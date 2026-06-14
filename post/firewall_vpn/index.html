@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="非常应景的实验，弥补了一直以来的知识缺口">
+<title>防火墙翻越</title>
+
+<link rel='canonical' href='https://th4uma.github.io/post/firewall_vpn/'>
+
+<link rel="stylesheet" href="/scss/style.min.5808d9f960cd3176a76fafd720ebb8e0ace728f0632a73e61bfdce0587bb6582.css"><meta property='og:title' content="防火墙翻越">
+<meta property='og:description' content="非常应景的实验，弥补了一直以来的知识缺口">
+<meta property='og:url' content='https://th4uma.github.io/post/firewall_vpn/'>
+<meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-06-13T21:49:02&#43;08:00'/><meta property='article:modified_time' content='2026-06-13T21:49:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/firewall1.jpg' />
+<meta name="twitter:title" content="防火墙翻越">
+<meta name="twitter:description" content="非常应景的实验，弥补了一直以来的知识缺口"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/firewall1.jpg' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            localStorage.setItem(colorSchemeKey, "dark");
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😋</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Thaumazein&#39;s Shelter</a></h1>
+            <h2 class="site-description">Keep on Keeping on!</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/622057325'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <!--
+tags: [china, platform, streaming, video]
+category: Brand
+version: "2.1"
+unicode: "f6d2"
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="32"
+  height="32"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="#000000"
+  stroke-width="1"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" />
+  <path d="M8 3l2 3" />
+  <path d="M16 3l-2 3" />
+  <path d="M9 13v-2" />
+  <path d="M15 11v2" />
+</svg>
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Th4uma'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://psnprofiles.com/Thaumazein--'
+                        target="_blank"
+                        title="PSN"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 30 30" width="30px" height="30px">    <path d="M 11.181641 3.7421875 L 11.181641 24.857422 L 15.761719 26.257812 L 15.761719 8.5761719 C 15.761719 8.0671719 15.761625 7.8135937 16.015625 7.5585938 C 16.142625 7.3045937 16.396391 7.3046406 16.650391 7.4316406 C 17.286391 7.6856406 17.669922 8.1948906 17.669922 9.2128906 L 17.669922 16.207031 C 19.195922 16.970031 20.466375 16.970031 21.484375 16.207031 C 22.502375 15.444031 23.011719 14.300578 23.011719 12.392578 C 23.012719 10.357578 22.630234 9.0853594 21.740234 8.0683594 C 20.977234 7.0503594 19.578969 6.1594375 17.542969 5.5234375 C 14.998969 4.7604375 12.835641 4.1241875 11.181641 3.7421875 z M 9.9101562 16.972656 L 4.0585938 19.007812 L 3.1699219 19.388672 C 1.7709219 20.024672 1.0078125 20.660875 1.0078125 21.296875 C 1.1348125 22.059875 1.388875 23.078844 3.296875 23.714844 C 5.077875 24.350844 6.4770625 24.604891 10.039062 23.587891 L 10.039062 21.296875 C 6.6030625 22.440875 6.0949375 22.314547 5.5859375 22.060547 C 5.0769375 21.806547 5.076125 21.550828 5.203125 21.423828 C 5.585125 21.169828 6.984375 20.660156 6.984375 20.660156 L 9.9101562 19.642578 L 9.9101562 16.972656 z M 22.853516 17.962891 C 22.440109 17.948984 22.026781 17.956531 21.613281 17.988281 C 20.214281 17.988281 18.941063 18.243 17.414062 18.625 L 17.414062 21.296875 L 20.212891 20.277344 L 21.738281 19.769531 C 21.738281 19.769531 22.375812 19.642625 22.757812 19.515625 C 23.393812 19.388625 24.15625 19.642578 24.15625 19.642578 C 24.53825 19.642578 24.792969 19.768438 24.792969 20.023438 C 24.919969 20.277438 24.665297 20.406156 24.029297 20.660156 L 22.630859 21.169922 L 17.542969 23.076172 L 17.542969 25.748047 L 19.832031 24.984375 L 26.191406 22.695312 L 26.955078 22.3125 C 28.481078 21.8035 29.117234 21.167297 28.990234 20.404297 C 28.990234 19.642297 28.100219 19.134 26.574219 18.625 C 25.333719 18.24325 24.093734 18.004609 22.853516 17.962891 z"/></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://qm.qq.com/q/86n1mKWhCE'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-qq"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9.748a14.716 14.716 0 0 0 11.995 -.052c.275 -9.236 -11.104 -11.256 -11.995 .052z" /><path d="M18 10c.984 2.762 1.949 4.765 2 7.153c.014 .688 -.664 1.346 -1.184 .303c-.346 -.696 -.952 -1.181 -1.816 -1.456" /><path d="M17 16c.031 1.831 .147 3.102 -1 4" /><path d="M8 20c-1.099 -.87 -.914 -2.24 -1 -4" /><path d="M6 10c-.783 2.338 -1.742 4.12 -1.968 6.43c-.217 2.227 .716 1.644 1.16 .917c.296 -.487 .898 -.934 1.808 -1.347" /><path d="M15.898 13l-.476 -2" /><path d="M8 20l-1.5 1c-.5 .5 -.5 1 .5 1h10c1 0 1 -.5 .5 -1l-1.5 -1" /><path d="M13.75 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M10.25 7m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#实验环境">实验环境</a></li>
+    <li><a href="#基础网络测试">基础网络测试</a></li>
+    <li><a href="#静态端口转发">静态端口转发</a></li>
+    <li><a href="#动态-socks-代理">动态 SOCKS 代理</a></li>
+    <li><a href="#layer-3-vpn-隧道">Layer 3 VPN 隧道</a>
+      <ol>
+        <li><a href="#a-区访问-b-区">A 区访问 B 区</a></li>
+        <li><a href="#b-区访问外部">B 区访问外部</a></li>
+      </ol>
+    </li>
+    <li><a href="#实验理解">实验理解</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/firewall_vpn/">
+                
+                    <img src="/images/cover/firewall1.jpg" loading="lazy" alt="Featured image of post 防火墙翻越" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" >
+                计算机网络
+            </a>
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
+            </a>
+        
+            <a href="/categories/vpn/" >
+                VPN
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/firewall_vpn/">防火墙翻越</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            非常应景的实验，弥补了一直以来的知识缺口
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-06-13</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="实验环境">实验环境
+</h2><p>我使用的是 Ubuntu 24.04.4，基本环境配置见<a class="link" href="https://th4uma.github.io/post/arp/#%e5%87%86%e5%a4%87"  target="_blank" rel="noopener"
+    >ARP攻击原理学习</a></p>
+<p>网络结构如下：</p>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>节点</th>
+					<th>IP 地址</th>
+					<th>作用</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>A 区普通主机 1</td>
+					<td><code>10.8.0.5</code></td>
+					<td>用来测试从 A 区访问 B 区服务</td>
+			</tr>
+			<tr>
+					<td>A 区普通主机 2</td>
+					<td><code>10.8.0.6</code></td>
+					<td>用来进行辅助连通性测试</td>
+			</tr>
+			<tr>
+					<td>A 区网关</td>
+					<td><code>10.8.0.99</code></td>
+					<td>A 区出口，也是 SSH 隧道和 VPN 隧道的一端</td>
+			</tr>
+			<tr>
+					<td>B 区服务器 1</td>
+					<td><code>192.168.20.5</code></td>
+					<td>B 区目标服务器，提供 Telnet 等被保护服务</td>
+			</tr>
+			<tr>
+					<td>B 区服务器 2</td>
+					<td><code>192.168.20.6</code></td>
+					<td>B 区目标服务器，用来进行辅助连通性测试</td>
+			</tr>
+			<tr>
+					<td>B 区网关</td>
+					<td><code>192.168.20.99</code></td>
+					<td>B 区出口，也是 SSH 隧道、SOCKS 代理和 VPN 隧道的一端</td>
+			</tr>
+			<tr>
+					<td>中间路由器</td>
+					<td><code>10.8.0.11 / 192.168.20.11</code></td>
+					<td>负责转发 A 区和 B 区之间的流量，并执行防火墙规则</td>
+			</tr>
+	</tbody>
+</table></div>
+<p>启动实验前先清理容器环境，防止被之前的网络配置干扰</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker stop <span class="k">$(</span>sudo docker ps -q<span class="k">)</span> 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">sudo docker system prune -f
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入实验目录并启动</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> seed-labs/category-network/Firewall_Evasion/Labsetup
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>验证容器状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker ps
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="1.png" style="width: 100%;" />
+<h2 id="基础网络测试">基础网络测试
+</h2><p>实验开始前，首先确认从A1到B1，和从A1到B2容器的网络连通性</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A1-10.8.0.5 ping -c <span class="m">3</span> 192.168.20.5
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A1-10.8.0.5 ping -c <span class="m">3</span> 192.168.20.6
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="2.png" style="width: 80%;" />
+<p>查看中间路由器的路由表，这里可以看到它有两个网卡，<code>eth0</code>连接 A 区网段<code>10.8.0.0/24</code>，自己的地址是 <code>10.8.0.11</code>，<code>eth1</code>连接 B 区网段<code>192.168.20.0/24</code>，自己的地址是 <code>192.168.20.11</code>。说明这个路由器就是两个区域通信的中转</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> router-firewall ip route show
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="3.png" style="width: 80%;" />
+<p>进入防火墙容器，查看默认的 <code>iptables</code> 规则</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it router-firewall /bin/bash
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看完整的 filter 表</span>
+</span></span><span class="line"><span class="cl">iptables -L -v -n
+</span></span><span class="line"><span class="cl"><span class="c1"># 只看 FORWARD 链</span>
+</span></span><span class="line"><span class="cl">iptables -L FORWARD -v -n
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="4.png" style="width: 100%;" />
+<p>这部分规则模拟的就是一个简易的公司内网防火墙环境，类比到真实情况，A 就是防火墙外侧网络，可以作为外部访问者或者代理服务器，B 就是受保护的内网。这里重点是看<code>FORWARD</code>链，也就是路由器转发包的规则，默认策略是 <code>ACCEPT</code></p>
+<p>从 A 区方向进来的 TCP 流量中，已经建立的连接和SSH流量，也就是目标端口是<code>22</code>的流量可以继续通过，其他普通 TCP 会被丢弃，这样 A 区主机如果直接访问 B 区的 Telnet、HTTP 等普通 TCP 服务，就会被防火墙阻断</p>
+<p>从 B 区方向进来的所有流量中，目标是 <code>93.184.216.0/24</code>的流量会被丢弃，这个 IP 在之后的实验中对应的是<code>www.example.com</code>，这就体现了 B 区主机访问某个网站被防火墙阻断的场景</p>
+<h2 id="静态端口转发">静态端口转发
+</h2><blockquote>
+<p>通过建立 SSH 静态隧道，将对本地端口的访问转发到远程内网的特定服务上，这里把 A 区网关的 <code>8000</code> 端口映射到 <code>192.168.20.5:23</code>，从而让区域 A 的主机穿透防火墙，访问区域 B 被保护的 Telnet 服务</p>
+</blockquote>
+<p>新开一个终端窗口，进入 A 区网关容器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 A 区网关上建立 SSH 隧道，目的是将<code>10.8.0.99:8000</code>映射到<code>192.168.20.5:23</code>。执行命令后终端会持续运行来维持 SSH 隧道</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -4NT -L 0.0.0.0:8000:192.168.20.5:23 seed@192.168.20.99
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>-L</code>：启用本地端口转发</p>
+</li>
+<li>
+<p><code>0.0.0.0:8000</code>：让 A 区网关上的 SSH 客户端监听所有网卡上的 <code>8000</code> 端口</p>
+</li>
+<li>
+<p><code>192.168.20.5:23</code>：如果监听到8000端口的连接，就通过 SSH 隧道转发给 B 区网关，B 区网关再连接 B1 的 Telnet 服务</p>
+</li>
+<li>
+<p><code>seed@192.168.20.99</code>：SSH 连接到 B 区网关</p>
+</li>
+<li>
+<p><code>-N</code>：不执行远程命令，只做端口转发</p>
+</li>
+<li>
+<p><code>-T</code>：不分配伪终端</p>
+</li>
+</ul>
+<img src="5.png" style="width: 90%;" />
+<p>新开一个终端进入 A1 容器，通过 A 区网关的 <code>8000</code> 端口连接 B1 的 Telnet 服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A1-10.8.0.5 /bin/bash
+</span></span><span class="line"><span class="cl">telnet 10.8.0.99 <span class="m">8000</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>连接成功后会弹出 Ubuntu 的登录提示，输入用户和密码后，可以输入下面的命令看到当前处于 <code>192.168.20.5</code>主机上，说明连接已经成功建立</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ip -br a
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="6.png" style="width: 80%;" />
+<p>为了观察防火墙视角下的数据包，可以在路由器容器中抓包</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tcpdump -n -i any
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到防火墙主要能看到 <code>10.8.0.99</code> 到 <code>192.168.20.99:22</code> 的 SSH 流量，真正的 Telnet 数据被包在 SSH 加密连接内部，防火墙看不到里面访问的是 <code>192.168.20.5:23</code>，这就是静态端口转发可以绕过防火墙限制的原因</p>
+<img src="7.png" style="width: 100%;" />
+<h2 id="动态-socks-代理">动态 SOCKS 代理
+</h2><blockquote>
+<p>静态端口转发每次只能绑定一个固定目标，而动态端口转发会在本地启动一个 SOCKS 代理，仅指定代理出入口，但访问目标不写死在 SSH 命令里。因此能让 B 区主机通过 A 区网关作为出口，来访问原本被防火墙拦截的网站</p>
+</blockquote>
+<p>新开一个终端窗口，进入 B 区网关容器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B-192.168.20.99 /bin/bash
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 B 区网关上建立动态代理隧道，目的是通过 SSH 隧道把请求发到 A 区网关，再让 A 区网关去访问目标。执行命令后终端会持续运行来维持 SSH 隧道</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -4NT -D 0.0.0.0:9000 seed@10.8.0.99
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>-D</code>：启用动态端口转发，也就是创建 SOCKS 代理。</p>
+</li>
+<li>
+<p><code>0.0.0.0:9000</code>：让 B 区网关上的 SSH 客户端监听所有网卡上的 <code>9000</code> 端口</p>
+</li>
+<li>
+<p><code>seed@10.8.0.99</code>：SSH 连接到 A 区网关</p>
+</li>
+</ul>
+<img src="8.png" style="width: 100%;" />
+<p>进入 B1 容器，修改本地映射，将域名与被防火墙封锁的网段绑定</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 /bin/bash
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;93.184.216.34 www.example.com&#34;</span> &gt;&gt; /etc/hosts
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>直接访问目标网站，可以发现没有反应，说明无法访问</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="9.png" style="width: 100%;" />
+<p>用 SOCKS5 代理访问网站，这次可以成功拿到网页 HTML 内容。这是因为 B1 会把请求交给 B 区网关的 SOCKS 代理，也就是<code>192.168.20.99:9000</code>，代理再通过 SSH 隧道把请求发给 A 区网关来访问外部网站。其中<code>socks5h</code> 中的 <code>h</code> 就表示域名解析也交给代理端处理</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl --proxy socks5h://192.168.20.99:9000 www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="10.png" style="width: 100%;" />
+<p>浏览器也是类似的流程，首先在 Firefox 浏览器中如图配置代理</p>
+<img src="11.png" style="width: 80%;" />
+<p>访问<code>www.example.com</code>，可以发现页面成功加载了</p>
+<img src="12.png" style="width: 100%;" />
+<p>关闭动态代理隧道，再次访问就发现代理服务器拒绝连接，这和真实网络中的代理是类似的</p>
+<img src="13.png" style="width: 100%;" />
+<h2 id="layer-3-vpn-隧道">Layer 3 VPN 隧道
+</h2><blockquote>
+<p>这部分更接近真正 VPN 的工作方式，它会创建一个虚拟网卡 <code>tun0</code>，然后把数据包放进 SSH 隧道中传输</p>
+</blockquote>
+<p>开始这个部分前，先重启实验容器，清理之前的隧道和路由配置来防止干扰</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker compose down
+</span></span><span class="line"><span class="cl">sudo docker compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="a-区访问-b-区">A 区访问 B 区
+</h3><p>这里先在防火墙上添加规则，禁止 A 区网段直接访问 B 区网段</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it router-firewall /bin/bash
+</span></span><span class="line"><span class="cl">iptables -A FORWARD -s 10.8.0.0/24 -d 192.168.20.0/24 -j DROP
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>此时从 A 区网关 ping B1 会失败</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 ping 192.168.20.5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="14.png" style="width: 100%;" />
+<blockquote>
+<p>为了实现访问A 网关不再把包直接发向 B 区，而是先把包送进 <code>tun0</code>，再用 SSH 封装起来发给 B 网关。防火墙看到的外层还是 SSH，不是普通的 A 到 B 访问</p>
+</blockquote>
+<p>进入 A 区网关容器，使用 SSH 的 <code>-w</code> 参数建立三层隧道。这个终端需要保持挂起来维持 VPN 隧道</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 /bin/bash
+</span></span><span class="line"><span class="cl">ssh -w 0:0 root@192.168.20.99 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;PermitLocalCommand=yes&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;LocalCommand= ip addr add 192.168.53.88/24 dev tun0 &amp;&amp; ip link set tun0 up&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;RemoteCommand=ip addr add 192.168.53.99/24 dev tun0 &amp;&amp; ip link set tun0 up&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>-w 0:0</code> 会在 SSH 两端创建 <code>tun0</code> 虚拟网卡。A 侧的 <code>tun0</code> 地址是 <code>192.168.53.88/24</code>，B 侧的 <code>tun0</code> 地址是 <code>192.168.53.99/24</code>。这相当于在 A 区网关和 B 区网关之间创建了一条虚拟三层链路。</p>
+<img src="15.png" style="width: 100%;" />
+<p>新开一个终端进入 A 区网关，配置路由。为了避免 SSH 隧道自己的连接被错误引进 <code>tun0</code>，可以先给 B 区网关加一条单独的主机路由。再把访问 B 区网段的流量引入 <code>tun0</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 /bin/bash
+</span></span><span class="line"><span class="cl">ip route add 192.168.20.99/32 via 10.8.0.11
+</span></span><span class="line"><span class="cl">ip route replace 192.168.20.0/24 dev tun0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接着给 B1 和 B2 配置回程路由，让它们知道返回 <code>192.168.53.0/24</code> 这个隧道网段时应该交给 B 区网关</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 ip route add 192.168.53.0/24 via 192.168.20.99
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B2-192.168.20.6 ip route add 192.168.53.0/24 via 192.168.20.99
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>回到 A 区网关再次ping B1。此时虽然防火墙已经阻断了 <code>10.8.0.0/24</code> 到 <code>192.168.20.0/24</code> 的直接访问，但是 A 区网关访问 B 区网段时，数据包先进入 <code>tun0</code>，再被封装进 SSH 连接中。防火墙看到的外层流量仍然是 A 网关到 B 网关的 SSH 连接，看不到内部的三层访问。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 192.168.20.5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="16.png" style="width: 90%;" />
+<h3 id="b-区访问外部">B 区访问外部
+</h3><p>这个场景用于模拟 B 区主机访问某个外部网段被防火墙阻断，然后通过带 NAT 的 VPN 隧道从 A 区出口访问外部网络。</p>
+<p>测试前需要断开上一个场景的隧道，并重启容器清理路由。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker-compose down
+</span></span><span class="line"><span class="cl">sudo docker-compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在防火墙上添加出站阻断规则。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it router-firewall /bin/bash
+</span></span><span class="line"><span class="cl">iptables -A FORWARD -s 192.168.20.0/24 -d 93.184.216.0/24 -j DROP
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入 B 区网关，建立带 NAT 的 VPN 隧道。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B-192.168.20.99 /bin/bash
+</span></span><span class="line"><span class="cl">ssh -w 0:0 root@10.8.0.99 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;PermitLocalCommand=yes&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;LocalCommand= ip addr add 192.168.53.88/24 dev tun0 &amp;&amp; ip link set tun0 up \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; ip route add 93.184.216.0/24 dev tun0 \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o tun0&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;RemoteCommand=ip addr add 192.168.53.99/24 dev tun0 &amp;&amp; ip link set tun0 up \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里多了两处 NAT 配置。</p>
+<p>B 区网关上的 NAT 用来处理进入隧道前的源地址转换。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -A POSTROUTING -j MASQUERADE -o tun0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A 区网关上的 NAT 用来处理从 A 区出口访问外部网络时的源地址转换。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接着给 B1 和 B2 添加到目标网段的路由，让它们访问 <code>93.184.216.0/24</code> 时先交给 B 区网关。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 ip route add 93.184.216.0/24 via 192.168.20.99
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B2-192.168.20.6 ip route add 93.184.216.0/24 via 192.168.20.99
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 B1 中访问 <code>www.example.com</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 curl www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里的流量路径可以理解为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">B1
+</span></span><span class="line"><span class="cl">    -&gt; B 区网关 192.168.20.99
+</span></span><span class="line"><span class="cl">    -&gt; tun0
+</span></span><span class="line"><span class="cl">    -&gt; SSH 隧道
+</span></span><span class="line"><span class="cl">    -&gt; A 区网关 10.8.0.99
+</span></span><span class="line"><span class="cl">    -&gt; 外部网站
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>直接访问时，B1 到 <code>93.184.216.0/24</code> 的流量会命中防火墙的 <code>DROP</code> 规则。建立 VPN 隧道后，B1 的流量先进入 B 区网关，再通过 <code>tun0</code> 被封装到 SSH 连接中，最后从 A 区网关访问外部目标。</p>
+<p>NAT 的作用是让返回包能正确回来。如果没有 NAT，外部目标或者中间节点可能不知道怎么返回到 B1 的私有地址。使用 <code>MASQUERADE</code> 后，出口侧会把源地址改成合适的地址，并记录连接关系，回包回来时再反向转换。</p>
+<h2 id="实验理解">实验理解
+</h2><p>这次实验最重要的点是理解防火墙的视角。防火墙不是天然知道用户真正想访问什么，它只能根据自己能看到的数据包字段做判断。</p>
+<p>直接访问时，防火墙可以看到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">10.8.0.x -&gt; 192.168.20.x
+</span></span><span class="line"><span class="cl">192.168.20.x -&gt; 93.184.216.x
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以规则可以按照源网段和目的网段进行拦截。</p>
+<p>建立 SSH 隧道后，防火墙看到的外层流量变成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">10.8.0.99 -&gt; 192.168.20.99:22
+</span></span><span class="line"><span class="cl">192.168.20.99 -&gt; 10.8.0.99:22
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>内部真正访问的 Telnet、HTTP 或者某个 IP 网段，都被封装在 SSH 连接里面。除非防火墙能解密或识别隧道行为，否则它只能把这部分流量当成普通 SSH 流量处理。</p>
+<p>静态端口转发适合访问一个固定服务。</p>
+<p>动态 SOCKS 代理适合让应用程序通过代理访问多个目标。</p>
+<p>Layer 3 VPN 隧道更接近真正的 VPN，可以通过虚拟网卡和路由把一整段 IP 流量引入隧道。</p>
+<p>这也解释了 VPN 的基本工作方式。VPN 的本质不是单纯“换 IP”，而是创建一条新的虚拟网络路径。系统把部分流量送进虚拟网卡，VPN 程序再把这些流量封装进另一条连接，发送到远端节点解封装，最后由远端节点继续访问目标网络。</p>
+<p>这个实验对我来说比较应景。之前经常听到代理、隧道、VPN、NAT、路由这些词，但它们之间的关系一直比较散。这次通过 Docker 网络把它们连起来之后，能明显看到一条完整路径：防火墙负责拦截，路由决定流量走向，SSH 负责隧道封装，<code>tun0</code> 负责承载三层数据包，NAT 负责处理回包路径。</p>
+<p>学完以后再看常见的 VPN 或代理软件，就不会只停留在“开了以后能访问”这个层面，而是能理解它大概在系统网络栈里动了哪些东西。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+            transform: translateY(-50%) translateY(260px);
+        }
+    </style></footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/post/firewall/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/firewall.jpg" loading="lazy" data-key="" data-hash="/images/cover/firewall.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">防火墙探索</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/daili/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/daili.jpg" loading="lazy" data-key="" data-hash="/images/cover/daili.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">一次校园网异常流量引出的代理分析与上网方案</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/mitnick/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/mitnick.jpg" loading="lazy" data-key="" data-hash="/images/cover/mitnick.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mitnick攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/tcp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/tcp.jpg" loading="lazy" data-key="" data-hash="/images/cover/tcp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TCP协议攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/icmp/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/icmp.jpg" loading="lazy" data-key="" data-hash="/images/cover/icmp.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ICMP重定向与中间人攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+        
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+    
+
+	
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2025 - 
+        
+        2026 Thaumazein
+    </section>
+    <section class="count_info">
+  <div>
+      本站已不稳定运行
+      <span id="ds" class="running-days number-highlight"></span>
+      天
+      <span id="hs" class="running-days number-highlight"></span>
+      小时
+      <span id="ms" class="running-days number-highlight"></span>
+      分钟
+  </div>
+  <div>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      共发表文章 
+      <span class="number-highlight">30</span> 
+      篇 ，总计 
+      <span class="number-highlight">130.73</span> 
+      k 字
+  </div>
+  <div>
+      <span id="busuanzi_container_site_pv">
+          本站总访问量：
+          <span id="busuanzi_value_site_pv" class="number-highlight"></span>
+          次
+      </span>
+  </div>
+</section>
+
+
+<script>
+let s1 = '2025-06-24'; 
+s1 = new Date(s1.replace(/-/g, "/"));
+let s2 = new Date();
+let timeDifference = s2.getTime() - s1.getTime();
+
+let days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+let hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+
+const ds = document.getElementById('ds');
+const hs = document.getElementById('hs');
+const ms = document.getElementById('ms');
+
+ds.innerHTML = days;
+hs.innerHTML = hours;
+ms.innerHTML = minutes;
+
+
+ds.classList.add('number-highlight');
+hs.classList.add('number-highlight');
+ms.classList.add('number-highlight');
+
+
+const busuanziValue = document.getElementById('busuanzi_value_site_pv');
+if (busuanziValue) {
+    busuanziValue.classList.add('number-highlight');
+}
+</script>
+    <section class="powerby">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+
+    </section>
+    
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    function backToTop() {
+      document.documentElement.scrollIntoView({
+        behavior: 'smooth',
+      })
+    }
+  
+    window.onload = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop > 0) {
+        totopBtn.style.display = 'inline'
+      } else {
+        totopBtn.style.display = 'none'
+      }
+    }
+  
+    window.onscroll = function () {
+      let scrollTop =
+        this.document.documentElement.scrollTop || this.document.body.scrollTop
+      let totopBtn = this.document.getElementById('back-to-top')
+      if (scrollTop < 200) {
+        totopBtn.style.display = 'none'
+      } else {
+        totopBtn.style.display = 'inline'
+        totopBtn.addEventListener('click', backToTop, false)
+      }
+    }
+  </script>
+
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+<div id="particles-js"></div>
+<div id="jsi-flying-fish-container"></div>
+
+<style>
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+    }
+    #jsi-flying-fish-container {
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.37;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    html, body {
+        position: relative;
+        min-height: 100%;
+    }  
+</style>
+
+<script src="/background/particles.min.js"></script>
+<script>
+  particlesJS.load('particles-js', '\/background\/particlesjs-config.json', function() {
+    console.log('particles.js loaded - callback');
+  });
+</script>
+<script src="/js/renderer.js"></script>
+
+
+<script>
+  if (typeof RENDERER !== 'undefined') {
+    RENDERER.init();
+  }
+</script>
+
+<style>
+    .highlight {
+         
+        max-height: 600px;
+        overflow: hidden;
+    }
+
+    .code-show {
+        max-height: none !important;
+    }
+
+    .code-more-box {
+        width: 100%;
+        padding-top: 78px;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .code-more-btn {
+        display: block;
+        margin: auto;
+        width: 44px;
+        height: 22px;
+        background: #f0f0f5;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        padding-top: 6px;
+        cursor: pointer;
+    }
+
+    .code-more-img {
+        cursor: pointer !important;
+        display: block;
+        margin: auto;
+        width: 22px;
+        height: 16px;
+    }
+</style>
+
+<script>
+  function initCodeMoreBox() {
+    let codeBlocks = document.querySelectorAll(".highlight");
+    if (!codeBlocks) {
+      return;
+    }
+    codeBlocks.forEach(codeBlock => {
+      
+      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
+        return;
+      }
+      
+      
+      let codeMoreBox = document.createElement('div');
+      codeMoreBox.classList.add('code-more-box');
+      
+      let codeMoreBtn = document.createElement('span');
+      codeMoreBtn.classList.add('code-more-btn');
+      codeMoreBtn.addEventListener('click', () => {
+        codeBlock.classList.add('code-show');
+        codeMoreBox.style.display = 'none';
+        
+        window.dispatchEvent(new Event('resize'))
+      })
+      
+      let img = document.createElement('img');
+      img.classList.add('code-more-img');
+      img.src = "https://th4uma.github.io/icons/codeMore.png"
+      
+      codeMoreBtn.appendChild(img);
+      codeMoreBox.appendChild(codeMoreBtn);
+      codeBlock.appendChild(codeMoreBox)
+    })
+  }
+ 
+  initCodeMoreBox();
+</script>
+
+
+<style>
+@font-face {
+  font-family: 'songti';
+  src: url('/font/songti.ttf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Ubuntu-R';
+  src: url('/font/Ubuntu-R.ttf') format('opentype');
+}
+
+:root {
+  --base-font-family: 'songti';
+  --code-font-family: 'Ubuntu-R';
+}
+
+body {
+  font-family: var(--base-font-family), sans-serif;
+  background: url(https://th4uma.github.io/background/bg.png) no-repeat center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+</style>
+
+
+<script defer src="https://cn.vercount.one/js"></script>
+
+
+<a href="#" id="back-to-top" title="返回顶部"></a>
+
+
+<style>
+  #back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 5px;
+    right: 15px;
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    background-color: #2b3947ab !important;
+    box-shadow: var(--shadow-l2);
+    font-size: 20px;  
+    text-align: center;
+    line-height: 38px;  
+    cursor: pointer;
+    transition:
+      transform 0.3s ease,
+      background-color 0.3s ease;  
+  }
+
+  #back-to-top:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    transform: rotate(135deg);
+    height: 8px;  
+    width: 8px;  
+    border-width: 0 0 2px 2px;
+    border-color: var(--back-to-top-color);
+    border-style: solid;
+  }
+
+  #back-to-top:hover {
+    transform: scale(1.1);  
+    background-color: var(--accent-background);  
+  }
+
+  #back-to-top:hover:before {
+    border-color: var(--accent-color);  
+  }
+
+   
+  @media screen and (max-width: 768px) {
+    #back-to-top {
+      bottom: 5px;
+      right: var(--container-padding);
+      width: 30px;  
+      height: 30px;
+      font-size: 16px;
+      line-height: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1024px) {
+    #back-to-top {
+      bottom: 10px;
+      right: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1280px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+    }
+  }
+
+  @media screen and (min-width: 1536px) {
+    #back-to-top {
+      bottom: 15px;
+      right: 25px;
+       
+    }
+  }
+</style>
+
+
+    </body>
+</html>
