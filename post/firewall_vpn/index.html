@@ -276,14 +276,21 @@ unicode: "f6d2"
     <li><a href="#基础网络测试">基础网络测试</a></li>
     <li><a href="#静态端口转发">静态端口转发</a></li>
     <li><a href="#动态-socks-代理">动态 SOCKS 代理</a></li>
-    <li><a href="#layer-3-vpn-隧道">Layer 3 VPN 隧道</a>
+    <li><a href="#3-层-vpn-隧道">3 层 VPN 隧道</a>
       <ol>
-        <li><a href="#a-区访问-b-区">A 区访问 B 区</a></li>
-        <li><a href="#b-区访问外部">B 区访问外部</a></li>
+        <li><a href="#a区访问b区">A区访问B区</a></li>
+        <li><a href="#b区访问外部">B区访问外部</a></li>
       </ol>
     </li>
-    <li><a href="#vpn-出站访问排查过程">VPN 出站访问排查过程</a></li>
     <li><a href="#实验理解">实验理解</a></li>
+    <li><a href="#附vpn-访问排查">附：VPN 访问排查</a>
+      <ol>
+        <li><a href="#域名解析">域名解析</a></li>
+        <li><a href="#网关配置">网关配置</a></li>
+        <li><a href="#数据链路">数据链路</a></li>
+        <li><a href="#目标ip">目标IP</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -384,39 +391,39 @@ unicode: "f6d2"
 	</thead>
 	<tbody>
 			<tr>
-					<td>A 区普通主机 1</td>
+					<td>A 区主机 1</td>
 					<td><code>10.8.0.5</code></td>
 					<td>用来测试从 A 区访问 B 区服务</td>
 			</tr>
 			<tr>
-					<td>A 区普通主机 2</td>
+					<td>A 区主机 2</td>
 					<td><code>10.8.0.6</code></td>
-					<td>用来进行辅助连通性测试</td>
+					<td>辅助测试</td>
 			</tr>
 			<tr>
 					<td>A 区网关</td>
 					<td><code>10.8.0.99</code></td>
-					<td>A 区出口，也是 SSH 隧道和 VPN 隧道的一端</td>
+					<td>A 区出口，也是 SSH 隧道的一端</td>
 			</tr>
 			<tr>
 					<td>B 区服务器 1</td>
 					<td><code>192.168.20.5</code></td>
-					<td>B 区目标服务器，提供 Telnet 等被保护服务</td>
+					<td>B 区目标服务器，提供 Telnet 服务</td>
 			</tr>
 			<tr>
 					<td>B 区服务器 2</td>
 					<td><code>192.168.20.6</code></td>
-					<td>B 区目标服务器，用来进行辅助连通性测试</td>
+					<td>B 区目标服务器，辅助测试</td>
 			</tr>
 			<tr>
 					<td>B 区网关</td>
 					<td><code>192.168.20.99</code></td>
-					<td>B 区出口，也是 SSH 隧道、SOCKS 代理和 VPN 隧道的一端</td>
+					<td>B 区出口，也是 SSH 隧道的一端</td>
 			</tr>
 			<tr>
 					<td>中间路由器</td>
 					<td><code>10.8.0.11 / 192.168.20.11</code></td>
-					<td>负责转发 A 区和 B 区之间的流量，并执行防火墙规则</td>
+					<td>转发 A 区 B 区之间的流量，同时执行防火墙规则</td>
 			</tr>
 	</tbody>
 </table></div>
@@ -494,11 +501,11 @@ unicode: "f6d2"
 </div>
 </div><img src="4.png" style="width: 100%;" />
 <p>这部分规则模拟的就是一个简易的公司内网防火墙环境，类比到真实情况，A 就是防火墙外侧网络，可以作为外部访问者或者代理服务器，B 就是受保护的内网。这里重点是看<code>FORWARD</code>链，也就是路由器转发包的规则，默认策略是 <code>ACCEPT</code></p>
-<p>从 A 区方向进来的 TCP 流量中，已经建立的连接和SSH流量，也就是目标端口是<code>22</code>的流量可以继续通过，其他普通 TCP 会被丢弃，这样 A 区主机如果直接访问 B 区的 Telnet、HTTP 等普通 TCP 服务，就会被防火墙阻断</p>
-<p>从 B 区方向进来的所有流量中，目标是 <code>93.184.216.0/24</code>的流量会被丢弃，这个 IP 在之后的实验中对应的是<code>www.example.com</code>，这就体现了 B 区主机访问某个网站被防火墙阻断的场景</p>
+<p>从 A 区方向进来的 TCP 流量中，已经建立的连接和SSH流量，也就是目标端口是<code>22</code>的流量可以通过，其他普通 TCP 会被丢弃，这样 A 区主机如果直接访问 B 区的 Telnet、HTTP 这类普通 TCP 服务，就会被防火墙阻断</p>
+<p>从 B 区方向进来的所有流量中，目标是<code>93.184.216.0/24</code>的流量会被丢弃，这个 IP 在之后的实验中对应的是<code>www.example.com</code>，这就体现了 B 区主机访问某个网站被防火墙阻断的情况</p>
 <h2 id="静态端口转发">静态端口转发
 </h2><blockquote>
-<p>通过建立 SSH 静态隧道，将对本地端口的访问转发到远程内网的特定服务上，这里把 A 区网关的 <code>8000</code> 端口映射到 <code>192.168.20.5:23</code>，从而让区域 A 的主机穿透防火墙，访问区域 B 被保护的 Telnet 服务</p>
+<p>通过建立 SSH 静态隧道，把对本地端口的访问转发到远程内网的特定服务上。这里把 A 区网关的 <code>8000</code> 端口映射到 <code>192.168.20.5:23</code>，从而让 A 区主机穿透防火墙，访问 B 区被保护的 Telnet 服务</p>
 </blockquote>
 <p>新开一个终端窗口，进入 A 区网关容器</p>
 <div class="highlight"><div class="chroma">
@@ -550,7 +557,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">telnet 10.8.0.99 <span class="m">8000</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>连接成功后会弹出 Ubuntu 的登录提示，输入用户和密码后，可以输入下面的命令看到当前处于 <code>192.168.20.5</code>主机上，说明连接已经成功建立</p>
+</div><p>输入用户和密码登录后，输入下面的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -559,7 +566,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ip -br a
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="6.png" style="width: 80%;" />
+</div><p>可以看到已经成功登录到了 <code>192.168.20.5</code>的终端</p>
+<img src="6.png" style="width: 80%;" />
 <p>为了观察防火墙视角下的数据包，可以在路由器容器中抓包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -569,11 +577,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tcpdump -n -i any
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>可以看到防火墙主要能看到 <code>10.8.0.99</code> 到 <code>192.168.20.99:22</code> 的 SSH 流量，真正的 Telnet 数据被包在 SSH 加密连接内部，防火墙看不到里面访问的是 <code>192.168.20.5:23</code>，这就是静态端口转发可以绕过防火墙限制的原因</p>
+</div><p>防火墙主要能看到 <code>10.8.0.99</code> 到 <code>192.168.20.99:22</code> 的 SSH 流量，真正的 Telnet 数据被包在 SSH 加密连接内部，防火墙看不到里面访问的是 <code>192.168.20.5:23</code>，这就是静态端口转发可以绕过防火墙限制的原因</p>
 <img src="7.png" style="width: 100%;" />
 <h2 id="动态-socks-代理">动态 SOCKS 代理
 </h2><blockquote>
-<p>静态端口转发每次只能绑定一个固定目标，而动态端口转发会在本地启动一个 SOCKS 代理，仅指定代理出入口，但访问目标不写死在 SSH 命令里，由socks代理命令来传输。因此能让 B 区主机通过 A 区网关作为出口，来访问原本被防火墙拦截的网站</p>
+<p>静态端口转发每次只能绑定一个固定目标，而动态端口转发会在本地启动一个 SOCKS 代理，仅指定代理出入口，但访问目标不写死在 SSH 命令里，由 SOCKS 代理命令来传输。因此能让 B 区主机通过 A 区网关作为出口，来访问原本被防火墙拦截的网站</p>
+<p>SOCKS 代理在应用层，处理的是应用发起的具体访问请求</p>
 </blockquote>
 <p>新开一个终端窗口，进入 B 区网关容器</p>
 <div class="highlight"><div class="chroma">
@@ -595,7 +604,7 @@ unicode: "f6d2"
 </div>
 </div><ul>
 <li>
-<p><code>-D</code>：启用动态端口转发，也就是创建 SOCKS 代理。</p>
+<p><code>-D</code>：启用动态端口转发，也就是创建 SOCKS 代理</p>
 </li>
 <li>
 <p><code>0.0.0.0:9000</code>：让 B 区网关上的 SSH 客户端监听所有网卡上的 <code>9000</code> 端口</p>
@@ -604,7 +613,7 @@ unicode: "f6d2"
 <p><code>seed@10.8.0.99</code>：SSH 连接到 A 区网关</p>
 </li>
 </ul>
-<img src="8.png" style="width: 100%;" />
+<img src="8.png" style="width: 90%;" />
 <p>进入 B1 容器，修改本地映射，将域名与被防火墙封锁的网段绑定</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -625,8 +634,11 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl www.example.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="9.png" style="width: 100%;" />
-<p>用 SOCKS5 代理访问网站，这次可以成功拿到网页 HTML 内容。这是因为 B1 会把请求交给 B 区网关的 SOCKS 代理，也就是<code>192.168.20.99:9000</code>，代理再通过 SSH 隧道把请求发给 A 区网关来访问外部网站。其中<code>socks5h</code> 中的 <code>h</code> 就表示域名解析也交给代理端处理</p>
+</div><img src="9.png" style="width: 90%;" />
+<p>用 SOCKS5 代理访问网站，这次可以成功拿到网页 HTML 内容。这是因为 B1 会把请求交给 B 区网关的 SOCKS 代理，也就是<code>192.168.20.99:9000</code>，代理再通过 SSH 隧道把请求发给 A 区网关来访问外部网站</p>
+<blockquote>
+<p>这里使用的是 <code>socks5h</code>， <code>h</code> 表示域名解析交给代理端完成。因此 B1 在<code>/etc/hosts</code> 中对 <code>www.example.com</code> 的映射主要用来直接访问触发防火墙阻断，而通过 SOCKS 代理访问时，域名可能被代理出口重新解析</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -640,11 +652,11 @@ unicode: "f6d2"
 <img src="11.png" style="width: 80%;" />
 <p>访问<code>www.example.com</code>，可以发现页面成功加载了</p>
 <img src="12.png" style="width: 100%;" />
-<p>关闭动态代理隧道，再次访问就发现代理服务器拒绝连接，这和真实网络中的代理是类似的</p>
+<p>关闭SSH隧道，再次访问就发现代理服务器拒绝连接，这和真实网络中的代理是类似的</p>
 <img src="13.png" style="width: 100%;" />
-<h2 id="layer-3-vpn-隧道">Layer 3 VPN 隧道
+<h2 id="3-层-vpn-隧道">3 层 VPN 隧道
 </h2><blockquote>
-<p>这部分更接近真正 VPN 的工作方式，它会创建一个虚拟网卡 <code>tun0</code>，然后把数据包放进 SSH 隧道中传输</p>
+<p>这部分更接近真正 VPN 的工作方式，它会创建一个虚拟网卡 <code>tun0</code>，然后把数据包放进 SSH 隧道中传输。3层指的是网络层，记录了源IP、目标IP</p>
 </blockquote>
 <p>开始这个部分前，先重启实验容器，清理之前的隧道和路由配置来防止干扰</p>
 <div class="highlight"><div class="chroma">
@@ -657,7 +669,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo docker compose up -d
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="a-区访问-b-区">A 区访问 B 区
+</div><h3 id="a区访问b区">A区访问B区
 </h3><p>这里先在防火墙上添加规则，禁止 A 区网段直接访问 B 区网段。这个规则是添加在最后的，用于处理不匹配前面几个规则的流量</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -680,9 +692,9 @@ unicode: "f6d2"
 </div>
 </div><img src="14.png" style="width: 100%;" />
 <blockquote>
-<p>为了成功访问，A 网关不再把包直接发向 B 区，而是建立SSH连接，由于SSH只是一个通信协议，不参与流量的规划因此在 A 区网关和 B 区网关之间创建虚拟网卡 <code>tun0</code>，作用是分离需要代理的流量 。这样只需要把访问 B 区网段的流量引到 <code>tun0</code>，这些 IP 数据包就会被 SSH 封装后发送到 B 区网关</p>
+<p>为了成功访问，A 网关不再把包直接发向 B 区，而是建立 SSH 连接。但由于SSH只是一个通信协议，不参与流量的规划，因此还要在 A 区网关和 B 区网关创建虚拟网卡 <code>tun0</code>，作用是分离需要代理的流量。这样只需要把访问 B 区网段的流量引到 <code>tun0</code>，这些数据包就会被 SSH 封装后发到 B 区网关</p>
 </blockquote>
-<p>进入 A 区网关容器，用 SSH 的 <code>-w</code> 参数建立三层 VPN 隧道。这里的三层指的是 IP 层，因为 <code>tun0</code> 接收和发送的是 IP 数据包。执行命令后终端会持续运行来维持 VPN 隧道</p>
+<p>进入 A 区网关容器，用 SSH 的 <code>-w</code> 参数建立三层 VPN 隧道。执行命令后终端会持续运行来维持 VPN 隧道</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -703,14 +715,14 @@ unicode: "f6d2"
 <li><code>-w 0:0</code>：启用 SSH 的三层隧道功能，在 A 区和 B 区网关分别创建 <code>tun0</code> 虚拟网卡</li>
 <li><code>root@192.168.20.99</code>：SSH 连接到 B 区网关，也就是 VPN 隧道出口</li>
 <li><code>PermitLocalCommand=yes</code>：允许 SSH 连接建立后在本地自动执行命令</li>
-<li><code>LocalCommand=...</code>：在 A 区网关上配置 <code>tun0</code>，分配 <code>192.168.53.88/24</code>并启动</li>
-<li><code>RemoteCommand=...</code>：在 B 区网关上配置 <code>tun0</code>，分配 <code>192.168.53.99/24</code>，并启动</li>
+<li><code>LocalCommand=...</code>：在 A 区网关上配置 <code>tun0</code>，分配 <code>192.168.53.88/24</code>并启动网卡</li>
+<li><code>RemoteCommand=...</code>：在 B 区网关上配置 <code>tun0</code>，分配 <code>192.168.53.99/24</code>并启动网卡</li>
 </ul>
-<p>执行后A 区网关上会出现一个地址为 <code>192.168.53.88/24</code> 的 <code>tun0</code>，B 区网关上会出现一个地址为 <code>192.168.53.99/24</code> 的 <code>tun0</code>。这相当于在 A 区网关和 B 区网关之间创建了一条通过 SSH 连接的 VPN 隧道。可以理解成SSH作为通道，<code>tun0</code>作为数据分发<img src="15.png" style="width: 100%;" /></p>
+<img src="15.png" style="width: 90%;" />
 <blockquote>
-<p>上一步只是搭建了传输的基础，但还没有对流量进行规划。这一步需要配置路由，把访问 <code>192.168.20.0/24</code> 的数据包导入 <code>tun0</code>。这样 A 区访问 B 区网段时，数据包先进入 <code>tun0</code>，再被 SSH 发送到 B 区网关</p>
+<p>上一步只是搭建了传输的基础，但还没有对流量进行规划。这一步需要配置路由，给访问流量和回程流量添加规则</p>
 </blockquote>
-<p>新开一个终端进入 A 区网关，配置路由。为了避免 SSH 隧道自己的连接进入 <code>tun0</code>，先在<code>tun0</code>给 B 区网关加一条单独的规则来排除它，再把访问 B 区网段的流量引入 <code>tun0</code></p>
+<p>进入 A 区网关配置路由。为了避免 SSH 隧道自己的连接进入 <code>tun0</code>，先给 B 区网关加一条单独的规则来让它走原来的路径，再把访问 B 区网段的流量引入 <code>tun0</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -727,18 +739,16 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">ip route replace 192.168.20.0/24 dev tun0
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>还需要给 B1 和 B2 配置回程路由，将返回 <code>192.168.53.0/24</code> 的流量交给 B 区网关</p>
+</div><p>还需要给 B1 配置回程路由，将目标是 <code>192.168.53.0/24</code> 的回包交给 B 区网关</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 ip route add 192.168.53.0/24 via 192.168.20.99
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B2-192.168.20.6 ip route add 192.168.53.0/24 via 192.168.20.99
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>回到 A 区网关再次 ping B1，此时数据包先进入 <code>tun0</code>，再被封装进 SSH 连接中，防火墙看到的外层还是 SSH，不会进行拦截</p>
+</div><p>回到 A 区网关再次 ping B1，此时数据包先进入 <code>tun0</code>，再被封装进 SSH 连接中，防火墙看到的外层还是 SSH，不会进行拦截，因此成功发送了数据包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -747,9 +757,12 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ping 192.168.20.5
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="16.png" style="width: 90%;" />
-<h3 id="b-区访问外部">B 区访问外部
-</h3><p>开始这个部分前，断开上一个场景的隧道，并重启容器清理路由</p>
+</div><img src="16.png" style="width: 80%;" />
+<h3 id="b区访问外部">B区访问外部
+</h3><blockquote>
+<p>注意：实验中的<code>www.example.com</code>通过CDN解析，域名解析出的IP经常会变化，变化一次就会导致之前的一大串配置全部失效，需要修改IP后重新执行。这个方案稳定性极低，但也是无奈之举，更好的实验流程是将访问目标设置为自己有公网IP的服务器</p>
+</blockquote>
+<p>开始这个部分前，重启容器来清理路由</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -760,372 +773,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo docker compose up -d
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入 B1 容器，修改本地映射，将域名与被防火墙封锁的网段绑定</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 /bin/bash
-</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;93.184.216.34 www.example.com&#34;</span> &gt;&gt; /etc/hosts
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>直接访问目标网站被拒绝</p>
-<img src="19.png" style="width: 90%;" />
-<p>进入 B 区网关，建立带 NAT 的 VPN 隧道。执行命令后终端会持续运行来维持 VPN 隧道</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B-192.168.20.99 /bin/bash
-</span></span><span class="line"><span class="cl">ssh -w 0:0 root@10.8.0.99 <span class="se">\
-</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;PermitLocalCommand=yes&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;LocalCommand= ip addr add 192.168.53.88/24 dev tun0 &amp;&amp; ip link set tun0 up \
-</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; ip route add 93.184.216.0/24 dev tun0 \
-</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o tun0&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;RemoteCommand=ip addr add 192.168.53.99/24 dev tun0 &amp;&amp; ip link set tun0 up \
-</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里多了两处 NAT 配置。</p>
-<p>B 区网关上的 NAT 用来处理进入隧道前的源地址转换。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -A POSTROUTING -j MASQUERADE -o tun0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>A 区网关上的 NAT 用来处理从 A 区出口访问外部网络时的源地址转换。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="17.png" style="width: 90%;" />
-<p>接着给 B1 和 B2 添加到目标网段的路由，让它们访问 <code>93.184.216.0/24</code> 时先交给 B 区网关。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 ip route add 93.184.216.0/24 via 192.168.20.99
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B2-192.168.20.6 ip route add 93.184.216.0/24 via 192.168.20.99
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在 B1 容器中访问 <code>www.example.com</code>，数据经过SSH隧道</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="18.png" style="width: 90%;" />
-<blockquote>
-<p>遇到问题，配置完依旧无法访问</p>
-<p>查看发现ipv6</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec B1-192.168.20.5 getent hosts www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>强制指定ipv4</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo docker exec -it B1-192.168.20.5 /bin/bash
-</span></span><span class="line"><span class="cl">echo &#34;93.184.216.34 www.example.com&#34; &gt;&gt; /etc/hosts
-</span></span><span class="line"><span class="cl">getent ahostsv4 www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="21.png" style="width: 90%;" />
-</blockquote>
-<p>直接访问时，B1 到 <code>93.184.216.0/24</code> 的流量会命中防火墙的 <code>DROP</code> 规则。建立 VPN 隧道后，B1 的流量先进入 B 区网关，再通过 <code>tun0</code> 被封装到 SSH 连接中，最后从 A 区网关访问外部目标。</p>
-<p>NAT 的作用是让返回包能正确回来。如果没有 NAT，外部目标或者中间节点可能不知道怎么返回到 B1 的私有地址。使用 <code>MASQUERADE</code> 后，出口侧会把源地址改成合适的地址，并记录连接关系，回包回来时再反向转换。</p>
-<h2 id="vpn-出站访问排查过程">VPN 出站访问排查过程
-</h2><p>这一部分原本按照实验说明，将 <code>www.example.com</code> 手动绑定到 <code>93.184.216.34</code>，再通过防火墙规则阻断 B 区主机直接访问该网段。随后希望通过 SSH 三层 VPN 隧道，让 B1 的访问流量绕到 A 区网关出口，从而实现访问。</p>
-<p>开始时在 B1 中添加本地映射。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 /bin/bash
-</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;93.184.216.34 www.example.com&#34;</span> &gt;&gt; /etc/hosts
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>随后直接检查域名解析，发现 <code>getent hosts</code> 显示的是 IPv6 地址</p>
-<img src="20.png" style="width: 90%;" />
-<p>这里说明一个问题，<code>getent hosts www.example.com</code> 并不能稳定用来验证 IPv4 的 hosts 映射。它可能优先显示 DNS 查询到的 IPv6 记录，而实验中的防火墙规则拦截的是 IPv4 网段 <code>93.184.216.0/24</code>。所以后续检查 IPv4 映射时，改用 <code>getent ahostsv4</code>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">getent ahostsv4 www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><img src="21.png" style="width: 90%;" />
-<p>这说明 B1 的 IPv4 映射已经生效。随后强制使用 IPv4 访问目标网站。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -4 --connect-timeout <span class="m">5</span> www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">curl: (28) Failed to connect to www.example.com port 80: Connection timed out
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这一步说明 B1 直接访问该 IPv4 地址时确实被阻断。为了确认 B1 的路由是否正确，又检查了到目标 IP 的路由。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B1-192.168.20.5 ip route get 93.184.216.34
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">93.184.216.34 via 192.168.20.99 dev eth0 src 192.168.20.5 uid 0
-</span></span><span class="line"><span class="cl">    cache
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这说明 B1 访问 <code>93.184.216.34</code> 时，会先把数据包交给 B 区网关 <code>192.168.20.99</code>。因此 B1 这一侧的 hosts 映射和路由配置是正确的。</p>
-<p>接着检查 B 区网关的 VPN 隧道、路由和 NAT 配置。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 ip -br a
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 ip route get 93.184.216.34
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 iptables -t nat -L POSTROUTING -v -n
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">lo               UNKNOWN        127.0.0.1/8 ::1/128
-</span></span><span class="line"><span class="cl">eth0@if149       UP             192.168.20.99/24
-</span></span><span class="line"><span class="cl">tun0             UNKNOWN        192.168.53.88/24 fe80::e7e:bc29:765b:ea28/64
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">93.184.216.34 dev tun0 src 192.168.53.88 uid 0
-</span></span><span class="line"><span class="cl">    cache
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
-</span></span><span class="line"><span class="cl"> pkts bytes target     prot opt in     out     source               destination
-</span></span><span class="line"><span class="cl">    5   300 MASQUERADE  all  --  *      tun0    0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">    0     0 MASQUERADE  all  --  *      tun0    0.0.0.0/0            0.0.0.0/0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>B 区网关上已经出现 <code>tun0</code>，地址为 <code>192.168.53.88/24</code>。同时，访问 <code>93.184.216.34</code> 的路由显示为 <code>dev tun0</code>，说明 B 区网关会把目标流量送入 VPN 隧道。NAT 表中也能看到 <code>MASQUERADE -o tun0</code>，并且计数已经增加，说明有数据包经过这条 NAT 规则。</p>
-<p>然后检查 A 区网关的隧道、出站路由、NAT 和 IP 转发状态。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 ip -br a
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 ip route get 93.184.216.34
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 iptables -t nat -L POSTROUTING -v -n
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 sysctl net.ipv4.ip_forward
-</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 sysctl net.ipv4.ip_forward
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">lo               UNKNOWN        127.0.0.1/8 ::1/128
-</span></span><span class="line"><span class="cl">eth0@if145       UP             10.8.0.99/24
-</span></span><span class="line"><span class="cl">tun0             UNKNOWN        192.168.53.99/24 fe80::8dd0:3cdd:93e0:1b53/64
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">93.184.216.34 via 10.8.0.1 dev eth0 src 10.8.0.99 uid 0
-</span></span><span class="line"><span class="cl">    cache
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
-</span></span><span class="line"><span class="cl"> pkts bytes target     prot opt in     out     source               destination
-</span></span><span class="line"><span class="cl">    6   360 MASQUERADE  all  --  *      eth0    0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">    0     0 MASQUERADE  all  --  *      eth0    0.0.0.0/0            0.0.0.0/0
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">net.ipv4.ip_forward = 1
-</span></span><span class="line"><span class="cl">net.ipv4.ip_forward = 1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>A 区网关上也已经出现 <code>tun0</code>，地址为 <code>192.168.53.99/24</code>。访问 <code>93.184.216.34</code> 时会从 <code>eth0</code> 出口转发，并且 A 区网关上的 NAT 规则 <code>MASQUERADE -o eth0</code> 也已经存在。两边的 <code>ip_forward</code> 都是 <code>1</code>，说明内核允许转发数据包。</p>
-<p>此时已经可以判断，VPN 隧道、路由、NAT 和内核转发配置基本都没有问题。接着通过抓包继续定位数据包到底走到了哪里。</p>
-<p>在 A 区网关上抓取 <code>tun0</code> 流量。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 tcpdump -n -i tun0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后在 B1 中重新访问目标网站。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B1-192.168.20.5 curl -4 --connect-timeout <span class="m">5</span> www.example.com
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>A 区网关 <code>tun0</code> 上抓到如下数据包</p>
-<img src="22.png" style="width: 90%;" />
-<p>这里的 <code>192.168.53.88 &gt; 93.184.216.34.80</code> 说明 B 区网关已经把 B1 的访问流量送进 VPN 隧道，并且该流量已经到达 A 区网关的 <code>tun0</code>。这证明链路的前半段是通的。</p>
-<p>随后检查 A 区网关是否把从 <code>tun0</code> 收到的流量继续从 <code>eth0</code> 发出去。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 tcpdump -n -i eth0 host 93.184.216.34
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>抓包结果如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">16:28:00.505808 IP 93.184.216.34.80 &gt; 10.8.0.99.50822: Flags [R.], seq 1894847891, ack 1583554073, win 64240, length 0
-</span></span><span class="line"><span class="cl">16:28:02.997721 IP 93.184.216.34.80 &gt; 10.8.0.99.50832: Flags [R.], seq 1850611110, ack 1170564849, win 64240, length 0
-</span></span><span class="line"><span class="cl">16:28:05.097269 IP 10.8.0.99.55316 &gt; 93.184.216.34.80: Flags [S], seq 1663839810, win 64240, options [mss 1460,sackOK,TS val 316201904 ecr 0,nop,wscale 10], length 0
-</span></span><span class="line"><span class="cl">16:28:06.147490 IP 10.8.0.99.55316 &gt; 93.184.216.34.80: Flags [S], seq 1663839810, win 64240, options [mss 1460,sackOK,TS val 316202954 ecr 0,nop,wscale 10], length 0
-</span></span><span class="line"><span class="cl">16:28:07.172382 IP 10.8.0.99.55316 &gt; 93.184.216.34.80: Flags [S], seq 1663839810, win 64240, options [mss 1460,sackOK,TS val 316203978 ecr 0,nop,wscale 10], length 0
-</span></span><span class="line"><span class="cl">16:28:07.592511 IP 10.8.0.99.55328 &gt; 93.184.216.34.80: Flags [S], seq 4033442293, win 64240, options [mss 1460,sackOK,TS val 316204399 ecr 0,nop,wscale 10], length 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里可以看到，A 区网关已经把数据包从 <code>eth0</code> 发出去了。源地址也已经被 NAT 成 <code>10.8.0.99</code>。也就是说链路已经走到了：</p>
-<p>B1 → B 区网关 → tun0 → SSH 隧道 → A 区网关 → eth0 → 目标 IP</p>
-<p>此时问题不再是 VPN 隧道没有建立，而是目标 IP <code>93.184.216.34</code> 本身没有稳定响应。</p>
-<p>为了验证这一点，直接在 A 区网关访问 <code>93.184.216.34</code>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 curl -4 --connect-timeout <span class="m">8</span> -v http://93.184.216.34
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">*   Trying 93.184.216.34:80...
-</span></span><span class="line"><span class="cl">* TCP_NODELAY set
-</span></span><span class="line"><span class="cl">* Connection timed out after 8000 milliseconds
-</span></span><span class="line"><span class="cl">* Closing connection 0
-</span></span><span class="line"><span class="cl">curl: (28) Connection timed out after 8000 milliseconds
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>再次测试时又出现连接拒绝。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sudo docker exec A-10.8.0.99 curl -4 -v http://93.184.216.34
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">*   Trying 93.184.216.34:80...
-</span></span><span class="line"><span class="cl">* TCP_NODELAY set
-</span></span><span class="line"><span class="cl">* connect to 93.184.216.34 port 80 failed: Connection refused
-</span></span><span class="line"><span class="cl">* Failed to connect to 93.184.216.34 port 80: Connection refused
-</span></span><span class="line"><span class="cl">curl: (7) Failed to connect to 93.184.216.34 port 80: Connection refused
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>但是直接访问 <code>www.example.com</code> 可以成功。</p>
+</div><p>首先在A网关尝试访问目标网站，输出中可以看到<code>www.example.com</code>被映射到了<code>104.20.23.154</code>。这个IP经常变化，因此虽然在VPN转发流程中A区网关并不参与DNS解析，还是需要执行下面的命令来找到有效的IP</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1134,35 +782,19 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 curl -4 --connect-timeout <span class="m">8</span> -v www.example.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输出中可以看到实际连接的不是 <code>93.184.216.34</code>，而是 Cloudflare 的新地址。</p>
+</div><img src="30.png" style="width: 70%;" />
+<p>重新在路由器容器建立B区网段对于目标网段的防火墙阻断</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">*   Trying 104.20.23.154:80...
-</span></span><span class="line"><span class="cl">* Connected to www.example.com (104.20.23.154) port 80 (#0)
-</span></span><span class="line"><span class="cl">&gt; GET / HTTP/1.1
-</span></span><span class="line"><span class="cl">&gt; Host: www.example.com
-</span></span><span class="line"><span class="cl">&gt; User-Agent: curl/7.68.0
-</span></span><span class="line"><span class="cl">&gt; Accept: */*
-</span></span><span class="line"><span class="cl">&lt; HTTP/1.1 200 OK
-</span></span><span class="line"><span class="cl">&lt; Server: cloudflare
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">&lt;!doctype html&gt;&lt;html lang=&#34;en&#34;&gt;&lt;head&gt;&lt;title&gt;Example Domain&lt;/title&gt;...
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it router-firewall /bin/bash
+</span></span><span class="line"><span class="cl">iptables -A FORWARD -s 192.168.20.0/24 -d 104.20.23.0/24 -j DROP
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这说明 <code>www.example.com</code> 当前已经不再稳定解析到旧的 <code>93.184.216.34</code>。实验说明中使用的旧 IP 现在不能稳定访问，因此继续把 B1 的 hosts 固定到 <code>93.184.216.34</code> 会导致隧道配置正确但访问仍然失败。</p>
-<p>于是将 B1 中的 hosts 映射改为当前可以访问的 IPv4 地址 <code>104.20.23.154</code>。</p>
+</div><p>将 B1 的本地映射改成 <code>104.20.23.154</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1179,28 +811,51 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">getent ahostsv4 www.example.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="24.png" style="width: 90%;" />
-<p>这说明 B1 的 IPv4 映射已经改到了新的可访问地址。</p>
-<p>不过这里还要注意，直接执行不带 <code>-4</code> 的 <code>curl www.example.com</code> 可能会绕到 IPv6 访问。</p>
+</div><img src="24.png" style="width: 100%;" />
+<p>直接访问目标网站被拒绝</p>
+<img src="19.png" style="width: 100%;" />
+<p>进入 B 区网关容器，用 SSH 的 <code>-w</code> 参数建立带 NAT 的三层 VPN 隧道。执行命令后终端会持续运行来维持 VPN 隧道</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B-192.168.20.99 /bin/bash
+</span></span><span class="line"><span class="cl">ssh -w 0:0 root@10.8.0.99 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;PermitLocalCommand=yes&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;LocalCommand= ip addr add 192.168.53.88/24 dev tun0 &amp;&amp; ip link set tun0 up \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; ip route add 104.20.23.0/24 dev tun0 \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o tun0&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -o <span class="s2">&#34;RemoteCommand=ip addr add 192.168.53.99/24 dev tun0 &amp;&amp; ip link set tun0 up \
+</span></span></span><span class="line"><span class="cl"><span class="s2">       &amp;&amp; iptables -t nat -A POSTROUTING -j MASQUERADE -o eth0&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>-w 0:0</code>：启用 SSH 的三层隧道功能，在 B 区网关和 A 区网关之间创建 <code>tun0</code> 虚拟网卡</li>
+<li><code>root@10.8.0.99</code>：SSH 连接到 A 区网关，也就是 VPN 隧道出口</li>
+<li><code>PermitLocalCommand=yes</code>：允许 SSH 连接建立后在本地自动执行命令</li>
+<li><code>LocalCommand=...</code>：在 B 区网关上配置 <code>tun0</code>，分配 <code>192.168.53.88/24</code>，启动网卡，并把目标网段的流量导入隧道</li>
+<li><code>RemoteCommand=...</code>：在 A 区网关上配置<code>tun0</code>，分配 <code>192.168.53.99/24</code>并启动网卡</li>
+</ul>
+<p>这里两侧都配置 NAT是为了解决返回路径问题。B 区网关上的NAT会把 B1 发出的流量伪装成 B 区网关的隧道地址 <code>192.168.53.88</code>，这样 A 区网关会将数据包从 <code>tun0</code> 送回 B 区网关，网关再根据NAT记录发给B1。A 区网关上的NAT会把从隧道转发出来的流量伪装成 A 区网关的出口地址 <code>10.8.0.99</code>，这样目标IP的返回包会先回到 A 区网关，再由 NAT 记录转发回隧道</p>
+<img src="17.png" style="width: 100%;" />
+<p>然后给 B1  添加到目标网段的规则，让它访问 <code>104.20.23.0/24</code> 时先交给 B 区网关</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl www.example.com
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 ip route add 104.20.23.0/24 via 192.168.20.99
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>输出如下。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">&lt;!doctype html&gt;&lt;html lang=&#34;en&#34;&gt;&lt;head&gt;&lt;title&gt;Example Domain&lt;/title&gt;...
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个成功不能直接作为 IPv4 VPN 绕过成功的证据。因为前面 <code>getent hosts www.example.com</code> 曾经显示过 IPv6 记录，不带 <code>-4</code> 的 <code>curl</code> 可能使用 IPv6 路径访问，这会绕过当前针对 IPv4 的防火墙规则。</p>
-<p>因此这部分实验最后应统一使用下面的命令作为验证依据。</p>
+</div><p>在 B1 容器中访问 <code>www.example.com</code>，直接 <code>curl www.example.com</code> 可能会变成 IPv6 访问，因此使用下面的命令验证</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -1209,40 +864,10 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -4 www.example.com
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="23.png" style="width: 90%;" />
-<p>排查结论是，VPN 隧道、B 区网关路由、A 区网关转发和 NAT 都已经正常工作。真正导致访问失败的原因是实验中原本使用的 <code>93.184.216.34</code> 已经不能稳定访问，而 <code>www.example.com</code> 当前解析到了 Cloudflare 的新地址。后续实验应先确认当前可访问的 IPv4 地址，再同步修改 hosts 映射、防火墙阻断规则和 VPN 路由规则，不能继续依赖旧的 <code>93.184.216.34</code>。</p>
+</div><img src="23.png" style="width: 100%;" />
+<p>B1 先把访问目标 IP 的数据包交给 B 区网关，B 区网关通过 NAT 把源地址改成隧道入口地址后送进<code>tun0</code>，SSH 隧道把数据包带到 A 区网关，A 区网关再通过 NAT 把源地址改成自己的出口地址然后从 <code>eth0</code> 发出。回包按照 NAT 记录逐层返回最终回到 B1，就这样实现了防火墙的越过</p>
 <h2 id="实验理解">实验理解
-</h2><p>这次实验最重要的点是理解防火墙的视角。防火墙不是天然知道用户真正想访问什么，它只能根据自己能看到的数据包字段做判断。</p>
-<p>直接访问时，防火墙可以看到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">10.8.0.x -&gt; 192.168.20.x
-</span></span><span class="line"><span class="cl">192.168.20.x -&gt; 93.184.216.x
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以规则可以按照源网段和目的网段进行拦截。</p>
-<p>建立 SSH 隧道后，防火墙看到的外层流量变成：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">10.8.0.99 -&gt; 192.168.20.99:22
-</span></span><span class="line"><span class="cl">192.168.20.99 -&gt; 10.8.0.99:22
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>内部真正访问的 Telnet、HTTP 或者某个 IP 网段，都被封装在 SSH 连接里面。除非防火墙能解密或识别隧道行为，否则它只能把这部分流量当成普通 SSH 流量处理。</p>
-<p>静态端口转发适合访问一个固定服务。</p>
-<p>动态 SOCKS 代理适合让应用程序通过代理访问多个目标。</p>
-<p>Layer 3 VPN 隧道更接近真正的 VPN，可以通过虚拟网卡和路由把一整段 IP 流量引入隧道。</p>
-<p>这也解释了 VPN 的基本工作方式。VPN 的本质不是单纯“换 IP”，而是创建一条新的虚拟网络路径。系统把部分流量送进虚拟网卡，VPN 程序再把这些流量封装进另一条连接，发送到远端节点解封装，最后由远端节点继续访问目标网络。</p>
-<p>这个实验对我来说比较应景。之前经常听到代理、隧道、VPN、NAT、路由这些词，但它们之间的关系一直比较散。这次通过 Docker 网络把它们连起来之后，能明显看到一条完整路径：防火墙负责拦截，路由决定流量走向，SSH 负责隧道封装，<code>tun0</code> 负责承载三层数据包，NAT 负责处理回包路径。</p>
-<p>学完以后再看常见的 VPN 或代理软件，就不会只停留在“开了以后能访问”这个层面，而是能理解它大概在系统网络栈里动了哪些东西。</p>
+</h2><p>在这个实验中，不管用什么方法绕过防火墙，最外层都是一个SSH隧道。整个过程中，防火墙负责拦截不允许的流量，路由决定数据包应该走普通网络还是进入隧道，SSH 作为隧道承载流量，<code>tun0</code> 是让流量进入隧道的虚拟网卡，NAT 负责处理返回路径。因此 VPN 本质是在原有网络外创建了一条新的虚拟网络路径</p>
 <div class="table-wrapper"><table>
 	<thead>
 			<tr>
@@ -1255,25 +880,171 @@ unicode: "f6d2"
 			<tr>
 					<td>直接 SSH</td>
 					<td>远程登录 B 网关</td>
-					<td>你在 B 网关上执行命令</td>
+					<td>在 B 网关上执行命令</td>
 			</tr>
 			<tr>
 					<td>SSH 端口转发</td>
-					<td>转发某个 TCP 端口</td>
+					<td>转发特定端口到固定地址</td>
 					<td>只能访问指定服务</td>
 			</tr>
 			<tr>
 					<td>SSH SOCKS</td>
-					<td>应用层代理</td>
-					<td>浏览器、curl 这类应用能走代理</td>
+					<td>应用层主动走代理</td>
+					<td>代理代替连接目标</td>
 			</tr>
 			<tr>
 					<td>SSH + <code>tun0</code></td>
-					<td>三层 VPN</td>
-					<td>系统级 IP 包都能按路由走隧道</td>
+					<td>新增虚拟网络</td>
+					<td>系统按照路由分流</td>
 			</tr>
 	</tbody>
 </table></div>
+<h2 id="附vpn-访问排查">附：VPN 访问排查
+</h2><blockquote>
+<p>在<a class="link" href="https://th4uma.github.io/post/firewall_vpn/#b%e5%8c%ba%e8%ae%bf%e9%97%ae%e5%a4%96%e9%83%a8"  target="_blank" rel="noopener"
+    >B区访问外部</a>部分，原本是将 <code>www.example.com</code> 绑定到 <code>93.184.216.34</code>，再添加防火墙规则来阻断 B 区主机访问这个IP，最后建立VPN隧道绕过防火墙，但发现VPN建立完成后依旧无法访问</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it B1-192.168.20.5 /bin/bash -c <span class="s1">&#39;echo &#34;93.184.216.34 www.example.com&#34; &gt;&gt; /etc/hosts&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></blockquote>
+<h3 id="域名解析">域名解析
+</h3><p>在B1容器检查域名解析，发现显示的是 IPv6 地址，说明这个域名的解析可能自动走了IPv6</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B1-192.168.20.5 getent hosts www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="20.png" style="width: 100%;" />
+<p>查询 IPv4 解析结果，可以看到确实绑定了 <code>93.184.216.34</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">getent ahostsv4 www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="21.png" style="width: 90%;" />
+<p>强制用 IPv4 访问目标，结果依旧失败</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -4 --connect-timeout <span class="m">5</span> www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="25.png" style="width: 100%;" />
+<h3 id="网关配置">网关配置
+</h3><p>检查 B 区网关的 VPN 隧道、路由、 NAT 配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 ip -br a
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 ip route get 93.184.216.34
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 iptables -t nat -L POSTROUTING -v -n
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>B 区网关上可以看到 <code>tun0</code>，地址是 <code>192.168.53.88/24</code>。访问 <code>93.184.216.34</code> 的路由是 <code>dev tun0</code>，说明网关会把目标流量送进 VPN 隧道。NAT 表中可以看到 <code>MASQUERADE -o tun0</code>，计数也增加了，说明有数据包经过 NAT 规则</p>
+<img src="26.png" style="width: 100%;" />
+<p>检查 A 区网关的隧道、出站路由、NAT 、IP 转发状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 ip -br a
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 ip route get 93.184.216.34
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 iptables -t nat -L POSTROUTING -v -n
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 sysctl net.ipv4.ip_forward
+</span></span><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B-192.168.20.99 sysctl net.ipv4.ip_forward
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A 区网关上可以看到 <code>tun0</code>，地址是 <code>192.168.53.99/24</code>。访问 <code>93.184.216.34</code> 的路由是 <code>via 10.8.0.1 dev eth0 src 10.8.0.99</code>，说明网关会把目标流量从 <code>eth0</code> 发出，并通过 <code>10.8.0.1</code> 访问外部网络。NAT 表中可以看到 <code>MASQUERADE -o eth0</code>，计数也增加了，说明有数据包经过 NAT 规则。两边的 <code>ip_forward</code> 也都是 <code>1</code>，说明配置部分没有问题</p>
+<img src="27.png" style="width: 90%;" />
+<h3 id="数据链路">数据链路
+</h3><p>之后抓包来查看数据包的路径，在 A 区网关上抓 <code>tun0</code> 的流量</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 tcpdump -n -i tun0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在 B1 中重新访问目标网站</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> B1-192.168.20.5 curl -4 --connect-timeout <span class="m">5</span> www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>抓到如下的流量，这里的 <code>192.168.53.88 &gt; 93.184.216.34.80</code> 说明 B 区网关已经把 B1 的访问流量送进 VPN 隧道并到达 A 区网关的 <code>tun0</code></p>
+<img src="22.png" style="width: 100%;" />
+<p>检查 A 区网关是否把收到的流量继续从 <code>eth0</code> 发出去</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> -it A-10.8.0.99 tcpdump -n -i eth0 host 93.184.216.34
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>抓到如下流量，可以看到源地址被 NAT 成 <code>10.8.0.99</code>，数据包也成功发出，说明传输路径是通的</p>
+<img src="28.png" style="width: 100%;" />
+<h3 id="目标ip">目标IP
+</h3><p>既然数据传输没有问题，那么问题很可能出在 A 区网关访问目标IP的时候。尝试直接访问 <code>93.184.216.34</code>，发现连接不上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 curl -4 --connect-timeout <span class="m">8</span> -v http://93.184.216.34
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="29.png" style="width: 100%;" />
+<p>直接访问 <code>www.example.com</code> 却成功了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker <span class="nb">exec</span> A-10.8.0.99 curl -4 --connect-timeout <span class="m">8</span> -v www.example.com
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="30.png" style="width: 70%;" />
+<p>输出中可以看到实际连接的是 <code>104.20.23.154</code>，而下面的这段信息说明请求经过 Cloudflare</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Server: cloudflare
+</span></span><span class="line"><span class="cl">cf-cache-status: HIT
+</span></span><span class="line"><span class="cl">CF-RAY: a0c2ec3ca90216f0-FRA
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以得出 <code>www.example.com</code> 由 CDN 网络提供访问，域名解析可能返回不同的公网 IP。而之前只配置了 <code>93.184.216.0/24</code>的 VPN 隧道，当域名解析到新的IP地址时，原本的规则就无法匹配IP了，导致表现出来的结果是无法访问</p>
 
 </section>
 
@@ -1655,7 +1426,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">133.30</span> 
+      <span class="number-highlight">132.18</span> 
       k 字
   </div>
   <div>
