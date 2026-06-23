@@ -431,7 +431,6 @@ unicode: "f6d2"
         </li>
       </ol>
     </li>
-    <li><a href="#待整理">待整理</a></li>
   </ol>
 </nav>
         </div>
@@ -2875,10 +2874,10 @@ unicode: "f6d2"
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">// 放在函数声明区域
-</span></span><span class="line"><span class="cl">extern void mythread_init();
-</span></span><span class="line"><span class="cl">// 放在内核启动流程中
-</span></span><span class="line"><span class="cl">mythread_init();
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 放在函数声明区域
+</span></span></span><span class="line"><span class="cl"><span class="k">extern</span> <span class="kt">void</span> <span class="nf">mythread_init</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 放在内核启动流程中
+</span></span></span><span class="line"><span class="cl"><span class="nf">mythread_init</span><span class="p">();</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>重新编译运行，可以看到启动过程中就输出了密码。这是因为这条输出是内核线程自己在内核态中用 <code>kprintf</code> 打印出来的，不依赖用户态程序触发。系统启动后，只要线程被创建，而且文件系统已经初始化完成，它就能自己执行读取文件的任务</p>
@@ -4229,106 +4228,7 @@ unicode: "f6d2"
 </div>
 </div><p>shell 会先创建一个管道，再创建两个子进程。一个子进程执行 <code>ls</code>，另一个子进程执行 <code>grep test</code>。通过 <code>dup</code> 把 <code>ls</code> 的标准输出改到管道写端，把 <code>grep</code> 的标准输入改到管道读端。</p>
 <p>这样 <code>ls</code> 输出的内容不会直接打印到屏幕，而是进入管道。<code>grep</code> 读取的内容也不是键盘输入，而是来自管道。最终就实现了前一个程序的输出作为后一个程序的输入。</p>
-<h2 id="待整理">待整理
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="c1">#### ## 一、 实验基础与调试技术
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“环境怎么搭、代码怎么跑、出了错怎么查”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab01</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">实验环境概要</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab02</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">调试与运行</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab03</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">调试实战</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab06</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="n">Backtrace</span><span class="err">（通过栈追踪辅助调试）</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">#### ## 二、 用户态、内核态与系统调用
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“特权级切换与软中断机制”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab04</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">系统调用入门</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab05</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">系统调用综合</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab17</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">用户态上下文</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">#### ## 三、 内存管理与程序加载
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“程序在内存中如何分布、如何被读入内存运行”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab07</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">内存布局打印</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab08</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">程序加载</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">#### ## 四、 进程、线程与处理器调度
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“多任务并发、时钟中断以及如何切分</span><span class="w"> </span><span class="n">CPU</span><span class="w"> </span><span class="err">时间”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab11</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">内核线程</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab09</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">谦让的美德（多为</span><span class="w"> </span><span class="o">`</span><span class="n">yield</span><span class="o">`</span><span class="w"> </span><span class="err">让出</span><span class="w"> </span><span class="n">CPU</span><span class="w"> </span><span class="err">的调度实现）</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab10</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">进程时间片</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab16</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">时钟中断</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">#### ## 五、 文件系统与块设备缓存
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“持久化数据如何组织、磁盘数据如何高效读写”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab13</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="n">FAT32下的文件检测</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab14</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="n">FAT32簇链</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab15</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">磁盘块缓存</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="c1">#### ## 六、 进程间通信（IPC）
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">&gt;</span><span class="w"> </span><span class="err">解决“不同进程之间如何传递数据”的问题。</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Lab12</span><span class="p">.</span><span class="o">**</span><span class="w"> </span><span class="err">管道通信</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div>
+
 </section>
 
 
@@ -4605,7 +4505,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">132.18</span> 
+      <span class="number-highlight">131.73</span> 
       k 字
   </div>
   <div>
