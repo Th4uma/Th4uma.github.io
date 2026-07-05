@@ -2745,8 +2745,7 @@ unicode: "f6d2"
 <img src="40.png" style="width: 60%;" />
 <h2 id="进程与线程">进程与线程
 </h2><h3 id="内核线程">内核线程
-</h3><p>内核线程就是运行在内核里的特殊进程。普通用户进程在需要内核服务时，要通过 <code>ecall</code> 触发系统调用，然后从用户态陷入内核态，执行完之后再返回用户态，而内核线程从创建开始就在内核态运行</p>
-<p>虽然它叫线程，但和普通进程一样会被调度器调度，也有自己的 PCB 和内核栈。区别在于普通用户进程运行的是用户程序，而内核线程运行的是内核里的函数。类似内核自己创建出来的后台任务，用来完成一些持续的维护工作，比如文件系统缓存写回、脏块同步、资源回收这类</p>
+</h3><p>内核线程就是运行在内核里的特殊进程，从创建开始就在内核态运行。虽然它叫线程，但和普通进程一样会被调度器调度，也有自己的 PCB 和内核栈。区别在于普通用户进程运行的是用户程序，而内核线程运行的是内核里的函数。类似内核自己创建出来的后台任务，用来完成一些持续的维护工作</p>
 <h4 id="读取密码并打印">读取密码并打印
 </h4><blockquote>
 <p>这部分的目标是创建一个内核线程，让它在文件系统初始化完成后，读取文件镜像里的 <code>/password</code> 文件并打印</p>
@@ -3937,11 +3936,11 @@ unicode: "f6d2"
 </div><p>最终改成了在检索函数加打印</p>
 <h2 id="进程间通信1111">进程间通信1111
 </h2><h3 id="管道通信">管道通信
-</h3><p>管道可以理解成内核提供的一块缓冲区，用来让两个进程之间传递数据。普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量，所以需要通过内核提供的通信机制来交换数据。</p>
-<p>管道有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据。因为一个管道更适合单向传输，所以这次实验中要创建两个管道，一个负责父进程传给子进程，一个负责子进程传回父进程。</p>
-<p>这次实验要做的事情是父进程从标准输入读取一串长度为 16 的字母序列，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后由父进程输出。</p>
+</h3><p>普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量。而管道就是内核提供的一块缓冲区，用来让两个进程之间传递数据。管道是单向传输，有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据</p>
+<p>这里要做的是父进程从读取一个字符串，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后父进程进行输出</p>
 <h4 id="函数实现-4">函数实现
-</h4><p>在 <code>user/src</code> 下新建用户程序，比如 <code>pipe_test.c</code>：</p>
+</h4><p>首先在<code>src/fs/pipe.c</code>中查看创建管道的函数<code>pipe</code>的实现</p>
+<p>在 <code>user/src</code> 下新建 <code>pipe_test.c</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -3999,6 +3998,8 @@ unicode: "f6d2"
 </span><span class="lnt">53
 </span><span class="lnt">54
 </span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;unistd.h&#34;</span><span class="cp">
@@ -4008,11 +4009,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="cp">#define LEN 16
 </span></span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">p2c</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 数组下标0是读端，下标1是写端
+</span></span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">p2c</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">c2p</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">LEN</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">pipe</span><span class="p">(</span><span class="n">p2c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 创建两个管道
+</span></span></span><span class="line"><span class="cl">    <span class="nf">pipe</span><span class="p">(</span><span class="n">p2c</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">pipe</span><span class="p">(</span><span class="n">c2p</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">pid</span> <span class="o">=</span> <span class="nf">fork</span><span class="p">();</span>
@@ -4058,25 +4061,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里先创建了两个管道：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">p2c</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">c2p</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nf">pipe</span><span class="p">(</span><span class="n">p2c</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nf">pipe</span><span class="p">(</span><span class="n">c2p</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>p2c</code> 表示 parent to child，用来让父进程给子进程发数据。<code>c2p</code> 表示 child to parent，用来让子进程把处理后的数据传回父进程。</p>
-<p><code>pipe</code> 创建完成后，数组下标 <code>0</code> 是读端，下标 <code>1</code> 是写端：</p>
+</div><p><code>pipe</code> 创建完成后，数组下标 <code>0</code> 是读端，下标 <code>1</code> 是写端：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -4505,7 +4490,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">131.73</span> 
+      <span class="number-highlight">138.10</span> 
       k 字
   </div>
   <div>

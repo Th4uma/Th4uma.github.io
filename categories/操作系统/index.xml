@@ -2249,8 +2249,7 @@
 &lt;img src=&#34;40.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;h2 id=&#34;进程与线程&#34;&gt;进程与线程
 &lt;/h2&gt;&lt;h3 id=&#34;内核线程&#34;&gt;内核线程
-&lt;/h3&gt;&lt;p&gt;内核线程就是运行在内核里的特殊进程。普通用户进程在需要内核服务时，要通过 &lt;code&gt;ecall&lt;/code&gt; 触发系统调用，然后从用户态陷入内核态，执行完之后再返回用户态，而内核线程从创建开始就在内核态运行&lt;/p&gt;
-&lt;p&gt;虽然它叫线程，但和普通进程一样会被调度器调度，也有自己的 PCB 和内核栈。区别在于普通用户进程运行的是用户程序，而内核线程运行的是内核里的函数。类似内核自己创建出来的后台任务，用来完成一些持续的维护工作，比如文件系统缓存写回、脏块同步、资源回收这类&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;内核线程就是运行在内核里的特殊进程，从创建开始就在内核态运行。虽然它叫线程，但和普通进程一样会被调度器调度，也有自己的 PCB 和内核栈。区别在于普通用户进程运行的是用户程序，而内核线程运行的是内核里的函数。类似内核自己创建出来的后台任务，用来完成一些持续的维护工作&lt;/p&gt;
 &lt;h4 id=&#34;读取密码并打印&#34;&gt;读取密码并打印
 &lt;/h4&gt;&lt;blockquote&gt;
 &lt;p&gt;这部分的目标是创建一个内核线程，让它在文件系统初始化完成后，读取文件镜像里的 &lt;code&gt;/password&lt;/code&gt; 文件并打印&lt;/p&gt;
@@ -3441,11 +3440,11 @@
 &lt;/div&gt;&lt;p&gt;最终改成了在检索函数加打印&lt;/p&gt;
 &lt;h2 id=&#34;进程间通信1111&#34;&gt;进程间通信1111
 &lt;/h2&gt;&lt;h3 id=&#34;管道通信&#34;&gt;管道通信
-&lt;/h3&gt;&lt;p&gt;管道可以理解成内核提供的一块缓冲区，用来让两个进程之间传递数据。普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量，所以需要通过内核提供的通信机制来交换数据。&lt;/p&gt;
-&lt;p&gt;管道有读端和写端，进程可以通过 &lt;code&gt;write&lt;/code&gt; 往写端写入数据，通过 &lt;code&gt;read&lt;/code&gt; 从读端读取数据。因为一个管道更适合单向传输，所以这次实验中要创建两个管道，一个负责父进程传给子进程，一个负责子进程传回父进程。&lt;/p&gt;
-&lt;p&gt;这次实验要做的事情是父进程从标准输入读取一串长度为 16 的字母序列，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后由父进程输出。&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量。而管道就是内核提供的一块缓冲区，用来让两个进程之间传递数据。管道是单向传输，有读端和写端，进程可以通过 &lt;code&gt;write&lt;/code&gt; 往写端写入数据，通过 &lt;code&gt;read&lt;/code&gt; 从读端读取数据&lt;/p&gt;
+&lt;p&gt;这里要做的是父进程从读取一个字符串，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后父进程进行输出&lt;/p&gt;
 &lt;h4 id=&#34;函数实现-4&#34;&gt;函数实现
-&lt;/h4&gt;&lt;p&gt;在 &lt;code&gt;user/src&lt;/code&gt; 下新建用户程序，比如 &lt;code&gt;pipe_test.c&lt;/code&gt;：&lt;/p&gt;
+&lt;/h4&gt;&lt;p&gt;首先在&lt;code&gt;src/fs/pipe.c&lt;/code&gt;中查看创建管道的函数&lt;code&gt;pipe&lt;/code&gt;的实现&lt;/p&gt;
+&lt;p&gt;在 &lt;code&gt;user/src&lt;/code&gt; 下新建 &lt;code&gt;pipe_test.c&lt;/code&gt;&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -3503,6 +3502,8 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;53
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;54
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;55
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;56
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;57
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;#34;unistd.h&amp;#34;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -3512,11 +3513,13 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define LEN 16
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 数组下标0是读端，下标1是写端
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c2p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;buf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LEN&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;pipe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// 创建两个管道
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;pipe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;pipe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c2p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
@@ -3562,25 +3565,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这里先创建了两个管道：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c2p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;pipe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p2c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;pipe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c2p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;code&gt;p2c&lt;/code&gt; 表示 parent to child，用来让父进程给子进程发数据。&lt;code&gt;c2p&lt;/code&gt; 表示 child to parent，用来让子进程把处理后的数据传回父进程。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;pipe&lt;/code&gt; 创建完成后，数组下标 &lt;code&gt;0&lt;/code&gt; 是读端，下标 &lt;code&gt;1&lt;/code&gt; 是写端：&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;pipe&lt;/code&gt; 创建完成后，数组下标 &lt;code&gt;0&lt;/code&gt; 是读端，下标 &lt;code&gt;1&lt;/code&gt; 是写端：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
