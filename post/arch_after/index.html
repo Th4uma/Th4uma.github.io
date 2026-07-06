@@ -299,6 +299,7 @@ unicode: "f6d2"
         </li>
         <li><a href="#git">Git</a></li>
         <li><a href="#科学上网">科学上网</a></li>
+        <li><a href="#续航优化">续航优化</a></li>
       </ol>
     </li>
     <li><a href="#kde美化">KDE美化</a>
@@ -873,6 +874,63 @@ unicode: "f6d2"
 </div>
 </div><p>然后搜索quic，在结果中将<code>Experimental QUIC protocol</code> 设置为 <code>Disabled</code>，重启浏览器生效</p>
 <img src="31.png" style="width: 90%;" />
+<h3 id="续航优化">续航优化
+</h3><p>由于这台笔记本的用途基本是带出去上课，电池管理便极为重要，而arch默认的电源优化可以说几乎为0，仅仅4小时左右就没电了，因此我对电源进行了优化</p>
+<p>首先是在系统自带的电源管理中进行简单的设置。这里容易被忽略的一点是桌面的小组件，可以减少小组件数量或者每个小组件的刷新时间来省电</p>
+<img src="32.png" style="width: 100%;" />
+<p>更深入的电源管理我使用的是TLP，首先安装 <code>tlp</code>、<code>tlp-pd</code>、<code>tlp-rdw</code>。<code>tlp</code> 是核心省电服务，<code>tlp-pd</code> 用来让桌面环境的电源模式切换器通过 TLP 后端工作，<code>tlp-rdw</code> 是无线设备切换相关组件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -Syu
+</span></span><span class="line"><span class="cl">sudo pacman -S tlp tlp-pd tlp-rdw
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>启用服务：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo systemctl enable --now tlp.service
+</span></span><span class="line"><span class="cl">sudo systemctl enable --now tlp-pd.service
+</span></span><span class="line"><span class="cl">sudo systemctl enable NetworkManager-dispatcher.service
+</span></span><span class="line"><span class="cl">sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>含义是：</p>
+<div class="table-wrapper"><table>
+	<thead>
+			<tr>
+					<th>命令</th>
+					<th>含义</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>tlp.service</code></td>
+					<td>TLP 主服务，负责启动后应用电源策略</td>
+			</tr>
+			<tr>
+					<td><code>tlp-pd.service</code></td>
+					<td>TLP Profiles Daemon，让桌面环境显示并切换 TLP 的性能、省电模式</td>
+			</tr>
+			<tr>
+					<td><code>NetworkManager-dispatcher.service</code></td>
+					<td>给 <code>tlp-rdw</code> 用，处理 Wi-Fi、蓝牙、WWAN 这类无线设备事件</td>
+			</tr>
+			<tr>
+					<td><code>mask systemd-rfkill</code></td>
+					<td>避免 systemd 自己保存和恢复无线开关状态，和 TLP 的无线设备切换逻辑打架</td>
+			</tr>
+	</tbody>
+</table></div>
 <h2 id="kde美化">KDE美化
 </h2><h3 id="分辨率">分辨率
 </h3><p>先生成 modeline</p>
@@ -927,8 +985,11 @@ unicode: "f6d2"
 <img src="23.png" style="width: 100%;" />
 <p>尝试降低分辨率到120hz，依旧报错</p>
 <img src="22.png" style="width: 100%;" />
-<p>最后查看系统识别的屏幕分辨率，发现是1k，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究</p>
+<p>最后查看系统识别的屏幕分辨率，发现是1K，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究</p>
 <img src="24.png" style="width: 100%;" />
+<blockquote>
+<p>几个月后我才发现原来是自己记错了，屏幕分辨率实际上就是1K&hellip;</p>
+</blockquote>
 <h3 id="背光">背光
 </h3><blockquote>
 <p>突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题</p>
@@ -1364,7 +1425,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">138.10</span> 
+      <span class="number-highlight">138.74</span> 
       k 字
   </div>
   <div>

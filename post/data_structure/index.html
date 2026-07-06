@@ -319,6 +319,7 @@ unicode: "f6d2"
             <li><a href="#p1996-约瑟夫问题">P1996 约瑟夫问题</a></li>
             <li><a href="#p1160-队列安排-1">P1160 队列安排</a></li>
             <li><a href="#b3630-排队顺序">B3630 排队顺序</a></li>
+            <li><a href="#输入有序链表">输入有序链表</a></li>
           </ol>
         </li>
       </ol>
@@ -374,7 +375,7 @@ unicode: "f6d2"
             <li><a href="#dfs">DFS</a></li>
             <li><a href="#邻接表">邻接表</a></li>
             <li><a href="#树的质心">树的质心</a></li>
-            <li><a href="#二叉搜索树">二叉搜索树</a></li>
+            <li><a href="#二叉排序树">二叉排序树</a></li>
           </ol>
         </li>
         <li><a href="#题目练习-4">题目练习</a>
@@ -442,6 +443,7 @@ unicode: "f6d2"
         <li><a href="#after">after</a></li>
         <li><a href="#week2">week2</a></li>
         <li><a href="#week4">week4</a></li>
+        <li><a href="#short1">short1</a></li>
       </ol>
     </li>
   </ol>
@@ -2242,6 +2244,100 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h4 id="输入有序链表">输入有序链表
+</h4><p>课程作业，输入一个链表并实时进行排序，没什么难度</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">node</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">struct</span> <span class="n">node</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">node</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">cr</span><span class="p">(</span><span class="n">node</span> <span class="o">*</span><span class="n">head</span><span class="p">,</span> <span class="kt">int</span> <span class="n">a</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">node</span> <span class="o">*</span><span class="n">nw</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span> <span class="o">*</span><span class="p">)</span><span class="nf">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nw</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">node</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">head</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">&lt;</span> <span class="n">nw</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nw</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">nw</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">node</span> <span class="o">*</span><span class="n">head</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span> <span class="o">*</span><span class="p">)</span><span class="nf">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">node</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">head</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">cr</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">node</span> <span class="o">*</span><span class="n">ans</span> <span class="o">=</span> <span class="n">head</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;有序链表：&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d &#34;</span><span class="p">,</span> <span class="n">ans</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ans</span> <span class="o">=</span> <span class="n">ans</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
 </div><h2 id="栈">栈
 </h2><h3 id="基础知识-2">基础知识
 </h3><h4 id="定义-2">定义
@@ -3892,8 +3988,8 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="二叉搜索树">二叉搜索树
-</h4><p>二叉搜索树的定义就是对于任何一个节点，左子树的所有节点值都小于它，右子树的所有节点值都大于它</p>
+</div><h4 id="二叉排序树">二叉排序树
+</h4><p>又名二叉搜索树，定义就是对于任何一个节点，左子树的所有节点值都小于它，右子树的所有节点值都大于它</p>
 <p>首先定义一个结构体，里面有5个变量，还要定义两个全局变量</p>
 <ul>
 <li>
@@ -4858,7 +4954,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="p5076-深基16例7普通二叉树简化版">P5076 【深基16.例7】普通二叉树（简化版）
-</h4><p>二叉搜索树的模板，写的焦头烂额，基本流程是大模型给我讲一遍，自己写出来稀烂的代码，对着题解进行优化，然后丢给大模型找错误再照着修改。从逻辑到边界到判断问题全出了无数遍，最后代码写出来了，逻辑也懂，但再让我写一次就写不出来了。挫败感最强的一题</p>
+</h4><p>二叉排序树的模板，写的焦头烂额，基本流程是大模型给我讲一遍，自己写出来稀烂的代码，对着题解进行优化，然后丢给大模型找错误再照着修改。从逻辑到边界到判断问题全出了无数遍，最后代码写出来了，逻辑也懂，但再让我写一次就写不出来了。挫败感最强的一题</p>
 <blockquote>
 <p>第一次经过大模型指点我写出来的代码是这样，定义一个总节点数变量ct,找到空节点就赋值并ct加一，然后设置为父节点的左或右子节点</p>
 <p>问题来了，我这种写法会将树变成一个链表，解决方法是最后加上一行<code>return sy;</code>，也就是返回父节点，这样下次添加就会从根节点开始遍历</p>
@@ -6362,6 +6458,8 @@ unicode: "f6d2"
 </h3><p>这周零散的学图，还在算法学习过程中，因此需要大模型给一些参考和模板。我上课时并不听课，而是自己在下面写代码，可当被叫上去画线索树时我完全不会，问其他问题也经常答不上来，不禁让我对自己产生了一丝怀疑</p>
 <h3 id="week4">week4
 </h3><p>回校一个月，学习速度非常慢，期末前学不完了，目前剩下一点点图和排序以及之后的章节，预计短学期结束前可以完成</p>
+<h3 id="short1">short1
+</h3><p>短学期正式开始</p>
 
 </section>
 
@@ -6639,7 +6737,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">138.10</span> 
+      <span class="number-highlight">138.74</span> 
       k 字
   </div>
   <div>

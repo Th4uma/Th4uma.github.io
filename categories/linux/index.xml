@@ -950,6 +950,63 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;然后搜索quic，在结果中将&lt;code&gt;Experimental QUIC protocol&lt;/code&gt; 设置为 &lt;code&gt;Disabled&lt;/code&gt;，重启浏览器生效&lt;/p&gt;
 &lt;img src=&#34;31.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h3 id=&#34;续航优化&#34;&gt;续航优化
+&lt;/h3&gt;&lt;p&gt;由于这台笔记本的用途基本是带出去上课，电池管理便极为重要，而arch默认的电源优化可以说几乎为0，仅仅4小时左右就没电了，因此我对电源进行了优化&lt;/p&gt;
+&lt;p&gt;首先是在系统自带的电源管理中进行简单的设置。这里容易被忽略的一点是桌面的小组件，可以减少小组件数量或者每个小组件的刷新时间来省电&lt;/p&gt;
+&lt;img src=&#34;32.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;更深入的电源管理我使用的是TLP，首先安装 &lt;code&gt;tlp&lt;/code&gt;、&lt;code&gt;tlp-pd&lt;/code&gt;、&lt;code&gt;tlp-rdw&lt;/code&gt;。&lt;code&gt;tlp&lt;/code&gt; 是核心省电服务，&lt;code&gt;tlp-pd&lt;/code&gt; 用来让桌面环境的电源模式切换器通过 TLP 后端工作，&lt;code&gt;tlp-rdw&lt;/code&gt; 是无线设备切换相关组件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -Syu
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo pacman -S tlp tlp-pd tlp-rdw
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;启用服务：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl enable --now tlp.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl enable --now tlp-pd.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl enable NetworkManager-dispatcher.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义是：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;命令&lt;/th&gt;
+					&lt;th&gt;含义&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;tlp.service&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;TLP 主服务，负责启动后应用电源策略&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;tlp-pd.service&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;TLP Profiles Daemon，让桌面环境显示并切换 TLP 的性能、省电模式&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;NetworkManager-dispatcher.service&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;给 &lt;code&gt;tlp-rdw&lt;/code&gt; 用，处理 Wi-Fi、蓝牙、WWAN 这类无线设备事件&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;mask systemd-rfkill&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;避免 systemd 自己保存和恢复无线开关状态，和 TLP 的无线设备切换逻辑打架&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
 &lt;h2 id=&#34;kde美化&#34;&gt;KDE美化
 &lt;/h2&gt;&lt;h3 id=&#34;分辨率&#34;&gt;分辨率
 &lt;/h3&gt;&lt;p&gt;先生成 modeline&lt;/p&gt;
@@ -1004,8 +1061,11 @@
 &lt;img src=&#34;23.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;p&gt;尝试降低分辨率到120hz，依旧报错&lt;/p&gt;
 &lt;img src=&#34;22.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;最后查看系统识别的屏幕分辨率，发现是1k，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究&lt;/p&gt;
+&lt;p&gt;最后查看系统识别的屏幕分辨率，发现是1K，也就是说不是设置问题，是系统根本没有识别出来我屏幕真正的分辨率。至于原因，可能涉及到显卡驱动等多种问题。我觉得麻烦，而且可能搞乱系统，就没有继续探究下去了，也许之后忍受不了这个分辨率的时候会重新研究&lt;/p&gt;
 &lt;img src=&#34;24.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;几个月后我才发现原来是自己记错了，屏幕分辨率实际上就是1K&amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h3 id=&#34;背光&#34;&gt;背光
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;突然发现我的界面非常暗，大概是windows的百分之八十亮度，但控制面板的亮度已经设置成百分百了，估计是亮度映射有问题&lt;/p&gt;
