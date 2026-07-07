@@ -398,7 +398,7 @@ unicode: "f6d2"
         <li><a href="#踩坑记录-3">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#文件系统1111">文件系统1111</a>
+    <li><a href="#文件系统">文件系统</a>
       <ol>
         <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
           <ol>
@@ -406,13 +406,13 @@ unicode: "f6d2"
             <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
-        <li><a href="#fat32簇链">FAT32簇链</a>
+        <li><a href="#fat32簇链1111">FAT32簇链1111</a>
           <ol>
             <li><a href="#函数实现-2">函数实现</a></li>
             <li><a href="#验证-4">验证</a></li>
           </ol>
         </li>
-        <li><a href="#磁盘块缓存">磁盘块缓存</a>
+        <li><a href="#磁盘块缓存1111">磁盘块缓存1111</a>
           <ol>
             <li><a href="#函数实现-3">函数实现</a></li>
             <li><a href="#验证-5">验证</a></li>
@@ -425,6 +425,7 @@ unicode: "f6d2"
       <ol>
         <li><a href="#管道通信">管道通信</a>
           <ol>
+            <li><a href="#原理-2">原理</a></li>
             <li><a href="#函数实现-4">函数实现</a></li>
             <li><a href="#验证-6">验证</a></li>
           </ol>
@@ -3409,12 +3410,12 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="49.png" style="width: 100%;" />
-<h2 id="文件系统1111">文件系统1111
+<h2 id="文件系统">文件系统
 </h2><h3 id="fat32下的文件检索">FAT32下的文件检索
-</h3><p>平时打开文件时，表面上只是传入了一个文件名，但文件系统内部需要根据这个名字在目录中找到对应的目录项。FAT32 的目录项比较特殊，真实结构里会涉及短文件名和长文件名，不过当前框架已经把这些细节封装到了目录遍历函数里。</p>
-<p>这里真正要处理的是逻辑层面的文件查找：遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置。</p>
+</h3><p>平时打开文件时，会传入一个文件名，比如 <code>test.txt</code>。文件系统会根据这个名字在目录中找到对应的目录项，之后再读取内容。FAT32 的目录项比较特殊，会涉及短文件名和长文件名，这里的框架已经把这些细节封装到函数里，所以只需要处理文件查找的逻辑即可</p>
+<p>具体方法是遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置</p>
 <h4 id="函数实现-1">函数实现
-</h4><p>入口函数是 <code>fat_dirlookup</code>：</p>
+</h4><p>首先查看入口函数，作用是在目录簇 <code>dir_clus</code> 里查找文件名 <code>cname</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -3429,9 +3430,35 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里 <code>DEFINE_LOOKUP_HELPER</code> 会创建一个辅助结构体，用来保存查找过程中的状态。<code>cname</code> 是要查找的目标文件名，<code>ret</code> 用来保存找到的目录项，<code>offset</code> 用来保存目录项在目录中的偏移。</p>
-<p><code>fat_travs_logical_dir</code> 负责遍历目录。它每遍历到一个逻辑目录项，就会调用一次 <code>lookup_handler</code>。所以查找逻辑不需要自己手动遍历目录，只需要在 <code>lookup_handler</code> 中判断当前文件名是不是目标文件名。</p>
-<p>打开 <code>src/fs/fat32.c</code>，找到 <code>lookup_handler</code>，补全代码：</p>
+</div><p>其中<code>DEFINE_LOOKUP_HELPER</code> 会创建一个结构体，用来保存查找过程中的状态。<code>cname</code> 是要查找的目标文件名，<code>ret</code> 用来保存找到的目录项，<code>offset</code> 用来保存目录项在目录中的偏移。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">typedef</span> <span class="n">struct</span> <span class="n">lookup_helper</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">uint8_t</span> <span class="n">checksum</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">uint32_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">lookup_helper_t</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>fat_travs_logical_dir</code> 负责遍历目录。它每遍历到一个逻辑目录项，就会调用一次 <code>lookup_handler</code>。所以查找逻辑不需要自己手动遍历目录，只需要在 <code>lookup_handler</code> 中判断当前文件名是不是目标文件名</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">FR_t fat_travs_logical_dir(fat32_t *fat, uint32_t dir_clus, uint32_t dir_offset, travs_handler_t handler, void *state)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>打开 <code>src/fs/fat32.c</code>，写入<code>lookup_handler</code>的逻辑</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -3455,10 +3482,12 @@ unicode: "f6d2"
 </span><span class="lnt">19
 </span><span class="lnt">20
 </span><span class="lnt">21
+</span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">FR_t</span> <span class="nf">lookup_handler</span><span class="p">(</span><span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">__helper</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 把传入的 `__helper` 转回 `lookup_helper_t *`
+</span></span></span><span class="line"><span class="cl">    <span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="c1">//临时打印，正式实现可以删除
 </span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: target=[%s], current=[%s], offset=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">            <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
@@ -3472,21 +3501,12 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FR_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 查找成功
+</span></span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FR_OK</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FR_CONTINUE</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里先把传入的 <code>__helper</code> 转回 <code>lookup_helper_t *</code>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>因为 <code>fat_travs_logical_dir</code> 的状态参数是 <code>void *</code>，它本身不知道传进来的具体结构，只负责原样传给 handler。真正使用时需要自己转回对应类型。</p>
@@ -3555,7 +3575,7 @@ unicode: "f6d2"
 </div><p>可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>，外层遍历停止，系统继续执行后续加载流程。</p>
 <p>最后系统正常进入 shell：</p>
 <img src="54.png" style="width: 70%;" />
-<h3 id="fat32簇链">FAT32簇链
+<h3 id="fat32簇链1111">FAT32簇链1111
 </h3><p>FAT32 是一种显式链式分配文件系统。文件内容不一定连续存放在磁盘上，而是按簇组织。每个簇在 FAT 表中都有一个对应表项，表项里保存的是下一个簇号。只要从文件起始簇开始，不断读取 FAT 表中的后继簇号，就可以沿着簇链找到整个文件的数据。</p>
 <p>这里要补全的是 <code>fat_next_cluster</code>，它的作用是给定当前簇号 <code>cclus</code>，返回它在 FAT 表中记录的下一个簇号。</p>
 <h4 id="函数实现-2">函数实现
@@ -3688,7 +3708,7 @@ unicode: "f6d2"
 </div>
 </div><p>这说明系统在加载用户程序时已经正常使用了簇链追踪功能。如果后继簇号读取错误，跨簇文件就无法被完整读出，系统也可能无法正常启动到 shell。</p>
 <img src="55.png" style="width: 40%;" />
-<h3 id="磁盘块缓存">磁盘块缓存
+<h3 id="磁盘块缓存1111">磁盘块缓存1111
 </h3><p>磁盘访问速度比内存慢很多，所以文件系统不会每次都直接访问磁盘，而是会在内存中维护一组块缓存。读取磁盘块时，先在缓存里查找。如果目标块已经存在，就直接返回缓存；如果不存在，再选择一个空闲缓存块回收，用它去缓存新的磁盘块。</p>
 <p>这里使用 LRU 链表管理缓存块。链表头部表示最近使用过的缓存，链表尾部表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头部。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收。</p>
 <h4 id="函数实现-3">函数实现
@@ -3873,7 +3893,9 @@ unicode: "f6d2"
 <p>验证完成后删除这些 <code>kprintf</code>，避免文件系统访问时输出过多调试信息。</p>
 <img src="56.png" style="width: 100%;" />
 <h3 id="踩坑记录-4">踩坑记录
-</h3><p>测试时候输出open /password failed</p>
+</h3><blockquote>
+<p>测试时候输出<code>open /password failed</code></p>
+</blockquote>
 <p>在 <code>user/src</code> 下新建 <code>test_lookup.c</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3938,18 +3960,22 @@ unicode: "f6d2"
 </h2><h3 id="管道通信">管道通信
 </h3><p>普通进程之间的地址空间是隔离的，一个进程不能直接访问另一个进程的变量。而管道就是内核提供的一块缓冲区，用来让两个进程之间传递数据。管道是单向传输，有读端和写端，进程可以通过 <code>write</code> 往写端写入数据，通过 <code>read</code> 从读端读取数据</p>
 <p>这里要做的是父进程从输入读取一个字符串，通过管道发给子进程。子进程把字符串转成全小写后，再通过另一个管道传回父进程，最后父进程进行输出</p>
-<h4 id="函数实现-4">函数实现
+<h4 id="原理-2">原理
 </h4><p>首先在<code>src/fs/pipe.c</code>中查看创建管道的函数<code>pipe</code>的实现</p>
 <ul>
-<li><code>pipealloc</code>：创建管道，分配读端和写端。用户态中的 <code>fd[0]</code> 对应读端，<code>fd[1]</code> 对应写端。</li>
-<li><code>piperead</code>：从管道读取数据。管道有数据时直接读；管道为空但写端还开着时阻塞等待；管道为空且写端关闭时返回 0。</li>
-<li><code>pipewrite</code>：向管道写入数据。缓冲区没满时正常写入；缓冲区满但读端还在时阻塞等待；读端关闭后继续写入会返回错误。</li>
-<li><code>pipeclose</code>：关闭管道的一端。关闭写端会唤醒等待读取的进程，关闭读端会唤醒等待写入的进程。读端和写端都关闭后，管道占用的内存会被释放。</li>
-<li><code>__pipe_empty</code>：判断管道是否为空，条件是 <code>nread == nwrite</code>。</li>
-<li><code>__pipe_full</code>：判断管道是否已满，条件是 <code>nwrite == nread + PIPESIZE</code>。</li>
-<li><code>pipe_empty</code> 和 <code>pipe_full</code>：带加锁保护的空管道、满管道判断函数，避免并发访问时状态不一致。</li>
+<li><code>pipealloc</code>：创建管道，分配读写端。用户态中的 <code>fd[0]</code> 对应读端，<code>fd[1]</code> 对应写端</li>
+<li><code>piperead</code>：从管道读取数据。管道有数据时直接读，管道为空但写端还开着时阻塞等待，管道为空且写端关闭时返回 0</li>
+<li><code>pipewrite</code>：向管道写入数据。缓冲区没满时正常写入，缓冲区满但读端还在时阻塞等待，读端关闭后继续写入会返回错误</li>
+<li><code>pipeclose</code>：关闭管道的一端。关闭写端会唤醒等待读取的进程，关闭读端会唤醒等待写入的进程。读端和写端都关闭后，管道占用的内存会被释放</li>
+<li><code>__pipe_empty</code>：判断管道是否为空，条件是 <code>nread == nwrite</code></li>
+<li><code>__pipe_full</code>：判断管道是否已满，条件是 <code>nwrite == nread + PIPESIZE</code></li>
+<li><code>pipe_empty</code> 和 <code>pipe_full</code>：带加锁保护的空满管道判断函数，避免并发访问时状态不一致</li>
 </ul>
-<p>管道内部可以理解成一个环形缓冲区。<code>nread</code> 记录已经读出的字节数，<code>nwrite</code> 记录已经写入的字节数，实际访问数组时通过 <code>% PIPESIZE</code> 回到对应位置。</p>
+<p>管道内部可以理解成一个环形缓冲区。<code>nread</code> 记录已经读出的字节数，<code>nwrite</code> 记录已经写入的字节数，实际访问数组时通过 <code>% PIPESIZE</code> 回到对应位置</p>
+<h4 id="函数实现-4">函数实现
+</h4><blockquote>
+<p>管道是单向的，为了实现双向通信，这里创建了两个管道。管道的输入与输出句柄都会返回给当前的进程，为了让另一个进程可以访问，这里使用了<code>fork()</code></p>
+</blockquote>
 <p>在 <code>user/src</code> 下新建 <code>pipe_test.c</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4079,8 +4105,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>管道是单向的，为了实现双向通信，这里创建了两个管道。管道的输入与输出句柄都会返回给当前的进程，为了让另一个进程可以访问，这里使用了<code>fork()</code></p>
-<h4 id="验证-6">验证
+</div><h4 id="验证-6">验证
 </h4><p>重新编译并运行，进入系统后运行测试程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -4091,10 +4116,10 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输入一串16个字母的序列<code>ABCDefghIJKLmnop</code>，如果传输成功，可以看到下面的输出</p>
-<img src="52.png" style="width: 80%;" />
+<img src="52.png" style="width: 70%;" />
 <p>这里的转换结果是由子进程通过管道传回父进程的。父进程只负责读取输入、发送接收数据、打印结果</p>
 <blockquote>
-<p>shell 里的 <code>|</code> 也是用管道实现的。比如<code>ls | grep test</code>，这个命令的意思是把 <code>ls</code> 的输出结果交给 <code>grep test</code> 继续处理。<code>ls</code> 负责列出当前目录下的文件和目录，<code>grep test</code> 从这些内容中筛选出包含 <code>test</code> 的行</p>
+<p>shell 里的 <code>|</code> 也是用管道实现的。比如<code>ls | grep test</code>，这个命令的意思是<code>ls</code> 列出当前目录下的文件和目录，然后把输出结果交给 <code>grep test</code> 继续处理，<code>grep test</code> 从这些内容中筛选出包含 <code>test</code> 的行</p>
 <p>shell 会先创建一个管道，再创建两个子进程。一个子进程执行 <code>ls</code>，另一个子进程执行 <code>grep test</code>。通过 <code>dup</code> 把 <code>ls</code> 的输出改到管道写端，把 <code>grep</code> 的输入改到管道读端。这样 <code>ls</code> 输出的内容通过管道传给<code>grep</code> ，就实现了前一个程序的输出作为后一个程序的输入</p>
 </blockquote>
 
@@ -4374,7 +4399,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">138.88</span> 
+      <span class="number-highlight">139.05</span> 
       k 字
   </div>
   <div>
