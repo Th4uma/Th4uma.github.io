@@ -273,21 +273,6 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#前言">前言</a></li>
-    <li><a href="#知识结构">知识结构</a>
-      <ol>
-        <li><a href="#名词解释">名词解释</a>
-          <ol>
-            <li><a href="#进程调度">进程调度</a></li>
-            <li><a href="#内存管理">内存管理</a></li>
-            <li><a href="#cpu与硬件">CPU与硬件</a></li>
-            <li><a href="#系统调用">系统调用</a></li>
-            <li><a href="#程序构建">程序构建</a></li>
-          </ol>
-        </li>
-        <li><a href="#流程描述">流程描述</a></li>
-        <li><a href="#文件作用">文件作用</a></li>
-      </ol>
-    </li>
     <li><a href="#环境">环境</a>
       <ol>
         <li><a href="#安装">安装</a></li>
@@ -320,8 +305,17 @@ unicode: "f6d2"
         <li><a href="#踩坑记录">踩坑记录</a></li>
       </ol>
     </li>
-    <li><a href="#系统调用-1">系统调用</a>
+    <li><a href="#系统调用">系统调用</a>
       <ol>
+        <li><a href="#用户态上下文1111">用户态上下文1111</a>
+          <ol>
+            <li><a href="#测试程序">测试程序</a></li>
+            <li><a href="#打印-trapframe">打印 trapframe</a></li>
+            <li><a href="#反汇编定位">反汇编定位</a></li>
+            <li><a href="#跳过异常指令">跳过异常指令</a></li>
+            <li><a href="#验证">验证</a></li>
+          </ol>
+        </li>
         <li><a href="#基础调用">基础调用</a>
           <ol>
             <li><a href="#调用表">调用表</a></li>
@@ -336,15 +330,6 @@ unicode: "f6d2"
             <li><a href="#用户态调用">用户态调用</a></li>
           </ol>
         </li>
-        <li><a href="#用户态上下文1111">用户态上下文1111</a>
-          <ol>
-            <li><a href="#测试程序">测试程序</a></li>
-            <li><a href="#打印-trapframe">打印 trapframe</a></li>
-            <li><a href="#反汇编定位">反汇编定位</a></li>
-            <li><a href="#跳过异常指令">跳过异常指令</a></li>
-            <li><a href="#验证">验证</a></li>
-          </ol>
-        </li>
         <li><a href="#踩坑记录-1">踩坑记录</a></li>
       </ol>
     </li>
@@ -352,7 +337,7 @@ unicode: "f6d2"
       <ol>
         <li><a href="#内存布局">内存布局</a>
           <ol>
-            <li><a href="#打印函数调用链">打印函数调用链</a></li>
+            <li><a href="#打印进程内存区域">打印进程内存区域</a></li>
             <li><a href="#验证-1">验证</a></li>
           </ol>
         </li>
@@ -400,21 +385,22 @@ unicode: "f6d2"
     </li>
     <li><a href="#文件系统">文件系统</a>
       <ol>
-        <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
+        <li><a href="#磁盘块缓存1111">磁盘块缓存1111</a>
           <ol>
             <li><a href="#函数实现-1">函数实现</a></li>
-            <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
         <li><a href="#fat32簇链1111">FAT32簇链1111</a>
           <ol>
             <li><a href="#函数实现-2">函数实现</a></li>
-            <li><a href="#验证-4">验证</a></li>
+            <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
-        <li><a href="#磁盘块缓存1111">磁盘块缓存1111</a>
+        <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
           <ol>
+            <li><a href="#逻辑">逻辑</a></li>
             <li><a href="#函数实现-3">函数实现</a></li>
+            <li><a href="#验证-4">验证</a></li>
             <li><a href="#验证-5">验证</a></li>
           </ol>
         </li>
@@ -430,6 +416,22 @@ unicode: "f6d2"
             <li><a href="#验证-6">验证</a></li>
           </ol>
         </li>
+      </ol>
+    </li>
+    <li><a href="#知识结构">知识结构</a>
+      <ol>
+        <li><a href="#名词解释">名词解释</a>
+          <ol>
+            <li><a href="#进程调度">进程调度</a></li>
+            <li><a href="#内存管理">内存管理</a></li>
+            <li><a href="#cpu与硬件">CPU与硬件</a></li>
+            <li><a href="#系统调用-1">系统调用</a></li>
+            <li><a href="#程序构建">程序构建</a></li>
+            <li><a href="#文件系统-1">文件系统</a></li>
+          </ol>
+        </li>
+        <li><a href="#流程描述">流程描述</a></li>
+        <li><a href="#文件作用">文件作用</a></li>
       </ol>
     </li>
   </ol>
@@ -520,154 +522,6 @@ unicode: "f6d2"
 </blockquote>
 <p>对，上面的话是我在两小时前说出来的，但现在已经结束了配环境，开始第一个正式实验了。确实很有意思啊，我又反悔，决定进行记录了</p>
 </blockquote>
-<h2 id="知识结构">知识结构
-</h2><h3 id="名词解释">名词解释
-</h3><h4 id="进程调度">进程调度
-</h4><ul>
-<li>
-<p>进程：一个运行中的程序就是一个进程</p>
-</li>
-<li>
-<p>线程：</p>
-</li>
-<li>
-<p>调度：CPU在某段时间内快速切换运行多个进程，虽然CPU同一时刻只能运行一个进程，但由于切换的足够快，从而看起来是同时运行</p>
-</li>
-<li>
-<p>上下文：进程在某个时刻的完整状态，包含了寄存器栈指针等信息</p>
-</li>
-<li>
-<p>上下文切换：</p>
-</li>
-<li>
-<p>时间片：</p>
-</li>
-<li>
-<p>clone</p>
-</li>
-<li>
-<p>fork</p>
-</li>
-<li>
-<p>PCB</p>
-</li>
-<li>
-<p>用户进程：在用户态运行的程序，使用的硬件资源由内核来分配，权限低</p>
-</li>
-</ul>
-<h4 id="内存管理">内存管理
-</h4><ul>
-<li>
-<p>栈：存放函数调用相关的数据</p>
-</li>
-<li>
-<p>堆：程序运行过程中动态申请的内存区域</p>
-</li>
-<li>
-<p>虚拟内存：操作系统管理物理内存，为了防止信息泄露和安全问题，会给每个进程分配一块单独的专属内存，分配是通过虚拟地址来交给进程，这就是虚拟内存，而虚拟地址再通过页表映射到物理内存</p>
-</li>
-<li>
-<p>页表：虚拟内存对应物理内存的映射表，每个进程的页表都是独立的</p>
-</li>
-<li>
-<p>按页对齐：</p>
-</li>
-</ul>
-<h4 id="cpu与硬件">CPU与硬件
-</h4><ul>
-<li>
-<p>架构：CPU指令集和运行模式的整体设计结构，不同架构运行模式不同，指令不互通</p>
-</li>
-<li>
-<p>用户态：CPU运行普通程序的状态，很多权限受限，而且没有办法直接控制硬件</p>
-</li>
-<li>
-<p>内核态：CPU运行操作系统内核的状态，权限最高但没有办法直接由用户态控制</p>
-</li>
-<li>
-<p>寄存器：</p>
-</li>
-<li>
-<p>trap：陷入，在遇到系统调用、中断、异常等操作的时候，CPU状态改变成内核态这个过程就是陷入</p>
-</li>
-<li>
-<p>异常：</p>
-</li>
-<li>
-<p>中断：</p>
-</li>
-<li>
-<p>trapframe：CPU状态切换到内核态时，需要保存当前进程的上下文，这就是用来保存的结构体，切换回用户态时会将上下文取出用来恢复状态</p>
-</li>
-<li>
-<p>互斥：</p>
-</li>
-</ul>
-<h4 id="系统调用">系统调用
-</h4><ul>
-<li>syscall：系统调用，用户态如果需要执行内核态权限的操作就需要它，由用户态陷入内核态进行</li>
-<li>syscall 分发表：</li>
-</ul>
-<h4 id="程序构建">程序构建
-</h4><ul>
-<li>交叉编译：在一种架构机器上将程序源文件编译成另一种架构的可执行文件</li>
-<li>ELF：</li>
-<li>uint64_t：64位无符号整数，在 64 位系统里，经常用来存地址、寄存器值、指针内存数据，因为 64 位地址本身就是一个 64 位数字
-<ul>
-<li><code>uint</code> = unsigned int</li>
-<li><code>64</code> = 64 位</li>
-<li><code>_t</code> = type</li>
-</ul>
-</li>
-<li><code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int</li>
-<li>字段</li>
-</ul>
-<p>未分类：</p>
-<h3 id="流程描述">流程描述
-</h3><ul>
-<li>
-<p>系统启动流程：bootloader &gt; kernel &gt; 初始化内存与文件系统 &gt; 创建第一个用户进程 &gt; exec(init0) &gt; 进入shell</p>
-</li>
-<li>
-<p>系统调用流程：用户程序调用 syscall &gt; 参数与 syscall 编号写入寄存器 &gt; trap &gt; CPU 陷入内核态 &gt; 保存上下文到 trapframe &gt; 内核根据 syscall 编号找到对应处理函数 &gt; 解析参数并执行系统调用 &gt; 返回值写入寄存器 &gt; 恢复上下文 &gt; 返回用户态继续执行</p>
-</li>
-<li>
-<p>程序加载流程：调用 exec &gt; 读取 ELF &gt; 遍历 Program Header &gt; 找到 PT_LOAD 段 &gt; mmap_map 创建 VMA &gt; loadseg 加载段内容 &gt; 设置入口地址 &gt; 进入新程序执行</p>
-</li>
-</ul>
-<h3 id="文件作用">文件作用
-</h3><ul>
-<li>
-<p>系统调用：
-常见文件：kernel/syscall.h、kernel/syscall.c、kernel/sysproc.c、user/user.h、user/usys.pl、Makefile
-常见方法：分配 syscall 编号 → 在 syscall 表注册 → 写 sys_xxx → user.h 声明 → usys.pl 加入口 → 写用户测试程序</p>
-</li>
-<li>
-<p>进程：
-常见文件：kernel/proc.h、kernel/proc.c、kernel/sysproc.c、kernel/trap.c
-常见方法：PCB 加字段 → fork 复制或初始化字段 → scheduler/exit/wait 中处理状态 → syscall 提供接口</p>
-</li>
-<li>
-<p>调度：
-常见文件：kernel/proc.h、kernel/proc.c、kernel/trap.c
-常见方法：PCB 加调度字段 → timer interrupt 中更新 → scheduler 中选择进程 → yield 触发切换</p>
-</li>
-<li>
-<p>内存：
-常见文件：kernel/vm.c、kernel/proc.c、kernel/memlayout.h、kernel/riscv.h
-常见方法：页表遍历 → walk 查 PTE → mappages 建映射 → uvmunmap 释放 → copyin/copyout 处理用户地址</p>
-</li>
-<li>
-<p>程序加载：
-常见文件：kernel/exec.c、kernel/elf.h、kernel/proc.c、kernel/vm.c
-常见方法：读取 ELF 头 → 遍历 program header → 分配地址空间 → 加载段 → 设置用户栈和入口地址</p>
-</li>
-<li>
-<p>文件系统：
-常见文件：kernel/fs.c、kernel/file.c、kernel/sysfile.c、kernel/fcntl.h
-常见方法：从 fd 找 file → 从 file 找 inode → ilock → readi/writei → iunlock</p>
-</li>
-</ul>
 <h2 id="环境">环境
 </h2><p>我使用的是Ubuntu 24.04.4 LTS 64位 的虚拟机</p>
 <ul>
@@ -1464,8 +1318,379 @@ unicode: "f6d2"
 <p><strong>原因</strong>：虽然把 <code>backtrace()</code> 放到了正确的位置，但<code>syscall()</code>本身会被多次调用，比如欢迎语句的输出，导致输出一个字符就执行一次backtrace</p>
 <p><strong>解决方法</strong>：添加过滤规则，计数打印，打印一次就结束</p>
 <img src="31.png" style="width: 30%;" />
-<h2 id="系统调用-1">系统调用
+<h2 id="系统调用">系统调用
 </h2><p>用户程序没有权限直接访问内核，只能通过 syscall 对内核执行操作。系统调用也就是用户态通过ecall陷入内核，内核根据syscall号调用对应函数，然后返回结果</p>
+<h3 id="用户态上下文1111">用户态上下文1111
+</h3><p>用户态上下文指用户程序运行时的寄存器状态，包括程序计数器、栈指针、函数参数寄存器、返回地址等信息。用户程序通过系统调用、异常或中断进入内核态时，CPU 需要保存这些状态，否则内核处理完成后就无法回到原来的用户程序继续执行。</p>
+<p>在这个实验框架中，用户态上下文保存在 <code>trapframe</code> 中。每个进程的 PCB 中都有一个 <code>trapframe</code> 指针。用户态陷入内核时，汇编入口会先把寄存器信息保存到这里，之后内核可以通过 <code>trapframe</code> 读取或修改用户程序的上下文。</p>
+<p>这里要做的是让用户程序故意触发一次非法内存访问，然后在内核中查看它触发异常时的上下文。之后再修改 <code>trapframe</code> 中保存的返回地址，让程序跳过异常指令继续执行。</p>
+<h4 id="测试程序">测试程序
+</h4><p>在 <code>user/src/context_test.c</code> 中写入测试程序：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;stdio.h&#34;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test Start ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Illegal Access
+</span></span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0xff</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test End ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这行代码会向地址 <code>0</code> 写入数据：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">*</span><span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0xff</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>地址 <code>0</code> 没有映射到合法用户内存，所以会触发 page fault，用户程序陷入内核态。</p>
+<p>在 <code>user/src/init0.c</code> 中运行它：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">run</span><span class="p">(</span><span class="s">&#34;context_test&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新编译运行后，可以看到程序在非法访问处崩溃，关键输出为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">epc 0x100d8 va 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里 <code>epc</code> 表示触发异常时用户程序正在执行的指令地址，<code>va</code> 表示导致异常的虚拟地址。也就是说，用户程序在 <code>0x100d8</code> 处执行指令时，访问了虚拟地址 <code>0</code>。</p>
+<img src="65.png" style="width: 60%;" />
+<h4 id="打印-trapframe">打印 trapframe
+</h4><p>打开 <code>src/kernel/trap.c</code>，在 <code>usertrap()</code> 的 <code>when_pagefault</code> 分支中加入打印：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">when_pagefault</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="s">&#34;context_test&#34;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">tf_print</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="nf">handle_pagefault</span><span class="p">(</span><span class="n">scause</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">kill</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新运行后可以看到类似输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Trapframe {
+</span></span><span class="line"><span class="cl">    sp: 7fffff78
+</span></span><span class="line"><span class="cl">    fp: 7fffff88
+</span></span><span class="line"><span class="cl">    pc: 100d8
+</span></span><span class="line"><span class="cl">    ra: 100d0
+</span></span><span class="line"><span class="cl">    a0: 1b
+</span></span><span class="line"><span class="cl">    a1: 7fffff10
+</span></span><span class="line"><span class="cl">    a2: 1b
+</span></span><span class="line"><span class="cl">    a3: ffffffffffffffff
+</span></span><span class="line"><span class="cl">    a4: 0
+</span></span><span class="line"><span class="cl">    a5: ffffffffffffffff
+</span></span><span class="line"><span class="cl">    s3: 0
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里最重要的是 <code>pc</code>。它表示用户程序触发异常时正在执行的指令地址。本次输出中 <code>pc = 0x100d8</code>，和前面异常信息里的 <code>epc 0x100d8</code> 一致。</p>
+<p><code>ra = 0x100d0</code> 表示函数调用返回后应该继续执行的位置。结合后面的反汇编结果可以看到，程序已经完成了开始信息的输出，真正触发 page fault 的位置仍然是 <code>pc/epc</code> 指向的 <code>0x100d8</code>。</p>
+<img src="66.png" style="width: 60%;" />
+<h4 id="反汇编定位">反汇编定位
+</h4><p>用户程序编译后会放在 <code>build/user_prog</code> 目录中，可以用 <code>objdump</code> 反汇编：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">riscv64-unknown-elf-objdump -S build/user_prog/context_test &gt; disasm.S
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后搜索 trapframe 中打印出的 <code>pc</code> 地址：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -n -A10 -B10 <span class="s2">&#34;100d8&#34;</span> disasm.S
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到 <code>0x100d8</code> 附近的指令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">100d0: 00000713           li      a4,0
+</span></span><span class="line"><span class="cl">100d4: fff00793           li      a5,-1
+</span></span><span class="line"><span class="cl">100d8: 00f70023           sb      a5,0(a4)
+</span></span><span class="line"><span class="cl">100dc: 00004517           auipc   a0,0x4
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>li a4,0</code> 会把 <code>a4</code> 置为 <code>0</code>，<code>li a5,-1</code> 会把 <code>a5</code> 置为 <code>-1</code>。后面的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sb a5,0(a4)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>表示把 <code>a5</code> 的低 8 位写入 <code>a4 + 0</code> 指向的地址。由于 <code>a4 = 0</code>，这条指令实际执行的是向虚拟地址 <code>0x0</code> 写入一个字节。</p>
+<p>地址 <code>0x0</code> 没有映射到合法用户虚拟地址空间，所以触发 Store/AMO page fault。异常信息中的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">epc 0x100d8 va 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也正好和反汇编结果对应。</p>
+<img src="67.png" style="width: 60%;" />
+<h4 id="跳过异常指令">跳过异常指令
+</h4><p>这里要求不修改用户程序，让后面的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test End ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也能继续执行。</p>
+<p>异常返回用户态时，CPU 会根据 <code>trapframe</code> 中保存的 <code>pc/epc</code> 回到用户程序继续运行。所以只要在内核中修改这个字段，就可以改变用户程序恢复执行的位置。</p>
+<p>这次触发异常的是一条普通 RISC-V 存储指令，长度为 4 字节。反汇编中可以看到，非法访问指令位于 <code>0x100d8</code>，下一条指令位于 <code>0x100dc</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">100d8: 00f70023           sb      a5,0(a4)
+</span></span><span class="line"><span class="cl">100dc: 00004517           auipc   a0,0x4
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以只要把 <code>pc/epc</code> 加 4，就可以跳过导致异常的指令，从下一条指令继续执行。</p>
+<p>在 <code>src/kernel/pagefault.c</code> 中找到 <code>handle_pagefault()</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -R <span class="s2">&#34;handle_pagefault(&#34;</span> -n .
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以定位到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">src/kernel/pagefault.c:149:int handle_pagefault(uint64_t scause)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>打开 <code>src/kernel/pagefault.c</code>，在 <code>handle_pagefault()</code> 中添加针对 <code>context_test</code> 的特殊处理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">handle_pagefault</span><span class="p">(</span><span class="kt">uint64_t</span> <span class="n">scause</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">ktrap</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sstatus</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">SSTATUS_SPP</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">proc_t</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">epc</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sepc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">stval</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">stval</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">rva</span> <span class="o">=</span> <span class="nf">PGROUNDDOWN</span><span class="p">(</span><span class="n">stval</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">vma_t</span> <span class="o">*</span><span class="n">vma</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">pagefault_t</span> <span class="n">fault</span> <span class="o">=</span> <span class="nf">get_pagefault</span><span class="p">(</span><span class="n">scause</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fault</span> <span class="o">==</span> <span class="n">PF_UNKNOWN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ktrap</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">strncmp</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="s">&#34;context_test&#34;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">stval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">epc</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ktrap</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果当前实验框架中的 <code>trapframe</code> 字段名是 <code>pc</code>，就改成：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">pc</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里判断 <code>!ktrap</code> 是为了只处理用户态触发的异常，避免影响内核态 page fault。判断进程名为 <code>context_test</code> 是为了只针对这个测试程序生效。判断 <code>stval == 0</code> 是为了确认这次异常来自空指针访问。</p>
+<p>这样处理后，内核没有给地址 <code>0x0</code> 建立映射，也没有修改用户程序源码，只是修改了用户态上下文中保存的返回位置。异常处理完成后，程序会从 <code>0x100dc</code> 继续执行，也就是跳过 <code>sb a5,0(a4)</code> 这条非法写入指令。</p>
+<h4 id="验证">验证
+</h4><p>修改完成后重新编译运行，输出结果如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Kernel starts successfully!
+</span></span><span class="line"><span class="cl">Edit user/src/init0.c to run your program.
+</span></span><span class="line"><span class="cl">Enjoy it!
+</span></span><span class="line"><span class="cl">child welcome exited with 0
+</span></span><span class="line"><span class="cl">=== Context Test Start ===
+</span></span><span class="line"><span class="cl">Trapframe {
+</span></span><span class="line"><span class="cl">    sp: 7fffff78
+</span></span><span class="line"><span class="cl">    fp: 7fffff88
+</span></span><span class="line"><span class="cl">    pc: 100d8
+</span></span><span class="line"><span class="cl">    ra: 100d0
+</span></span><span class="line"><span class="cl">    a0: 1b
+</span></span><span class="line"><span class="cl">    a1: 7fffff10
+</span></span><span class="line"><span class="cl">    a2: 1b
+</span></span><span class="line"><span class="cl">    a3: ffffffffffffffff
+</span></span><span class="line"><span class="cl">    a4: 0
+</span></span><span class="line"><span class="cl">    a5: ffffffffffffffff
+</span></span><span class="line"><span class="cl">    s3: 0
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">=== Context Test End ===
+</span></span><span class="line"><span class="cl">child context_test exited with 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，程序仍然在空指针写入处触发了异常，并且内核成功打印出了当时的 <code>trapframe</code> 信息。此时 <code>pc = 0x100d8</code>，与反汇编中非法写入指令 <code>sb a5,0(a4)</code> 的地址一致。</p>
+<p>在原始情况下，程序执行到这条指令后会因为访问地址 <code>0x0</code> 而被终止。修改 <code>handle_pagefault()</code> 后，内核在检测到 <code>context_test</code> 触发空指针访问时，将 <code>trapframe</code> 中保存的 <code>pc/epc</code> 加 4，使异常返回后不再重新执行 <code>0x100d8</code> 处的非法写入指令，而是从下一条指令 <code>0x100dc</code> 继续执行。</p>
+<p>因此，程序成功输出了：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">=== Context Test End ===
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>并且最终以退出码 <code>0</code> 正常结束：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">child context_test exited with 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这说明本次修改生效。<code>trapframe</code> 中保存的用户态上下文不只是能被读取，也能在异常处理过程中被内核修改，从而改变用户程序返回后的执行位置。</p>
+<img src="68.png" style="width: 60%;" />
 <h3 id="基础调用">基础调用
 </h3><h4 id="调用表">调用表
 </h4><p>首先分配系统调用号，打开<code>entry/syscall.tbl</code>文件，在尾部添加三列数据</p>
@@ -1885,377 +2110,6 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="20.png" style="width: 60%;" />
-<h3 id="用户态上下文1111">用户态上下文1111
-</h3><p>用户态上下文指用户程序运行时的寄存器状态，包括程序计数器、栈指针、函数参数寄存器、返回地址等信息。用户程序通过系统调用、异常或中断进入内核态时，CPU 需要保存这些状态，否则内核处理完成后就无法回到原来的用户程序继续执行。</p>
-<p>在这个实验框架中，用户态上下文保存在 <code>trapframe</code> 中。每个进程的 PCB 中都有一个 <code>trapframe</code> 指针。用户态陷入内核时，汇编入口会先把寄存器信息保存到这里，之后内核可以通过 <code>trapframe</code> 读取或修改用户程序的上下文。</p>
-<p>这里要做的是让用户程序故意触发一次非法内存访问，然后在内核中查看它触发异常时的上下文。之后再修改 <code>trapframe</code> 中保存的返回地址，让程序跳过异常指令继续执行。</p>
-<h4 id="测试程序">测试程序
-</h4><p>在 <code>user/src/context_test.c</code> 中写入测试程序：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&#34;stdio.h&#34;</span><span class="cp">
-</span></span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test Start ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// Illegal Access
-</span></span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0xff</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test End ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这行代码会向地址 <code>0</code> 写入数据：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">*</span><span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mh">0xff</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>地址 <code>0</code> 没有映射到合法用户内存，所以会触发 page fault，用户程序陷入内核态。</p>
-<p>在 <code>user/src/init0.c</code> 中运行它：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">run</span><span class="p">(</span><span class="s">&#34;context_test&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>重新编译运行后，可以看到程序在非法访问处崩溃，关键输出为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">epc 0x100d8 va 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里 <code>epc</code> 表示触发异常时用户程序正在执行的指令地址，<code>va</code> 表示导致异常的虚拟地址。也就是说，用户程序在 <code>0x100d8</code> 处执行指令时，访问了虚拟地址 <code>0</code>。</p>
-<img src="65.png" style="width: 60%;" />
-<h4 id="打印-trapframe">打印 trapframe
-</h4><p>打开 <code>src/kernel/trap.c</code>，在 <code>usertrap()</code> 的 <code>when_pagefault</code> 分支中加入打印：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">when_pagefault</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="s">&#34;context_test&#34;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">tf_print</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="nf">handle_pagefault</span><span class="p">(</span><span class="n">scause</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">goto</span> <span class="n">kill</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>重新运行后可以看到类似输出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Trapframe {
-</span></span><span class="line"><span class="cl">    sp: 7fffff78
-</span></span><span class="line"><span class="cl">    fp: 7fffff88
-</span></span><span class="line"><span class="cl">    pc: 100d8
-</span></span><span class="line"><span class="cl">    ra: 100d0
-</span></span><span class="line"><span class="cl">    a0: 1b
-</span></span><span class="line"><span class="cl">    a1: 7fffff10
-</span></span><span class="line"><span class="cl">    a2: 1b
-</span></span><span class="line"><span class="cl">    a3: ffffffffffffffff
-</span></span><span class="line"><span class="cl">    a4: 0
-</span></span><span class="line"><span class="cl">    a5: ffffffffffffffff
-</span></span><span class="line"><span class="cl">    s3: 0
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里最重要的是 <code>pc</code>。它表示用户程序触发异常时正在执行的指令地址。本次输出中 <code>pc = 0x100d8</code>，和前面异常信息里的 <code>epc 0x100d8</code> 一致。</p>
-<p><code>ra = 0x100d0</code> 表示函数调用返回后应该继续执行的位置。结合后面的反汇编结果可以看到，程序已经完成了开始信息的输出，真正触发 page fault 的位置仍然是 <code>pc/epc</code> 指向的 <code>0x100d8</code>。</p>
-<img src="66.png" style="width: 60%;" />
-<h4 id="反汇编定位">反汇编定位
-</h4><p>用户程序编译后会放在 <code>build/user_prog</code> 目录中，可以用 <code>objdump</code> 反汇编：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">riscv64-unknown-elf-objdump -S build/user_prog/context_test &gt; disasm.S
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后搜索 trapframe 中打印出的 <code>pc</code> 地址：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -n -A10 -B10 <span class="s2">&#34;100d8&#34;</span> disasm.S
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到 <code>0x100d8</code> 附近的指令：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">100d0: 00000713           li      a4,0
-</span></span><span class="line"><span class="cl">100d4: fff00793           li      a5,-1
-</span></span><span class="line"><span class="cl">100d8: 00f70023           sb      a5,0(a4)
-</span></span><span class="line"><span class="cl">100dc: 00004517           auipc   a0,0x4
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>li a4,0</code> 会把 <code>a4</code> 置为 <code>0</code>，<code>li a5,-1</code> 会把 <code>a5</code> 置为 <code>-1</code>。后面的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sb a5,0(a4)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>表示把 <code>a5</code> 的低 8 位写入 <code>a4 + 0</code> 指向的地址。由于 <code>a4 = 0</code>，这条指令实际执行的是向虚拟地址 <code>0x0</code> 写入一个字节。</p>
-<p>地址 <code>0x0</code> 没有映射到合法用户虚拟地址空间，所以触发 Store/AMO page fault。异常信息中的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">epc 0x100d8 va 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>也正好和反汇编结果对应。</p>
-<img src="67.png" style="width: 60%;" />
-<h4 id="跳过异常指令">跳过异常指令
-</h4><p>这里要求不修改用户程序，让后面的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;=== Context Test End ===</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>也能继续执行。</p>
-<p>异常返回用户态时，CPU 会根据 <code>trapframe</code> 中保存的 <code>pc/epc</code> 回到用户程序继续运行。所以只要在内核中修改这个字段，就可以改变用户程序恢复执行的位置。</p>
-<p>这次触发异常的是一条普通 RISC-V 存储指令，长度为 4 字节。反汇编中可以看到，非法访问指令位于 <code>0x100d8</code>，下一条指令位于 <code>0x100dc</code>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">100d8: 00f70023           sb      a5,0(a4)
-</span></span><span class="line"><span class="cl">100dc: 00004517           auipc   a0,0x4
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以只要把 <code>pc/epc</code> 加 4，就可以跳过导致异常的指令，从下一条指令继续执行。</p>
-<p>在 <code>src/kernel/pagefault.c</code> 中找到 <code>handle_pagefault()</code>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -R <span class="s2">&#34;handle_pagefault(&#34;</span> -n .
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以定位到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">src/kernel/pagefault.c:149:int handle_pagefault(uint64_t scause)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>打开 <code>src/kernel/pagefault.c</code>，在 <code>handle_pagefault()</code> 中添加针对 <code>context_test</code> 的特殊处理：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">handle_pagefault</span><span class="p">(</span><span class="kt">uint64_t</span> <span class="n">scause</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">ktrap</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sstatus</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">SSTATUS_SPP</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">proc_t</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">epc</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">sepc</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">stval</span> <span class="o">=</span> <span class="nf">read_csr</span><span class="p">(</span><span class="n">stval</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint64_t</span> <span class="n">rva</span> <span class="o">=</span> <span class="nf">PGROUNDDOWN</span><span class="p">(</span><span class="n">stval</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">vma_t</span> <span class="o">*</span><span class="n">vma</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="kt">pagefault_t</span> <span class="n">fault</span> <span class="o">=</span> <span class="nf">get_pagefault</span><span class="p">(</span><span class="n">scause</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">fault</span> <span class="o">==</span> <span class="n">PF_UNKNOWN</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">ktrap</span> <span class="o">&amp;&amp;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">p</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">&amp;&amp;</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">strncmp</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="s">&#34;context_test&#34;</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
-</span></span><span class="line"><span class="cl">        <span class="n">stval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">epc</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">ktrap</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="p">...</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="p">...</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果当前实验框架中的 <code>trapframe</code> 字段名是 <code>pc</code>，就改成：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">p</span><span class="o">-&gt;</span><span class="n">trapframe</span><span class="o">-&gt;</span><span class="n">pc</span> <span class="o">+=</span> <span class="mi">4</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里判断 <code>!ktrap</code> 是为了只处理用户态触发的异常，避免影响内核态 page fault。判断进程名为 <code>context_test</code> 是为了只针对这个测试程序生效。判断 <code>stval == 0</code> 是为了确认这次异常来自空指针访问。</p>
-<p>这样处理后，内核没有给地址 <code>0x0</code> 建立映射，也没有修改用户程序源码，只是修改了用户态上下文中保存的返回位置。异常处理完成后，程序会从 <code>0x100dc</code> 继续执行，也就是跳过 <code>sb a5,0(a4)</code> 这条非法写入指令。</p>
-<h4 id="验证">验证
-</h4><p>修改完成后重新编译运行，输出结果如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Kernel starts successfully!
-</span></span><span class="line"><span class="cl">Edit user/src/init0.c to run your program.
-</span></span><span class="line"><span class="cl">Enjoy it!
-</span></span><span class="line"><span class="cl">child welcome exited with 0
-</span></span><span class="line"><span class="cl">=== Context Test Start ===
-</span></span><span class="line"><span class="cl">Trapframe {
-</span></span><span class="line"><span class="cl">    sp: 7fffff78
-</span></span><span class="line"><span class="cl">    fp: 7fffff88
-</span></span><span class="line"><span class="cl">    pc: 100d8
-</span></span><span class="line"><span class="cl">    ra: 100d0
-</span></span><span class="line"><span class="cl">    a0: 1b
-</span></span><span class="line"><span class="cl">    a1: 7fffff10
-</span></span><span class="line"><span class="cl">    a2: 1b
-</span></span><span class="line"><span class="cl">    a3: ffffffffffffffff
-</span></span><span class="line"><span class="cl">    a4: 0
-</span></span><span class="line"><span class="cl">    a5: ffffffffffffffff
-</span></span><span class="line"><span class="cl">    s3: 0
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">=== Context Test End ===
-</span></span><span class="line"><span class="cl">child context_test exited with 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，程序仍然在空指针写入处触发了异常，并且内核成功打印出了当时的 <code>trapframe</code> 信息。此时 <code>pc = 0x100d8</code>，与反汇编中非法写入指令 <code>sb a5,0(a4)</code> 的地址一致。</p>
-<p>在原始情况下，程序执行到这条指令后会因为访问地址 <code>0x0</code> 而被终止。修改 <code>handle_pagefault()</code> 后，内核在检测到 <code>context_test</code> 触发空指针访问时，将 <code>trapframe</code> 中保存的 <code>pc/epc</code> 加 4，使异常返回后不再重新执行 <code>0x100d8</code> 处的非法写入指令，而是从下一条指令 <code>0x100dc</code> 继续执行。</p>
-<p>因此，程序成功输出了：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">=== Context Test End ===
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>并且最终以退出码 <code>0</code> 正常结束：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">child context_test exited with 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这说明本次修改生效。<code>trapframe</code> 中保存的用户态上下文不只是能被读取，也能在异常处理过程中被内核修改，从而改变用户程序返回后的执行位置。</p>
-<img src="68.png" style="width: 60%;" />
 <h3 id="踩坑记录-1">踩坑记录
 </h3><blockquote>
 <p><code>printf</code>报错<code>implicit declaration of function 'printf'</code>和<code>stdio.h: No such file or directory</code></p>
@@ -2301,7 +2155,7 @@ unicode: "f6d2"
 <p>要打印内存区域，首先就要找到保存这个区域的数据结构vma，vma就是描述一段虚拟内存的结构体。每一个进程会被分配到一块连续地址的虚拟内存，其中划分出来多块不同作用的区域，最后用页表来将虚拟地址映射到物理地址，不同进程的物理页可以独立或者共享，虚拟内存解决了物理内存不连续和需要隔离的问题</p>
 <p>一个进程的虚拟内存并非一整块，是分成很多作用不同的段，每一段就是一个<code>vma_t</code>，比如程序代码、全局变量、堆、栈这一类。vma由链表存储，链表入口是<code>vma_head</code>，上面的一个段也就是一个节点，所有链表都存储在<code>mm_t</code>结构体中</p>
 <img src="45.png" style="width: 40%;" />
-<h4 id="打印函数调用链">打印函数调用链
+<h4 id="打印进程内存区域">打印进程内存区域
 </h4><p>在根目录运行 <code>grep</code> 命令查看 <code>vma_t</code>这个结构体的定义</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3411,307 +3265,10 @@ unicode: "f6d2"
 </div>
 </div><img src="49.png" style="width: 100%;" />
 <h2 id="文件系统">文件系统
-</h2><h3 id="fat32下的文件检索">FAT32下的文件检索
-</h3><p>平时打开文件时，会传入一个文件名，比如 <code>test.txt</code>。文件系统会根据这个名字在目录中找到对应的目录项，之后再读取内容。FAT32 的目录项比较特殊，会涉及短文件名和长文件名，这里的框架已经把这些细节封装到函数里，所以只需要处理文件查找的逻辑即可</p>
-<p>具体方法是遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置</p>
-<h4 id="函数实现-1">函数实现
-</h4><p>首先查看入口函数，作用是在目录簇 <code>dir_clus</code> 里查找文件名 <code>cname</code></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">FR_t</span> <span class="nf">fat_dirlookup</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">dir_clus</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cname</span><span class="p">,</span> <span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">ret</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">DEFINE_LOOKUP_HELPER</span><span class="p">(</span><span class="n">helper</span><span class="p">,</span> <span class="n">cname</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">fat_travs_logical_dir</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">dir_clus</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lookup_handler</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">helper</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其中<code>DEFINE_LOOKUP_HELPER</code> 会创建一个结构体，用来保存查找过程中的状态。<code>cname</code> 是要查找的目标文件名，<code>ret</code> 用来保存找到的目录项，<code>offset</code> 用来保存目录项在目录中的偏移。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">typedef</span> <span class="n">struct</span> <span class="n">lookup_helper</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">uint8_t</span> <span class="n">checksum</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">uint32_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">lookup_helper_t</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>fat_travs_logical_dir</code> 负责遍历目录。它每遍历到一个逻辑目录项，就会调用一次 <code>lookup_handler</code>。所以查找逻辑不需要自己手动遍历目录，只需要在 <code>lookup_handler</code> 中判断当前文件名是不是目标文件名</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">FR_t fat_travs_logical_dir(fat32_t *fat, uint32_t dir_clus, uint32_t dir_offset, travs_handler_t handler, void *state)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>打开 <code>src/fs/fat32.c</code>，写入<code>lookup_handler</code>的逻辑</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">FR_t</span> <span class="nf">lookup_handler</span><span class="p">(</span><span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">__helper</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 把传入的 `__helper` 转回 `lookup_helper_t *`
-</span></span></span><span class="line"><span class="cl">    <span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">//临时打印，正式实现可以删除
-</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: target=[%s], current=[%s], offset=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">//临时打印
-</span></span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: found [%s]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">=</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">		<span class="c1">// 查找成功
-</span></span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FR_OK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FR_CONTINUE</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>因为 <code>fat_travs_logical_dir</code> 的状态参数是 <code>void *</code>，它本身不知道传进来的具体结构，只负责原样传给 handler。真正使用时需要自己转回对应类型。</p>
-<p>文件名比较用的是：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">strncmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>name</code> 是当前遍历到的文件名，<code>helper-&gt;name</code> 是目标文件名。这里比较长度用了 <code>strlen(helper-&gt;name) + 1</code>，是为了把字符串结尾的 <code>\0</code> 也比较进去。</p>
-<p>如果只比较目标文件名长度，可能会出现前缀误判。比如目标是 <code>abc</code>，当前文件名是 <code>abcd</code>，前三个字符相同，但这两个文件名并不一样。把 <code>\0</code> 一起比较后，<code>abc</code> 的第四个字符是字符串结束符，<code>abcd</code> 的第四个字符是 <code>d</code>，就不会被误判成同一个文件。</p>
-<p>匹配成功后，把当前目录项复制到输出位置：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">=</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>再保存当前目录项的偏移：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这两个值不是保存在局部变量里，而是写入外部传进来的指针。这样 <code>fat_dirlookup</code> 返回后，调用者就能拿到查找到的目录项和偏移位置。</p>
-<p>最后返回：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">return</span> <span class="n">FR_OK</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>FR_OK</code> 表示已经找到目标文件，可以结束外层目录遍历。</p>
-<p>如果当前目录项不是目标文件，就返回：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">return</span> <span class="n">FR_CONTINUE</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这表示继续遍历后面的目录项。</p>
-<h4 id="验证-3">验证
-</h4><p>重新编译运行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">make clean
-</span></span><span class="line"><span class="cl">./run-qemu.sh
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>，外层遍历停止，系统继续执行后续加载流程。</p>
-<p>最后系统正常进入 shell：</p>
-<img src="54.png" style="width: 70%;" />
-<h3 id="fat32簇链1111">FAT32簇链1111
-</h3><p>FAT32 是一种显式链式分配文件系统。文件内容不一定连续存放在磁盘上，而是按簇组织。每个簇在 FAT 表中都有一个对应表项，表项里保存的是下一个簇号。只要从文件起始簇开始，不断读取 FAT 表中的后继簇号，就可以沿着簇链找到整个文件的数据。</p>
-<p>这里要补全的是 <code>fat_next_cluster</code>，它的作用是给定当前簇号 <code>cclus</code>，返回它在 FAT 表中记录的下一个簇号。</p>
-<h4 id="函数实现-2">函数实现
-</h4><p>打开 <code>src/fs/fat32.c</code>，找到 <code>fat_next_cluster</code>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint32_t</span> <span class="nf">fat_next_cluster</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">cclus</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">answer</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">//打印用于直观看结果
-</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;fat_next: %u -&gt; %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cclus</span><span class="p">,</span> <span class="n">answer</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>开头先判断当前簇是不是空闲簇或者结束簇：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果当前簇已经是结束标记，或者本身就是空闲簇，就不应该继续追踪后继簇号。继续查这种簇没有意义，所以直接触发 <code>panic</code>。</p>
-<p>下面这句会读取当前簇号所在的 FAT 表扇区：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>clus2fatsec</code> 会根据簇号计算它对应的 FAT 表项在哪个扇区中。<code>bread</code> 则把这个扇区读入缓存，返回对应的块缓冲区。</p>
-<p>真正读取后继簇号的是这一句：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>clus2offset</code> 会计算当前簇号对应的 FAT 表项在这个扇区内部的偏移。FAT32 中每个表项占 4 字节，所以找到偏移后，把这个位置的数据按 <code>uint32_t</code> 读取出来，就得到了下一个簇号。</p>
-<p>FAT32 的表项虽然是 32 位，但有效簇号通常只使用低 28 位，高 4 位属于保留部分，所以读取后还需要保留低 28 位：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果源码中已经定义了对应的掩码宏，可以用框架里的宏替代 <code>0x0FFFFFFF</code>。</p>
-<p>最后释放缓冲区并返回结果：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>bread</code> 读取出的块缓冲区用完后需要通过 <code>brelse</code> 释放，否则会影响块缓存的正常使用。</p>
-<h4 id="验证-4">验证
-</h4><p>重新编译运行后，可以看到系统在读取文件时不断打印当前簇号和后继簇号：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 156 -&gt; 157
-</span></span><span class="line"><span class="cl">fat_next: 157 -&gt; 158
-</span></span><span class="line"><span class="cl">fat_next: 158 -&gt; 159
-</span></span><span class="line"><span class="cl">fat_next: 159 -&gt; 160
-</span></span><span class="line"><span class="cl">fat_next: 160 -&gt; 161
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这说明 FAT 表中记录的是一条显式簇链。文件系统先拿到当前簇号，再通过 <code>fat_next_cluster</code> 查询 FAT 表，得到下一个簇号，然后继续沿着这条链读取后续数据。</p>
-<p>后面启动 shell 时也能看到类似输出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 249 -&gt; 250
-</span></span><span class="line"><span class="cl">fat_next: 250 -&gt; 251
-</span></span><span class="line"><span class="cl">fat_next: 251 -&gt; 252
-</span></span><span class="line"><span class="cl">fat_next: 252 -&gt; 253
-</span></span><span class="line"><span class="cl">fat_next: 253 -&gt; 254
-</span></span><span class="line"><span class="cl">fat_next: 254 -&gt; 255
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这说明系统在加载用户程序时已经正常使用了簇链追踪功能。如果后继簇号读取错误，跨簇文件就无法被完整读出，系统也可能无法正常启动到 shell。</p>
-<img src="55.png" style="width: 40%;" />
-<h3 id="磁盘块缓存1111">磁盘块缓存1111
+</h2><h3 id="磁盘块缓存1111">磁盘块缓存1111
 </h3><p>磁盘访问速度比内存慢很多，所以文件系统不会每次都直接访问磁盘，而是会在内存中维护一组块缓存。读取磁盘块时，先在缓存里查找。如果目标块已经存在，就直接返回缓存；如果不存在，再选择一个空闲缓存块回收，用它去缓存新的磁盘块。</p>
 <p>这里使用 LRU 链表管理缓存块。链表头部表示最近使用过的缓存，链表尾部表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头部。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收。</p>
-<h4 id="函数实现-3">函数实现
+<h4 id="函数实现-1">函数实现
 </h4><p>打开 <code>src/fs/bio.c</code>，补全 <code>bget</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3877,6 +3434,261 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>这样链表尾部就会逐渐保留最久没有被使用的缓存块。之后缓存未命中时，从尾部反向遍历，就能优先回收最近最少使用的块。</p>
+<h3 id="fat32簇链1111">FAT32簇链1111
+</h3><p>FAT32 是一种显式链式分配文件系统。文件内容不一定连续存放在磁盘上，而是按簇组织。每个簇在 FAT 表中都有一个对应表项，表项里保存的是下一个簇号。只要从文件起始簇开始，不断读取 FAT 表中的后继簇号，就可以沿着簇链找到整个文件的数据。</p>
+<p>这里要补全的是 <code>fat_next_cluster</code>，它的作用是给定当前簇号 <code>cclus</code>，返回它在 FAT 表中记录的下一个簇号。</p>
+<h4 id="函数实现-2">函数实现
+</h4><p>打开 <code>src/fs/fat32.c</code>，找到 <code>fat_next_cluster</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">uint32_t</span> <span class="nf">fat_next_cluster</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">cclus</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="n">answer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//打印用于直观看结果
+</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;fat_next: %u -&gt; %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cclus</span><span class="p">,</span> <span class="n">answer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>开头先判断当前簇是不是空闲簇或者结束簇：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nf">IS_FAT_CLUS_END</span><span class="p">(</span><span class="n">cclus</span><span class="p">)</span> <span class="o">||</span> <span class="n">cclus</span> <span class="o">==</span> <span class="n">FAT_CLUS_FREE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;try to follow a FREE/EOC cluster&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果当前簇已经是结束标记，或者本身就是空闲簇，就不应该继续追踪后继簇号。继续查这种簇没有意义，所以直接触发 <code>panic</code>。</p>
+<p>下面这句会读取当前簇号所在的 FAT 表扇区：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">buf</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">fat</span><span class="o">-&gt;</span><span class="n">dev</span><span class="p">,</span> <span class="nf">clus2fatsec</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>clus2fatsec</code> 会根据簇号计算它对应的 FAT 表项在哪个扇区中。<code>bread</code> 则把这个扇区读入缓存，返回对应的块缓冲区。</p>
+<p>真正读取后继簇号的是这一句：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)(</span><span class="n">buf</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="nf">clus2offset</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">cclus</span><span class="p">));</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>clus2offset</code> 会计算当前簇号对应的 FAT 表项在这个扇区内部的偏移。FAT32 中每个表项占 4 字节，所以找到偏移后，把这个位置的数据按 <code>uint32_t</code> 读取出来，就得到了下一个簇号。</p>
+<p>FAT32 的表项虽然是 32 位，但有效簇号通常只使用低 28 位，高 4 位属于保留部分，所以读取后还需要保留低 28 位：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">answer</span> <span class="o">&amp;=</span> <span class="mh">0x0FFFFFFF</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果源码中已经定义了对应的掩码宏，可以用框架里的宏替代 <code>0x0FFFFFFF</code>。</p>
+<p>最后释放缓冲区并返回结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nf">brelse</span><span class="p">(</span><span class="n">buf</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">answer</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>bread</code> 读取出的块缓冲区用完后需要通过 <code>brelse</code> 释放，否则会影响块缓存的正常使用。</p>
+<h4 id="验证-3">验证
+</h4><p>重新编译运行后，可以看到系统在读取文件时不断打印当前簇号和后继簇号：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 156 -&gt; 157
+</span></span><span class="line"><span class="cl">fat_next: 157 -&gt; 158
+</span></span><span class="line"><span class="cl">fat_next: 158 -&gt; 159
+</span></span><span class="line"><span class="cl">fat_next: 159 -&gt; 160
+</span></span><span class="line"><span class="cl">fat_next: 160 -&gt; 161
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这说明 FAT 表中记录的是一条显式簇链。文件系统先拿到当前簇号，再通过 <code>fat_next_cluster</code> 查询 FAT 表，得到下一个簇号，然后继续沿着这条链读取后续数据。</p>
+<p>后面启动 shell 时也能看到类似输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">fat_next: 249 -&gt; 250
+</span></span><span class="line"><span class="cl">fat_next: 250 -&gt; 251
+</span></span><span class="line"><span class="cl">fat_next: 251 -&gt; 252
+</span></span><span class="line"><span class="cl">fat_next: 252 -&gt; 253
+</span></span><span class="line"><span class="cl">fat_next: 253 -&gt; 254
+</span></span><span class="line"><span class="cl">fat_next: 254 -&gt; 255
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这说明系统在加载用户程序时已经正常使用了簇链追踪功能。如果后继簇号读取错误，跨簇文件就无法被完整读出，系统也可能无法正常启动到 shell。</p>
+<img src="55.png" style="width: 40%;" />
+<h3 id="fat32下的文件检索">FAT32下的文件检索
+</h3><p>平时打开文件时，会传入一个文件名，比如 <code>test.txt</code>。文件系统会根据这个名字在目录中找到对应的目录项，之后再读取内容。FAT32 的目录项比较特殊，会涉及短文件名和长文件名，这里的框架已经把这些细节封装到函数里，所以只需要处理文件查找的逻辑即可</p>
+<p>具体方法是遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置</p>
+<h4 id="逻辑">逻辑
+</h4><p>首先在<code>src/fs/fat32.c</code>中查看入口函数，作用是在指定目录簇下寻找名为<code>name</code>的目录项</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">FR_t</span> <span class="nf">fat_dirlookup</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">dir_clus</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cname</span><span class="p">,</span> <span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">ret</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">DEFINE_LOOKUP_HELPER</span><span class="p">(</span><span class="n">helper</span><span class="p">,</span> <span class="n">cname</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ret</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nf">fat_travs_logical_dir</span><span class="p">(</span><span class="n">fat</span><span class="p">,</span> <span class="n">dir_clus</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">lookup_handler</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">helper</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>fat_travs_logical_dir</code> 负责遍历目录。它每遍历到一个逻辑目录项，就会调用一次 <code>lookup_handler</code>。所以查找逻辑不需要自己手动遍历目录，只需要在 <code>lookup_handler</code> 中判断当前文件名是不是目标文件名</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">FR_t</span> <span class="nf">fat_travs_logical_dir</span><span class="p">(</span><span class="kt">fat32_t</span> <span class="o">*</span><span class="n">fat</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">dir_clus</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">dir_offset</span><span class="p">,</span> <span class="kt">travs_handler_t</span> <span class="n">handler</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">state</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>fat</code> ：FAT32 文件系统对象</li>
+<li><code>dir_clus</code> ：要遍历的目录簇</li>
+<li><code>dir_offset</code> ：遍历开始的位置</li>
+<li><code>handler</code> ：屏蔽掉FAT32具体目录项的具体细节，集中整合为一个逻辑上的目录项</li>
+<li><code>state</code> ：传递给 <code>handler</code> 的状态信息</li>
+</ul>
+<p><code>DEFINE_LOOKUP_HELPER</code> 会创建一个结构体，用来保存<code>handler</code>所需的状态信息</p>
+<ul>
+<li><code>cname</code> ：要查找的目标文件名</li>
+<li><code>ret</code> ：保存找到的目录项</li>
+<li><code>offset</code> ：保存目录项在目录中的偏移</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">lookup_helper</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint8_t</span> <span class="n">checksum</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">uint32_t</span> <span class="o">*</span><span class="n">offset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="kt">lookup_helper_t</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>后两个参数是用于输出的，也就是在<code>hanlder</code>中匹配到了对应的目录项后，需要将相关的目录项信息赋值给这些字段中指针所指向的位置</p>
+<h4 id="函数实现-3">函数实现
+</h4><p>打开 <code>src/fs/fat32.c</code>，写入<code>lookup_handler</code>的逻辑</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="n">FR_t</span> <span class="nf">lookup_handler</span><span class="p">(</span><span class="kt">dir_item_t</span> <span class="o">*</span><span class="n">item</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">off_t</span> <span class="n">offset</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">__helper</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 把传入的 `__helper` 转回 `lookup_helper_t *`
+</span></span></span><span class="line"><span class="cl">    <span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="n">helper</span> <span class="o">=</span> <span class="p">(</span><span class="kt">lookup_helper_t</span> <span class="o">*</span><span class="p">)</span><span class="n">__helper</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//临时打印，正式实现可以删除
+</span></span></span><span class="line"><span class="cl">    <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: target=[%s], current=[%s], offset=%ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 文件名匹配
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">strncmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="nf">strlen</span><span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//临时打印
+</span></span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;lookup: found [%s]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 把当前目录项复制到输出位置
+</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">item</span> <span class="o">=</span> <span class="o">*</span><span class="n">item</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 保存当前目录项的偏移
+</span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">*</span><span class="n">helper</span><span class="o">-&gt;</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// 查找成功
+</span></span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">FR_OK</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 不匹配，继续遍历后面的目录项
+</span></span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">FR_CONTINUE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>文件名比较用的是<code>strncmp(name, helper-&gt;name, strlen(helper-&gt;name) + 1)</code></p>
+<ul>
+<li><code>name</code> 是当前遍历到的文件名</li>
+<li><code>helper-&gt;name</code> 是目标文件名</li>
+<li>这里比较长度用了 <code>strlen(helper-&gt;name) + 1</code>，是为了把字符串结尾的 <code>\0</code> 也比较进去。</li>
+</ul>
+<p>如果只比较目标文件名长度，可能会出现前缀误判。比如目标是 <code>abc</code>，当前文件名是 <code>abcd</code>，前三个字符相同，但这两个文件名并不一样。把 <code>\0</code> 一起比较后，<code>abc</code> 的第四个字符是字符串结束符，<code>abcd</code> 的第四个字符是 <code>d</code>，就不会被误判成同一个文件。</p>
+<h4 id="验证-4">验证
+</h4><p>重新编译运行，可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>，外层遍历停止，系统继续执行后续加载流程。最后系统正常进入 shell</p>
+<img src="54.png" style="width: 70%;" />
 <h4 id="验证-5">验证
 </h4><p>重新编译运行：</p>
 <div class="highlight"><div class="chroma">
@@ -4122,6 +3934,404 @@ unicode: "f6d2"
 <p>shell 里的 <code>|</code> 也是用管道实现的。比如<code>ls | grep test</code>，这个命令的意思是<code>ls</code> 列出当前目录下的文件和目录，然后把输出结果交给 <code>grep test</code> 继续处理，<code>grep test</code> 从这些内容中筛选出包含 <code>test</code> 的行</p>
 <p>shell 会先创建一个管道，再创建两个子进程。一个子进程执行 <code>ls</code>，另一个子进程执行 <code>grep test</code>。通过 <code>dup</code> 把 <code>ls</code> 的输出改到管道写端，把 <code>grep</code> 的输入改到管道读端。这样 <code>ls</code> 输出的内容通过管道传给<code>grep</code> ，就实现了前一个程序的输出作为后一个程序的输入</p>
 </blockquote>
+<h2 id="知识结构">知识结构
+</h2><h3 id="名词解释">名词解释
+</h3><h4 id="进程调度">进程调度
+</h4><ul>
+<li>
+<p>进程：一个运行中的程序就是一个进程</p>
+</li>
+<li>
+<p>线程：</p>
+</li>
+<li>
+<p>调度：CPU在某段时间内快速切换运行多个进程，虽然CPU同一时刻只能运行一个进程，但由于切换的足够快，从而看起来是同时运行</p>
+</li>
+<li>
+<p>上下文：进程在某个时刻的完整状态，包含了寄存器栈指针等信息</p>
+</li>
+<li>
+<p>上下文切换：</p>
+</li>
+<li>
+<p>时间片：</p>
+</li>
+<li>
+<p>clone</p>
+</li>
+<li>
+<p>fork</p>
+</li>
+<li>
+<p>PCB</p>
+</li>
+<li>
+<p>用户进程：在用户态运行的程序，使用的硬件资源由内核来分配，权限低</p>
+</li>
+<li>
+<p>调度器</p>
+</li>
+<li>
+<p>就绪态</p>
+</li>
+<li>
+<p>运行态</p>
+</li>
+<li>
+<p>阻塞态</p>
+</li>
+<li>
+<p>内核线程</p>
+</li>
+<li>
+<p>进程切换</p>
+</li>
+<li>
+<p>调度队列</p>
+</li>
+<li>
+<p>父进程</p>
+</li>
+<li>
+<p>子进程</p>
+</li>
+<li>
+<p>PID</p>
+</li>
+<li>
+<p>yield</p>
+</li>
+</ul>
+<h4 id="内存管理">内存管理
+</h4><ul>
+<li>
+<p>栈：存放函数调用相关的数据</p>
+</li>
+<li>
+<p>堆：程序运行过程中动态申请的内存区域</p>
+</li>
+<li>
+<p>虚拟内存：操作系统管理物理内存，为了防止信息泄露和安全问题，会给每个进程分配一块单独的专属内存，分配是通过虚拟地址来交给进程，这就是虚拟内存，而虚拟地址再通过页表映射到物理内存</p>
+</li>
+<li>
+<p>页表：虚拟内存对应物理内存的映射表，每个进程的页表都是独立的</p>
+</li>
+<li>
+<p>按页对齐：</p>
+</li>
+<li>
+<p>页</p>
+</li>
+<li>
+<p>页框</p>
+</li>
+<li>
+<p>物理内存</p>
+</li>
+<li>
+<p>虚拟地址</p>
+</li>
+<li>
+<p>物理地址</p>
+</li>
+<li>
+<p>VMA</p>
+</li>
+<li>
+<p>mmap</p>
+</li>
+<li>
+<p>copy_from_user</p>
+</li>
+<li>
+<p>copy_to_user</p>
+</li>
+<li>
+<p>page fault</p>
+</li>
+<li>
+<p>缺页异常</p>
+</li>
+<li>
+<p>用户栈</p>
+</li>
+<li>
+<p>内核栈</p>
+</li>
+</ul>
+<h4 id="cpu与硬件">CPU与硬件
+</h4><ul>
+<li>
+<p>架构：CPU指令集和运行模式的整体设计结构，不同架构运行模式不同，指令不互通</p>
+</li>
+<li>
+<p>用户态：CPU运行普通程序的状态，很多权限受限，而且没有办法直接控制硬件</p>
+</li>
+<li>
+<p>内核态：CPU运行操作系统内核的状态，权限最高但没有办法直接由用户态控制</p>
+</li>
+<li>
+<p>寄存器：</p>
+</li>
+<li>
+<p>trap：陷入，在遇到系统调用、中断、异常等操作的时候，CPU状态改变成内核态这个过程就是陷入</p>
+</li>
+<li>
+<p>异常：</p>
+</li>
+<li>
+<p>中断：</p>
+</li>
+<li>
+<p>trapframe：CPU状态切换到内核态时，需要保存当前进程的上下文，这就是用来保存的结构体，切换回用户态时会将上下文取出用来恢复状态</p>
+</li>
+<li>
+<p>互斥：</p>
+</li>
+<li>
+<p>ecall</p>
+</li>
+<li>
+<p>sepc</p>
+</li>
+<li>
+<p>scause</p>
+</li>
+<li>
+<p>stval</p>
+</li>
+<li>
+<p>sstatus</p>
+</li>
+<li>
+<p>ra</p>
+</li>
+<li>
+<p>fp</p>
+</li>
+<li>
+<p>sp</p>
+</li>
+<li>
+<p>pc</p>
+</li>
+<li>
+<p>SBI</p>
+</li>
+<li>
+<p>timer interrupt</p>
+</li>
+<li>
+<p>page fault</p>
+</li>
+</ul>
+<h4 id="系统调用-1">系统调用
+</h4><ul>
+<li>
+<p>syscall：系统调用，用户态如果需要执行内核态权限的操作就需要它，由用户态陷入内核态进行</p>
+</li>
+<li>
+<p>syscall 分发表：</p>
+</li>
+<li>
+<p>系统调用号</p>
+</li>
+<li>
+<p>syscall 参数</p>
+</li>
+<li>
+<p>sys_xxx</p>
+</li>
+<li>
+<p>返回值寄存器</p>
+</li>
+<li>
+<p>用户态封装函数</p>
+</li>
+<li>
+<p>trace</p>
+</li>
+</ul>
+<h4 id="程序构建">程序构建
+</h4><ul>
+<li>
+<p>交叉编译：在一种架构机器上将程序源文件编译成另一种架构的可执行文件</p>
+</li>
+<li>
+<p>ELF：</p>
+</li>
+<li>
+<p>uint64_t：64位无符号整数，在 64 位系统里，经常用来存地址、寄存器值、指针内存数据，因为 64 位地址本身就是一个 64 位数字</p>
+<ul>
+<li><code>uint</code> = unsigned int</li>
+<li><code>64</code> = 64 位</li>
+<li><code>_t</code> = type</li>
+</ul>
+</li>
+<li>
+<p><code>argaddr(0, &amp;user_ptr)</code>就是在从这里取出第0个参数解析成地址，<code>argint(1, &amp;len)</code>就是取出第一个参数解析成int</p>
+</li>
+<li>
+<p>字段</p>
+</li>
+<li>
+<p>ELF Header</p>
+</li>
+<li>
+<p>Program Header</p>
+</li>
+<li>
+<p>PT_LOAD</p>
+</li>
+<li>
+<p>Segment</p>
+</li>
+<li>
+<p>Section</p>
+</li>
+<li>
+<p><code>.text</code></p>
+</li>
+<li>
+<p><code>.data</code></p>
+</li>
+<li>
+<p><code>.bss</code></p>
+</li>
+<li>
+<p><code>.rodata</code></p>
+</li>
+<li>
+<p>静态链接</p>
+</li>
+<li>
+<p>动态链接</p>
+</li>
+<li>
+<p>addr2line</p>
+</li>
+<li>
+<p>objdump</p>
+</li>
+<li>
+<p>readelf</p>
+</li>
+</ul>
+<h4 id="文件系统-1">文件系统
+</h4><ul>
+<li>fd</li>
+<li>file</li>
+<li>inode</li>
+<li>目录项</li>
+<li>簇</li>
+<li>簇链</li>
+<li>FAT</li>
+<li>block buffer</li>
+<li>bread</li>
+<li>brelse</li>
+<li>bwrite</li>
+<li>路径查找</li>
+<li>根目录</li>
+</ul>
+<h3 id="流程描述">流程描述
+</h3><ul>
+<li>
+<p>系统启动流程：bootloader &gt; kernel &gt; 初始化内存与文件系统 &gt; 创建第一个用户进程 &gt; exec(init0) &gt; 进入shell</p>
+</li>
+<li>
+<p>系统调用流程：用户程序调用 syscall &gt; 参数与 syscall 编号写入寄存器 &gt; trap &gt; CPU 陷入内核态 &gt; 保存上下文到 trapframe &gt; 内核根据 syscall 编号找到对应处理函数 &gt; 解析参数并执行系统调用 &gt; 返回值写入寄存器 &gt; 恢复上下文 &gt; 返回用户态继续执行</p>
+</li>
+<li>
+<p>程序加载流程：调用 exec &gt; 读取 ELF &gt; 遍历 Program Header &gt; 找到 PT_LOAD 段 &gt; mmap_map 创建 VMA &gt; loadseg 加载段内容 &gt; 设置入口地址 &gt; 进入新程序执行</p>
+</li>
+<li>
+<p>异常处理流程</p>
+</li>
+<li>
+<p>时钟中断调度流程</p>
+</li>
+<li>
+<p>文件读取流程</p>
+</li>
+<li>
+<p>FAT32 路径查找流程</p>
+</li>
+<li>
+<p>FAT32 簇链读取流程</p>
+</li>
+<li>
+<p>backtrace 回溯流程</p>
+</li>
+<li>
+<p>内核线程创建流程</p>
+</li>
+<li>
+<p>page fault 处理流程</p>
+</li>
+<li>
+<p>上下文切换流程</p>
+</li>
+</ul>
+<h3 id="文件作用">文件作用
+</h3><ul>
+<li>
+<p>系统调用：
+常见文件：kernel/syscall.h、kernel/syscall.c、kernel/sysproc.c、user/user.h、user/usys.pl、Makefile
+常见方法：分配 syscall 编号 → 在 syscall 表注册 → 写 sys_xxx → user.h 声明 → usys.pl 加入口 → 写用户测试程序</p>
+</li>
+<li>
+<p>进程：
+常见文件：kernel/proc.h、kernel/proc.c、kernel/sysproc.c、kernel/trap.c
+常见方法：PCB 加字段 → fork 复制或初始化字段 → scheduler/exit/wait 中处理状态 → syscall 提供接口</p>
+</li>
+<li>
+<p>调度：
+常见文件：kernel/proc.h、kernel/proc.c、kernel/trap.c
+常见方法：PCB 加调度字段 → timer interrupt 中更新 → scheduler 中选择进程 → yield 触发切换</p>
+</li>
+<li>
+<p>内存：
+常见文件：kernel/vm.c、kernel/proc.c、kernel/memlayout.h、kernel/riscv.h
+常见方法：页表遍历 → walk 查 PTE → mappages 建映射 → uvmunmap 释放 → copyin/copyout 处理用户地址</p>
+</li>
+<li>
+<p>程序加载：
+常见文件：kernel/exec.c、kernel/elf.h、kernel/proc.c、kernel/vm.c
+常见方法：读取 ELF 头 → 遍历 program header → 分配地址空间 → 加载段 → 设置用户栈和入口地址</p>
+</li>
+<li>
+<p>文件系统：
+常见文件：kernel/fs.c、kernel/file.c、kernel/sysfile.c、kernel/fcntl.h
+常见方法：从 fd 找 file → 从 file 找 inode → ilock → readi/writei → iunlock</p>
+</li>
+<li>
+<p>异常与中断</p>
+</li>
+<li>
+<p>ELF 加载</p>
+</li>
+<li>
+<p>内核线程</p>
+</li>
+<li>
+<p>磁盘块缓存</p>
+</li>
+<li>
+<p>FAT32 文件系统</p>
+</li>
+<li>
+<p>调试工具</p>
+</li>
+<li>
+<p>用户程序</p>
+</li>
+<li>
+<p>QEMU 启动脚本</p>
+</li>
+<li>
+<p>GDB 调试脚本</p>
+</li>
+</ul>
 
 </section>
 
@@ -4399,7 +4609,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">139.05</span> 
+      <span class="number-highlight">139.38</span> 
       k 字
   </div>
   <div>
