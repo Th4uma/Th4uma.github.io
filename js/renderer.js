@@ -1,4 +1,8 @@
 var RENDERER = {
+    // Codex 作用：底部小鱼/水面填充色统一在这里维护。
+    // 说明：页面实际加载的是 static/js/renderer.js，不是 static/renderer.js。
+    // 改完后如果浏览器仍显示旧颜色，强刷页面；模板已给脚本 URL 加版本参数降低缓存影响。
+    FISH_FILL_STYLE : 'hsla(253, 16%, 41%, 0.81)',
     POINT_INTERVAL : 5,
     FISH_COUNT : 3,
     MAX_INTERVAL_COUNT : 50,
@@ -161,7 +165,7 @@ var RENDERER = {
         requestAnimationFrame(this.render);
         this.controlStatus();
         this.context.clearRect(0, 0, this.width, this.height);
-        this.context.fillStyle = 'hsla(254, 24%, 58%, 0.79)';
+        this.context.fillStyle = this.FISH_FILL_STYLE;
         
         for(var i = 0, count = this.fishes.length; i < count; i++){
             this.fishes[i].render(this.context);

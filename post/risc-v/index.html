@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/risc-v/'>
 
-<link rel="stylesheet" href="/scss/style.min.5628d2deac1bf194da1f5f02d44d440f75ea82c7054a2731bfca56da242498bb.css"><meta property='og:title' content="基于RISC-V架构的操作系统学习">
+<link rel="stylesheet" href="/scss/style.min.8ca45b1392e2faa3a62076fb2c69c6fd176c2644de45dda9647e7cfae513a908.css"><meta property='og:title' content="基于RISC-V架构的操作系统学习">
 <meta property='og:description' content="反复横跳">
 <meta property='og:url' content='https://th4uma.github.io/post/risc-v/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -57,7 +57,7 @@
                     
                     
                         
-                        <img src="/img/avatar_hu_3258497a308b47ee.png" width="300"
+                        <img src="/img/avatar_hu_b357717c5551bd98.png" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -374,10 +374,12 @@ unicode: "f6d2"
             <li><a href="#时间片主动让出">时间片主动让出</a></li>
           </ol>
         </li>
-        <li><a href="#时钟中断111">时钟中断111</a>
+        <li><a href="#时钟中断-1">时钟中断</a>
           <ol>
-            <li><a href="#实现">实现</a></li>
-            <li><a href="#实现-1">实现</a></li>
+            <li><a href="#中断入口">中断入口</a></li>
+            <li><a href="#识别时钟中断">识别时钟中断</a></li>
+            <li><a href="#中断处理">中断处理</a></li>
+            <li><a href="#验证-3">验证</a></li>
           </ol>
         </li>
         <li><a href="#踩坑记录-3">踩坑记录</a></li>
@@ -390,20 +392,20 @@ unicode: "f6d2"
             <li><a href="#lru链表初始化">LRU链表初始化</a></li>
             <li><a href="#lru缓存获取">LRU缓存获取</a></li>
             <li><a href="#lru缓存释放">LRU缓存释放</a></li>
-            <li><a href="#验证-3">验证</a></li>
+            <li><a href="#验证-4">验证</a></li>
           </ol>
         </li>
         <li><a href="#fat32簇链">FAT32簇链</a>
           <ol>
             <li><a href="#函数实现-1">函数实现</a></li>
-            <li><a href="#验证-4">验证</a></li>
+            <li><a href="#验证-5">验证</a></li>
           </ol>
         </li>
         <li><a href="#fat32下的文件检索">FAT32下的文件检索</a>
           <ol>
             <li><a href="#逻辑">逻辑</a></li>
             <li><a href="#函数实现-2">函数实现</a></li>
-            <li><a href="#验证-5">验证</a></li>
+            <li><a href="#验证-6">验证</a></li>
           </ol>
         </li>
       </ol>
@@ -414,7 +416,7 @@ unicode: "f6d2"
           <ol>
             <li><a href="#原理-2">原理</a></li>
             <li><a href="#函数实现-3">函数实现</a></li>
-            <li><a href="#验证-6">验证</a></li>
+            <li><a href="#验证-7">验证</a></li>
           </ol>
         </li>
       </ol>
@@ -446,7 +448,6 @@ unicode: "f6d2"
 
 
             <main class="main full-width">
-
     <article class="has-image main-article">
     <header class="article-header">
         <div class="article-image">
@@ -1322,8 +1323,8 @@ unicode: "f6d2"
 <h2 id="系统调用">系统调用
 </h2><p>用户程序没有权限直接访问内核，只能通过 syscall 对内核执行操作。系统调用也就是用户态通过ecall陷入内核，内核根据syscall号调用对应函数，然后返回结果</p>
 <h3 id="用户态上下文1111">用户态上下文1111
-</h3><p>用户态上下文指用户程序运行时的寄存器状态，包括程序计数器、栈指针、函数参数寄存器、返回地址等信息。用户程序通过系统调用、异常或中断进入内核态时，CPU 需要保存这些状态，否则内核处理完成后就无法回到原来的用户程序继续执行。</p>
-<p>在这个实验框架中，用户态上下文保存在 <code>trapframe</code> 中。每个进程的 PCB 中都有一个 <code>trapframe</code> 指针。用户态陷入内核时，汇编入口会先把寄存器信息保存到这里，之后内核可以通过 <code>trapframe</code> 读取或修改用户程序的上下文。</p>
+</h3><p>用户态上下文就是用户程序运行时的寄存器状态。用户程序进入内核态时，CPU 需要保存这些状态，否则内核处理完成后就无法回到原来的用户程序继续执行。</p>
+<p>用户态上下文保存在 <code>trapframe</code> 中。每个进程的 PCB 中都有一个 <code>trapframe</code> 指针。用户态陷入内核时，汇编入口会先把寄存器信息保存到这里，之后内核可以通过 <code>trapframe</code> 读取或修改用户程序的上下文。</p>
 <p>这里要做的是让用户程序故意触发一次非法内存访问，然后在内核中查看它触发异常时的上下文。之后再修改 <code>trapframe</code> 中保存的返回地址，让程序跳过异常指令继续执行。</p>
 <h4 id="测试程序">测试程序
 </h4><p>在 <code>user/src/context_test.c</code> 中写入测试程序：</p>
@@ -3130,8 +3131,8 @@ unicode: "f6d2"
 </div>
 </div><p>这里的 <code>p</code> 是调度器刚刚切换过去运行的进程。<code>swtch</code> 前的 <code>p</code> 是将要运行的进程，<code>swtch</code> 返回后的 <code>p</code> 是刚刚运行完并让出 CPU 的同一个进程。<code>swtch</code> 返回后控制权回到了调度器，所以此时可以通过 <code>p-&gt;yield_reason</code> 判断它刚才为什么让出 CPU</p>
 <p>这样如果进程因为 <code>time_slice</code> 减到 0 被切走，就会打印时间片耗尽，如果没有被标记为 <code>YIELD_TIMESLICE</code>，就说明是其他情况导致的yield</p>
-<img src="62.png" style="width: 50%;" />
-<p>内核main中有一个叫做<code>scavenger</code>的内核线程，它会做出主动让出调度器的动作。运行它之后，输出中会更容易看到主动让出的提示，因为它会主动调用 <code>yield()</code></p>
+<img src="62.png" style="width: 40%;" />
+<p>内核<code>main</code>中有一个叫做<code>scavenger</code>的内核线程，它会做出主动让出调度器的动作。运行它之后，输出中会更容易看到主动让出的提示，因为它会主动调用 <code>yield()</code></p>
 <p>在 <code>src/main.c</code> 中，把这一行注释去掉</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3143,15 +3144,15 @@ unicode: "f6d2"
 </div>
 </div><p>重新编译运行，发现输出中不停出现<code>yield voluntarily</code>，说明这个线程会循环调用yield</p>
 <img src="63.png" style="width: 30%;" />
-<h3 id="时钟中断111">时钟中断111
-</h3><p>时钟中断就是硬件定时器周期性打断 CPU，让内核重新获得控制权。如果没有时钟中断，一个进程只要不主动 <code>yield</code>，就可能一直占着 CPU。加入时钟中断后，内核可以定期进入调度逻辑，从而实现进程切换和时间片消耗</p>
-<h4 id="实现">实现
-</h4><p>中断和异常的入口在 <code>src/kernel/trap.c</code>，里面有两个入口函数：</p>
+<h3 id="时钟中断-1">时钟中断
+</h3><p>时钟中断就是硬件定时器周期性打断 CPU，让内核重新获得控制权。内核可以定期进入调度逻辑，从而实现进程切换和时间片消耗。如果没有时钟中断，一个进程只要不主动 <code>yield</code>，就可能一直占用 CPU</p>
+<h4 id="中断入口">中断入口
+</h4><p>中断和异常的入口在 <code>src/kernel/trap.c</code>，有两个入口函数：</p>
 <ul>
 <li><code>usertrap()</code>：处理来自用户态的 trap</li>
 <li><code>kerneltrap()</code>：处理来自内核态的 trap</li>
 </ul>
-<p>这两个函数都会根据 <code>scause</code> 判断 trap 的原因。如果是中断，就会进入 <code>when_irq</code> 分支，然后调用 <code>src/kernel/irq.c</code> 中的 <code>handle_irq(scause)</code></p>
+<p>这两个函数的判断逻辑如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -3170,43 +3171,11 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>handle_irq()</code> 中已经写好了时钟中断的处理逻辑，真正要补的是 <code>when_clock</code>，让它能匹配时钟中断</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">when_clock {
-</span></span><span class="line"><span class="cl">    if (cpuid() == 0) {
-</span></span><span class="line"><span class="cl">        clockintr();
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    reset_timer();
-</span></span><span class="line"><span class="cl">    if (p &amp;&amp; p-&gt;state == RUNNING &amp;&amp; !p-&gt;killed) {
-</span></span><span class="line"><span class="cl">    	// 临时打印，调试用
-</span></span><span class="line"><span class="cl">    	kprintf(&#34;[clock] pid=%d ticks=%d\n&#34;, p-&gt;pid, ticks);
-</span></span><span class="line"><span class="cl">    	
-</span></span><span class="line"><span class="cl">        yield();
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    break;
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这段逻辑表示识别到时钟中断后，先用 <code>clockintr()</code> 更新系统时间，再用 <code>reset_timer()</code> 设置下一次时钟中断。如果当前进程正在运行并且没有被杀死，就调用 <code>yield()</code> 让出 CPU</p>
-<h4 id="实现-1">实现
-</h4><p>可以看到 <code>when_clock</code> 定义在 <code>include/riscv.h</code> 中，目前还是 TODO。RISC-V 的 <code>scause</code> 最高位表示是否为中断，低位表示中断编号。Supervisor Timer Interrupt 的编号是 5，所以完整值是 <code>INTERRUPT + 5</code></p>
-<p>在 <code>include/riscv.h</code> 中添加</p>
+</div><p>最主要的一句是<code>handle_irq(scause) == -1</code>：</p>
+<p><code>scause</code> 是记录中断原因的寄存器。最高位为 1 表示发生了中断，剩余部分保存中断编号时钟中断进入这里后，会继续交给 <code>handle_irq()</code> 判断类型。返回 <code>-1</code> 表示中断没有被正常处理，跳转到 <code>kill</code></p>
+<h4 id="识别时钟中断">识别时钟中断
+</h4><p><code>INTERRUPT</code> 表示最高位的中断标记，时钟中断的编号是 5，因此它在 <code>scause</code> 中的值为 <code>INTERRUPT + 5</code></p>
+<p>在 <code>include/riscv.h</code> 中定义对应的宏：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -3225,25 +3194,68 @@ unicode: "f6d2"
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#define INTR_SOFT   (INTERRUPT  + 1)
-</span></span><span class="line"><span class="cl">//添加
-</span></span><span class="line"><span class="cl">#define INTR_TIMER  (INTERRUPT  + 5)
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">#define INTR_EXT    (INTERRUPT  + 9)
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">#define when_softirq \
-</span></span><span class="line"><span class="cl">    case INTR_SOFT:
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">#define when_hardirq \
-</span></span><span class="line"><span class="cl">    case INTR_EXT:
-</span></span><span class="line"><span class="cl">//添加
-</span></span><span class="line"><span class="cl">#define when_clock \
-</span></span><span class="line"><span class="cl">    case INTR_TIMER:
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#define INTR_SOFT   (INTERRUPT  + 1)
+</span></span></span><span class="line"><span class="cl"><span class="c1">//添加
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define INTR_TIMER  (INTERRUPT  + 5)
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#define INTR_EXT    (INTERRUPT  + 9)
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#define when_softirq \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    case INTR_SOFT:
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#define when_hardirq \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    case INTR_EXT:
+</span></span></span><span class="line"><span class="cl"><span class="c1">//添加
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define when_clock \
+</span></span></span><span class="line"><span class="cl"><span class="cp">    case INTR_TIMER:
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这表示原代码<code>when_clock</code>，在编译前会变成<code>case (INTERRUPT + 5)</code></p>
+<h4 id="中断处理">中断处理
+</h4><p>这里只需要实现<code>handle_irq()</code> 中的<code>when_clock</code>，让它能在时钟中断时调用<code>yield()</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">when_clock</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 识别到时钟中断
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nf">cpuid</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 更新系统时间
+</span></span></span><span class="line"><span class="cl">        <span class="nf">clockintr</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 设置下一次时钟中断
+</span></span></span><span class="line"><span class="cl">    <span class="nf">reset_timer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 当前进程正在运行并且没有被杀死
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">==</span> <span class="n">RUNNING</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">killed</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    	
+</span></span><span class="line"><span class="cl">    	<span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;[clock] pid=%d ticks=%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span> <span class="n">ticks</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    	<span class="c1">// 让出CPU
+</span></span></span><span class="line"><span class="cl">        <span class="nf">yield</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>因为 <code>handle_irq()</code> 中是 <code>switch (scause)</code>，所以 <code>when_clock</code> 最终需要展开成一个 <code>case</code>。这样当 <code>scause</code> 等于 <code>INTERRUPT + 5</code> 时，就会进入时钟中断处理分支</p>
-<p>重新编译运行，可以看到一直循环输出clock，说明时钟中断是周期性无限发生的</p>
-<img src="64.png" style="width: 50%;" />
+</div><h4 id="验证-3">验证
+</h4><p>重新编译运行，可以看到一直循环输出clock，说明时钟中断是周期性无限发生的</p>
+<img src="64.png" style="width: 20%;" />
 <h3 id="踩坑记录-3">踩坑记录
 </h3><blockquote>
 <p>编译时报错 <code>implicit declaration of function 'test_yield'</code></p>
@@ -3268,7 +3280,7 @@ unicode: "f6d2"
 <h2 id="文件系统">文件系统
 </h2><h3 id="磁盘块缓存">磁盘块缓存
 </h3><p>磁盘访问速度比内存慢很多，所以文件系统会在内存中维护一组块缓存，读取磁盘块时，先在缓存里查找。如果目标块已经存在，就直接返回缓存，否则再选择一个空闲缓存块回收，用它去缓存新的磁盘块</p>
-<p>这里使用 LRU 链表管理缓存块，LRU的淘汰特性是<strong>Least Recently Used</strong>，也就是<strong>最近最少使用</strong>。对于一个刚被使用完释放的块缓存，它应该是被最近使用的，所以应该移动到最头部的位置。最终链表头表示最近使用过的缓存，链表尾表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头部。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收</p>
+<p>这里使用 LRU 链表管理缓存块，LRU的淘汰特性是<strong>Least Recently Used</strong>，也就是<strong>最近最少使用</strong>。链表头表示最近使用过的缓存，链表尾表示最久没有使用的缓存。释放一个缓存块时，如果它已经没有外部引用，就把它移动到链表头。缓存未命中时，从链表尾部向前找 <code>refcnt == 0</code> 的块进行回收</p>
 <h4 id="lru链表初始化">LRU链表初始化
 </h4><p>具体实现在 <code>src/fs/bio.c</code>的<code>bcache_init</code>函数中</p>
 <div class="highlight"><div class="chroma">
@@ -3294,9 +3306,9 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl"><span class="nf">INIT_LIST_HEAD</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="c1">// 循环依次初始化每个缓存
 </span></span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="n">bcache</span><span class="p">.</span><span class="n">buf</span><span class="p">;</span> <span class="n">b</span> <span class="o">&lt;</span> <span class="n">bcache</span><span class="p">.</span><span class="n">buf</span> <span class="o">+</span> <span class="n">NBUF</span><span class="p">;</span> <span class="n">b</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 没被使用
+</span></span><span class="line"><span class="cl">    <span class="c1">// 没被引用
 </span></span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 没有加锁
+</span></span><span class="line"><span class="cl">    <span class="c1">// 初始化块号
 </span></span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="c1">// 没绑定磁盘设备
 </span></span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
@@ -3354,6 +3366,8 @@ unicode: "f6d2"
 </span><span class="lnt">40
 </span><span class="lnt">41
 </span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">static</span> <span class="kt">blk_buf_t</span> <span class="o">*</span><span class="nf">bget</span><span class="p">(</span><span class="n">uint</span> <span class="n">dev</span><span class="p">,</span> <span class="n">uint</span> <span class="n">blockno</span><span class="p">)</span> <span class="p">{</span>
@@ -3365,13 +3379,13 @@ unicode: "f6d2"
 </span></span></span><span class="line"><span class="cl">    <span class="nf">list_for_each_entry</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">,</span> <span class="n">lru</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="c1">// 当前块命中缓存，不需要重新回收缓存块
 </span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">==</span> <span class="n">dev</span> <span class="o">&amp;&amp;</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">==</span> <span class="n">blockno</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="c1">// 表示当前有多少调用者正在使用这个缓存块。只要大于0，这个缓存块就不能被改成保存其他磁盘块
+</span></span><span class="line"><span class="cl">            <span class="c1">// 当前调用者正在使用这个缓存块
 </span></span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span><span class="o">++</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">            <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache hit: block=%u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">blockno</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">			<span class="c1">// 释放全局锁
+</span></span><span class="line"><span class="cl">			<span class="c1">// 缓存查找和引用计数修改完成，因此释放全局锁
 </span></span></span><span class="line"><span class="cl">            <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="c1">// 获取当前缓存块自己的睡眠锁
+</span></span><span class="line"><span class="cl">            <span class="c1">// 之后这个块需要被读取数据，获取当前缓存块自己的睡眠锁
 </span></span></span><span class="line"><span class="cl">            <span class="nf">acquiresleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
@@ -3382,14 +3396,16 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">        <span class="c1">// 只有引用计数为 0 的缓存块才能被重新使用
 </span></span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache recycle: old=%u new=%u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span><span class="p">,</span> <span class="n">blockno</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">			<span class="c1">//更新设备号、块号、有效标记、引用计数
+</span></span><span class="line"><span class="cl">			<span class="c1">//进行替代，更新设备号、块号、有效标记、引用计数
 </span></span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">dev</span> <span class="o">=</span> <span class="n">dev</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span> <span class="o">=</span> <span class="n">blockno</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="c1">// valid设为 0 表示这个缓存块虽然已经绑定到了新的磁盘块号，但内容还没有真正从磁盘读入。之后上层读取时会再触发磁盘读入
+</span></span><span class="line"><span class="cl">            <span class="c1">// 表示这个缓存块虽然已经绑定到了新的磁盘块号，但内容还没有真正从磁盘读入。之后读取时会再触发磁盘读入
 </span></span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">valid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 当前调用已经占用这个缓存
+</span></span></span><span class="line"><span class="cl">            <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">			<span class="c1">// 之后 bread 会把磁盘数据读入这个缓存，因此释放全局锁获取睡眠锁
+</span></span></span><span class="line"><span class="cl">            <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="nf">acquiresleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">b</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="p">}</span>
@@ -3400,11 +3416,18 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>锁分为全局锁与睡眠锁</p>
-<p><code>bcache.lock</code> 是全局锁，只在查找缓存和修改 <code>refcnt</code> 时使用。找到目标缓存并增加 <code>refcnt</code> 后，就可以释放它，让其他进程继续访问缓存链表。</p>
-<p><code>b-&gt;lock</code> 是当前缓存自己的锁，用来保护 <code>b-&gt;data</code>。获取它之后，调用者才能安全读写这个缓存。获取睡眠锁可能需要等待，所以必须先释放全局锁，避免等待期间锁住整个缓存系统</p>
+</div><p><code>refcnt</code>统计当前缓存块调用者的数量。只要大于0，这个缓存块就不能被改成保存其他磁盘块</p>
+<p>锁分为全局锁与睡眠锁：</p>
+<ul>
+<li>
+<p><code>bcache.lock</code> 是全局锁，负责保护缓存链表和引用计数。只在查找缓存和修改 <code>refcnt</code> 时使用，防止多个进程同时修改链表。找到目标缓存并增加 <code>refcnt</code> 后，就可以释放它，让其他进程继续访问缓存链表</p>
+</li>
+<li>
+<p><code>b-&gt;lock</code> 是当前缓存自己的锁，用来保护当前缓存块中的具体内容 <code>b-&gt;data</code>，保证同一时间只有一个调用者修改它。获取睡眠锁可能需要等待，所以必须先释放全局锁，避免等待期间锁住整个缓存系统</p>
+</li>
+</ul>
 <h4 id="lru缓存释放">LRU缓存释放
-</h4><p>当上层访问完块缓存后，用 <code>brelse</code>来释放这个块缓存。函数将会先同步这个块缓存与磁盘的内容，然后归还块缓存的引用，当引用为0时，块缓存就成为了可被淘汰的状态</p>
+</h4><p>当上层访问完块缓存后，用 <code>brelse</code>来释放这个块缓存。函数会先同步这个块缓存与磁盘的内容，然后归还块缓存的引用，当引用为0时，块缓存就成为了可被淘汰的状态</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -3428,33 +3451,38 @@ unicode: "f6d2"
 </span><span class="lnt">19
 </span><span class="lnt">20
 </span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">brelse</span><span class="p">(</span><span class="kt">blk_buf_t</span> <span class="o">*</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">holdingsleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 说明调用者确实正在使用这个缓存块
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">holdingsleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">panic</span><span class="p">(</span><span class="s">&#34;brelse&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">bsync</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">releasesleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// 将缓存中被修改的内容同步回磁盘
+</span></span></span><span class="line"><span class="cl">    <span class="nf">bsync</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 调用者已经使用完，释放缓存块自己的锁，获取全局锁
+</span></span></span><span class="line"><span class="cl">    <span class="nf">releasesleep</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="nf">acquire</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span><span class="o">--</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// 临时验证输出：说明该缓存块已经没有外部引用，被移动到 LRU 链表头部
-</span></span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache release: block=%u move to head</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="nf">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// 当前调用者归还缓存块，引用计数减一
+</span></span></span><span class="line"><span class="cl">    <span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span><span class="o">--</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">	<span class="c1">// 这个缓存块已经没有外部引用
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       
+</span></span><span class="line"><span class="cl">        <span class="nf">kprintf</span><span class="p">(</span><span class="s">&#34;bcache release: block=%u move to head</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">blockno</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">		<span class="c1">// 将这个缓存块移动到 LRU 链表头部
+</span></span></span><span class="line"><span class="cl">        <span class="nf">list_del</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">        <span class="nf">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">// refcnt 和 LRU 链表修改完成，释放全局锁
+</span></span></span><span class="line"><span class="cl">    <span class="nf">release</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lock</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>brelse</code> 表示上层已经使用完这个块缓存。这里先同步缓存和磁盘内容，然后释放块自己的睡眠锁。之后修改全局缓存状态，所以需要获取 <code>bcache.lock</code>。</p>
-<p>当 <code>refcnt</code> 减到 0 时，说明这个缓存块当前已经没有外部引用。它刚刚被使用完，所以属于最近使用过的块，需要从原来的位置删除，再移动到 LRU 链表头部。</p>
+</div><p>当 <code>refcnt</code> 减到 0 时，说明这个缓存块当前已经没有外部引用。它刚刚被使用完，所以属于最近使用过的块，需要从原来的位置删除，再移动到 LRU 链表头部。这样链表尾部就会逐渐保留最久没有被使用的缓存块。之后缓存未命中时，从尾部反向遍历，就能优先回收最近最少使用的块</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -3465,9 +3493,13 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="nf">list_add</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">lru</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bcache</span><span class="p">.</span><span class="n">lru_head</span><span class="p">);</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这样链表尾部就会逐渐保留最久没有被使用的缓存块。之后缓存未命中时，从尾部反向遍历，就能优先回收最近最少使用的块。</p>
-<h4 id="验证-3">验证
-</h4><p>系统启动和读取文件时会触发块缓存读写，这里能看到缓存块的命中与移动</p>
+</div><blockquote>
+<p>思考：缓存未命中时，回收最尾部当前未被引用的块，那么替换后新的缓存块就在链表最尾部。假如连续两次发生未命中，第二次未命中时，就会替换第一次未命中替换来的缓存块，可它并不是最久未使用的块</p>
+<p>原因：发生替换就说明这个新缓存块要被使用了。使用完成后，<code>brelse</code>会把它移动到链表头，而不是我最开始理解的保留在链表尾部。因此刚替换的缓存不会立即再次被回收。我忽略了使用的过程</p>
+<p>替换的具体流程：更新块信息、 <code>refcnt=1</code> 、<code>bread</code> 从磁盘读入数据、<strong>使用缓存</strong>、 <code>refcnt=0</code>、移到头部</p>
+</blockquote>
+<h4 id="验证-4">验证
+</h4><p>系统启动和读取文件时会触发块缓存的读写，这里能看到缓存块的命中与移动，说明实现成功</p>
 <img src="56.png" style="width: 50%;" />
 <h3 id="fat32簇链">FAT32簇链
 </h3><p>FAT32 是一种显式链式分配文件系统。它会把分区空间划分为多个簇。一个簇由多个扇区组成，是 FAT32 分配存储空间的基本单位。文件内容不一定连续存放在磁盘上，而是按簇存储，一个文件可能占用多个簇</p>
@@ -3533,9 +3565,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>FAT32 的表项虽然占 32 位，但簇号只使用低 28 位。因此通过<code>answer &amp;= 0x0FFFFFFF;</code>，把高 4 位清除</p>
-<h4 id="验证-4">验证
+<h4 id="验证-5">验证
 </h4><p>重新编译运行后，可以看到系统在读取文件时不断打印当前簇号和后继簇号，后面启动 shell 时也能看到类似输出。这说明系统在加载用户程序时已经正常使用了簇链追踪功能</p>
-<img src="55.png" style="width: 40%;" />
+<img src="55.png" style="width: 50%;" />
 <h3 id="fat32下的文件检索">FAT32下的文件检索
 </h3><p>平时打开文件时，会传入一个文件名，比如 <code>test.txt</code>。文件系统会根据这个名字在目录中找到对应的目录项，之后再读取内容。FAT32 的目录项比较特殊，会涉及短文件名和长文件名，这里的框架已经把这些细节封装到函数里，所以只需要处理文件查找的逻辑即可</p>
 <p>具体方法是遍历当前目录中的每一个逻辑目录项，拿到它的文件名，然后和目标文件名比较。如果名字相同，就把这个目录项保存下来，同时记录它在目录中的偏移位置</p>
@@ -3557,7 +3589,7 @@ unicode: "f6d2"
 </div>
 </div><p>这个函数需要输出两份信息，同时还要用返回值表示成功或失败。C 函数只能直接返回一个值，所以这里采用指针输出</p>
 <ul>
-<li><code>fat</code>： FAT32 文件系统对象，里面保存簇大小和 FAT 表位置等文件系统信息</li>
+<li><code>fat</code>： FAT32 文件系统对象，里面保存簇大小和 FAT 表位置等</li>
 <li><code>dir_clus</code>：要遍历的目录簇起始簇号</li>
 <li><code>cname</code>：需要查找的目标文件名</li>
 <li><code>ret</code>：目录项的输出地址</li>
@@ -3676,7 +3708,7 @@ unicode: "f6d2"
 <li><code>helper-&gt;name</code> ：目标文件名</li>
 </ul>
 <p>比较长度用了 <code>strlen(helper-&gt;name) + 1</code>，是为了把字符串结尾的 <code>\0</code> 也比较进去。如果只比较目标文件名长度，可能会出现前缀误判。比如目标是 <code>abc</code>，当前文件名是 <code>abcd</code>，前三个字符相同，但这两个文件名并不一样。把 <code>\0</code> 一起比较后，<code>abc</code> 的第四个字符是字符串结束符，<code>abcd</code> 的第四个字符是 <code>d</code>，就不会被误判成同一个文件</p>
-<h4 id="验证-5">验证
+<h4 id="验证-6">验证
 </h4><p>重新编译运行，可以看到，<code>lookup_handler</code> 会从目录开头逐项比较当前文件名和目标文件名。找到 <code>sh</code> 后返回 <code>FR_OK</code>。最后系统正常进入 shell</p>
 <img src="54.png" style="width: 70%;" />
 <h2 id="进程间通信">进程间通信
@@ -3828,7 +3860,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="验证-6">验证
+</div><h4 id="验证-7">验证
 </h4><p>重新编译并运行，进入系统后运行测试程序</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3839,7 +3871,7 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>输入一串16个字母的序列<code>ABCDefghIJKLmnop</code>，如果传输成功，可以看到下面的输出</p>
-<img src="52.png" style="width: 70%;" />
+<img src="52.png" style="width: 60%;" />
 <p>这里的转换结果是由子进程通过管道传回父进程的。父进程只负责读取输入、发送接收数据、打印结果</p>
 <blockquote>
 <p>shell 里的 <code>|</code> 也是用管道实现的。比如<code>ls | grep test</code>，这个命令的意思是<code>ls</code> 列出当前目录下的文件和目录，然后把输出结果交给 <code>grep test</code> 继续处理，<code>grep test</code> 从这些内容中筛选出包含 <code>test</code> 的行</p>
@@ -4258,6 +4290,7 @@ unicode: "f6d2"
 
     
 
+    
         
         <div id="viewCount">
             <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
@@ -4275,9 +4308,10 @@ unicode: "f6d2"
         #viewCount {
              position: absolute;   
              left: 280px;            
-            transform: translateY(-50%) translateY(260px);
+             transform: translateY(-50%) translateY(260px);
         }
-    </style></footer>
+    </style>
+    </footer>
 
 
     
@@ -4317,6 +4351,7 @@ unicode: "f6d2"
     
         
         
+            
   <div id="like-container">
     <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
     <span id="like-count">0</span>
@@ -4433,6 +4468,7 @@ unicode: "f6d2"
 
 
 
+        
     
 
 	
@@ -4526,7 +4562,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">144.17</span> 
+      <span class="number-highlight">144.43</span> 
       k 字
   </div>
   <div>
@@ -4863,7 +4899,7 @@ if (busuanziValue) {
     console.log('particles.js loaded - callback');
   });
 </script>
-<script src="/js/renderer.js"></script>
+<script src="/js/renderer.js?v=1785603009"></script>
 
 
 <script>
@@ -4967,7 +5003,8 @@ if (busuanziValue) {
 
 :root {
   --base-font-family: 'songti';
-  --code-font-family: 'Ubuntu-R';
+   
+  --code-font-family: ui-monospace, "Cascadia Mono", "JetBrains Mono", "Fira Code", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 body {
