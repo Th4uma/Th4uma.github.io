@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/l3ctf25/'>
 
-<link rel="stylesheet" href="/scss/style.min.b28345fa8d27e7fee9b48e4d895b6891345c77f9335bc941c10fc72de87c8585.css"><meta property='og:title' content="L3HCTF 2025 misc wp">
+<link rel="stylesheet" href="/scss/style.min.e45a4b4fee3965b11b50079dea4dae8a1ebddbd87bf57a563d0446a33bffe71f.css"><meta property='og:title' content="L3HCTF 2025 misc wp">
 <meta property='og:description' content="也是非常菜，只做出来第一道题，赛后跟着wp复现一下其他题目\n量子双生影\r解压出webp文件，是ai处理过的二维码，写脚本转换成黑白\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 from PIL import Image def rgb_to_black_white(image_path, output_path=&#34;bw_output.png&#34;, threshold=128): img = Image.open(image_path).convert(&#39;RGB&#39;) pixels = img.load() for y in range(img.height): for x in range(img.width): r, g, b = pixels[x, y] brightness = 0.299 * r + 0.587 * g + 0.114 * b if brightness &lt; threshold: pixels[x, y] = (0, 0, 0) else: pixels[x, y] = (255, 255, 255) img.save(output_path) print(f&#34;已生成黑白图：{output_path}&#34;) rgb_to_black_white(&#34;stream2.webp&#34;, &#34;bw_output.png&#34;, threshold=128) 扫第二个二维码\n">
 <meta property='og:url' content='https://th4uma.github.io/post/l3ctf25/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -957,7 +957,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">30</span> 
       篇 ，总计 
-      <span class="number-highlight">147.33</span> 
+      <span class="number-highlight">150.75</span> 
       k 字
   </div>
   <div>
@@ -1166,9 +1166,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1785692091"></script>
+<script src="/js/renderer.js?v=1785865945"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1785692091"></script>
+<script defer src="/js/codex-bg-motion.js?v=1785865945"></script>
 
 
 <script>

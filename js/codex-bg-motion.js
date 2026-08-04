@@ -23,12 +23,12 @@
     edge: 18,
     gap: 88,
     moveEvery: 5000,
-    moveCount: 3,
+    moveCount: 4,
     weights: [0.375, 0.25, 0.375],
     duration: 5000,
     stagger: [200, 420],
-    maxActive: 4,
-    maxStart: 2,
+    maxActive: 5,
+    maxStart: 3,
     dx: [-4,-3, -2, -1, 1, 2, 3, 4],
   };
 
