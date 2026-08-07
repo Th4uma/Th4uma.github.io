@@ -7,7 +7,95 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Sat, 13 Jun 2026 21:49:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 07 Aug 2026 12:08:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>IoT安全入门之环境搭建与固件分析</title>
+        <link>https://th4uma.github.io/post/iot/</link>
+        <pubDate>Fri, 07 Aug 2026 12:08:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/iot/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/iot.jpg" alt="Featured image of post IoT安全入门之环境搭建与固件分析" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+&lt;/h2&gt;&lt;p&gt;想学IoT安全，但前置知识过于庞杂，现有的教程往往默认读者有固件分析和逆向基础。我的基础并不好，几乎看不懂文章，不知道每一步在做什么，而系统补基础容易变成空中楼阁且劝退，因此陷入了两难的境地&lt;/p&gt;
+&lt;p&gt;这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与分析&lt;/p&gt;
+&lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
+&lt;/h2&gt;&lt;h3 id=&#34;固件获取&#34;&gt;固件获取
+&lt;/h3&gt;&lt;p&gt;首先是通过漏洞编号确认路由器型号与固件版本，比如这篇文章的&lt;a class=&#34;link&#34; href=&#34;https://ia601506.us.archive.org/22/items/RouterHG532e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;华为HG532 CVE-2017-17215 固件&lt;/a&gt;，得到一个二进制文件&lt;code&gt;HG532eV100R001C01B020_upgrade_packet.bin&lt;/code&gt;，这就是整个设备的软件镜像&lt;/p&gt;
+&lt;h3 id=&#34;主要工具&#34;&gt;主要工具
+&lt;/h3&gt;&lt;p&gt;固件分析用到的各种工具更适合Linux环境，因此我使用Ubuntu 24.04.4作为宿主机&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;binwalk&lt;/code&gt;：用于解包和分析固件，需要配套工具&lt;code&gt;sasquatch&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install binwalk
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone --quiet --depth 1 --branch &amp;#34;master&amp;#34; https://github.com/devttys0/sasquatch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd sasquatch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://github.com/devttys0/sasquatch/pull/47.patch &amp;amp;&amp;amp; patch -p1 &amp;lt; 47.patch &amp;amp;&amp;amp; sudo ./build.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;qemu&lt;/code&gt;：路由器固件大多是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install qemu qemu-user-static qemu-system
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ida&lt;/code&gt;：静态分析&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;网络配置&#34;&gt;网络配置
+&lt;/h3&gt;&lt;h2 id=&#34;固件分析&#34;&gt;固件分析
+&lt;/h2&gt;&lt;h3 id=&#34;固件解包&#34;&gt;固件解包
+&lt;/h3&gt;&lt;p&gt;需要通过解包从固件的二进制文件中中提取出文件系统。使用binwalk进行解包，解包后的文件系统在&lt;code&gt;squashfs-root/&lt;/code&gt;目录下&lt;/p&gt;
+&lt;p&gt;这个命令的意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;-e&lt;/code&gt; ：尝试提取&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;-M&lt;/code&gt;： 提取后继续递归扫描里面的内容&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;进入 &lt;code&gt;squashfs-root&lt;/code&gt; 后，可以看到类似普通 Linux 系统的目录结构。&lt;code&gt;bin&lt;/code&gt; 和 &lt;code&gt;sbin&lt;/code&gt; 中通常放可执行程序，&lt;code&gt;etc&lt;/code&gt; 中通常放配置文件，&lt;code&gt;lib&lt;/code&gt; 中通常放动态链接库&lt;/p&gt;
+&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Huawei Home Routers in Botnet Recruitment - Check Point Research&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://xz.aliyun.com/news/4451&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;CVE-2017-17215-HG532命令注入漏洞分析-先知社区&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/312&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;华为HG532系列路由器命令注入漏洞复现 CVE-2017-17215 - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/384&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;一些经典IoT漏洞的分析与复现（新手向） - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>防火墙翻越</title>
         <link>https://th4uma.github.io/post/firewall_vpn/</link>
         <pubDate>Sat, 13 Jun 2026 21:49:02 +0800</pubDate>
