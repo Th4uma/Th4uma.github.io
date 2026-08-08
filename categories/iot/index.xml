@@ -8,14 +8,14 @@
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
         <lastBuildDate>Fri, 07 Aug 2026 12:08:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/categories/iot/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>IoT安全入门之环境搭建与固件分析</title>
+        <title>IoT安全入门之固件分析</title>
         <link>https://th4uma.github.io/post/iot/</link>
         <pubDate>Fri, 07 Aug 2026 12:08:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/iot/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/iot.jpg" alt="Featured image of post IoT安全入门之环境搭建与固件分析" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://th4uma.github.io/images/cover/iot.jpg" alt="Featured image of post IoT安全入门之固件分析" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;想学IoT安全，但前置知识过于庞杂，现有的教程往往默认读者有固件分析和逆向基础。我的基础并不好，几乎看不懂文章，不知道每一步在做什么，而系统补基础容易变成空中楼阁且劝退，因此陷入了两难的境地&lt;/p&gt;
-&lt;p&gt;这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与分析&lt;/p&gt;
+&lt;p&gt;这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与逆向分析&lt;/p&gt;
 &lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
 &lt;/h2&gt;&lt;h3 id=&#34;固件获取&#34;&gt;固件获取
 &lt;/h3&gt;&lt;p&gt;首先是通过漏洞编号确认路由器型号与固件版本，比如这篇文章的&lt;a class=&#34;link&#34; href=&#34;https://ia601506.us.archive.org/22/items/RouterHG532e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -34,37 +34,28 @@
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install binwalk
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install binwalk
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone --quiet --depth 1 --branch &amp;#34;master&amp;#34; https://github.com/devttys0/sasquatch
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cd sasquatch
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://github.com/devttys0/sasquatch/pull/47.patch &amp;amp;&amp;amp; patch -p1 &amp;lt; 47.patch &amp;amp;&amp;amp; sudo ./build.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone --quiet --depth &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; --branch &lt;span class=&#34;s2&#34;&gt;&amp;#34;master&amp;#34;&lt;/span&gt; https://github.com/devttys0/sasquatch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; sasquatch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;wget https://github.com/devttys0/sasquatch/pull/47.patch &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; patch -p1 &amp;lt; 47.patch &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; sudo ./build.sh
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;qemu&lt;/code&gt;：路由器固件大多是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ida&lt;/code&gt;：对 ELF 程序进行静态分析&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;qemu&lt;/code&gt;：路由器固件一般是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install qemu qemu-user-static qemu-system
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install qemu qemu-user-static qemu-system
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;ida&lt;/code&gt;：静态分析&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;网络配置&#34;&gt;网络配置
-&lt;/h3&gt;&lt;h2 id=&#34;固件分析&#34;&gt;固件分析
+&lt;/div&gt;&lt;h2 id=&#34;固件分析&#34;&gt;固件分析
 &lt;/h2&gt;&lt;h3 id=&#34;固件解包&#34;&gt;固件解包
-&lt;/h3&gt;&lt;p&gt;需要通过解包从固件的二进制文件中中提取出文件系统。使用binwalk进行解包，解包后的文件系统在&lt;code&gt;squashfs-root/&lt;/code&gt;目录下&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;使用binwalk进行解包，也就是从固件的二进制文件中提取出文件系统。解包后的文件系统在&lt;code&gt;squashfs-root/&lt;/code&gt;目录下&lt;/p&gt;
 &lt;p&gt;这个命令的意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -82,8 +73,244 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;进入 &lt;code&gt;squashfs-root&lt;/code&gt; 后，可以看到类似普通 Linux 系统的目录结构。&lt;code&gt;bin&lt;/code&gt; 和 &lt;code&gt;sbin&lt;/code&gt; 中通常放可执行程序，&lt;code&gt;etc&lt;/code&gt; 中通常放配置文件，&lt;code&gt;lib&lt;/code&gt; 中通常放动态链接库&lt;/p&gt;
+&lt;/div&gt;&lt;h3 id=&#34;文件分类&#34;&gt;文件分类
+&lt;/h3&gt;&lt;p&gt;进入 &lt;code&gt;squashfs-root&lt;/code&gt; 后，可以看到类似普通 Linux 系统的目录结构。&lt;code&gt;bin&lt;/code&gt; 和 &lt;code&gt;sbin&lt;/code&gt; 中是可执行程序，&lt;code&gt;etc&lt;/code&gt; 中是配置文件，&lt;code&gt;lib&lt;/code&gt; 中是动态链接库&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;注意到vscode只能打开&lt;code&gt;etc&lt;/code&gt;中的文件，可执行文件打开会乱码。这是因为它只能打开文本类文件，可执行文件是编译后的机器指令&lt;/p&gt;
+&lt;p&gt;使用下面的命令批量判断这些目录里每个文件的类型&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;file bin/* sbin/* etc/* lib/* usr/bin/* 2&amp;gt;/dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;这里筛选几个有代表性的输出：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/busybox: ELF 32-bit MSB executable, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, interpreter /lib/ld-uClibc.so.0, no section header
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这是一个 ELF 可执行程序&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ELF&lt;/code&gt;：Linux 下常见的二进制文件格式&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;32-bit&lt;/code&gt;：这是 32 位程序&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MSB&lt;/code&gt;：大端序，也就是高位字节放在前面&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MIPS&lt;/code&gt;：这个程序的架构是 MIPS&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MIPS32 rel2&lt;/code&gt;：MIPS 指令集版本&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dynamically linked&lt;/code&gt;：程序运行时需要依赖动态库&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;interpreter /lib/ld-uClibc.so.0&lt;/code&gt;：程序启动时需要通过这个动态链接器加载运行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;no section header&lt;/code&gt;：文件中没有 section header，很多固件程序会被精简掉这部分信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/cat: symbolic link to busybox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/ls:  symbolic link to busybox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/sh:  symbolic link to busybox
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这种文件是指向 BusyBox 的符号链接。它们并不是实现命令的二进制程序，真正的程序是 &lt;code&gt;busybox&lt;/code&gt;。因此无需分析这类文件，分析 &lt;code&gt;busybox&lt;/code&gt; 即可&lt;/p&gt;
+&lt;p&gt;嵌入式设备为了节省存储空间，经常用一个 BusyBox 实现很多常用命令。系统调用 &lt;code&gt;ls&lt;/code&gt; 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sbin/init: symbolic link to ../bin/busybox
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;init&lt;/code&gt; 和系统启动流程有关，也指向 BusyBox&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/startbsp: POSIX shell script, ASCII text executable
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这是 shell 脚本，是文本文件，可以直接打开阅读。&lt;code&gt;ASCII text executable&lt;/code&gt; 表示它是文本且可执行。脚本能直接看出某些启动命令或配置逻辑，可以优先分析这类文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/sys: symbolic link to /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;指向 &lt;code&gt;/dev/null&lt;/code&gt;，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令，可以忽略&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc/inetd.conf: ASCII text
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc/inittab:    ASCII text
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc/profile:    ASCII text
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这些是普通文本文件，可以直接打开阅读。一般是重要的配置类文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc/servercert.pem: PEM certificate
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc/serverkey.pem:  PEM RSA private key
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;证书和私钥相关文件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PEM certificate&lt;/code&gt;：PEM 格式证书&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PEM RSA private key&lt;/code&gt;：PEM 格式 RSA 私钥&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lib/extra: directory
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这是普通目录，需要继续进入目录内部扫描文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lib/ld-uClibc-0.9.30.so: ELF 32-bit MSB shared object, MIPS, MIPS32 rel2 version 1 (SYSV), static-pie linked, no section header
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lib/ld-uClibc.so.0:      symbolic link to ld-uClibc-0.9.30.so
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这是动态链接器相关文件。前面很多 ELF 程序里都有 &lt;code&gt;interpreter /lib/ld-uClibc.so.0&lt;/code&gt;，说明这些程序运行时会通过这个路径找到动态链接器&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ld-uClibc.so.0&lt;/code&gt;：程序要找的动态链接器路径&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ld-uClibc-0.9.30.so&lt;/code&gt;：实际存在的具体版本文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;symbolic link&lt;/code&gt;：把通用名字指向具体版本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lib/libhttpapi.so: ELF 32-bit MSB shared object, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, no section header
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这是动态库，是供其他程序调用的库文件。固件中的程序运行时会依赖这些 &lt;code&gt;.so&lt;/code&gt; 文件&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;shared object&lt;/code&gt;：共享库文件&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MIPS&lt;/code&gt;：库文件的架构是 MIPS&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dynamically linked&lt;/code&gt;：它本身也可能依赖其他库&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;no section header&lt;/code&gt;：文件中没有 section header&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;启动流程&#34;&gt;启动流程
+&lt;/h3&gt;&lt;p&gt;这个固件里 &lt;code&gt;/sbin/init&lt;/code&gt; 指向 BusyBox，BusyBox 的 &lt;code&gt;init&lt;/code&gt; 会读取 &lt;code&gt;/etc/inittab&lt;/code&gt; 作为启动配置。所以观察启动流程首先看 &lt;code&gt;etc/inittab&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;::sysinit:/etc/init.d/rcS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;::respawn:-/bin/sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# tty2::askfirst:-/bin/sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#::ctrlaltdel:/bin/umount -a -r&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;::sysinit:/etc/init.d/rcS&lt;/code&gt;：&lt;code&gt;init&lt;/code&gt; 启动后，会在初始化阶段执行 &lt;code&gt;/etc/init.d/rcS&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;::respawn:-/bin/sh&lt;/code&gt;：反复拉起一个 shell。 &lt;code&gt;-&lt;/code&gt;表示让 shell 按 login shell 方式启动， login shell 会读取 &lt;code&gt;/etc/profile&lt;/code&gt;、&lt;code&gt;~/.profile&lt;/code&gt;这类配置&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;# tty2::askfirst:-/bin/sh&lt;/code&gt;：控制台登录。这行被注释了，不会执行&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;#::ctrlaltdel:/bin/umount -a -r&lt;/code&gt;：响应 Ctrl+Alt+Del 这类重启动作， &lt;code&gt;/bin/umount -a -r&lt;/code&gt; 是卸载文件系统。这行被注释了，不会执行&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里主要需要查看两个文件：&lt;code&gt;etc/init.d/rcS&lt;/code&gt;和&lt;code&gt;/etc/profile&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;etc/init.d/rcS&lt;/code&gt;只打印信息和设置 &lt;code&gt;PATH&lt;/code&gt;，没有继续启动其他服务。这条线断掉了&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/sh
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/bin/echo &lt;span class=&#34;s2&#34;&gt;&amp;#34;rcs&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;PATH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/sbin:/bin:/usr/bin:/usr/sbin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; PATH
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;RCS DONE&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;/etc/profile&lt;/code&gt;才是真正的目标，摘取其中重要的命令如下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;//脚本调用
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;swapdev
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;startbsp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;// 后面带有&lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;的是后台启动，持续运行的程序
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; -e /bin/atserver &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; atserver &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; -e /bin/usbdiagd &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; usbdiagd &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;atmcmdd &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;tcwdog -t &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; /dev/watchdog &lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;//最后的前台程序
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;初步分析刚刚筛选出来和启动相关的程序：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/swapdev&lt;/strong&gt;：环境准备的脚本，创建设备节点&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/startbsp&lt;/strong&gt;：环境初始化的脚本，挂载目录&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/atserver&lt;/strong&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/usbdiagd&lt;/strong&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/atmcmdd&lt;/strong&gt;：后台启动的 ELF 程序，常驻运行&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/tcwdog&lt;/strong&gt;：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 &lt;code&gt;tcwdog&lt;/code&gt;，&lt;code&gt;/dev/watchdog&lt;/code&gt; 是传给它的设备节点参数&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bin/mic&lt;/strong&gt;：最后执行的ELF程序，没有&lt;code&gt;&amp;amp;&lt;/code&gt;说明 &lt;code&gt;profile&lt;/code&gt; 执行到这里后， 它可能会接管后续流程&lt;/p&gt;
+&lt;h3 id=&#34;逆向分析&#34;&gt;逆向分析
+&lt;/h3&gt;&lt;p&gt;真正有分析价值的是&lt;code&gt;mic&lt;/code&gt;和&lt;code&gt;atmcmdd&lt;/code&gt;，这里先分析&lt;code&gt;mic&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;用ida打开，首先确认识别的文件类型与架构和之前&lt;code&gt;file&lt;/code&gt;命令输出的一致，其他保持默认即可&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;Shift + F12&lt;/code&gt;打开 Strings 窗口，这个窗口会把程序里能识别出来的可读字符串列出来，主要看最后一列即可&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Huawei Home Routers in Botnet Recruitment - Check Point Research&lt;/a&gt;&lt;/p&gt;

@@ -2,16 +2,16 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="分析目标是华为HG532">
-<title>IoT安全入门之环境搭建与固件分析</title>
+<title>IoT安全入门之固件分析</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/iot/'>
 
-<link rel="stylesheet" href="/scss/style.min.e14f87e740fade00ceaf1b3e9665f545a30320d15418134fce99f763ba8f4f23.css"><meta property='og:title' content="IoT安全入门之环境搭建与固件分析">
+<link rel="stylesheet" href="/scss/style.min.e14f87e740fade00ceaf1b3e9665f545a30320d15418134fce99f763ba8f4f23.css"><meta property='og:title' content="IoT安全入门之固件分析">
 <meta property='og:description' content="分析目标是华为HG532">
 <meta property='og:url' content='https://th4uma.github.io/post/iot/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-07T12:08:02&#43;08:00'/><meta property='article:modified_time' content='2026-08-07T12:08:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/iot.jpg' />
-<meta name="twitter:title" content="IoT安全入门之环境搭建与固件分析">
+<meta name="twitter:title" content="IoT安全入门之固件分析">
 <meta name="twitter:description" content="分析目标是华为HG532"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://th4uma.github.io/images/cover/iot.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -277,12 +277,14 @@ unicode: "f6d2"
       <ol>
         <li><a href="#固件获取">固件获取</a></li>
         <li><a href="#主要工具">主要工具</a></li>
-        <li><a href="#网络配置">网络配置</a></li>
       </ol>
     </li>
     <li><a href="#固件分析">固件分析</a>
       <ol>
         <li><a href="#固件解包">固件解包</a></li>
+        <li><a href="#文件分类">文件分类</a></li>
+        <li><a href="#启动流程">启动流程</a></li>
+        <li><a href="#逆向分析">逆向分析</a></li>
       </ol>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -302,7 +304,7 @@ unicode: "f6d2"
         <div class="article-image">
             <a href="/post/iot/">
                 
-                    <img src="/images/cover/iot.jpg" loading="lazy" alt="Featured image of post IoT安全入门之环境搭建与固件分析" />
+                    <img src="/images/cover/iot.jpg" loading="lazy" alt="Featured image of post IoT安全入门之固件分析" />
                 
             </a>
         </div>
@@ -325,7 +327,7 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/iot/">IoT安全入门之环境搭建与固件分析</a>
+            <a href="/post/iot/">IoT安全入门之固件分析</a>
         </h2>
     
         
@@ -369,7 +371,7 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>想学IoT安全，但前置知识过于庞杂，现有的教程往往默认读者有固件分析和逆向基础。我的基础并不好，几乎看不懂文章，不知道每一步在做什么，而系统补基础容易变成空中楼阁且劝退，因此陷入了两难的境地</p>
-<p>这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与分析</p>
+<p>这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与逆向分析</p>
 <h2 id="环境搭建">环境搭建
 </h2><h3 id="固件获取">固件获取
 </h3><p>首先是通过漏洞编号确认路由器型号与固件版本，比如这篇文章的<a class="link" href="https://ia601506.us.archive.org/22/items/RouterHG532e"  target="_blank" rel="noopener"
@@ -388,37 +390,28 @@ unicode: "f6d2"
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install binwalk
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install binwalk
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">git clone --quiet --depth 1 --branch &#34;master&#34; https://github.com/devttys0/sasquatch
-</span></span><span class="line"><span class="cl">cd sasquatch
-</span></span><span class="line"><span class="cl">wget https://github.com/devttys0/sasquatch/pull/47.patch &amp;&amp; patch -p1 &lt; 47.patch &amp;&amp; sudo ./build.sh
+</span></span><span class="line"><span class="cl">git clone --quiet --depth <span class="m">1</span> --branch <span class="s2">&#34;master&#34;</span> https://github.com/devttys0/sasquatch
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> sasquatch
+</span></span><span class="line"><span class="cl">wget https://github.com/devttys0/sasquatch/pull/47.patch <span class="o">&amp;&amp;</span> patch -p1 &lt; 47.patch <span class="o">&amp;&amp;</span> sudo ./build.sh
 </span></span></code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>qemu</code>：路由器固件大多是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令</li>
+<li><code>ida</code>：对 ELF 程序进行静态分析</li>
+<li><code>qemu</code>：路由器固件一般是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install qemu qemu-user-static qemu-system
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install qemu qemu-user-static qemu-system
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><code>ida</code>：静态分析</li>
-</ul>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"></code></pre></td></tr></table>
-</div>
-</div><h3 id="网络配置">网络配置
-</h3><h2 id="固件分析">固件分析
+</div><h2 id="固件分析">固件分析
 </h2><h3 id="固件解包">固件解包
-</h3><p>需要通过解包从固件的二进制文件中中提取出文件系统。使用binwalk进行解包，解包后的文件系统在<code>squashfs-root/</code>目录下</p>
+</h3><p>使用binwalk进行解包，也就是从固件的二进制文件中提取出文件系统。解包后的文件系统在<code>squashfs-root/</code>目录下</p>
 <p>这个命令的意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容</p>
 <ul>
 <li>
@@ -436,8 +429,244 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>进入 <code>squashfs-root</code> 后，可以看到类似普通 Linux 系统的目录结构。<code>bin</code> 和 <code>sbin</code> 中通常放可执行程序，<code>etc</code> 中通常放配置文件，<code>lib</code> 中通常放动态链接库</p>
+</div><h3 id="文件分类">文件分类
+</h3><p>进入 <code>squashfs-root</code> 后，可以看到类似普通 Linux 系统的目录结构。<code>bin</code> 和 <code>sbin</code> 中是可执行程序，<code>etc</code> 中是配置文件，<code>lib</code> 中是动态链接库</p>
 <img src="1.png" style="width: 90%;" />
+<p>注意到vscode只能打开<code>etc</code>中的文件，可执行文件打开会乱码。这是因为它只能打开文本类文件，可执行文件是编译后的机器指令</p>
+<p>使用下面的命令批量判断这些目录里每个文件的类型</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">file bin/* sbin/* etc/* lib/* usr/bin/* 2&gt;/dev/null
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="2.png" style="width: 90%;" />
+<p>这里筛选几个有代表性的输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">bin/busybox: ELF 32-bit MSB executable, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, interpreter /lib/ld-uClibc.so.0, no section header
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是一个 ELF 可执行程序</p>
+<ul>
+<li><code>ELF</code>：Linux 下常见的二进制文件格式</li>
+<li><code>32-bit</code>：这是 32 位程序</li>
+<li><code>MSB</code>：大端序，也就是高位字节放在前面</li>
+<li><code>MIPS</code>：这个程序的架构是 MIPS</li>
+<li><code>MIPS32 rel2</code>：MIPS 指令集版本</li>
+<li><code>dynamically linked</code>：程序运行时需要依赖动态库</li>
+<li><code>interpreter /lib/ld-uClibc.so.0</code>：程序启动时需要通过这个动态链接器加载运行</li>
+<li><code>no section header</code>：文件中没有 section header，很多固件程序会被精简掉这部分信息</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">bin/cat: symbolic link to busybox
+</span></span><span class="line"><span class="cl">bin/ls:  symbolic link to busybox
+</span></span><span class="line"><span class="cl">bin/sh:  symbolic link to busybox
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这种文件是指向 BusyBox 的符号链接。它们并不是实现命令的二进制程序，真正的程序是 <code>busybox</code>。因此无需分析这类文件，分析 <code>busybox</code> 即可</p>
+<p>嵌入式设备为了节省存储空间，经常用一个 BusyBox 实现很多常用命令。系统调用 <code>ls</code> 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">sbin/init: symbolic link to ../bin/busybox
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>init</code> 和系统启动流程有关，也指向 BusyBox</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">bin/startbsp: POSIX shell script, ASCII text executable
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是 shell 脚本，是文本文件，可以直接打开阅读。<code>ASCII text executable</code> 表示它是文本且可执行。脚本能直接看出某些启动命令或配置逻辑，可以优先分析这类文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">bin/sys: symbolic link to /dev/null
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>指向 <code>/dev/null</code>，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令，可以忽略</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">etc/inetd.conf: ASCII text
+</span></span><span class="line"><span class="cl">etc/inittab:    ASCII text
+</span></span><span class="line"><span class="cl">etc/profile:    ASCII text
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这些是普通文本文件，可以直接打开阅读。一般是重要的配置类文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">etc/servercert.pem: PEM certificate
+</span></span><span class="line"><span class="cl">etc/serverkey.pem:  PEM RSA private key
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>证书和私钥相关文件</p>
+<ul>
+<li><code>PEM certificate</code>：PEM 格式证书</li>
+<li><code>PEM RSA private key</code>：PEM 格式 RSA 私钥</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">lib/extra: directory
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是普通目录，需要继续进入目录内部扫描文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lib/ld-uClibc-0.9.30.so: ELF 32-bit MSB shared object, MIPS, MIPS32 rel2 version 1 (SYSV), static-pie linked, no section header
+</span></span><span class="line"><span class="cl">lib/ld-uClibc.so.0:      symbolic link to ld-uClibc-0.9.30.so
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是动态链接器相关文件。前面很多 ELF 程序里都有 <code>interpreter /lib/ld-uClibc.so.0</code>，说明这些程序运行时会通过这个路径找到动态链接器</p>
+<ul>
+<li><code>ld-uClibc.so.0</code>：程序要找的动态链接器路径</li>
+<li><code>ld-uClibc-0.9.30.so</code>：实际存在的具体版本文件</li>
+<li><code>symbolic link</code>：把通用名字指向具体版本</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lib/libhttpapi.so: ELF 32-bit MSB shared object, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, no section header
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是动态库，是供其他程序调用的库文件。固件中的程序运行时会依赖这些 <code>.so</code> 文件</p>
+<ul>
+<li><code>shared object</code>：共享库文件</li>
+<li><code>MIPS</code>：库文件的架构是 MIPS</li>
+<li><code>dynamically linked</code>：它本身也可能依赖其他库</li>
+<li><code>no section header</code>：文件中没有 section header</li>
+</ul>
+<h3 id="启动流程">启动流程
+</h3><p>这个固件里 <code>/sbin/init</code> 指向 BusyBox，BusyBox 的 <code>init</code> 会读取 <code>/etc/inittab</code> 作为启动配置。所以观察启动流程首先看 <code>etc/inittab</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">::sysinit:/etc/init.d/rcS
+</span></span><span class="line"><span class="cl">::respawn:-/bin/sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># tty2::askfirst:-/bin/sh</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#::ctrlaltdel:/bin/umount -a -r</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>::sysinit:/etc/init.d/rcS</code>：<code>init</code> 启动后，会在初始化阶段执行 <code>/etc/init.d/rcS</code></p>
+</li>
+<li>
+<p><code>::respawn:-/bin/sh</code>：反复拉起一个 shell。 <code>-</code>表示让 shell 按 login shell 方式启动， login shell 会读取 <code>/etc/profile</code>、<code>~/.profile</code>这类配置</p>
+</li>
+<li>
+<p><code># tty2::askfirst:-/bin/sh</code>：控制台登录。这行被注释了，不会执行</p>
+</li>
+<li>
+<p><code>#::ctrlaltdel:/bin/umount -a -r</code>：响应 Ctrl+Alt+Del 这类重启动作， <code>/bin/umount -a -r</code> 是卸载文件系统。这行被注释了，不会执行</p>
+</li>
+</ul>
+<blockquote>
+<p>这里主要需要查看两个文件：<code>etc/init.d/rcS</code>和<code>/etc/profile</code></p>
+</blockquote>
+<p><code>etc/init.d/rcS</code>只打印信息和设置 <code>PATH</code>，没有继续启动其他服务。这条线断掉了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl">/bin/echo <span class="s2">&#34;rcs&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">PATH</span><span class="o">=</span>/sbin:/bin:/usr/bin:/usr/sbin
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> PATH
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;RCS DONE&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>/etc/profile</code>才是真正的目标，摘取其中重要的命令如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">//脚本调用
+</span></span><span class="line"><span class="cl">swapdev
+</span></span><span class="line"><span class="cl">startbsp
+</span></span><span class="line"><span class="cl">// 后面带有<span class="p">&amp;</span>的是后台启动，持续运行的程序
+</span></span><span class="line"><span class="cl"><span class="nb">test</span> -e /bin/atserver <span class="o">&amp;&amp;</span> atserver <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">test</span> -e /bin/usbdiagd <span class="o">&amp;&amp;</span> usbdiagd <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl">atmcmdd <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl">tcwdog -t <span class="m">1</span> /dev/watchdog <span class="p">&amp;</span>
+</span></span><span class="line"><span class="cl">//最后的前台程序
+</span></span><span class="line"><span class="cl">mic
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>初步分析刚刚筛选出来和启动相关的程序：</p>
+<p><strong>bin/swapdev</strong>：环境准备的脚本，创建设备节点</p>
+<p><strong>bin/startbsp</strong>：环境初始化的脚本，挂载目录</p>
+<p><strong>bin/atserver</strong>：没有找到对应文件，可能是残留逻辑</p>
+<p><strong>bin/usbdiagd</strong>：没有找到对应文件，可能是残留逻辑</p>
+<p><strong>bin/atmcmdd</strong>：后台启动的 ELF 程序，常驻运行</p>
+<p><strong>bin/tcwdog</strong>：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 <code>tcwdog</code>，<code>/dev/watchdog</code> 是传给它的设备节点参数</p>
+<p><strong>bin/mic</strong>：最后执行的ELF程序，没有<code>&amp;</code>说明 <code>profile</code> 执行到这里后， 它可能会接管后续流程</p>
+<h3 id="逆向分析">逆向分析
+</h3><p>真正有分析价值的是<code>mic</code>和<code>atmcmdd</code>，这里先分析<code>mic</code></p>
+<p>用ida打开，首先确认识别的文件类型与架构和之前<code>file</code>命令输出的一致，其他保持默认即可</p>
+<img src="3.png" style="width: 90%;" />
+<p><code>Shift + F12</code>打开 Strings 窗口，这个窗口会把程序里能识别出来的可读字符串列出来，主要看最后一列即可</p>
+<img src="4.png" style="width: 70%;" />
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://research.checkpoint.com/2017/good-zero-day-skiddie/"  target="_blank" rel="noopener"
     >Huawei Home Routers in Botnet Recruitment - Check Point Research</a></p>
@@ -834,7 +1063,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">31</span> 
       篇 ，总计 
-      <span class="number-highlight">152.87</span> 
+      <span class="number-highlight">154.75</span> 
       k 字
   </div>
   <div>
@@ -1043,9 +1272,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1786125044"></script>
+<script src="/js/renderer.js?v=1786210038"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1786125044"></script>
+<script defer src="/js/codex-bg-motion.js?v=1786210038"></script>
 
 
 <script>
