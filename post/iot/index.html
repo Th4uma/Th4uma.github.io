@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://th4uma.github.io/post/iot/'>
 
-<link rel="stylesheet" href="/scss/style.min.e14f87e740fade00ceaf1b3e9665f545a30320d15418134fce99f763ba8f4f23.css"><meta property='og:title' content="IoT安全入门之固件分析">
+<link rel="stylesheet" href="/scss/style.min.42cce825416a462bc39da367891195712c6982c914cb79c35f5f4f2aa73fad96.css"><meta property='og:title' content="IoT安全入门之固件分析">
 <meta property='og:description' content="分析目标是华为HG532">
 <meta property='og:url' content='https://th4uma.github.io/post/iot/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
@@ -285,6 +285,7 @@ unicode: "f6d2"
         <li><a href="#文件分类">文件分类</a></li>
         <li><a href="#启动流程">启动流程</a></li>
         <li><a href="#逆向分析">逆向分析</a></li>
+        <li><a href="#main函数分析">main函数分析</a></li>
       </ol>
     </li>
     <li><a href="#参考">参考</a></li>
@@ -320,6 +321,10 @@ unicode: "f6d2"
         
             <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
                 网络安全
+            </a>
+        
+            <a href="/categories/reverse/" >
+                Reverse
             </a>
         
     </header>
@@ -662,10 +667,38 @@ unicode: "f6d2"
 <p><strong>bin/tcwdog</strong>：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 <code>tcwdog</code>，<code>/dev/watchdog</code> 是传给它的设备节点参数</p>
 <p><strong>bin/mic</strong>：最后执行的ELF程序，没有<code>&amp;</code>说明 <code>profile</code> 执行到这里后， 它可能会接管后续流程</p>
 <h3 id="逆向分析">逆向分析
-</h3><p>真正有分析价值的是<code>mic</code>和<code>atmcmdd</code>，这里先分析<code>mic</code></p>
+</h3><blockquote>
+<p>真正有分析价值的是<code>mic</code>和<code>atmcmdd</code>，这里先分析<code>mic</code></p>
+</blockquote>
 <p>用ida打开，首先确认识别的文件类型与架构和之前<code>file</code>命令输出的一致，其他保持默认即可</p>
 <img src="3.png" style="width: 90%;" />
-<p><code>Shift + F12</code>打开 Strings 窗口，这个窗口会把程序里能识别出来的可读字符串列出来，主要看最后一列即可</p>
+<p>打开<code>Functions window</code>窗口，它就是IDA 识别出来的函数目录</p>
+<img src="4.png" style="width: 100%;" />
+<p>这里的函数名分为几类：</p>
+<ul>
+<li><code>_init</code>：前面带有下划线的函数，一般是ELF和运行库产生的，可以不重点分析</li>
+<li><code>sscanf</code>：比较熟悉常见的名称，是libc 或系统接口，无需单独分析</li>
+<li><code>sub_40xxxx</code>：真实命名未知的函数，以地址临时命名</li>
+<li><code>ATP_xxx_yyy</code>：这里有大量<code>ATP</code>开头的函数，大致可以判断这就是这个固件的功能函数。其中<code>xxx</code>是功能分类，<code>yyy</code>是具体操作
+<ul>
+<li><code>ATP_UTIL_xxx</code>：util分类是通用功能，比如进程、socket、定时器。如<code>ATP_UTIL_ForkProcess</code>是util下创建子进程的函数</li>
+<li><code>ATP_MSG_xxx</code>：msg分类是消息与通信的实现，如发送、队列等。如<code>ATP_MSG_SendSimpleMsg</code>就是msg分类下发送简单信息的函数</li>
+<li><code>ATP_MIC_xxx</code>：如<code>ATP_MIC_SockSvrCreate</code>是<code>mic</code>分类下创建socket服务的函数。暂时看不出这个分类具体是什么功能，注意到有些函数调用了msg</li>
+</ul>
+</li>
+</ul>
+<p>然后打开<code>Imports</code>窗口，这里记录了程序调用的外部库函数</p>
+<img src="6.png" style="width: 100%;" />
+<p>双击一个函数进入，可以看到.extern，说明用到了这个函数名，但它的实现代码不在这个文件里。也就是说这部分保存的是外部模块的调用关系</p>
+<img src="7.png" style="width: 70%;" />
+<p>把光标放到函数上，然后按 <code>X</code>看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文</p>
+<img src="9.png" style="width: 30%;" />
+<p>回到<code>Functions window</code>，剩下的函数就是在这个文件中实现的。双击会出现这样的流程图，说明真正进入了函数的实现逻辑。注意到只有<code>ATP_MIC_xxx</code>在这个文件中实现，其他两个分类都是外部引用</p>
+<img src="8.png" style="width: 30%;" />
+<p>下一步回到main函数，根据实际调用关系继续分析</p>
+<h3 id="main函数分析">main函数分析
+</h3><p>双击main函数进入它的实现逻辑界面，首先看一下程序的流程图</p>
+<img src="5.png" style="width: 90%;" />
 <img src="4.png" style="width: 70%;" />
 <h2 id="参考">参考
 </h2><p><a class="link" href="https://research.checkpoint.com/2017/good-zero-day-skiddie/"  target="_blank" rel="noopener"
@@ -1063,7 +1096,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">31</span> 
       篇 ，总计 
-      <span class="number-highlight">154.75</span> 
+      <span class="number-highlight">155.46</span> 
       k 字
   </div>
   <div>
@@ -1272,9 +1305,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1786210038"></script>
+<script src="/js/renderer.js?v=1786633947"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1786210038"></script>
+<script defer src="/js/codex-bg-motion.js?v=1786633947"></script>
 
 
 <script>

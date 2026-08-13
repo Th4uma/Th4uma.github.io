@@ -306,10 +306,38 @@
 &lt;p&gt;&lt;strong&gt;bin/tcwdog&lt;/strong&gt;：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 &lt;code&gt;tcwdog&lt;/code&gt;，&lt;code&gt;/dev/watchdog&lt;/code&gt; 是传给它的设备节点参数&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;bin/mic&lt;/strong&gt;：最后执行的ELF程序，没有&lt;code&gt;&amp;amp;&lt;/code&gt;说明 &lt;code&gt;profile&lt;/code&gt; 执行到这里后， 它可能会接管后续流程&lt;/p&gt;
 &lt;h3 id=&#34;逆向分析&#34;&gt;逆向分析
-&lt;/h3&gt;&lt;p&gt;真正有分析价值的是&lt;code&gt;mic&lt;/code&gt;和&lt;code&gt;atmcmdd&lt;/code&gt;，这里先分析&lt;code&gt;mic&lt;/code&gt;&lt;/p&gt;
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;真正有分析价值的是&lt;code&gt;mic&lt;/code&gt;和&lt;code&gt;atmcmdd&lt;/code&gt;，这里先分析&lt;code&gt;mic&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;用ida打开，首先确认识别的文件类型与架构和之前&lt;code&gt;file&lt;/code&gt;命令输出的一致，其他保持默认即可&lt;/p&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;&lt;code&gt;Shift + F12&lt;/code&gt;打开 Strings 窗口，这个窗口会把程序里能识别出来的可读字符串列出来，主要看最后一列即可&lt;/p&gt;
+&lt;p&gt;打开&lt;code&gt;Functions window&lt;/code&gt;窗口，它就是IDA 识别出来的函数目录&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;这里的函数名分为几类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;_init&lt;/code&gt;：前面带有下划线的函数，一般是ELF和运行库产生的，可以不重点分析&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sscanf&lt;/code&gt;：比较熟悉常见的名称，是libc 或系统接口，无需单独分析&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sub_40xxxx&lt;/code&gt;：真实命名未知的函数，以地址临时命名&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ATP_xxx_yyy&lt;/code&gt;：这里有大量&lt;code&gt;ATP&lt;/code&gt;开头的函数，大致可以判断这就是这个固件的功能函数。其中&lt;code&gt;xxx&lt;/code&gt;是功能分类，&lt;code&gt;yyy&lt;/code&gt;是具体操作
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ATP_UTIL_xxx&lt;/code&gt;：util分类是通用功能，比如进程、socket、定时器。如&lt;code&gt;ATP_UTIL_ForkProcess&lt;/code&gt;是util下创建子进程的函数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ATP_MSG_xxx&lt;/code&gt;：msg分类是消息与通信的实现，如发送、队列等。如&lt;code&gt;ATP_MSG_SendSimpleMsg&lt;/code&gt;就是msg分类下发送简单信息的函数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ATP_MIC_xxx&lt;/code&gt;：如&lt;code&gt;ATP_MIC_SockSvrCreate&lt;/code&gt;是&lt;code&gt;mic&lt;/code&gt;分类下创建socket服务的函数。暂时看不出这个分类具体是什么功能，注意到有些函数调用了msg&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;然后打开&lt;code&gt;Imports&lt;/code&gt;窗口，这里记录了程序调用的外部库函数&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;双击一个函数进入，可以看到.extern，说明用到了这个函数名，但它的实现代码不在这个文件里。也就是说这部分保存的是外部模块的调用关系&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;把光标放到函数上，然后按 &lt;code&gt;X&lt;/code&gt;看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 30%;&#34; /&gt;
+&lt;p&gt;回到&lt;code&gt;Functions window&lt;/code&gt;，剩下的函数就是在这个文件中实现的。双击会出现这样的流程图，说明真正进入了函数的实现逻辑。注意到只有&lt;code&gt;ATP_MIC_xxx&lt;/code&gt;在这个文件中实现，其他两个分类都是外部引用&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 30%;&#34; /&gt;
+&lt;p&gt;下一步回到main函数，根据实际调用关系继续分析&lt;/p&gt;
+&lt;h3 id=&#34;main函数分析&#34;&gt;main函数分析
+&lt;/h3&gt;&lt;p&gt;双击main函数进入它的实现逻辑界面，首先看一下程序的流程图&lt;/p&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;img src=&#34;4.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
