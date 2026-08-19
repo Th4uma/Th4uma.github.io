@@ -318,7 +318,7 @@
 &lt;li&gt;&lt;code&gt;_init&lt;/code&gt;：前面带有下划线的函数，一般是ELF和运行库产生的，可以不重点分析&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;sscanf&lt;/code&gt;：比较熟悉常见的名称，是libc 或系统接口，无需单独分析&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;sub_40xxxx&lt;/code&gt;：真实命名未知的函数，以地址临时命名&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ATP_xxx_yyy&lt;/code&gt;：这里有大量&lt;code&gt;ATP&lt;/code&gt;开头的函数，大致可以判断这就是这个固件的功能函数。其中&lt;code&gt;xxx&lt;/code&gt;是功能分类，&lt;code&gt;yyy&lt;/code&gt;是具体操作
+&lt;li&gt;&lt;code&gt;ATP_xxx_yyy&lt;/code&gt;：这里有大量&lt;code&gt;ATP&lt;/code&gt;开头的函数，根据命名猜测是这个固件的功能函数。其中&lt;code&gt;xxx&lt;/code&gt;是功能分类，&lt;code&gt;yyy&lt;/code&gt;是具体操作
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;ATP_UTIL_xxx&lt;/code&gt;：util分类是通用功能，比如进程、socket、定时器。如&lt;code&gt;ATP_UTIL_ForkProcess&lt;/code&gt;是util下创建子进程的函数&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;ATP_MSG_xxx&lt;/code&gt;：msg分类是消息与通信的实现，如发送、队列等。如&lt;code&gt;ATP_MSG_SendSimpleMsg&lt;/code&gt;就是msg分类下发送简单信息的函数&lt;/li&gt;
@@ -326,19 +326,48 @@
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;然后打开&lt;code&gt;Imports&lt;/code&gt;窗口，这里记录了程序调用的外部库函数&lt;/p&gt;
-&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;双击一个函数进入，可以看到.extern，说明用到了这个函数名，但它的实现代码不在这个文件里。也就是说这部分保存的是外部模块的调用关系&lt;/p&gt;
+&lt;p&gt;双击一个函数进入，可能出现两种情况：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只有短短一行，可以看到.extern，说明引用了这个函数，但它的实现代码不在这个文件里。也就是说这部分保存的是调用关系&lt;/li&gt;
+&lt;/ul&gt;
 &lt;img src=&#34;7.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;把光标放到函数上，然后按 &lt;code&gt;X&lt;/code&gt;看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文&lt;/p&gt;
-&lt;img src=&#34;9.png&#34; style=&#34;width: 30%;&#34; /&gt;
-&lt;p&gt;回到&lt;code&gt;Functions window&lt;/code&gt;，剩下的函数就是在这个文件中实现的。双击会出现这样的流程图，说明真正进入了函数的实现逻辑。注意到只有&lt;code&gt;ATP_MIC_xxx&lt;/code&gt;在这个文件中实现，其他两个分类都是外部引用&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;出现这样的流程图，说明真正进入了函数的实现逻辑。在这里可以按 &lt;code&gt;F5&lt;/code&gt; 反编译，查看伪代码分析具体功能&lt;/li&gt;
+&lt;/ul&gt;
 &lt;img src=&#34;8.png&#34; style=&#34;width: 30%;&#34; /&gt;
-&lt;p&gt;下一步回到main函数，根据实际调用关系继续分析&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我这里报错&lt;code&gt;Sorry, the current file is not decompilable&lt;/code&gt;。说明反编译失败了，无法生成伪代码。因此后续分析主要通过函数调用进行&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;打开&lt;code&gt;Imports&lt;/code&gt;窗口，这里记录了程序调用的外部库函数，也就是.extern&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;把光标放到函数上，然后按 &lt;code&gt;X&lt;/code&gt;看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;注意到只有&lt;code&gt;ATP_MIC_xxx&lt;/code&gt;在这个文件中实现，其他两个分类都是外部引用。下一步回到main函数，根据实际调用关系继续分析&lt;/p&gt;
 &lt;h3 id=&#34;main函数分析&#34;&gt;main函数分析
 &lt;/h3&gt;&lt;p&gt;双击main函数进入它的实现逻辑界面，首先看一下程序的流程图&lt;/p&gt;
 &lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;img src=&#34;4.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;第一部分是函数的开头。这里调用了&lt;code&gt;strcmp&lt;/code&gt;，也就是字符串的比较，返回 0 表示两个字符串相同&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;左侧这部分调用了GetVersion，并且在最后直接退出，判断是用于打印版本信息&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;继续分析右侧。&lt;code&gt;puts&lt;/code&gt; 打印 &lt;code&gt;&amp;quot;Start mic now ...&amp;quot;&lt;/code&gt;说明这里是启动阶段。&lt;code&gt;signal&lt;/code&gt; 是注册信号处理函数。最后调用了init，是函数初始化部分&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;如果这里初始化失败，会输出错误信息，然后直接来到程序结束阶段&lt;/p&gt;
+&lt;img src=&#34;13.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;这里注意到报错输出直接说明了每一部分的作用：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Create inetd app failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建一个 inetd app，用于管理服务入口&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Append stdin to inetd app failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;把 stdin 加到这个入口的 socket server 里，说明它能接收来自标准输入的数据&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;14.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Create msg svr failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;创建 msg server，说明 &lt;code&gt;mic&lt;/code&gt; 有消息通信功能&lt;/p&gt;
+&lt;img src=&#34;15.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;&amp;ldquo;Load cfm failed: %x.\n&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;初始化 CFM 相关数据，也就是和配置与管理相关的部分&lt;/p&gt;
+&lt;img src=&#34;16.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;Huawei Home Routers in Botnet Recruitment - Check Point Research&lt;/a&gt;&lt;/p&gt;
