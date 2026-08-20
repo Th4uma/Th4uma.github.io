@@ -7,7 +7,59 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Fri, 07 Aug 2026 12:08:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 20 Aug 2026 18:48:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>CVE-2017-17215 华为HG532路由器命令注入漏洞分析</title>
+        <link>https://th4uma.github.io/post/hg532/</link>
+        <pubDate>Thu, 20 Aug 2026 18:48:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/hg532/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/hg532.jpg" alt="Featured image of post CVE-2017-17215 华为HG532路由器命令注入漏洞分析" /&gt;&lt;p&gt;CVE-2017-17215是一个远程命令执行漏洞。路由器通过37215端口提供UPnP管理服务，其中一项功能会处理外部传入的数据。固件没有正确过滤这些内容，攻击者可以把系统命令混入请求，最终让路由器以高权限执行&lt;/p&gt;
+&lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
+&lt;/h2&gt;&lt;p&gt;在&lt;code&gt;Ubuntu 24.04.4&lt;/code&gt;环境下进行下列操作&lt;/p&gt;
+&lt;h3 id=&#34;固件获取&#34;&gt;固件获取
+&lt;/h3&gt;&lt;p&gt;下载&lt;a class=&#34;link&#34; href=&#34;https://ia601506.us.archive.org/22/items/RouterHG532e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;华为HG532 CVE-2017-17215 固件&lt;/a&gt;，使用binwalk进行解包。解包后的文件系统在&lt;code&gt;squashfs-root/&lt;/code&gt;目录下&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;网络配置&#34;&gt;网络配置
+&lt;/h3&gt;&lt;p&gt;安装网络相关工具&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install bridge-utils uml-utilities
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;打开IP转发&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sysctl -w net.ipv4.ip_forward=1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
+&lt;p&gt;sudo apt install qemu-user-static qemu-system&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Huawei Home Routers in Botnet Recruitment - Check Point Research&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://xz.aliyun.com/news/4451&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;CVE-2017-17215-HG532命令注入漏洞分析-先知社区&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/312&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;华为HG532系列路由器命令注入漏洞复现 CVE-2017-17215 - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/384&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;一些经典IoT漏洞的分析与复现（新手向） - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>IoT安全入门之固件分析</title>
         <link>https://th4uma.github.io/post/iot/</link>
         <pubDate>Fri, 07 Aug 2026 12:08:02 +0800</pubDate>
@@ -15,13 +67,13 @@
         <guid>https://th4uma.github.io/post/iot/</guid>
         <description>&lt;img src="https://th4uma.github.io/images/cover/iot.jpg" alt="Featured image of post IoT安全入门之固件分析" /&gt;&lt;h2 id=&#34;前言&#34;&gt;前言
 &lt;/h2&gt;&lt;p&gt;想学IoT安全，但前置知识过于庞杂，现有的教程往往默认读者有固件分析和逆向基础。我的基础并不好，几乎看不懂文章，不知道每一步在做什么，而系统补基础容易变成空中楼阁且劝退，因此陷入了两难的境地&lt;/p&gt;
-&lt;p&gt;这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与逆向分析&lt;/p&gt;
+&lt;p&gt;这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程和逆向分析&lt;/p&gt;
 &lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
 &lt;/h2&gt;&lt;h3 id=&#34;固件获取&#34;&gt;固件获取
 &lt;/h3&gt;&lt;p&gt;首先是通过漏洞编号确认路由器型号与固件版本，比如这篇文章的&lt;a class=&#34;link&#34; href=&#34;https://ia601506.us.archive.org/22/items/RouterHG532e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;华为HG532 CVE-2017-17215 固件&lt;/a&gt;，得到一个二进制文件&lt;code&gt;HG532eV100R001C01B020_upgrade_packet.bin&lt;/code&gt;，这就是整个设备的软件镜像&lt;/p&gt;
 &lt;h3 id=&#34;主要工具&#34;&gt;主要工具
-&lt;/h3&gt;&lt;p&gt;固件分析用到的各种工具更适合Linux环境，因此我使用Ubuntu 24.04.4作为宿主机&lt;/p&gt;
+&lt;/h3&gt;&lt;p&gt;固件分析用到的各种工具更适合Linux环境，因此我使用&lt;code&gt;Ubuntu 24.04.4&lt;/code&gt;作为宿主机&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;binwalk&lt;/code&gt;：用于解包和分析固件，需要配套工具&lt;code&gt;sasquatch&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -43,28 +95,19 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;ida&lt;/code&gt;：对 ELF 程序进行静态分析&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;qemu&lt;/code&gt;：路由器固件一般是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;qemu&lt;/code&gt;：路由器固件一般是一套嵌入式Linux系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
 &lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install qemu qemu-user-static qemu-system
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo apt install qemu-user-static qemu-system
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;固件分析&#34;&gt;固件分析
+&lt;/div&gt;&lt;h2 id=&#34;固件初步处理&#34;&gt;固件初步处理
 &lt;/h2&gt;&lt;h3 id=&#34;固件解包&#34;&gt;固件解包
 &lt;/h3&gt;&lt;p&gt;使用binwalk进行解包，也就是从固件的二进制文件中提取出文件系统。解包后的文件系统在&lt;code&gt;squashfs-root/&lt;/code&gt;目录下&lt;/p&gt;
-&lt;p&gt;这个命令的意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;-e&lt;/code&gt; ：尝试提取&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;-M&lt;/code&gt;： 提取后继续递归扫描里面的内容&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -73,8 +116,13 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;文件分类&#34;&gt;文件分类
-&lt;/h3&gt;&lt;p&gt;进入 &lt;code&gt;squashfs-root&lt;/code&gt; 后，可以看到类似普通 Linux 系统的目录结构。&lt;code&gt;bin&lt;/code&gt; 和 &lt;code&gt;sbin&lt;/code&gt; 中是可执行程序，&lt;code&gt;etc&lt;/code&gt; 中是配置文件，&lt;code&gt;lib&lt;/code&gt; 中是动态链接库&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-e&lt;/code&gt; ：尝试提取&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-M&lt;/code&gt;： 提取后继续递归扫描里面的内容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;文件分类&#34;&gt;文件分类
+&lt;/h3&gt;&lt;p&gt;进入 &lt;code&gt;squashfs-root&lt;/code&gt; 后，可以看到类似Linux系统的目录结构。&lt;code&gt;bin&lt;/code&gt; 和 &lt;code&gt;sbin&lt;/code&gt; 中是可执行程序，&lt;code&gt;etc&lt;/code&gt; 中是配置文件，&lt;code&gt;lib&lt;/code&gt;中是动态链接库&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
 &lt;p&gt;注意到vscode只能打开&lt;code&gt;etc&lt;/code&gt;中的文件，可执行文件打开会乱码。这是因为它只能打开文本类文件，可执行文件是编译后的机器指令&lt;/p&gt;
 &lt;p&gt;使用下面的命令批量判断这些目录里每个文件的类型&lt;/p&gt;
@@ -119,8 +167,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/sh:  symbolic link to busybox
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;这种文件是指向 BusyBox 的符号链接。它们并不是实现命令的二进制程序，真正的程序是 &lt;code&gt;busybox&lt;/code&gt;。因此无需分析这类文件，分析 &lt;code&gt;busybox&lt;/code&gt; 即可&lt;/p&gt;
-&lt;p&gt;嵌入式设备为了节省存储空间，经常用一个 BusyBox 实现很多常用命令。系统调用 &lt;code&gt;ls&lt;/code&gt; 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;这种文件是指向&lt;code&gt;BusyBox&lt;/code&gt;的符号链接。它们并不是实现命令的二进制程序，真正的程序是&lt;code&gt;busybox&lt;/code&gt;。因此无需分析这类文件，分析 &lt;code&gt;busybox&lt;/code&gt;即可&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;嵌入式设备为了节省存储空间，经常用一个BusyBox实现很多常用命令。比如系统调用 &lt;code&gt;ls&lt;/code&gt; 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -147,7 +197,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bin/sys: symbolic link to /dev/null
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;指向 &lt;code&gt;/dev/null&lt;/code&gt;，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令，可以忽略&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;指向 &lt;code&gt;/dev/null&lt;/code&gt;，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -298,16 +348,16 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;初步分析刚刚筛选出来和启动相关的程序：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/swapdev&lt;/strong&gt;：环境准备的脚本，创建设备节点&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/startbsp&lt;/strong&gt;：环境初始化的脚本，挂载目录&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/atserver&lt;/strong&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/usbdiagd&lt;/strong&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/atmcmdd&lt;/strong&gt;：后台启动的 ELF 程序，常驻运行&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/tcwdog&lt;/strong&gt;：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 &lt;code&gt;tcwdog&lt;/code&gt;，&lt;code&gt;/dev/watchdog&lt;/code&gt; 是传给它的设备节点参数&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;bin/mic&lt;/strong&gt;：最后执行的ELF程序，没有&lt;code&gt;&amp;amp;&lt;/code&gt;说明 &lt;code&gt;profile&lt;/code&gt; 执行到这里后， 它可能会接管后续流程&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/swapdev&lt;/code&gt;：环境准备的脚本，创建设备节点&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/startbsp&lt;/code&gt;：环境初始化的脚本，挂载目录&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/atserver&lt;/code&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/usbdiagd&lt;/code&gt;：没有找到对应文件，可能是残留逻辑&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/atmcmdd&lt;/code&gt;：后台启动的 ELF 程序，常驻运行&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/tcwdog&lt;/code&gt;：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 &lt;code&gt;tcwdog&lt;/code&gt;，&lt;code&gt;/dev/watchdog&lt;/code&gt; 是传给它的设备节点参数&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;bin/mic&lt;/code&gt;：最后执行的ELF程序，没有&lt;code&gt;&amp;amp;&lt;/code&gt;说明 &lt;code&gt;profile&lt;/code&gt; 执行到这里后，它可能会接管后续流程&lt;/p&gt;
 &lt;h3 id=&#34;逆向分析&#34;&gt;逆向分析
 &lt;/h3&gt;&lt;blockquote&gt;
-&lt;p&gt;真正有分析价值的是&lt;code&gt;mic&lt;/code&gt;和&lt;code&gt;atmcmdd&lt;/code&gt;，这里先分析&lt;code&gt;mic&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;比较有分析价值的是&lt;code&gt;mic&lt;/code&gt;和&lt;code&gt;atmcmdd&lt;/code&gt;，这里先分析&lt;code&gt;mic&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;用ida打开，首先确认识别的文件类型与架构和之前&lt;code&gt;file&lt;/code&gt;命令输出的一致，其他保持默认即可&lt;/p&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 90%;&#34; /&gt;
@@ -328,55 +378,77 @@
 &lt;/ul&gt;
 &lt;p&gt;双击一个函数进入，可能出现两种情况：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;只有短短一行，可以看到.extern，说明引用了这个函数，但它的实现代码不在这个文件里。也就是说这部分保存的是调用关系&lt;/li&gt;
+&lt;li&gt;只有短短一行，可以看到&lt;code&gt;.extern&lt;/code&gt;，说明引用了这个函数，但它的实现代码不在这个文件里。也就是说这部分保存的是调用关系&lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;7.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 30%;&#34; /&gt;
 &lt;ul&gt;
 &lt;li&gt;出现这样的流程图，说明真正进入了函数的实现逻辑。在这里可以按 &lt;code&gt;F5&lt;/code&gt; 反编译，查看伪代码分析具体功能&lt;/li&gt;
 &lt;/ul&gt;
-&lt;img src=&#34;8.png&#34; style=&#34;width: 30%;&#34; /&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 20%;&#34; /&gt;
 &lt;blockquote&gt;
 &lt;p&gt;我这里报错&lt;code&gt;Sorry, the current file is not decompilable&lt;/code&gt;。说明反编译失败了，无法生成伪代码。因此后续分析主要通过函数调用进行&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;打开&lt;code&gt;Imports&lt;/code&gt;窗口，这里记录了程序调用的外部库函数，也就是.extern&lt;/p&gt;
-&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;打开&lt;code&gt;Imports&lt;/code&gt;窗口，这里记录了程序调用的外部库函数，也就是&lt;code&gt;.extern&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 70%;&#34; /&gt;
 &lt;p&gt;把光标放到函数上，然后按 &lt;code&gt;X&lt;/code&gt;看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文&lt;/p&gt;
-&lt;img src=&#34;9.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 60%;&#34; /&gt;
 &lt;p&gt;注意到只有&lt;code&gt;ATP_MIC_xxx&lt;/code&gt;在这个文件中实现，其他两个分类都是外部引用。下一步回到main函数，根据实际调用关系继续分析&lt;/p&gt;
-&lt;h3 id=&#34;main函数分析&#34;&gt;main函数分析
-&lt;/h3&gt;&lt;p&gt;双击main函数进入它的实现逻辑界面，首先看一下程序的流程图&lt;/p&gt;
-&lt;img src=&#34;5.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;第一部分是函数的开头。这里调用了&lt;code&gt;strcmp&lt;/code&gt;，也就是字符串的比较，返回 0 表示两个字符串相同&lt;/p&gt;
-&lt;img src=&#34;10.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;左侧这部分调用了GetVersion，并且在最后直接退出，判断是用于打印版本信息&lt;/p&gt;
-&lt;img src=&#34;12.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;继续分析右侧。&lt;code&gt;puts&lt;/code&gt; 打印 &lt;code&gt;&amp;quot;Start mic now ...&amp;quot;&lt;/code&gt;说明这里是启动阶段。&lt;code&gt;signal&lt;/code&gt; 是注册信号处理函数。最后调用了init，是函数初始化部分&lt;/p&gt;
-&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;如果这里初始化失败，会输出错误信息，然后直接来到程序结束阶段&lt;/p&gt;
+&lt;h2 id=&#34;main函数分析&#34;&gt;Main函数分析
+&lt;/h2&gt;&lt;p&gt;双击main函数进入它的实现逻辑界面，首先看一下程序的流程图&lt;/p&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 60%;&#34; /&gt;
+&lt;h3 id=&#34;开头&#34;&gt;开头
+&lt;/h3&gt;&lt;p&gt;这部分的意思是进入main后先检查启动参数。可以看到&lt;code&gt;main(int argc, char **argv, ...)&lt;/code&gt;， &lt;code&gt;argc&lt;/code&gt;是参数个数，&lt;code&gt;argv&lt;/code&gt;是参数内容。这里先判断参数个数是不是2，然后取出&lt;code&gt;argv[1]&lt;/code&gt;，调用&lt;code&gt;strcmp&lt;/code&gt;把它和字符串&lt;code&gt;&amp;quot;atpv&amp;quot;&lt;/code&gt;比较。如果返回0说明两个字符串相同，所以启动参数是&lt;code&gt;atpv&lt;/code&gt;时，程序会进入左侧，否则进入正常启动流程&lt;/p&gt;
+&lt;img src=&#34;10.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;左侧这部分调用了&lt;code&gt;GetVersion&lt;/code&gt;，并且在最后直接退出，判断是用于打印版本信息&lt;/p&gt;
+&lt;img src=&#34;12.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;h3 id=&#34;初始化阶段&#34;&gt;初始化阶段
+&lt;/h3&gt;&lt;p&gt;继续分析右侧。&lt;code&gt;puts&lt;/code&gt;打印&lt;code&gt;&amp;quot;Start mic now ...&amp;quot;&lt;/code&gt;说明这里是启动阶段。&lt;code&gt;signal&lt;/code&gt;是注册信号处理函数。最后调用了init，是函数初始化部分&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;如果这里初始化失败，会输出错误信息，然后直接来到结束阶段&lt;/p&gt;
 &lt;img src=&#34;13.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;这里注意到报错输出直接说明了每一部分的作用：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里注意到报错输出直接说明了每一部分的作用&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;&lt;code&gt;&amp;quot;Create inetd app failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;创建一个 inetd app，用于管理服务入口&lt;/p&gt;
-&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;创建一个&lt;code&gt;inetd app&lt;/code&gt;，也就是一个服务入口表，每个app是其中一个服务项&lt;/p&gt;
+&lt;img src=&#34;11.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;&amp;quot;Append stdin to inetd app failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;把 stdin 加到这个入口的 socket server 里，说明它能接收来自标准输入的数据&lt;/p&gt;
-&lt;img src=&#34;11.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;img src=&#34;14.png&#34; style=&#34;width: 70%;&#34; /&gt;
+&lt;p&gt;把&lt;code&gt;stdin&lt;/code&gt;加到&lt;code&gt;socket server&lt;/code&gt;里，说明它能接收来自标准输入的数据&lt;/p&gt;
+&lt;img src=&#34;14.png&#34; style=&#34;width: 50%;&#34; /&gt;
 &lt;p&gt;&lt;code&gt;&amp;quot;Create msg svr failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;创建 msg server，说明 &lt;code&gt;mic&lt;/code&gt; 有消息通信功能&lt;/p&gt;
-&lt;img src=&#34;15.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;p&gt;&amp;ldquo;Load cfm failed: %x.\n&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;初始化 CFM 相关数据，也就是和配置与管理相关的部分&lt;/p&gt;
-&lt;img src=&#34;16.png&#34; style=&#34;width: 70%;&#34; /&gt;
-&lt;h2 id=&#34;参考&#34;&gt;参考
-&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Huawei Home Routers in Botnet Recruitment - Check Point Research&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://xz.aliyun.com/news/4451&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;CVE-2017-17215-HG532命令注入漏洞分析-先知社区&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/312&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;华为HG532系列路由器命令注入漏洞复现 CVE-2017-17215 - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.iotsec-zone.com/article/384&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;一些经典IoT漏洞的分析与复现（新手向） - IOTsec-Zone&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;创建msg server，说明 &lt;code&gt;mic&lt;/code&gt; 有消息通信功能&lt;/p&gt;
+&lt;img src=&#34;15.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Load cfm failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;初始化 CFM 相关数据，也就是和配置与管理相关的部分。成功后便进入&lt;code&gt;inetd app&lt;/code&gt;的启动阶段&lt;/p&gt;
+&lt;img src=&#34;16.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;h3 id=&#34;启动阶段&#34;&gt;启动阶段
+&lt;/h3&gt;&lt;p&gt;这里首先打印了CFM正常的信息，然后检查dns服务。如果已经启动，会打印&lt;code&gt;Init app already start.&lt;/code&gt;并继续，否则调用&lt;code&gt;ATP_MIC_InetdLaunchApp&lt;/code&gt;进行启动。这里还出现了&lt;code&gt;Init kill pid = %d.&lt;/code&gt; ，说明会清理已有进程&lt;/p&gt;
+&lt;img src=&#34;17.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Create monitor svr failed: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;这部分是创建监听模块，用于监听后续事件&lt;/p&gt;
+&lt;img src=&#34;18.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;Mic start return: %x.\n&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;启动&lt;code&gt;log&lt;/code&gt;和&lt;code&gt;cms&lt;/code&gt;，让它们在后台运行，然后启动&lt;code&gt;socket&lt;/code&gt;基础服务，让前面准备好的功能开始运行。调用结束后再检查返回值&lt;/p&gt;
+&lt;img src=&#34;19.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;h3 id=&#34;结尾&#34;&gt;结尾
+&lt;/h3&gt;&lt;p&gt;最后进入 &lt;code&gt;main&lt;/code&gt; 的结尾，清理前面创建的&lt;code&gt;inetd&lt;/code&gt;和&lt;code&gt;socket&lt;/code&gt;环境，然后返回&lt;code&gt;0&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;20.png&#34; style=&#34;width: 50%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;到这里已经将&lt;code&gt;main&lt;/code&gt;函数的主要流程分析了一遍。后续可以通过&lt;code&gt;main&lt;/code&gt;函数调用的功能函数来深入分析&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;qemu分析&#34;&gt;QEMU分析
+&lt;/h2&gt;&lt;p&gt;前面的静态分析可以看到，&lt;code&gt;mic&lt;/code&gt;的&lt;code&gt;main&lt;/code&gt;函数会检查启动参数。如果参数是&lt;code&gt;atpv&lt;/code&gt;，程序会进入版本信息分支打印结果，然后退出&lt;/p&gt;
+&lt;p&gt;这里用 QEMU 进行验证。之前的&lt;code&gt;file&lt;/code&gt;命令显示程序是大端 MIPS，所以用&lt;code&gt;qemu-mips-static&lt;/code&gt;进行模拟，传入atpv参数&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;qemu-mips-static -L . ./bin/mic atpv
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看到如之前分析所见，输出了版本信息&lt;/p&gt;
+&lt;img src=&#34;21.png&#34; style=&#34;width: 90%;&#34; /&gt;
 </description>
         </item>
         <item>

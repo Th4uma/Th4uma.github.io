@@ -279,16 +279,23 @@ unicode: "f6d2"
         <li><a href="#主要工具">主要工具</a></li>
       </ol>
     </li>
-    <li><a href="#固件分析">固件分析</a>
+    <li><a href="#固件初步处理">固件初步处理</a>
       <ol>
         <li><a href="#固件解包">固件解包</a></li>
         <li><a href="#文件分类">文件分类</a></li>
         <li><a href="#启动流程">启动流程</a></li>
         <li><a href="#逆向分析">逆向分析</a></li>
-        <li><a href="#main函数分析">main函数分析</a></li>
       </ol>
     </li>
-    <li><a href="#参考">参考</a></li>
+    <li><a href="#main函数分析">Main函数分析</a>
+      <ol>
+        <li><a href="#开头">开头</a></li>
+        <li><a href="#初始化阶段">初始化阶段</a></li>
+        <li><a href="#启动阶段">启动阶段</a></li>
+        <li><a href="#结尾">结尾</a></li>
+      </ol>
+    </li>
+    <li><a href="#qemu分析">QEMU分析</a></li>
   </ol>
 </nav>
         </div>
@@ -376,13 +383,13 @@ unicode: "f6d2"
     
     <h2 id="前言">前言
 </h2><p>想学IoT安全，但前置知识过于庞杂，现有的教程往往默认读者有固件分析和逆向基础。我的基础并不好，几乎看不懂文章，不知道每一步在做什么，而系统补基础容易变成空中楼阁且劝退，因此陷入了两难的境地</p>
-<p>这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程、环境搭建、固件解包与逆向分析</p>
+<p>这篇文章不分析漏洞，主要用于熟悉IoT安全的基本流程和逆向分析</p>
 <h2 id="环境搭建">环境搭建
 </h2><h3 id="固件获取">固件获取
 </h3><p>首先是通过漏洞编号确认路由器型号与固件版本，比如这篇文章的<a class="link" href="https://ia601506.us.archive.org/22/items/RouterHG532e"  target="_blank" rel="noopener"
     >华为HG532 CVE-2017-17215 固件</a>，得到一个二进制文件<code>HG532eV100R001C01B020_upgrade_packet.bin</code>，这就是整个设备的软件镜像</p>
 <h3 id="主要工具">主要工具
-</h3><p>固件分析用到的各种工具更适合Linux环境，因此我使用Ubuntu 24.04.4作为宿主机</p>
+</h3><p>固件分析用到的各种工具更适合Linux环境，因此我使用<code>Ubuntu 24.04.4</code>作为宿主机</p>
 <ul>
 <li><code>binwalk</code>：用于解包和分析固件，需要配套工具<code>sasquatch</code></li>
 </ul>
@@ -404,28 +411,19 @@ unicode: "f6d2"
 </div>
 </div><ul>
 <li><code>ida</code>：对 ELF 程序进行静态分析</li>
-<li><code>qemu</code>：路由器固件一般是一套嵌入式 Linux 系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令</li>
+<li><code>qemu</code>：路由器固件一般是一套嵌入式Linux系统，适配路由器主机，无法在ubuntu下直接运行。为了让程序真正跑起来，需要用到QEMU。它模拟了固件运行所需的真实设备环境，翻译不同架构的指令</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install qemu qemu-user-static qemu-system
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install qemu-user-static qemu-system
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="固件分析">固件分析
+</div><h2 id="固件初步处理">固件初步处理
 </h2><h3 id="固件解包">固件解包
 </h3><p>使用binwalk进行解包，也就是从固件的二进制文件中提取出文件系统。解包后的文件系统在<code>squashfs-root/</code>目录下</p>
-<p>这个命令的意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容</p>
-<ul>
-<li>
-<p><code>-e</code> ：尝试提取</p>
-</li>
-<li>
-<p><code>-M</code>： 提取后继续递归扫描里面的内容</p>
-</li>
-</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -434,8 +432,13 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="文件分类">文件分类
-</h3><p>进入 <code>squashfs-root</code> 后，可以看到类似普通 Linux 系统的目录结构。<code>bin</code> 和 <code>sbin</code> 中是可执行程序，<code>etc</code> 中是配置文件，<code>lib</code> 中是动态链接库</p>
+</div><p>意思是binwalk会扫描文件里的特征，找到文件系统后递归扫描里面的内容</p>
+<ul>
+<li><code>-e</code> ：尝试提取</li>
+<li><code>-M</code>： 提取后继续递归扫描里面的内容</li>
+</ul>
+<h3 id="文件分类">文件分类
+</h3><p>进入 <code>squashfs-root</code> 后，可以看到类似Linux系统的目录结构。<code>bin</code> 和 <code>sbin</code> 中是可执行程序，<code>etc</code> 中是配置文件，<code>lib</code>中是动态链接库</p>
 <img src="1.png" style="width: 90%;" />
 <p>注意到vscode只能打开<code>etc</code>中的文件，可执行文件打开会乱码。这是因为它只能打开文本类文件，可执行文件是编译后的机器指令</p>
 <p>使用下面的命令批量判断这些目录里每个文件的类型</p>
@@ -480,8 +483,10 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">bin/sh:  symbolic link to busybox
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这种文件是指向 BusyBox 的符号链接。它们并不是实现命令的二进制程序，真正的程序是 <code>busybox</code>。因此无需分析这类文件，分析 <code>busybox</code> 即可</p>
-<p>嵌入式设备为了节省存储空间，经常用一个 BusyBox 实现很多常用命令。系统调用 <code>ls</code> 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能</p>
+</div><p>这种文件是指向<code>BusyBox</code>的符号链接。它们并不是实现命令的二进制程序，真正的程序是<code>busybox</code>。因此无需分析这类文件，分析 <code>busybox</code>即可</p>
+<blockquote>
+<p>嵌入式设备为了节省存储空间，经常用一个BusyBox实现很多常用命令。比如系统调用 <code>ls</code> 时，实际运行的是 BusyBox，只是 BusyBox 会根据自己被调用时的名字执行对应功能</p>
+</blockquote>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -508,7 +513,7 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">bin/sys: symbolic link to /dev/null
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>指向 <code>/dev/null</code>，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令，可以忽略</p>
+</div><p>指向 <code>/dev/null</code>，也就是 Linux 里的空设备。写入的东西会被丢弃，也读不出来正常内容。所以这是占位或被废弃的命令</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -659,16 +664,16 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>初步分析刚刚筛选出来和启动相关的程序：</p>
-<p><strong>bin/swapdev</strong>：环境准备的脚本，创建设备节点</p>
-<p><strong>bin/startbsp</strong>：环境初始化的脚本，挂载目录</p>
-<p><strong>bin/atserver</strong>：没有找到对应文件，可能是残留逻辑</p>
-<p><strong>bin/usbdiagd</strong>：没有找到对应文件，可能是残留逻辑</p>
-<p><strong>bin/atmcmdd</strong>：后台启动的 ELF 程序，常驻运行</p>
-<p><strong>bin/tcwdog</strong>：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 <code>tcwdog</code>，<code>/dev/watchdog</code> 是传给它的设备节点参数</p>
-<p><strong>bin/mic</strong>：最后执行的ELF程序，没有<code>&amp;</code>说明 <code>profile</code> 执行到这里后， 它可能会接管后续流程</p>
+<p><code>bin/swapdev</code>：环境准备的脚本，创建设备节点</p>
+<p><code>bin/startbsp</code>：环境初始化的脚本，挂载目录</p>
+<p><code>bin/atserver</code>：没有找到对应文件，可能是残留逻辑</p>
+<p><code>bin/usbdiagd</code>：没有找到对应文件，可能是残留逻辑</p>
+<p><code>bin/atmcmdd</code>：后台启动的 ELF 程序，常驻运行</p>
+<p><code>bin/tcwdog</code>：后台启动的 ELF 程序，和看门狗相关。这里真正被启动的是 <code>tcwdog</code>，<code>/dev/watchdog</code> 是传给它的设备节点参数</p>
+<p><code>bin/mic</code>：最后执行的ELF程序，没有<code>&amp;</code>说明 <code>profile</code> 执行到这里后，它可能会接管后续流程</p>
 <h3 id="逆向分析">逆向分析
 </h3><blockquote>
-<p>真正有分析价值的是<code>mic</code>和<code>atmcmdd</code>，这里先分析<code>mic</code></p>
+<p>比较有分析价值的是<code>mic</code>和<code>atmcmdd</code>，这里先分析<code>mic</code></p>
 </blockquote>
 <p>用ida打开，首先确认识别的文件类型与架构和之前<code>file</code>命令输出的一致，其他保持默认即可</p>
 <img src="3.png" style="width: 90%;" />
@@ -689,55 +694,77 @@ unicode: "f6d2"
 </ul>
 <p>双击一个函数进入，可能出现两种情况：</p>
 <ul>
-<li>只有短短一行，可以看到.extern，说明引用了这个函数，但它的实现代码不在这个文件里。也就是说这部分保存的是调用关系</li>
+<li>只有短短一行，可以看到<code>.extern</code>，说明引用了这个函数，但它的实现代码不在这个文件里。也就是说这部分保存的是调用关系</li>
 </ul>
-<img src="7.png" style="width: 70%;" />
+<img src="7.png" style="width: 30%;" />
 <ul>
 <li>出现这样的流程图，说明真正进入了函数的实现逻辑。在这里可以按 <code>F5</code> 反编译，查看伪代码分析具体功能</li>
 </ul>
-<img src="8.png" style="width: 30%;" />
+<img src="8.png" style="width: 20%;" />
 <blockquote>
 <p>我这里报错<code>Sorry, the current file is not decompilable</code>。说明反编译失败了，无法生成伪代码。因此后续分析主要通过函数调用进行</p>
 </blockquote>
-<p>打开<code>Imports</code>窗口，这里记录了程序调用的外部库函数，也就是.extern</p>
-<img src="6.png" style="width: 100%;" />
+<p>打开<code>Imports</code>窗口，这里记录了程序调用的外部库函数，也就是<code>.extern</code></p>
+<img src="6.png" style="width: 70%;" />
 <p>把光标放到函数上，然后按 <code>X</code>看交叉引用，这样就能看到程序里调用了这个外部函数的所有地方。这里主要分析调用时的上下文</p>
-<img src="9.png" style="width: 100%;" />
+<img src="9.png" style="width: 60%;" />
 <p>注意到只有<code>ATP_MIC_xxx</code>在这个文件中实现，其他两个分类都是外部引用。下一步回到main函数，根据实际调用关系继续分析</p>
-<h3 id="main函数分析">main函数分析
-</h3><p>双击main函数进入它的实现逻辑界面，首先看一下程序的流程图</p>
-<img src="5.png" style="width: 90%;" />
-<p>第一部分是函数的开头。这里调用了<code>strcmp</code>，也就是字符串的比较，返回 0 表示两个字符串相同</p>
-<img src="10.png" style="width: 70%;" />
-<p>左侧这部分调用了GetVersion，并且在最后直接退出，判断是用于打印版本信息</p>
-<img src="12.png" style="width: 70%;" />
-<p>继续分析右侧。<code>puts</code> 打印 <code>&quot;Start mic now ...&quot;</code>说明这里是启动阶段。<code>signal</code> 是注册信号处理函数。最后调用了init，是函数初始化部分</p>
-<img src="11.png" style="width: 70%;" />
-<p>如果这里初始化失败，会输出错误信息，然后直接来到程序结束阶段</p>
+<h2 id="main函数分析">Main函数分析
+</h2><p>双击main函数进入它的实现逻辑界面，首先看一下程序的流程图</p>
+<img src="5.png" style="width: 60%;" />
+<h3 id="开头">开头
+</h3><p>这部分的意思是进入main后先检查启动参数。可以看到<code>main(int argc, char **argv, ...)</code>， <code>argc</code>是参数个数，<code>argv</code>是参数内容。这里先判断参数个数是不是2，然后取出<code>argv[1]</code>，调用<code>strcmp</code>把它和字符串<code>&quot;atpv&quot;</code>比较。如果返回0说明两个字符串相同，所以启动参数是<code>atpv</code>时，程序会进入左侧，否则进入正常启动流程</p>
+<img src="10.png" style="width: 80%;" />
+<p>左侧这部分调用了<code>GetVersion</code>，并且在最后直接退出，判断是用于打印版本信息</p>
+<img src="12.png" style="width: 50%;" />
+<h3 id="初始化阶段">初始化阶段
+</h3><p>继续分析右侧。<code>puts</code>打印<code>&quot;Start mic now ...&quot;</code>说明这里是启动阶段。<code>signal</code>是注册信号处理函数。最后调用了init，是函数初始化部分</p>
+<img src="11.png" style="width: 50%;" />
+<p>如果这里初始化失败，会输出错误信息，然后直接来到结束阶段</p>
 <img src="13.png" style="width: 70%;" />
-<p>这里注意到报错输出直接说明了每一部分的作用：</p>
+<blockquote>
+<p>这里注意到报错输出直接说明了每一部分的作用</p>
+</blockquote>
 <p><code>&quot;Create inetd app failed: %x.\n&quot;</code></p>
-<p>创建一个 inetd app，用于管理服务入口</p>
-<img src="11.png" style="width: 70%;" />
+<p>创建一个<code>inetd app</code>，也就是一个服务入口表，每个app是其中一个服务项</p>
+<img src="11.png" style="width: 50%;" />
 <p><code>&quot;Append stdin to inetd app failed: %x.\n&quot;</code></p>
-<p>把 stdin 加到这个入口的 socket server 里，说明它能接收来自标准输入的数据</p>
-<img src="11.png" style="width: 70%;" />
-<img src="14.png" style="width: 70%;" />
+<p>把<code>stdin</code>加到<code>socket server</code>里，说明它能接收来自标准输入的数据</p>
+<img src="14.png" style="width: 50%;" />
 <p><code>&quot;Create msg svr failed: %x.\n&quot;</code></p>
-<p>创建 msg server，说明 <code>mic</code> 有消息通信功能</p>
-<img src="15.png" style="width: 70%;" />
-<p>&ldquo;Load cfm failed: %x.\n&rdquo;</p>
-<p>初始化 CFM 相关数据，也就是和配置与管理相关的部分</p>
-<img src="16.png" style="width: 70%;" />
-<h2 id="参考">参考
-</h2><p><a class="link" href="https://research.checkpoint.com/2017/good-zero-day-skiddie/"  target="_blank" rel="noopener"
-    >Huawei Home Routers in Botnet Recruitment - Check Point Research</a></p>
-<p><a class="link" href="https://xz.aliyun.com/news/4451"  target="_blank" rel="noopener"
-    >CVE-2017-17215-HG532命令注入漏洞分析-先知社区</a></p>
-<p><a class="link" href="https://www.iotsec-zone.com/article/312"  target="_blank" rel="noopener"
-    >华为HG532系列路由器命令注入漏洞复现 CVE-2017-17215 - IOTsec-Zone</a></p>
-<p><a class="link" href="https://www.iotsec-zone.com/article/384"  target="_blank" rel="noopener"
-    >一些经典IoT漏洞的分析与复现（新手向） - IOTsec-Zone</a></p>
+<p>创建msg server，说明 <code>mic</code> 有消息通信功能</p>
+<img src="15.png" style="width: 50%;" />
+<p><code>&quot;Load cfm failed: %x.\n&quot;</code></p>
+<p>初始化 CFM 相关数据，也就是和配置与管理相关的部分。成功后便进入<code>inetd app</code>的启动阶段</p>
+<img src="16.png" style="width: 50%;" />
+<h3 id="启动阶段">启动阶段
+</h3><p>这里首先打印了CFM正常的信息，然后检查dns服务。如果已经启动，会打印<code>Init app already start.</code>并继续，否则调用<code>ATP_MIC_InetdLaunchApp</code>进行启动。这里还出现了<code>Init kill pid = %d.</code> ，说明会清理已有进程</p>
+<img src="17.png" style="width: 100%;" />
+<p><code>&quot;Create monitor svr failed: %x.\n&quot;</code></p>
+<p>这部分是创建监听模块，用于监听后续事件</p>
+<img src="18.png" style="width: 50%;" />
+<p><code>&quot;Mic start return: %x.\n&quot;</code></p>
+<p>启动<code>log</code>和<code>cms</code>，让它们在后台运行，然后启动<code>socket</code>基础服务，让前面准备好的功能开始运行。调用结束后再检查返回值</p>
+<img src="19.png" style="width: 50%;" />
+<h3 id="结尾">结尾
+</h3><p>最后进入 <code>main</code> 的结尾，清理前面创建的<code>inetd</code>和<code>socket</code>环境，然后返回<code>0</code></p>
+<img src="20.png" style="width: 50%;" />
+<blockquote>
+<p>到这里已经将<code>main</code>函数的主要流程分析了一遍。后续可以通过<code>main</code>函数调用的功能函数来深入分析</p>
+</blockquote>
+<h2 id="qemu分析">QEMU分析
+</h2><p>前面的静态分析可以看到，<code>mic</code>的<code>main</code>函数会检查启动参数。如果参数是<code>atpv</code>，程序会进入版本信息分支打印结果，然后退出</p>
+<p>这里用 QEMU 进行验证。之前的<code>file</code>命令显示程序是大端 MIPS，所以用<code>qemu-mips-static</code>进行模拟，传入atpv参数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">qemu-mips-static -L . ./bin/mic atpv
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到如之前分析所见，输出了版本信息</p>
+<img src="21.png" style="width: 90%;" />
 
 </section>
 
@@ -811,6 +838,25 @@ unicode: "f6d2"
             
                 
 <article class="has-image">
+    <a href="/post/hg532/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/hg532.jpg" loading="lazy" data-key="" data-hash="/images/cover/hg532.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">CVE-2017-17215 华为HG532路由器命令注入漏洞分析</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
     <a href="/post/espthuctf/">
         
         
@@ -880,25 +926,6 @@ unicode: "f6d2"
 
         <div class="article-details">
             <h2 class="article-title">Mitnick攻击</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="has-image">
-    <a href="/post/tcp/">
-        
-        
-            <div class="article-image">
-                
-                    <img src="/images/cover/tcp.jpg" loading="lazy" data-key="" data-hash="/images/cover/tcp.jpg"/>
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">TCP协议攻击</h2>
         </div>
     </a>
 </article>
@@ -1122,10 +1149,12 @@ unicode: "f6d2"
       
       
       
+      
+      
       共发表文章 
-      <span class="number-highlight">31</span> 
+      <span class="number-highlight">32</span> 
       篇 ，总计 
-      <span class="number-highlight">155.84</span> 
+      <span class="number-highlight">156.70</span> 
       k 字
   </div>
   <div>
@@ -1334,9 +1363,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1787155190"></script>
+<script src="/js/renderer.js?v=1787241529"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1787155190"></script>
+<script defer src="/js/codex-bg-motion.js?v=1787241529"></script>
 
 
 <script>

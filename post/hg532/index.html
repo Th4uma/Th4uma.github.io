@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Keep on Keeping on!">
-<title>Category: IoT - Thaumazein&#39;s Shelter</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="复现一个经典漏洞">
+<title>CVE-2017-17215 华为HG532路由器命令注入漏洞分析</title>
 
-<link rel='canonical' href='https://th4uma.github.io/categories/iot/'>
+<link rel='canonical' href='https://th4uma.github.io/post/hg532/'>
 
-<link rel="stylesheet" href="/scss/style.min.42cce825416a462bc39da367891195712c6982c914cb79c35f5f4f2aa73fad96.css"><meta property='og:title' content="Category: IoT - Thaumazein's Shelter">
-<meta property='og:description' content="Keep on Keeping on!">
-<meta property='og:url' content='https://th4uma.github.io/categories/iot/'>
+<link rel="stylesheet" href="/scss/style.min.42cce825416a462bc39da367891195712c6982c914cb79c35f5f4f2aa73fad96.css"><meta property='og:title' content="CVE-2017-17215 华为HG532路由器命令注入漏洞分析">
+<meta property='og:description' content="复现一个经典漏洞">
+<meta property='og:url' content='https://th4uma.github.io/post/hg532/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='website'><meta property='og:updated_time' content=' 2026-08-20T18:48:02&#43;08:00 '/><meta property='og:image' content='https://th4uma.github.io/categories/iot/iot.jpg' />
-<meta name="twitter:title" content="Category: IoT - Thaumazein's Shelter">
-<meta name="twitter:description" content="Keep on Keeping on!"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/categories/iot/iot.jpg' /><link rel="alternate" type="application/rss&#43;xml" href="https://th4uma.github.io/categories/iot/index.xml">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-20T18:48:02&#43;08:00'/><meta property='article:modified_time' content='2026-08-20T18:48:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/hg532.jpg' />
+<meta name="twitter:title" content="CVE-2017-17215 华为HG532路由器命令注入漏洞分析">
+<meta name="twitter:description" content="复现一个经典漏洞"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/hg532.jpg' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
-    <body class="">
+    <body class="
+    article-page
+    ">
     <script>
         (function() {
             const colorSchemeKey = 'StackColorScheme';
@@ -251,69 +253,10 @@ unicode: "f6d2"
     <aside class="sidebar right-sidebar sticky">
         
             
-                <form action="/page/search/" class="search-form widget" >
-        <p>
-            <label>搜索</label>
-            <input name="keyword" required placeholder="输入关键词..." />
-        
-            <button title="搜索">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="10" cy="10" r="7" />
-  <line x1="21" y1="21" x2="15" y2="15" />
-</svg>
-
-
-
-            </button>
-        </p>
-    </form>
-            
-        
-            
-                <section class="widget archives">
+                
+    <section class="widget archives">
         <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M9.828 9.172a4 4 0 1 0 0 5.656 a10 10 0 0 0 2.172 -2.828a10 10 0 0 1 2.172 -2.828 a4 4 0 1 1 0 5.656a10 10 0 0 1 -2.172 -2.828a10 10 0 0 0 -2.172 -2.828" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">归档</h2>
-
-        
-        
-        
-        
-        
-        <div class="widget-archive--list">
-            <div class="archives-year">
-                    <a href="/page/archives/#2026">
-                        
-                            <span class="year">2026</span>
-                            <span class="count">18</span>
-                        
-                    </a> 
-                </div>
-            <div class="archives-year">
-                    <a href="/page/archives/#2025">
-                        
-                            <span class="year">2025</span>
-                            <span class="count">14</span>
-                        
-                    </a> 
-                </div>
-            
-        </div>
-    </section>
-            
-        
-            
-                <section class="widget tagCloud">
-    <div class="widget-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
   <path stroke="none" d="M0 0h24v24H0z"/>
   <line x1="5" y1="9" x2="19" y2="9" />
   <line x1="5" y1="15" x2="19" y2="15" />
@@ -323,53 +266,23 @@ unicode: "f6d2"
 
 
 
-    </div>
-    <h2 class="widget-title section-title">分类</h2>
-
-    <div class="tagCloud-tags">
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
         
-            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" class="font_size_11">
-                网络安全
-            </a>
-        
-            <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="font_size_11">
-                计算机网络
-            </a>
-        
-            <a href="/categories/%E9%9A%8F%E8%AE%B0/" class="font_size_4">
-                随记
-            </a>
-        
-            <a href="/categories/iot/" class="font_size_3">
-                IoT
-            </a>
-        
-            <a href="/categories/linux/" class="font_size_3">
-                Linux
-            </a>
-        
-            <a href="/categories/ctf/" class="font_size_2">
-                CTF
-            </a>
-        
-            <a href="/categories/hugo/" class="font_size_2">
-                Hugo
-            </a>
-        
-            <a href="/categories/openwrt/" class="font_size_2">
-                OpenWrt
-            </a>
-        
-            <a href="/categories/proxmoxve/" class="font_size_2">
-                ProxmoxVE
-            </a>
-        
-            <a href="/categories/%E7%94%B5%E5%AD%90%E5%88%B6%E4%BD%9C/" class="font_size_2">
-                电子制作
-            </a>
-        
-    </div>
-</section>
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#环境搭建">环境搭建</a>
+      <ol>
+        <li><a href="#固件获取">固件获取</a></li>
+        <li><a href="#网络配置">网络配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
 
             
         
@@ -377,85 +290,416 @@ unicode: "f6d2"
 
 
             <main class="main full-width">
-    <header>
-        <h3 class="section-title">
-            
-                Categories
-            
-        </h3>
-
-        <div class="section-card">
-            <div class="section-details">
-                <h3 class="section-count">3 个页面</h3>
-                <h1 class="section-term">IoT</h1>
-                
-            </div>
-                <div class="section-image">
-                    <img src="/categories/iot/iot_hu_d03d40a955c912db.jpg" 
-                            width="120"
-                            height="120" 
-                            loading="lazy">
-                    
-                </div>
-            
-        </div>
-    </header>
-    
-    <section class="article-list--compact">
-        
-            <article>
-    <a href="/post/hg532/">
-        <div class="article-details">
-            <h2 class="article-title">CVE-2017-17215 华为HG532路由器命令注入漏洞分析</h2>
-            <footer class="article-time">
-                <time datetime='2026-08-20T18:48:02&#43;08:00'>2026-08-20</time>
-            </footer>
-        </div>
-            <div class="article-image">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/post/hg532/">
                 
                     <img src="/images/cover/hg532.jpg" loading="lazy" alt="Featured image of post CVE-2017-17215 华为HG532路由器命令注入漏洞分析" />
                 
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/iot/" >
+                IoT
+            </a>
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" >
+                网络安全
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/post/hg532/">CVE-2017-17215 华为HG532路由器命令注入漏洞分析</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            复现一个经典漏洞
+        </h3>
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-08-20</time>
             </div>
         
-    </a>
-</article>
+
         
-            <article>
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>CVE-2017-17215是一个远程命令执行漏洞。路由器通过37215端口提供UPnP管理服务，其中一项功能会处理外部传入的数据。固件没有正确过滤这些内容，攻击者可以把系统命令混入请求，最终让路由器以高权限执行</p>
+<h2 id="环境搭建">环境搭建
+</h2><p>在<code>Ubuntu 24.04.4</code>环境下进行下列操作</p>
+<h3 id="固件获取">固件获取
+</h3><p>下载<a class="link" href="https://ia601506.us.archive.org/22/items/RouterHG532e"  target="_blank" rel="noopener"
+    >华为HG532 CVE-2017-17215 固件</a>，使用binwalk进行解包。解包后的文件系统在<code>squashfs-root/</code>目录下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">binwalk -Me HG532eV100R001C01B020_upgrade_packet.bin
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="网络配置">网络配置
+</h3><p>安装网络相关工具</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo apt install bridge-utils uml-utilities
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>打开IP转发</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sysctl -w net.ipv4.ip_forward=1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="1.png" style="width: 90%;" />
+<p>sudo apt install qemu-user-static qemu-system</p>
+<h2 id="参考">参考
+</h2><p><a class="link" href="https://research.checkpoint.com/2017/good-zero-day-skiddie/"  target="_blank" rel="noopener"
+    >Huawei Home Routers in Botnet Recruitment - Check Point Research</a></p>
+<p><a class="link" href="https://xz.aliyun.com/news/4451"  target="_blank" rel="noopener"
+    >CVE-2017-17215-HG532命令注入漏洞分析-先知社区</a></p>
+<p><a class="link" href="https://www.iotsec-zone.com/article/312"  target="_blank" rel="noopener"
+    >华为HG532系列路由器命令注入漏洞复现 CVE-2017-17215 - IOTsec-Zone</a></p>
+<p><a class="link" href="https://www.iotsec-zone.com/article/384"  target="_blank" rel="noopener"
+    >一些经典IoT漏洞的分析与复现（新手向） - IOTsec-Zone</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+
+    
+        
+        <div id="viewCount">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+            <time class="article-time--reading">
+                <span id="vercount_value_page_pv">loading... </span>次
+            </time>
+        </div>
+        
+    <style>
+         
+        #viewCount,
+        #viewCount * {
+            color: #ffffffe1 !important;
+        }
+        #viewCount {
+             position: absolute;   
+             left: 280px;            
+             transform: translateY(-50%) translateY(260px);
+        }
+    </style>
+    </footer>
+
+
+    
+        <link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI&#43;WdtXRGWt2kTvGFasHpSy3SV"crossorigin="anonymous"
+            ><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG&#43;vnGctmUb0ZY0l8"crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"integrity="sha384-&#43;VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4&#43;/RRE05"crossorigin="anonymous"
+                defer
+                >
+            </script><script>
+    window.addEventListener("DOMContentLoaded", () => {
+	const mainArticleElement = document.querySelector(".main-article");
+        renderMathInElement(mainArticleElement, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+            ],
+            ignoredClasses: ["gist"]
+        });})
+</script>
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
     <a href="/post/iot/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/iot.jpg" loading="lazy" data-key="" data-hash="/images/cover/iot.jpg"/>
+                
+            </div>
+        
+
         <div class="article-details">
             <h2 class="article-title">IoT安全入门之固件分析</h2>
-            <footer class="article-time">
-                <time datetime='2026-08-07T12:08:02&#43;08:00'>2026-08-07</time>
-            </footer>
         </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/espthuctf/">
+        
+        
             <div class="article-image">
                 
-                    <img src="/images/cover/iot.jpg" loading="lazy" alt="Featured image of post IoT安全入门之固件分析" />
+                    <img src="/images/cover/esp0.jpg" loading="lazy" data-key="" data-hash="/images/cover/esp0.jpg"/>
                 
             </div>
         
-    </a>
-</article>
-        
-            <article>
-    <a href="/post/espthuctf/">
+
         <div class="article-details">
             <h2 class="article-title">ESP32 IoT CTF 清华校赛版wp</h2>
-            <footer class="article-time">
-                <time datetime='2025-06-28T13:26:44&#43;08:00'>2025-06-28</time>
-            </footer>
         </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/firewall_vpn/">
+        
+        
             <div class="article-image">
                 
-                    <img src="/images/cover/esp0.jpg" loading="lazy" alt="Featured image of post ESP32 IoT CTF 清华校赛版wp" />
+                    <img src="/images/cover/firewall1.jpg" loading="lazy" data-key="" data-hash="/images/cover/firewall1.jpg"/>
                 
             </div>
         
+
+        <div class="article-details">
+            <h2 class="article-title">防火墙翻越</h2>
+        </div>
     </a>
 </article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/firewall/">
         
-    </section>
-<footer class="site-footer">
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/firewall.jpg" loading="lazy" data-key="" data-hash="/images/cover/firewall.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">防火墙探索</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/post/mitnick/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="/images/cover/mitnick.jpg" loading="lazy" data-key="" data-hash="/images/cover/mitnick.jpg"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mitnick攻击</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+        
+            
+  <div id="like-container">
+    <img id="like-icon" src="/icons/thumb-up.svg" alt="Like" />
+    <span id="like-count">0</span>
+  </div>
+
+  <style>
+    #like-container {
+      text-align: center;
+	display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+  margin: -3rem 0 -5rem 0rem;
+      user-select: none;
+      color: white;
+    }
+
+    #like-icon {
+      width: 33px;
+      height: 36px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      filter: brightness(0) invert(1);
+    }
+
+    #like-icon.clicked {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #like-count {
+      display: inline-block;
+      margin-left: 0px;
+      font-size: 1.5rem; 
+    }
+  </style>
+
+  <script>
+  (function () {
+    const appId = 'QMq4HFQshcHbTkGqUoX10lDK-gzGzoHsz';
+    const appKey = 'MgjYDq8Uwr9g8x8HEJ24tyEB';
+    const serverURL = 'https://qmz4hfqs.lc-cn-n1-shared.com';
+
+    const pagePath = window.location.pathname;
+    const localKey = 'liked_' + pagePath;
+    const maxLikes = 50;
+    const headers = {
+      'X-LC-Id': appId,
+      'X-LC-Key': appKey,
+      'Content-Type': 'application/json'
+    };
+
+    async function fetchLike() {
+      const res = await fetch(`${serverURL}/1.1/classes/Like?where=` + encodeURIComponent(JSON.stringify({ path: pagePath })), { headers });
+      const data = await res.json();
+      if (data.results.length > 0) {
+        return data.results[0];
+      } else {
+        const resNew = await fetch(`${serverURL}/1.1/classes/Like`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            path: pagePath,
+            count: 0,
+            ACL: {
+              "*": {
+                "read": true,
+                "write": true
+              }
+            }
+          })
+        });
+        return await resNew.json();
+      }
+    }
+
+    async function increaseLike(objectId) {
+      await fetch(`${serverURL}/1.1/classes/Like/${objectId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ count: { __op: 'Increment', amount: 1 } })
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const icon = document.getElementById('like-icon');
+      const count = document.getElementById('like-count');
+      const likedCount = parseInt(localStorage.getItem(localKey) || '0');
+
+      const data = await fetchLike();
+      count.textContent = data.count || 0;
+
+      icon.addEventListener('click', async () => {
+        let current = parseInt(localStorage.getItem(localKey) || '0');
+        if (current >= maxLikes) return;
+
+        icon.classList.add('clicked');
+        setTimeout(() => icon.classList.remove('clicked'), 400);
+
+        count.textContent = parseInt(count.textContent) + 1;
+        localStorage.setItem(localKey, current + 1);
+        await increaseLike(data.objectId);
+      });
+    });
+  })();
+  </script>
+
+
+
+
+
+        
+    
+
+	
+    <footer class="site-footer">
     <section class="copyright">
         &copy; 
         
@@ -596,6 +840,84 @@ if (busuanziValue) {
 </footer>
 
 
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
             </main>
         </div>
         <script 
@@ -680,9 +1002,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1787241527"></script>
+<script src="/js/renderer.js?v=1787241529"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1787241527"></script>
+<script defer src="/js/codex-bg-motion.js?v=1787241529"></script>
 
 
 <script>
