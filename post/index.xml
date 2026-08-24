@@ -13,7 +13,7 @@
         <pubDate>Thu, 20 Aug 2026 18:48:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/hg532/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/hg532.jpg" alt="Featured image of post CVE-2017-17215 华为HG532路由器命令注入漏洞分析" /&gt;&lt;p&gt;CVE-2017-17215是一个远程命令执行漏洞。路由器通过37215端口提供UPnP管理服务，其中一项功能会处理外部传入的数据。固件没有正确过滤这些内容，经过认证后，攻击者可以构造恶意请求进行命令注入，最终在设备上执行任意命令&lt;/p&gt;
+        <description>&lt;img src="https://th4uma.github.io/images/cover/hg532.jpg" alt="Featured image of post CVE-2017-17215 华为HG532路由器命令注入漏洞分析" /&gt;&lt;p&gt;&lt;code&gt;CVE-2017-17215&lt;/code&gt;是一个远程命令执行漏洞。路由器通过&lt;code&gt;37215&lt;/code&gt;端口提供UPnP管理服务，其中一项功能会处理外部传入的数据。固件没有正确过滤这些内容，经过认证后，攻击者可以构造恶意请求进行命令注入，最终在设备上执行任意命令&lt;/p&gt;
 &lt;h2 id=&#34;环境搭建&#34;&gt;环境搭建
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;我是在&lt;code&gt;Ubuntu 24.04.4&lt;/code&gt;环境下进行的复现&lt;/p&gt;
@@ -29,7 +29,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker compose version
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;我使用的是IoT-vulhub搭好的环境，对仓库进行拉取&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;我使用的是&lt;code&gt;IoT-vulhub&lt;/code&gt;搭好的环境，对仓库进行拉取&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -110,7 +110,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo docker compose -f docker-compose-system.yml up
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;启动成功后保持终端开启，另开一个终端建立SOCKS代理，让浏览器能通过容器转到QEMU网络，之后需要保持开启状态&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;启动成功后保持终端开启，另开一个终端建立&lt;code&gt;SOCKS&lt;/code&gt;代理，让浏览器能通过容器转到&lt;code&gt;QEMU&lt;/code&gt;网络，之后需要保持开启状态&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -120,10 +120,87 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;img src=&#34;1.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;部分浏览器为了安全性会自动把HTTP连接升级成HTTPS，导致管理页面无法打开，因此我使用了falkon浏览器。首先配置如图所示的代理&lt;/p&gt;
+&lt;p&gt;部分浏览器为了安全性会自动把&lt;code&gt;HTTP&lt;/code&gt;连接升级成&lt;code&gt;HTTPS&lt;/code&gt;，导致管理页面无法打开，因此我使用了falkon浏览器。首先配置如图所示的代理&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 90%;&#34; /&gt;
-&lt;p&gt;访问http://192.168.2.2/，出现路由器管理界面，说明环境配置成功&lt;/p&gt;
+&lt;p&gt;访问&lt;code&gt;http://192.168.2.2/&lt;/code&gt;，出现路由器管理界面，说明环境配置成功。可以用admin，@Hua1234进行登录&lt;/p&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;h2 id=&#34;漏洞分析&#34;&gt;漏洞分析
+&lt;/h2&gt;&lt;h3 id=&#34;初步分析&#34;&gt;初步分析
+&lt;/h3&gt;&lt;p&gt;阅读漏洞报告，可以获取如下信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;37215&lt;/code&gt;端口&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;upnp&lt;/code&gt;协议&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;POST&lt;/code&gt;请求&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/ctrlt/DeviceUpgrade_1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NewStatusURL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;NewDownloadURL&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;递归搜索固件目录，尝试定位具体文件&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grep&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;37215&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grep&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DeviceUpgrade&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grep&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NewStatusURL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;grep&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NewDownloadURL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;4.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;可以得知&lt;code&gt;37215&lt;/code&gt;端口写在&lt;code&gt;bin/mic&lt;/code&gt;，&lt;code&gt;DeviceUpgrade&lt;/code&gt;服务在&lt;code&gt;bin/upnp&lt;/code&gt;中实现，&lt;code&gt;etc/upnp/DevUpg.xml&lt;/code&gt; 定义了 &lt;code&gt;DeviceUpgrade&lt;/code&gt; 服务，包含&lt;code&gt;NewStatusURL&lt;/code&gt;和&lt;code&gt;NewDownloadURL&lt;/code&gt;两个字段&lt;/p&gt;
+&lt;h3 id=&#34;具体分析&#34;&gt;具体分析
+&lt;/h3&gt;&lt;p&gt;首先打开&lt;code&gt;etc/upnp/DevUpg.xml&lt;/code&gt;，这部分说明&lt;code&gt;NewStatusURL&lt;/code&gt;和&lt;code&gt;NewDownloadURL&lt;/code&gt;是&lt;code&gt;Upgrade&lt;/code&gt;中的参数&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;actionList&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;action&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Upgrade&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;argumentList&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;argument&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;NewDownloadURL&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;direction&amp;gt;&lt;/span&gt;in&lt;span class=&#34;nt&#34;&gt;&amp;lt;/direction&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;relatedStateVariable&amp;gt;&lt;/span&gt;DownloadURL&lt;span class=&#34;nt&#34;&gt;&amp;lt;/relatedStateVariable&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/argument&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;argument&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;NewStatusURL&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;direction&amp;gt;&lt;/span&gt;in&lt;span class=&#34;nt&#34;&gt;&amp;lt;/direction&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;relatedStateVariable&amp;gt;&lt;/span&gt;StatusURL&lt;span class=&#34;nt&#34;&gt;&amp;lt;/relatedStateVariable&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/argument&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/argumentList&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/action&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;用ida对bin/upnp进行分析，查找这两个字段的位置&lt;/p&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;直接查找到的是函数名的字符串，点击旁边的&lt;code&gt;# DATA XREF: sub_4074FC+60↑o&lt;/code&gt;，来到引用位置，这里才是真正的代码位置&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;这里可以看到很多指令，目标在中间位置，说明这只是一个函数中的一句指令。我们的目标是分析整个函数，因此向上查找函数的边界。可以看到LOAD:0040749C附近被分隔，且出现了addiu   $sp, -0x438开栈帧的操作，判断这里是函数的起始&lt;/p&gt;
+&lt;p&gt;把光标放到&lt;code&gt;0040749C&lt;/code&gt;，按&lt;code&gt;P&lt;/code&gt;创建函数&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;按&lt;code&gt;F5&lt;/code&gt;查看伪代码&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 100%;&#34; /&gt;
 &lt;h2 id=&#34;漏洞复现&#34;&gt;漏洞复现
 &lt;/h2&gt;&lt;h2 id=&#34;参考&#34;&gt;参考
 &lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://research.checkpoint.com/2017/good-zero-day-skiddie/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
