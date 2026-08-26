@@ -7,7 +7,34 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
-        <lastBuildDate>Thu, 20 Aug 2026 18:48:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 26 Aug 2026 12:48:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>CVE-2025-10779 DCS-935L栈溢出漏洞分析</title>
+        <link>https://th4uma.github.io/post/dcs935l/</link>
+        <pubDate>Wed, 26 Aug 2026 12:48:02 +0800</pubDate>
+        
+        <guid>https://th4uma.github.io/post/dcs935l/</guid>
+        <description>&lt;img src="https://th4uma.github.io/images/cover/dcs935l.jpg" alt="Featured image of post CVE-2025-10779 DCS-935L栈溢出漏洞分析" /&gt;&lt;h2 id=&#34;初步分析&#34;&gt;初步分析
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://legacyfiles.us.dlink.com/DCS-935L/REVA/FIRMWARE/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;下载固件&lt;/a&gt;，解压得到一个二进制文件，使用&lt;code&gt;binwalk&lt;/code&gt;进行解包&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;binwalk -e DCS-935L_A1_FW_1.10.01_20161128_r4156.bin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;得到一个文件夹，其中包含如下文件，固件分析一般在&lt;code&gt;squashfs-root&lt;/code&gt;下进行&lt;/p&gt;
+&lt;img src=&#34;1.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;下一步需要查找web服务相关的程序，关键词如&lt;code&gt;html&lt;/code&gt;、&lt;code&gt;.php&lt;/code&gt;、&lt;code&gt;.aspx&lt;/code&gt;、&lt;code&gt;favicon.icon&lt;/code&gt;、&lt;code&gt;web&lt;/code&gt;、&lt;code&gt;http&lt;/code&gt;等和web相关的词。这里查到有一个名称是&lt;code&gt;web&lt;/code&gt;的文件夹，里面有&lt;code&gt;favicon.ico&lt;/code&gt;和一些&lt;code&gt;.asp&lt;/code&gt;文件，推测这就是目标文件夹&lt;/p&gt;
+&lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
+&lt;p&gt;&lt;code&gt;web&lt;/code&gt;目录下有一个&lt;code&gt;httpd&lt;/code&gt;文件，以&lt;code&gt;d&lt;/code&gt;为后缀说明这是&lt;code&gt;http&lt;/code&gt;服务的服务端。还有一个文件夹名称是&lt;code&gt;cgi_bin&lt;/code&gt;，推测设备采用的是cgi协议&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV19VAUzUEL6/?spm_id_from=333.337.search-card.all.click&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;二进制安全 摄像头0day漏洞挖掘入门第一课_哔哩哔哩_bilibili&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>CVE-2017-17215 华为HG532路由器命令注入漏洞分析</title>
         <link>https://th4uma.github.io/post/hg532/</link>
         <pubDate>Thu, 20 Aug 2026 18:48:02 +0800</pubDate>
