@@ -2,18 +2,18 @@
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
 <meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="跟着教程学习基础">
-<title>CVE-2025-10779 DCS-935L栈溢出漏洞分析</title>
+<title>CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析</title>
 
 <link rel='canonical' href='https://th4uma.github.io/post/dcs935l/'>
 
-<link rel="stylesheet" href="/scss/style.min.59006129943b9e5bd7b4e3edbeb36644aa13c68e56fcb5b6be2874bbd987d4d1.css"><meta property='og:title' content="CVE-2025-10779 DCS-935L栈溢出漏洞分析">
+<link rel="stylesheet" href="/scss/style.min.59006129943b9e5bd7b4e3edbeb36644aa13c68e56fcb5b6be2874bbd987d4d1.css"><meta property='og:title' content="CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析">
 <meta property='og:description' content="跟着教程学习基础">
 <meta property='og:url' content='https://th4uma.github.io/post/dcs935l/'>
 <meta property='og:site_name' content='Thaumazein&#39;s Shelter'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-26T12:48:02&#43;08:00'/><meta property='article:modified_time' content='2026-08-26T12:48:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/images/cover/dcs935l.jpg' />
-<meta name="twitter:title" content="CVE-2025-10779 DCS-935L栈溢出漏洞分析">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-08-26T12:48:02&#43;08:00'/><meta property='article:modified_time' content='2026-08-26T12:48:02&#43;08:00'/><meta property='og:image' content='https://th4uma.github.io/post/dcs935l/cover.png' />
+<meta name="twitter:title" content="CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析">
 <meta name="twitter:description" content="跟着教程学习基础"><meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content='https://th4uma.github.io/images/cover/dcs935l.jpg' />
+    <meta name="twitter:image" content='https://th4uma.github.io/post/dcs935l/cover.png' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -273,7 +273,7 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#初步分析">初步分析</a></li>
-    <li><a href="#参考">参考</a></li>
+    <li><a href="#逆向分析">逆向分析</a></li>
   </ol>
 </nav>
         </div>
@@ -289,8 +289,12 @@ unicode: "f6d2"
     <header class="article-header">
         <div class="article-image">
             <a href="/post/dcs935l/">
-                
-                    <img src="/images/cover/dcs935l.jpg" loading="lazy" alt="Featured image of post CVE-2025-10779 DCS-935L栈溢出漏洞分析" />
+                <img src="/post/dcs935l/cover_hu_1a554fc2184bbf70.png"
+                        srcset="/post/dcs935l/cover_hu_1a554fc2184bbf70.png 800w, /post/dcs935l/cover_hu_b71ecfb345ea0aa8.png 1600w"
+                        width="800" 
+                        height="533" 
+                        loading="lazy"
+                        alt="Featured image of post CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析" />
                 
             </a>
         </div>
@@ -317,7 +321,7 @@ unicode: "f6d2"
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/post/dcs935l/">CVE-2025-10779 DCS-935L栈溢出漏洞分析</a>
+            <a href="/post/dcs935l/">CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析</a>
         </h2>
     
         
@@ -358,7 +362,7 @@ unicode: "f6d2"
 
 
                 <time class="article-time--reading">
-                    阅读时长: 1 分钟
+                    阅读时长: 2 分钟
                 </time>
             </div>
         
@@ -373,8 +377,14 @@ unicode: "f6d2"
     <section class="article-content">
     
     
-    <h2 id="初步分析">初步分析
-</h2><p><a class="link" href="https://legacyfiles.us.dlink.com/DCS-935L/REVA/FIRMWARE/"  target="_blank" rel="noopener"
+    <p>这篇文章主要是参考<a class="link" href="https://www.bilibili.com/video/BV19VAUzUEL6/?spm_id_from=333.337.search-card.all.click&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
+    >二进制安全 摄像头0day漏洞挖掘入门第一课_哔哩哔哩_bilibili</a>进行学习，在这个过程中纪录的学习笔记</p>
+<h2 id="初步分析">初步分析
+</h2><blockquote>
+<p>找漏洞之前首先要通过<a class="link" href="https://fofa.so/?locale=zh-CN"  target="_blank" rel="noopener"
+    >FOFA</a>查询用户量，查询语法<code>app=&quot;设备型号&quot; &amp;&amp; after=&quot;2026-01-01&quot;</code>，用户量越多的设备漏洞价值越高</p>
+</blockquote>
+<p><a class="link" href="https://legacyfiles.us.dlink.com/DCS-935L/REVA/FIRMWARE/"  target="_blank" rel="noopener"
     >下载固件</a>，解压得到一个二进制文件，使用<code>binwalk</code>进行解包</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -386,12 +396,24 @@ unicode: "f6d2"
 </div>
 </div><p>得到一个文件夹，其中包含如下文件，固件分析一般在<code>squashfs-root</code>下进行</p>
 <img src="1.png" style="width: 100%;" />
-<p>下一步需要查找web服务相关的程序，关键词如<code>html</code>、<code>.php</code>、<code>.aspx</code>、<code>favicon.icon</code>、<code>web</code>、<code>http</code>等和web相关的词。这里查到有一个名称是<code>web</code>的文件夹，里面有<code>favicon.ico</code>和一些<code>.asp</code>文件，推测这就是目标文件夹</p>
+<p>下一步需要查找web服务相关的程序，关键词如<code>html</code>、<code>.php</code>、<code>.aspx</code>、<code>favicon.icon</code>、<code>web</code>、<code>http</code>等和web相关的关键词。这里查到有一个名称是<code>web</code>的文件夹，里面有<code>favicon.ico</code>和一些<code>.asp</code>文件，推测这就是目标文件夹</p>
 <img src="2.png" style="width: 100%;" />
-<p><code>web</code>目录下有一个<code>httpd</code>文件，以<code>d</code>为后缀说明这是<code>http</code>服务的服务端。还有一个文件夹名称是<code>cgi_bin</code>，推测设备采用的是cgi协议</p>
-<h2 id="参考">参考
-</h2><p><a class="link" href="https://www.bilibili.com/video/BV19VAUzUEL6/?spm_id_from=333.337.search-card.all.click&amp;vd_source=38b3680952ba912cbee44397df0b531e"  target="_blank" rel="noopener"
-    >二进制安全 摄像头0day漏洞挖掘入门第一课_哔哩哔哩_bilibili</a></p>
+<p><code>web</code>目录下有一个<code>httpd</code>文件，以<code>d</code>为后缀说明这是<code>http</code>服务的服务端。还有一个文件夹名称是<code>cgi_bin</code>，推测设备采用的是<code>cgi</code>协议。<code>cgi</code>的特点就是将用户传入的参数设置为环境变量，然后用<code>getenv()</code>来获取环境变量</p>
+<p><code>cgi-bin</code>中可以看到<code>hnap</code>文件夹，<code>hnap</code>是一个D-Link、TP-Link等厂商设备中常见的Web协议。文件夹中包含<code>hnap_service</code>，这就是这次的分析目标</p>
+<blockquote>
+<p>一般情况在分析这类小型固件时，由于文件数量较少且逆向方便，可以逐个程序进行分析</p>
+</blockquote>
+<h2 id="逆向分析">逆向分析
+</h2><p>用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到<code>main</code>函数，然后<code>f5</code>进行反编译。注意到伪代码中多次引用了<code>getenv</code>函数，这也说明了这个代码确实和<code>cgi</code>有关</p>
+<img src="3.png" style="width:50%;" />
+<p>这次的目标是栈溢出漏洞，所以全局搜索相关函数<code>sprintf</code>和<code>strcpy</code>，然后按<code>x</code>查看调用情况</p>
+<img src="4.png" style="width: 48%;" />
+<img src="5.png" style="width: 49%;" />
+<blockquote>
+<p><code>strcpy(a,b)</code>意思就是用<code>strcpy</code>函数将<code>b</code>的内容复制到<code>a</code>中。因此在<code>strcpy(栈上有限字符串,用户输入)</code>中，如果用户输入字符串的长度超过栈可容纳上限，超出部分也一同被复制，这就导致了溢出</p>
+</blockquote>
+<p>挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到<code>main</code>函数中有这样的一句<code>strcpy(v28, v12);</code>，查看定义<code>char v28[256]; // [sp+64h] [-40Ch] BYREF</code>，<code>v12 = getenv(&quot;HNAP_AUTH&quot;);</code>，分别是256大小的字符串和用户输入，刚好符合栈溢出可能产生的条件</p>
+<img src="6.png" style="width: 80%;" />
 
 </section>
 
@@ -783,7 +805,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">33</span> 
       篇 ，总计 
-      <span class="number-highlight">158.58</span> 
+      <span class="number-highlight">159.26</span> 
       k 字
   </div>
   <div>
@@ -992,9 +1014,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1787762302"></script>
+<script src="/js/renderer.js?v=1788451304"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1787762302"></script>
+<script defer src="/js/codex-bg-motion.js?v=1788451304"></script>
 
 
 <script>

@@ -8,13 +8,19 @@
         <language>zh-cn</language>
         <copyright>Thaumazein</copyright>
         <lastBuildDate>Wed, 26 Aug 2026 12:48:02 +0800</lastBuildDate><atom:link href="https://th4uma.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>CVE-2025-10779 DCS-935L栈溢出漏洞分析</title>
+        <title>CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析</title>
         <link>https://th4uma.github.io/post/dcs935l/</link>
         <pubDate>Wed, 26 Aug 2026 12:48:02 +0800</pubDate>
         
         <guid>https://th4uma.github.io/post/dcs935l/</guid>
-        <description>&lt;img src="https://th4uma.github.io/images/cover/dcs935l.jpg" alt="Featured image of post CVE-2025-10779 DCS-935L栈溢出漏洞分析" /&gt;&lt;h2 id=&#34;初步分析&#34;&gt;初步分析
-&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://legacyfiles.us.dlink.com/DCS-935L/REVA/FIRMWARE/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+        <description>&lt;img src="https://th4uma.github.io/post/dcs935l/cover.png" alt="Featured image of post CVE-2025-10779 DCS-935L摄像头栈溢出漏洞分析" /&gt;&lt;p&gt;这篇文章主要是参考&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV19VAUzUEL6/?spm_id_from=333.337.search-card.all.click&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;二进制安全 摄像头0day漏洞挖掘入门第一课_哔哩哔哩_bilibili&lt;/a&gt;进行学习，在这个过程中纪录的学习笔记&lt;/p&gt;
+&lt;h2 id=&#34;初步分析&#34;&gt;初步分析
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;找漏洞之前首先要通过&lt;a class=&#34;link&#34; href=&#34;https://fofa.so/?locale=zh-CN&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;FOFA&lt;/a&gt;查询用户量，查询语法&lt;code&gt;app=&amp;quot;设备型号&amp;quot; &amp;amp;&amp;amp; after=&amp;quot;2026-01-01&amp;quot;&lt;/code&gt;，用户量越多的设备漏洞价值越高&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://legacyfiles.us.dlink.com/DCS-935L/REVA/FIRMWARE/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;下载固件&lt;/a&gt;，解压得到一个二进制文件，使用&lt;code&gt;binwalk&lt;/code&gt;进行解包&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -26,12 +32,24 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;得到一个文件夹，其中包含如下文件，固件分析一般在&lt;code&gt;squashfs-root&lt;/code&gt;下进行&lt;/p&gt;
 &lt;img src=&#34;1.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;下一步需要查找web服务相关的程序，关键词如&lt;code&gt;html&lt;/code&gt;、&lt;code&gt;.php&lt;/code&gt;、&lt;code&gt;.aspx&lt;/code&gt;、&lt;code&gt;favicon.icon&lt;/code&gt;、&lt;code&gt;web&lt;/code&gt;、&lt;code&gt;http&lt;/code&gt;等和web相关的词。这里查到有一个名称是&lt;code&gt;web&lt;/code&gt;的文件夹，里面有&lt;code&gt;favicon.ico&lt;/code&gt;和一些&lt;code&gt;.asp&lt;/code&gt;文件，推测这就是目标文件夹&lt;/p&gt;
+&lt;p&gt;下一步需要查找web服务相关的程序，关键词如&lt;code&gt;html&lt;/code&gt;、&lt;code&gt;.php&lt;/code&gt;、&lt;code&gt;.aspx&lt;/code&gt;、&lt;code&gt;favicon.icon&lt;/code&gt;、&lt;code&gt;web&lt;/code&gt;、&lt;code&gt;http&lt;/code&gt;等和web相关的关键词。这里查到有一个名称是&lt;code&gt;web&lt;/code&gt;的文件夹，里面有&lt;code&gt;favicon.ico&lt;/code&gt;和一些&lt;code&gt;.asp&lt;/code&gt;文件，推测这就是目标文件夹&lt;/p&gt;
 &lt;img src=&#34;2.png&#34; style=&#34;width: 100%;&#34; /&gt;
-&lt;p&gt;&lt;code&gt;web&lt;/code&gt;目录下有一个&lt;code&gt;httpd&lt;/code&gt;文件，以&lt;code&gt;d&lt;/code&gt;为后缀说明这是&lt;code&gt;http&lt;/code&gt;服务的服务端。还有一个文件夹名称是&lt;code&gt;cgi_bin&lt;/code&gt;，推测设备采用的是cgi协议&lt;/p&gt;
-&lt;h2 id=&#34;参考&#34;&gt;参考
-&lt;/h2&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.bilibili.com/video/BV19VAUzUEL6/?spm_id_from=333.337.search-card.all.click&amp;amp;vd_source=38b3680952ba912cbee44397df0b531e&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;二进制安全 摄像头0day漏洞挖掘入门第一课_哔哩哔哩_bilibili&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;web&lt;/code&gt;目录下有一个&lt;code&gt;httpd&lt;/code&gt;文件，以&lt;code&gt;d&lt;/code&gt;为后缀说明这是&lt;code&gt;http&lt;/code&gt;服务的服务端。还有一个文件夹名称是&lt;code&gt;cgi_bin&lt;/code&gt;，推测设备采用的是&lt;code&gt;cgi&lt;/code&gt;协议。&lt;code&gt;cgi&lt;/code&gt;的特点就是将用户传入的参数设置为环境变量，然后用&lt;code&gt;getenv()&lt;/code&gt;来获取环境变量&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cgi-bin&lt;/code&gt;中可以看到&lt;code&gt;hnap&lt;/code&gt;文件夹，&lt;code&gt;hnap&lt;/code&gt;是一个D-Link、TP-Link等厂商设备中常见的Web协议。文件夹中包含&lt;code&gt;hnap_service&lt;/code&gt;，这就是这次的分析目标&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一般情况在分析这类小型固件时，由于文件数量较少且逆向方便，可以逐个程序进行分析&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;逆向分析&#34;&gt;逆向分析
+&lt;/h2&gt;&lt;p&gt;用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到&lt;code&gt;main&lt;/code&gt;函数，然后&lt;code&gt;f5&lt;/code&gt;进行反编译。注意到伪代码中多次引用了&lt;code&gt;getenv&lt;/code&gt;函数，这也说明了这个代码确实和&lt;code&gt;cgi&lt;/code&gt;有关&lt;/p&gt;
+&lt;img src=&#34;3.png&#34; style=&#34;width:50%;&#34; /&gt;
+&lt;p&gt;这次的目标是栈溢出漏洞，所以全局搜索相关函数&lt;code&gt;sprintf&lt;/code&gt;和&lt;code&gt;strcpy&lt;/code&gt;，然后按&lt;code&gt;x&lt;/code&gt;查看调用情况&lt;/p&gt;
+&lt;img src=&#34;4.png&#34; style=&#34;width: 48%;&#34; /&gt;
+&lt;img src=&#34;5.png&#34; style=&#34;width: 49%;&#34; /&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;strcpy(a,b)&lt;/code&gt;意思就是用&lt;code&gt;strcpy&lt;/code&gt;函数将&lt;code&gt;b&lt;/code&gt;的内容复制到&lt;code&gt;a&lt;/code&gt;中。因此在&lt;code&gt;strcpy(栈上有限字符串,用户输入)&lt;/code&gt;中，如果用户输入字符串的长度超过栈可容纳上限，超出部分也一同被复制，这就导致了溢出&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到&lt;code&gt;main&lt;/code&gt;函数中有这样的一句&lt;code&gt;strcpy(v28, v12);&lt;/code&gt;，查看定义&lt;code&gt;char v28[256]; // [sp+64h] [-40Ch] BYREF&lt;/code&gt;，&lt;code&gt;v12 = getenv(&amp;quot;HNAP_AUTH&amp;quot;);&lt;/code&gt;，分别是256大小的字符串和用户输入，刚好符合栈溢出可能产生的条件&lt;/p&gt;
+&lt;img src=&#34;6.png&#34; style=&#34;width: 80%;&#34; /&gt;
 </description>
         </item>
         <item>
