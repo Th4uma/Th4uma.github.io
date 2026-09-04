@@ -273,7 +273,13 @@ unicode: "f6d2"
             <nav id="TableOfContents">
   <ol>
     <li><a href="#初步分析">初步分析</a></li>
-    <li><a href="#逆向分析">逆向分析</a></li>
+    <li><a href="#逆向分析">逆向分析</a>
+      <ol>
+        <li><a href="#寻找溢出点">寻找溢出点</a></li>
+        <li><a href="#判断溢出条件">判断溢出条件</a></li>
+      </ol>
+    </li>
+    <li><a href="#动态调试">动态调试</a></li>
   </ol>
 </nav>
         </div>
@@ -362,7 +368,7 @@ unicode: "f6d2"
 
 
                 <time class="article-time--reading">
-                    阅读时长: 2 分钟
+                    阅读时长: 5 分钟
                 </time>
             </div>
         
@@ -404,7 +410,8 @@ unicode: "f6d2"
 <p>一般情况在分析这类小型固件时，由于文件数量较少且逆向方便，可以逐个程序进行分析</p>
 </blockquote>
 <h2 id="逆向分析">逆向分析
-</h2><p>用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到<code>main</code>函数，然后<code>f5</code>进行反编译。注意到伪代码中多次引用了<code>getenv</code>函数，这也说明了这个代码确实和<code>cgi</code>有关</p>
+</h2><h3 id="寻找溢出点">寻找溢出点
+</h3><p>用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到<code>main</code>函数，然后<code>f5</code>进行反编译。注意到伪代码中多次引用了<code>getenv</code>函数，这也说明了这个代码确实和<code>cgi</code>有关</p>
 <img src="3.png" style="width:50%;" />
 <p>这次的目标是栈溢出漏洞，所以全局搜索相关函数<code>sprintf</code>和<code>strcpy</code>，然后按<code>x</code>查看调用情况</p>
 <img src="4.png" style="width: 48%;" />
@@ -412,8 +419,80 @@ unicode: "f6d2"
 <blockquote>
 <p><code>strcpy(a,b)</code>意思就是用<code>strcpy</code>函数将<code>b</code>的内容复制到<code>a</code>中。因此在<code>strcpy(栈上有限字符串,用户输入)</code>中，如果用户输入字符串的长度超过栈可容纳上限，超出部分也一同被复制，这就导致了溢出</p>
 </blockquote>
-<p>挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到<code>main</code>函数中有这样的一句<code>strcpy(v28, v12);</code>，查看定义<code>char v28[256]; // [sp+64h] [-40Ch] BYREF</code>，<code>v12 = getenv(&quot;HNAP_AUTH&quot;);</code>，分别是256大小的字符串和用户输入，刚好符合栈溢出可能产生的条件</p>
+<p>挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到<code>sub_402280</code>函数中有这样的一句<code>strcpy(v28, v12);</code>，查看定义<code>char v28[256]; // [sp+64h] [-40Ch] BYREF</code>，<code>v12 = getenv(&quot;HNAP_AUTH&quot;);</code>，分别是256字节大小的字符串和用户输入，刚好符合栈溢出可能产生的条件。这时如果<code>HNAP_AUTH</code>大于了<code>256</code>字节，就会产生溢出</p>
 <img src="6.png" style="width: 80%;" />
+<p>发现溢出点后，可以对其进行标记，也就是将本地变量名改成便于识别的形式，右键重命名。我这里分别改了函数名和记录用户输入的变量名</p>
+<img src="7.png" style="width: 80%;" />
+<h3 id="判断溢出条件">判断溢出条件
+</h3><p>对目标函数按<code>x</code>来到调用处，发现是<code>main</code>函数，在调用这一行打一个断点，随后分析其中的<code>if</code>判断逻辑，找出进入这一行的条件。这部分一共有4个<code>if</code>：</p>
+<p><code>if ( !v7 )</code>：当<code>v7=0</code>时会进入第一层调用目标函数的逻辑，<code>v7 = strcmp(v4, &quot;POST&quot;);</code>说明条件是<code>v4=POST</code>，而<code>v3 = getenv(&quot;REQUEST_METHOD&quot;);  v4 = v3;</code>，最终得知用户需要传入<code>&quot;POST&quot;</code>作为<code>REQUEST_METHOD</code>参数从而进入正确的分支</p>
+<p><code>if ( v9 )</code>：当<code>v9=1</code>时会进入正确逻辑，<code>v9 = getenv(&quot;SOAP_ACTION&quot;);</code>，也就是传入<code>'1'</code>作为<code>SOAP_ACTION</code>的值</p>
+<p><code>if ( v5 )</code>：当<code>v5=0</code>时会进入正确逻辑，<code>v5 = *v9 == 0;</code>，这部分是验证<code>v9</code>存在，无需特别分析</p>
+<p><code>if ( v11 &gt;= 0x20000 )</code>：当<code>v11&lt;0x20000</code>时会进入正确逻辑，<code>v10 = getenv(&quot;CONTENT_LENGTH&quot;);      v11 = atoi(v10);</code>，<code>atoi</code>函数的功能是将字符串转换为整数，也就是传入的<code>CONTENT_LENGTH</code>转换成整数后需要小于<code>0x20000</code></p>
+<img src="8.png" style="width: 80%;" />
+<p>重新回到目标函数中，分析如何来到产生栈溢出的这一行：</p>
+<p><code>if ( strcmp(a2, &quot;GetMultipleHNAPs&quot;) )</code>：进入下一步需要<code>strcmp(a2, &quot;GetMultipleHNAPs&quot;) </code>返回<code>1</code>，也就是<code>a2</code>不等于<code>&quot;GetMultipleHNAPs&quot;</code></p>
+<p><code>if ( strcmp(a2, &quot;PushDCHEvent&quot;) &amp;&amp; strcmp(a2, &quot;PushDCHEventList&quot;) &amp;&amp; strcmp(a2, &quot;Login&quot;) &amp;&amp; strcmp(a2, &quot;DoAction&quot;) )</code>：<code>a2</code>不等于<code>&quot;PushDCHEvent&quot;</code>、<code>&quot;PushDCHEventList&quot;</code>、<code>&quot;Login&quot;</code>、<code>&quot;DoAction&quot;</code></p>
+<p><code>if ( !v13 || !*v13 || !DANGER_IVAR || !*DANGER_IVAR )</code>：<code>DANGER_IVAR = getenv(&quot;HNAP_AUTH&quot;);     v13 = getenv(&quot;COOKIE&quot;);</code>，也就是需要<code>COOKIE</code>和<code>HNAP_AUTH</code>都存在，才可以进行到下一步</p>
+<img src="9.png" style="width: 80%;" />
+<p>这时我们已经获得了危险函数被调用并产生栈溢出的全部条件：</p>
+<ul>
+<li><code>REQUEST_METHOD=&quot;POST&quot;</code></li>
+<li><code>SOAP_ACTION=&quot;1&quot;</code></li>
+<li><code>atoi(CONTENT_LENGTH)&lt;0x20000</code>得出<code>CONTENT_LENGTH=&quot;1&quot;</code></li>
+<li><code>COOKIE=&quot;1&quot;</code></li>
+<li><code>HNAP_AUTH=&quot;超出256字节的字符串&quot;</code>，如<code>&quot;512&quot;*a</code></li>
+</ul>
+<h2 id="动态调试">动态调试
+</h2><blockquote>
+<p>为了验证程序执行是否和刚刚的分析结果相符，这里就需要进行动态调试</p>
+</blockquote>
+<p>cgi程序也就是一个编译好的c语言文件，可以开启cgi服务后在网页上执行，也能直接执行。如果通过网页执行的方式，实现栈溢出就需要构造一个http请求，比较麻烦，而这里可以通过export设置好环境变量，然后直接执行程序，通过设置好的环境变量传入参数，同样能达到调试的目的</p>
+<p>mips架构的程序无法在x86下直接运行，因此首先通过qemu进行模拟。来到固件根目录，输入下面的命令将qemu复制到固件根目录，为了让程序的依赖更少出错，将根目录设置成解包的文件目录。这样就实现了对原本设备的完整模拟</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cp /usr/bin/qemu-mips-static ./ 
+</span></span><span class="line"><span class="cl">sudo chroot . ./bin/sh 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用qemu对目标程序进行模拟，发现没有输出直接退出，说明成功运行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./qemu-mips-static /web/cgi-bin/hnap/hnap_service
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="10.png" style="width: 80%;" />
+<p>尝试修改第一个参数，可以看到输出HNAP REQUEST后退出</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">export</span> <span class="n">REQUEST_METHOD</span><span class="o">=</span><span class="s2">&#34;POST&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="11.png" style="width: 80%;" />
+<p>修改全部所需参数，发现程序停滞了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># export SOAP_ACTION=&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># export CONTENT_LENGTH=&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># export COOKIE=&#34;1&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><img src="12.png" style="width: 80%;" />
 
 </section>
 
@@ -805,7 +884,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">33</span> 
       篇 ，总计 
-      <span class="number-highlight">159.26</span> 
+      <span class="number-highlight">160.62</span> 
       k 字
   </div>
   <div>
@@ -1014,9 +1093,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1788451304"></script>
+<script src="/js/renderer.js?v=1788537747"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1788451304"></script>
+<script defer src="/js/codex-bg-motion.js?v=1788537747"></script>
 
 
 <script>

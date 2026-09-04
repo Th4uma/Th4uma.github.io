@@ -40,7 +40,8 @@
 &lt;p&gt;一般情况在分析这类小型固件时，由于文件数量较少且逆向方便，可以逐个程序进行分析&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;逆向分析&#34;&gt;逆向分析
-&lt;/h2&gt;&lt;p&gt;用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到&lt;code&gt;main&lt;/code&gt;函数，然后&lt;code&gt;f5&lt;/code&gt;进行反编译。注意到伪代码中多次引用了&lt;code&gt;getenv&lt;/code&gt;函数，这也说明了这个代码确实和&lt;code&gt;cgi&lt;/code&gt;有关&lt;/p&gt;
+&lt;/h2&gt;&lt;h3 id=&#34;寻找溢出点&#34;&gt;寻找溢出点
+&lt;/h3&gt;&lt;p&gt;用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到&lt;code&gt;main&lt;/code&gt;函数，然后&lt;code&gt;f5&lt;/code&gt;进行反编译。注意到伪代码中多次引用了&lt;code&gt;getenv&lt;/code&gt;函数，这也说明了这个代码确实和&lt;code&gt;cgi&lt;/code&gt;有关&lt;/p&gt;
 &lt;img src=&#34;3.png&#34; style=&#34;width:50%;&#34; /&gt;
 &lt;p&gt;这次的目标是栈溢出漏洞，所以全局搜索相关函数&lt;code&gt;sprintf&lt;/code&gt;和&lt;code&gt;strcpy&lt;/code&gt;，然后按&lt;code&gt;x&lt;/code&gt;查看调用情况&lt;/p&gt;
 &lt;img src=&#34;4.png&#34; style=&#34;width: 48%;&#34; /&gt;
@@ -48,8 +49,80 @@
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;strcpy(a,b)&lt;/code&gt;意思就是用&lt;code&gt;strcpy&lt;/code&gt;函数将&lt;code&gt;b&lt;/code&gt;的内容复制到&lt;code&gt;a&lt;/code&gt;中。因此在&lt;code&gt;strcpy(栈上有限字符串,用户输入)&lt;/code&gt;中，如果用户输入字符串的长度超过栈可容纳上限，超出部分也一同被复制，这就导致了溢出&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到&lt;code&gt;main&lt;/code&gt;函数中有这样的一句&lt;code&gt;strcpy(v28, v12);&lt;/code&gt;，查看定义&lt;code&gt;char v28[256]; // [sp+64h] [-40Ch] BYREF&lt;/code&gt;，&lt;code&gt;v12 = getenv(&amp;quot;HNAP_AUTH&amp;quot;);&lt;/code&gt;，分别是256大小的字符串和用户输入，刚好符合栈溢出可能产生的条件&lt;/p&gt;
+&lt;p&gt;挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到&lt;code&gt;sub_402280&lt;/code&gt;函数中有这样的一句&lt;code&gt;strcpy(v28, v12);&lt;/code&gt;，查看定义&lt;code&gt;char v28[256]; // [sp+64h] [-40Ch] BYREF&lt;/code&gt;，&lt;code&gt;v12 = getenv(&amp;quot;HNAP_AUTH&amp;quot;);&lt;/code&gt;，分别是256字节大小的字符串和用户输入，刚好符合栈溢出可能产生的条件。这时如果&lt;code&gt;HNAP_AUTH&lt;/code&gt;大于了&lt;code&gt;256&lt;/code&gt;字节，就会产生溢出&lt;/p&gt;
 &lt;img src=&#34;6.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;发现溢出点后，可以对其进行标记，也就是将本地变量名改成便于识别的形式，右键重命名。我这里分别改了函数名和记录用户输入的变量名&lt;/p&gt;
+&lt;img src=&#34;7.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;h3 id=&#34;判断溢出条件&#34;&gt;判断溢出条件
+&lt;/h3&gt;&lt;p&gt;对目标函数按&lt;code&gt;x&lt;/code&gt;来到调用处，发现是&lt;code&gt;main&lt;/code&gt;函数，在调用这一行打一个断点，随后分析其中的&lt;code&gt;if&lt;/code&gt;判断逻辑，找出进入这一行的条件。这部分一共有4个&lt;code&gt;if&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( !v7 )&lt;/code&gt;：当&lt;code&gt;v7=0&lt;/code&gt;时会进入第一层调用目标函数的逻辑，&lt;code&gt;v7 = strcmp(v4, &amp;quot;POST&amp;quot;);&lt;/code&gt;说明条件是&lt;code&gt;v4=POST&lt;/code&gt;，而&lt;code&gt;v3 = getenv(&amp;quot;REQUEST_METHOD&amp;quot;);  v4 = v3;&lt;/code&gt;，最终得知用户需要传入&lt;code&gt;&amp;quot;POST&amp;quot;&lt;/code&gt;作为&lt;code&gt;REQUEST_METHOD&lt;/code&gt;参数从而进入正确的分支&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( v9 )&lt;/code&gt;：当&lt;code&gt;v9=1&lt;/code&gt;时会进入正确逻辑，&lt;code&gt;v9 = getenv(&amp;quot;SOAP_ACTION&amp;quot;);&lt;/code&gt;，也就是传入&lt;code&gt;&#39;1&#39;&lt;/code&gt;作为&lt;code&gt;SOAP_ACTION&lt;/code&gt;的值&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( v5 )&lt;/code&gt;：当&lt;code&gt;v5=0&lt;/code&gt;时会进入正确逻辑，&lt;code&gt;v5 = *v9 == 0;&lt;/code&gt;，这部分是验证&lt;code&gt;v9&lt;/code&gt;存在，无需特别分析&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( v11 &amp;gt;= 0x20000 )&lt;/code&gt;：当&lt;code&gt;v11&amp;lt;0x20000&lt;/code&gt;时会进入正确逻辑，&lt;code&gt;v10 = getenv(&amp;quot;CONTENT_LENGTH&amp;quot;);      v11 = atoi(v10);&lt;/code&gt;，&lt;code&gt;atoi&lt;/code&gt;函数的功能是将字符串转换为整数，也就是传入的&lt;code&gt;CONTENT_LENGTH&lt;/code&gt;转换成整数后需要小于&lt;code&gt;0x20000&lt;/code&gt;&lt;/p&gt;
+&lt;img src=&#34;8.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;重新回到目标函数中，分析如何来到产生栈溢出的这一行：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( strcmp(a2, &amp;quot;GetMultipleHNAPs&amp;quot;) )&lt;/code&gt;：进入下一步需要&lt;code&gt;strcmp(a2, &amp;quot;GetMultipleHNAPs&amp;quot;) &lt;/code&gt;返回&lt;code&gt;1&lt;/code&gt;，也就是&lt;code&gt;a2&lt;/code&gt;不等于&lt;code&gt;&amp;quot;GetMultipleHNAPs&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( strcmp(a2, &amp;quot;PushDCHEvent&amp;quot;) &amp;amp;&amp;amp; strcmp(a2, &amp;quot;PushDCHEventList&amp;quot;) &amp;amp;&amp;amp; strcmp(a2, &amp;quot;Login&amp;quot;) &amp;amp;&amp;amp; strcmp(a2, &amp;quot;DoAction&amp;quot;) )&lt;/code&gt;：&lt;code&gt;a2&lt;/code&gt;不等于&lt;code&gt;&amp;quot;PushDCHEvent&amp;quot;&lt;/code&gt;、&lt;code&gt;&amp;quot;PushDCHEventList&amp;quot;&lt;/code&gt;、&lt;code&gt;&amp;quot;Login&amp;quot;&lt;/code&gt;、&lt;code&gt;&amp;quot;DoAction&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;if ( !v13 || !*v13 || !DANGER_IVAR || !*DANGER_IVAR )&lt;/code&gt;：&lt;code&gt;DANGER_IVAR = getenv(&amp;quot;HNAP_AUTH&amp;quot;);     v13 = getenv(&amp;quot;COOKIE&amp;quot;);&lt;/code&gt;，也就是需要&lt;code&gt;COOKIE&lt;/code&gt;和&lt;code&gt;HNAP_AUTH&lt;/code&gt;都存在，才可以进行到下一步&lt;/p&gt;
+&lt;img src=&#34;9.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;这时我们已经获得了危险函数被调用并产生栈溢出的全部条件：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;REQUEST_METHOD=&amp;quot;POST&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SOAP_ACTION=&amp;quot;1&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;atoi(CONTENT_LENGTH)&amp;lt;0x20000&lt;/code&gt;得出&lt;code&gt;CONTENT_LENGTH=&amp;quot;1&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;COOKIE=&amp;quot;1&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;HNAP_AUTH=&amp;quot;超出256字节的字符串&amp;quot;&lt;/code&gt;，如&lt;code&gt;&amp;quot;512&amp;quot;*a&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;动态调试&#34;&gt;动态调试
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;为了验证程序执行是否和刚刚的分析结果相符，这里就需要进行动态调试&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;cgi程序也就是一个编译好的c语言文件，可以开启cgi服务后在网页上执行，也能直接执行。如果通过网页执行的方式，实现栈溢出就需要构造一个http请求，比较麻烦，而这里可以通过export设置好环境变量，然后直接执行程序，通过设置好的环境变量传入参数，同样能达到调试的目的&lt;/p&gt;
+&lt;p&gt;mips架构的程序无法在x86下直接运行，因此首先通过qemu进行模拟。来到固件根目录，输入下面的命令将qemu复制到固件根目录，为了让程序的依赖更少出错，将根目录设置成解包的文件目录。这样就实现了对原本设备的完整模拟&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cp /usr/bin/qemu-mips-static ./ 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo chroot . ./bin/sh 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;用qemu对目标程序进行模拟，发现没有输出直接退出，说明成功运行&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;./qemu-mips-static /web/cgi-bin/hnap/hnap_service
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;10.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;尝试修改第一个参数，可以看到输出HNAP REQUEST后退出&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;REQUEST_METHOD&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;POST&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;11.png&#34; style=&#34;width: 80%;&#34; /&gt;
+&lt;p&gt;修改全部所需参数，发现程序停滞了&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# export SOAP_ACTION=&amp;#34;1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# export CONTENT_LENGTH=&amp;#34;1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# export COOKIE=&amp;#34;1&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;img src=&#34;12.png&#34; style=&#34;width: 80%;&#34; /&gt;
 </description>
         </item>
         
