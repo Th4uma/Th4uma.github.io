@@ -279,7 +279,18 @@ unicode: "f6d2"
         <li><a href="#判断溢出条件">判断溢出条件</a></li>
       </ol>
     </li>
-    <li><a href="#动态调试">动态调试</a></li>
+    <li><a href="#动态调试">动态调试</a>
+      <ol>
+        <li><a href="#初步调试">初步调试</a></li>
+        <li><a href="#错误排查">错误排查</a></li>
+      </ol>
+    </li>
+    <li><a href="#验证">验证</a></li>
+    <li><a href="#漏洞利用">漏洞利用</a>
+      <ol>
+        <li><a href="#常见寄存器">常见寄存器</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -368,7 +379,7 @@ unicode: "f6d2"
 
 
                 <time class="article-time--reading">
-                    阅读时长: 5 分钟
+                    阅读时长: 8 分钟
                 </time>
             </div>
         
@@ -401,9 +412,9 @@ unicode: "f6d2"
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>得到一个文件夹，其中包含如下文件，固件分析一般在<code>squashfs-root</code>下进行</p>
-<img src="1.png" style="width: 100%;" />
+<img src="1.png" style="width: 70%;" />
 <p>下一步需要查找web服务相关的程序，关键词如<code>html</code>、<code>.php</code>、<code>.aspx</code>、<code>favicon.icon</code>、<code>web</code>、<code>http</code>等和web相关的关键词。这里查到有一个名称是<code>web</code>的文件夹，里面有<code>favicon.ico</code>和一些<code>.asp</code>文件，推测这就是目标文件夹</p>
-<img src="2.png" style="width: 100%;" />
+<img src="2.png" style="width: 70%;" />
 <p><code>web</code>目录下有一个<code>httpd</code>文件，以<code>d</code>为后缀说明这是<code>http</code>服务的服务端。还有一个文件夹名称是<code>cgi_bin</code>，推测设备采用的是<code>cgi</code>协议。<code>cgi</code>的特点就是将用户传入的参数设置为环境变量，然后用<code>getenv()</code>来获取环境变量</p>
 <p><code>cgi-bin</code>中可以看到<code>hnap</code>文件夹，<code>hnap</code>是一个D-Link、TP-Link等厂商设备中常见的Web协议。文件夹中包含<code>hnap_service</code>，这就是这次的分析目标</p>
 <blockquote>
@@ -411,8 +422,8 @@ unicode: "f6d2"
 </blockquote>
 <h2 id="逆向分析">逆向分析
 </h2><h3 id="寻找溢出点">寻找溢出点
-</h3><p>用ida打开目标文件，自动识别架构是mips大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到<code>main</code>函数，然后<code>f5</code>进行反编译。注意到伪代码中多次引用了<code>getenv</code>函数，这也说明了这个代码确实和<code>cgi</code>有关</p>
-<img src="3.png" style="width:50%;" />
+</h3><p>用<code>ida</code>打开目标文件，自动识别架构是<code>mips</code>大端序，主界面可以按空格切换流程图与汇编。这里首先在左侧找到<code>main</code>函数，然后<code>f5</code>进行反编译。注意到伪代码中多次引用了<code>getenv</code>函数，这也说明了这个代码确实和<code>cgi</code>有关</p>
+<img src="3.png" style="width:40%;" />
 <p>这次的目标是栈溢出漏洞，所以全局搜索相关函数<code>sprintf</code>和<code>strcpy</code>，然后按<code>x</code>查看调用情况</p>
 <img src="4.png" style="width: 48%;" />
 <img src="5.png" style="width: 49%;" />
@@ -420,35 +431,61 @@ unicode: "f6d2"
 <p><code>strcpy(a,b)</code>意思就是用<code>strcpy</code>函数将<code>b</code>的内容复制到<code>a</code>中。因此在<code>strcpy(栈上有限字符串,用户输入)</code>中，如果用户输入字符串的长度超过栈可容纳上限，超出部分也一同被复制，这就导致了溢出</p>
 </blockquote>
 <p>挨个查看调用，通过伪代码寻找有可能出现栈溢出的位置。注意到<code>sub_402280</code>函数中有这样的一句<code>strcpy(v28, v12);</code>，查看定义<code>char v28[256]; // [sp+64h] [-40Ch] BYREF</code>，<code>v12 = getenv(&quot;HNAP_AUTH&quot;);</code>，分别是256字节大小的字符串和用户输入，刚好符合栈溢出可能产生的条件。这时如果<code>HNAP_AUTH</code>大于了<code>256</code>字节，就会产生溢出</p>
-<img src="6.png" style="width: 80%;" />
+<img src="6.png" style="width: 70%;" />
 <p>发现溢出点后，可以对其进行标记，也就是将本地变量名改成便于识别的形式，右键重命名。我这里分别改了函数名和记录用户输入的变量名</p>
-<img src="7.png" style="width: 80%;" />
+<img src="7.png" style="width: 60%;" />
 <h3 id="判断溢出条件">判断溢出条件
 </h3><p>对目标函数按<code>x</code>来到调用处，发现是<code>main</code>函数，在调用这一行打一个断点，随后分析其中的<code>if</code>判断逻辑，找出进入这一行的条件。这部分一共有4个<code>if</code>：</p>
-<p><code>if ( !v7 )</code>：当<code>v7=0</code>时会进入第一层调用目标函数的逻辑，<code>v7 = strcmp(v4, &quot;POST&quot;);</code>说明条件是<code>v4=POST</code>，而<code>v3 = getenv(&quot;REQUEST_METHOD&quot;);  v4 = v3;</code>，最终得知用户需要传入<code>&quot;POST&quot;</code>作为<code>REQUEST_METHOD</code>参数从而进入正确的分支</p>
-<p><code>if ( v9 )</code>：当<code>v9=1</code>时会进入正确逻辑，<code>v9 = getenv(&quot;SOAP_ACTION&quot;);</code>，也就是传入<code>'1'</code>作为<code>SOAP_ACTION</code>的值</p>
-<p><code>if ( v5 )</code>：当<code>v5=0</code>时会进入正确逻辑，<code>v5 = *v9 == 0;</code>，这部分是验证<code>v9</code>存在，无需特别分析</p>
-<p><code>if ( v11 &gt;= 0x20000 )</code>：当<code>v11&lt;0x20000</code>时会进入正确逻辑，<code>v10 = getenv(&quot;CONTENT_LENGTH&quot;);      v11 = atoi(v10);</code>，<code>atoi</code>函数的功能是将字符串转换为整数，也就是传入的<code>CONTENT_LENGTH</code>转换成整数后需要小于<code>0x20000</code></p>
-<img src="8.png" style="width: 80%;" />
-<p>重新回到目标函数中，分析如何来到产生栈溢出的这一行：</p>
-<p><code>if ( strcmp(a2, &quot;GetMultipleHNAPs&quot;) )</code>：进入下一步需要<code>strcmp(a2, &quot;GetMultipleHNAPs&quot;) </code>返回<code>1</code>，也就是<code>a2</code>不等于<code>&quot;GetMultipleHNAPs&quot;</code></p>
-<p><code>if ( strcmp(a2, &quot;PushDCHEvent&quot;) &amp;&amp; strcmp(a2, &quot;PushDCHEventList&quot;) &amp;&amp; strcmp(a2, &quot;Login&quot;) &amp;&amp; strcmp(a2, &quot;DoAction&quot;) )</code>：<code>a2</code>不等于<code>&quot;PushDCHEvent&quot;</code>、<code>&quot;PushDCHEventList&quot;</code>、<code>&quot;Login&quot;</code>、<code>&quot;DoAction&quot;</code></p>
-<p><code>if ( !v13 || !*v13 || !DANGER_IVAR || !*DANGER_IVAR )</code>：<code>DANGER_IVAR = getenv(&quot;HNAP_AUTH&quot;);     v13 = getenv(&quot;COOKIE&quot;);</code>，也就是需要<code>COOKIE</code>和<code>HNAP_AUTH</code>都存在，才可以进行到下一步</p>
+<ul>
+<li>
+<p><code>if ( !v7 )</code>：</p>
+<p>当<code>v7=0</code>时会进入第一层调用目标函数的逻辑，<code>v7 = strcmp(v4, &quot;POST&quot;);</code>说明条件是<code>v4=POST</code>，而<code>v3 = getenv(&quot;REQUEST_METHOD&quot;);  v4 = v3;</code>，最终得知用户需要传入<code>&quot;POST&quot;</code>作为<code>REQUEST_METHOD</code>参数从而进入正确的分支</p>
+</li>
+<li>
+<p><code>if ( v9 )</code>：</p>
+<p>当<code>v9=1</code>时会进入正确逻辑，<code>v9 = getenv(&quot;SOAP_ACTION&quot;);</code>，也就是传入<code>'1'</code>作为<code>SOAP_ACTION</code>的值</p>
+</li>
+<li>
+<p><code>if ( v5 )</code>：</p>
+<p>当<code>v5=0</code>时会进入正确逻辑，<code>v5 = *v9 == 0;</code>，这部分是验证<code>v9</code>有内容，无需特别分析</p>
+</li>
+<li>
+<p><code>if ( v11 &gt;= 0x20000 )</code>：</p>
+<p>当<code>v11&lt;0x20000</code>时会进入正确逻辑，<code>v10 = getenv(&quot;CONTENT_LENGTH&quot;);      v11 = atoi(v10);</code>，<code>atoi</code>函数的功能是将字符串转换为整数，也就是传入的<code>CONTENT_LENGTH</code>转换成整数后需要小于<code>0x20000</code></p>
+</li>
+</ul>
+<img src="8.png" style="width: 85%;" />
+<p>重新回到DANGER_ITEM中，分析如何来到产生栈溢出的这一行：</p>
+<ul>
+<li>
+<p><code>if ( strcmp(a2, &quot;GetMultipleHNAPs&quot;) )</code>：</p>
+<p>进入下一步需要<code>strcmp(a2, &quot;GetMultipleHNAPs&quot;) </code>返回<code>1</code>，也就是<code>a2</code>不等于<code>&quot;GetMultipleHNAPs&quot;</code></p>
+</li>
+<li>
+<p><code>if ( strcmp(a2, &quot;PushDCHEvent&quot;) &amp;&amp; strcmp(a2, &quot;PushDCHEventList&quot;) &amp;&amp; strcmp(a2, &quot;Login&quot;) &amp;&amp; strcmp(a2, &quot;DoAction&quot;) )</code>：</p>
+<p><code>a2</code>不等于<code>&quot;PushDCHEvent&quot;</code>、<code>&quot;PushDCHEventList&quot;</code>、<code>&quot;Login&quot;</code>、<code>&quot;DoAction&quot;</code></p>
+</li>
+<li>
+<p><code>if ( !v13 || !*v13 || !DANGER_IVAR || !*DANGER_IVAR )</code>：</p>
+<p><code>DANGER_IVAR = getenv(&quot;HNAP_AUTH&quot;);     v13 = getenv(&quot;COOKIE&quot;);</code>，也就是需要<code>COOKIE</code>和<code>HNAP_AUTH</code>都存在，才可以进行到下一步。同时由于<code>snprintf(v28, 0x80u, &quot;%s&quot;, v15);     v16 = strstr(v28, &quot;uid=&quot;);</code>，需要在<code>COOKIE</code>中加上<code>&quot;uid=&quot;</code></p>
+</li>
+</ul>
 <img src="9.png" style="width: 80%;" />
-<p>这时我们已经获得了危险函数被调用并产生栈溢出的全部条件：</p>
+<p>这时我们已经大致判断出危险函数被调用并产生栈溢出的条件：</p>
 <ul>
 <li><code>REQUEST_METHOD=&quot;POST&quot;</code></li>
 <li><code>SOAP_ACTION=&quot;1&quot;</code></li>
-<li><code>atoi(CONTENT_LENGTH)&lt;0x20000</code>得出<code>CONTENT_LENGTH=&quot;1&quot;</code></li>
-<li><code>COOKIE=&quot;1&quot;</code></li>
-<li><code>HNAP_AUTH=&quot;超出256字节的字符串&quot;</code>，如<code>&quot;512&quot;*a</code></li>
+<li><code>atoi(CONTENT_LENGTH)&lt;0x20000</code></li>
+<li><code>COOKIE=&quot;uid=&quot;</code></li>
+<li><code>HNAP_AUTH=&quot;超出256字节的字符串&quot;</code></li>
 </ul>
 <h2 id="动态调试">动态调试
-</h2><blockquote>
+</h2><h3 id="初步调试">初步调试
+</h3><blockquote>
 <p>为了验证程序执行是否和刚刚的分析结果相符，这里就需要进行动态调试</p>
 </blockquote>
-<p>cgi程序也就是一个编译好的c语言文件，可以开启cgi服务后在网页上执行，也能直接执行。如果通过网页执行的方式，实现栈溢出就需要构造一个http请求，比较麻烦，而这里可以通过export设置好环境变量，然后直接执行程序，通过设置好的环境变量传入参数，同样能达到调试的目的</p>
-<p>mips架构的程序无法在x86下直接运行，因此首先通过qemu进行模拟。来到固件根目录，输入下面的命令将qemu复制到固件根目录，为了让程序的依赖更少出错，将根目录设置成解包的文件目录。这样就实现了对原本设备的完整模拟</p>
+<p><code>cgi</code>程序也就是一个编译好的c语言文件，可以开启<code>cgi</code>服务后在网页上执行，也能直接执行。如果通过网页执行的方式，实现栈溢出就需要构造一个<code>http</code>请求，比较麻烦，而这里可以通过<code>export</code>设置好环境变量，然后直接执行程序，通过设置好的环境变量传入参数，同样能达到调试的目的</p>
+<p><code>mips</code>架构的程序无法在<code>x86</code>下直接运行，因此首先通过<code>qemu</code>进行模拟。来到固件根目录，输入下面的命令将<code>qemu</code>复制到固件根目录，为了让程序的依赖更少出错，将根目录设置成解包后的文件目录。这样就能实现对原本设备的完整模拟</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -459,7 +496,7 @@ unicode: "f6d2"
 </span></span><span class="line"><span class="cl">sudo chroot . ./bin/sh 
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>用qemu对目标程序进行模拟，发现没有输出直接退出，说明成功运行</p>
+</div><p>用<code>qemu</code>对目标程序进行模拟，发现没有输出直接退出，说明成功运行</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -468,8 +505,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./qemu-mips-static /web/cgi-bin/hnap/hnap_service
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="10.png" style="width: 80%;" />
-<p>尝试修改第一个参数，可以看到输出HNAP REQUEST后退出</p>
+</div><img src="10.png" style="width: 90%;" />
+<p>尝试修改第一个参数，可以看到输出<code>HNAP REQUEST</code>后退出</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -478,8 +515,8 @@ unicode: "f6d2"
 <pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">export</span> <span class="n">REQUEST_METHOD</span><span class="o">=</span><span class="s2">&#34;POST&#34;</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><img src="11.png" style="width: 80%;" />
-<p>修改全部所需参数，发现程序停滞了</p>
+</div><img src="11.png" style="width: 60%;" />
+<p>修改全部所需参数，发现程序停滞了，随意输入一个字符后出现段错误</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
@@ -487,12 +524,115 @@ unicode: "f6d2"
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># export SOAP_ACTION=&#34;1&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># export CONTENT_LENGTH=&#34;1&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># export COOKIE=&#34;1&#34;</span>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="k">export</span> <span class="n">SOAP_ACTION</span><span class="o">=</span><span class="s2">&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">export</span> <span class="n">CONTENT_LENGTH</span><span class="o">=</span><span class="s2">&#34;1&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">export</span> <span class="n">COOKIE</span><span class="o">=</span><span class="s2">&#34;uid=&#34;</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><img src="12.png" style="width: 80%;" />
+<p>这时需要启动一个<code>gdb</code>调试端口进行排查。在程序中有这一句<code>fread(v25, 1u, v11, stdin);</code>意思是程序从<code>stdin</code>中读取<code>CONTENT_LENGTH</code>个字节。创建<code>stdin.txt</code>，其中写入任意字符作为<code>stdin</code>，输入下面的命令后终端暂停，等待<code>ida</code>连接</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./qemu-mips-static -g 1234 /web/cgi-bin/hnap/hnap_service &lt; /stdin.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>新开一个终端，通过<code>ifconfig</code>查看<code>ip</code>地址为<code>192.168.78.134</code></p>
+<img src="13.png" style="width: 90%;" />
+<p>打开<code>ida</code>，选择<code>debugger</code>开启<code>gdb</code>调试，然后选择<code>process options</code>，填入刚刚的<code>ip</code>和端口</p>
+<img src="14.png" style="width: 50%;" />
+<p>按<code>f9</code>运行，确认弹窗后来到这个界面说明成功接入调试器</p>
+<img src="15.png" style="width: 100%;" />
+<p>我先前在程序中打过断点，进入后按一次<code>f9</code>，程序执行后停在第一个断点处，然后按<code>f5</code>就可以查看伪代码，暗紫色就是程序停住的地方，分析完一句便按<code>f9</code>继续</p>
+<img src="16.png" style="width: 100%;" />
+<h3 id="错误排查">错误排查
+</h3><p>程序运行到<code>v12 = fopen(&quot;/tmp/.hnap_in.xml&quot;, &quot;wb&quot;);</code>时产生了异常。这一句是创建<code>.hnap_in.xml</code>，但前提条件是父目录存在，可是检查固件目录后发现根本没有<code>tmp</code>文件夹，这可能由于正常启动会自动创建这个目录，而这里直接开始调试，跳过了创建步骤。因此手动进行创建，然后继续调试</p>
+<img src="17.png" style="width: 100%;" />
+<p>重新运行后成功进入了<code>DANGER_ITEM</code>，但依旧报错，定位到了这一句<code>v6 = ixmlGetElementByTag(v5, &quot;soap:Body&quot;);</code>，意思是在<code>v5</code>对应的<code>xml</code>中查找<code>soap:Body</code></p>
+<img src="18.png" style="width: 60%;" />
+<p>向上追溯，发现这里的xml也同时是上一个报错中的.hnap_in.xml，因此重点分析目标函数被调用前的这一段</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">v10</span> <span class="o">=</span> <span class="nf">getenv</span><span class="p">(</span><span class="s">&#34;CONTENT_LENGTH&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">v11</span> <span class="o">=</span> <span class="nf">atoi</span><span class="p">(</span><span class="n">v10</span><span class="p">);</span> <span class="c1">//将CONTENT_LENGTH转换成整数
+</span></span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span> <span class="n">v11</span> <span class="o">&gt;=</span> <span class="mh">0x20000</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">fread</span><span class="p">(</span><span class="n">v25</span><span class="p">,</span> <span class="mi">1u</span><span class="p">,</span> <span class="n">v11</span><span class="p">,</span> <span class="n">stdin</span><span class="p">);</span> <span class="c1">//从stdin中读取v11个字节到v25中
+</span></span></span><span class="line"><span class="cl"><span class="nf">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">v25</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">v12</span> <span class="o">=</span> <span class="nf">fopen</span><span class="p">(</span><span class="s">&#34;/tmp/.hnap_in.xml&#34;</span><span class="p">,</span> <span class="s">&#34;wb&#34;</span><span class="p">);</span> <span class="c1">//创建/tmp/.hnap_in.xml
+</span></span></span><span class="line"><span class="cl"><span class="nf">fwrite</span><span class="p">(</span><span class="n">v25</span><span class="p">,</span> <span class="mi">1u</span><span class="p">,</span> <span class="n">v11</span><span class="p">,</span> <span class="n">v12</span><span class="p">);</span> <span class="c1">//将v25中的内容写入刚刚创建的xml
+</span></span></span><span class="line"><span class="cl"><span class="nf">fclose</span><span class="p">(</span><span class="n">v12</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nf">memset</span><span class="p">(</span><span class="n">v25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">v25</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="n">v13</span> <span class="o">=</span> <span class="nf">DANGER_ITEM</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="s">&#34;/tmp/.hnap_in.xml&#34;</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">v26</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">v27</span><span class="p">);</span> <span class="c1">//目标函数接收这个文件路径
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样报错的原因便明了了：<code>CONTENT_LENGTH</code>的值为<code>1</code>，那么<code>xml</code>文件也只读入了一个字节，根本无法找到<code>soap:Body</code>，最终导致报错</p>
+<p>解决方法是在<code>stdin</code>中写入正确的<code>soap:Body</code>，以及将<code>CONTENT_LENGTH</code>的值改成对应的字节数。我这里找了一个模板，又将<code>CONTENT_LENGTH</code>改成了<code>127</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;soap:Body&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;m:GetPrice</span> <span class="na">xmlns:m=</span><span class="s">&#34;http://www.w3schools.com/prices&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;m:Item&gt;</span>Apples<span class="nt">&lt;/m:Item&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/m:GetPrice&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/soap:Body&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新调试后可以看到成功来到产生溢出这一句</p>
+<img src="20.png" style="width: 100%;" />
+<p>返回如下</p>
+<img src="22.png" style="width: 100%;" />
+<h2 id="验证">验证
+</h2><p>确认如下条件成立：</p>
+<ul>
+<li><code>REQUEST_METHOD=&quot;POST&quot;</code></li>
+<li><code>SOAP_ACTION=&quot;1&quot;</code></li>
+<li><code>CONTENT_LENGTH=&quot;$(wc -c &lt; /stdin.txt)&quot;</code></li>
+<li><code>COOKIE=&quot;uid=&quot;</code></li>
+<li><code>HNAP_AUTH=&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</code></li>
+<li>固件根目录下存在<code>/tmp</code>目录</li>
+<li>固件根目录下有<code>stdin.txt</code>，里面写入构造的xml</li>
+</ul>
+<p>开启调试</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">./qemu-mips-static -g 1234 /web/cgi-bin/hnap/hnap_service &lt; /stdin.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行到<code>DANGER_IVAR</code>被赋值后，终端输出了<code>HNAP_AUTH</code>的值</p>
+<img src="19.png" style="width: 100%;" />
+<p>最终来到<code>strcpy(v28, DANGER_IVAR);</code>，成功产生了栈溢出</p>
+<img src="21.png" style="width: 80%;" />
+<h2 id="漏洞利用">漏洞利用
+</h2><p>这一步需要构造可回显rce栈溢出</p>
+<h3 id="常见寄存器">常见寄存器
+</h3><p>程序之所以会从上到下一句句执行，是因为x86架构中的ip寄存器，也是mips架构的pc寄存器中，存放了下一条指令在内存中的地址。也就是说是这个寄存器决定程序执行到了哪一步，只要能控制这个寄存器，就可以控制程序执行到的位置</p>
 
 </section>
 
@@ -884,7 +1024,7 @@ unicode: "f6d2"
       共发表文章 
       <span class="number-highlight">33</span> 
       篇 ，总计 
-      <span class="number-highlight">160.62</span> 
+      <span class="number-highlight">161.85</span> 
       k 字
   </div>
   <div>
@@ -1093,9 +1233,9 @@ if (busuanziValue) {
 </style>
 
 
-<script src="/js/renderer.js?v=1788537747"></script>
+<script src="/js/renderer.js?v=1788709998"></script>
 
-<script defer src="/js/codex-bg-motion.js?v=1788537747"></script>
+<script defer src="/js/codex-bg-motion.js?v=1788709998"></script>
 
 
 <script>
